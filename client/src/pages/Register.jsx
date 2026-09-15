@@ -18,16 +18,34 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (form.password.length < 6) {
+    const trimmedForm = {
+      full_name: form.full_name.trim(),
+      email: form.email.trim(),
+      cms_number: form.cms_number.trim(),
+      password: form.password,
+    };
+
+    if (trimmedForm.password.length < 6) {
       setError('Password must be at least 6 characters.');
       return;
     }
     setLoading(true);
     try {
-      await authApi.register(form);
-      navigate('/login', { state: { message: 'Account created! Please sign in.' } });
+      await authApi.register(trimmedForm);
+      navigate('/login', { state: { message: 'Account created! Please sign in with your credentials.' } });
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        // Pydantic 422 validation errors are arrays of error objects
+        const messages = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`).join(', ');
+        setError(messages || 'Validation failed. Please check your inputs.');
+      } else if (typeof detail === 'string') {
+        setError(detail);
+      } else if (!err.response) {
+        setError('Cannot connect to backend server. Please verify the backend is running on http://localhost:8000.');
+      } else {
+        setError('Registration failed. Please check your inputs and try again.');
+      }
     } finally {
       setLoading(false);
     }

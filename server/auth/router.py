@@ -18,28 +18,33 @@ from auth.utils import hash_password, verify_password, create_access_token, get_
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
+from sqlalchemy import func
+
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     """
     Register a new student account.
     Returns the created user (without password).
     """
+    clean_email = payload.email.strip().lower()
+    clean_cms = payload.cms_number.strip().upper()
+
     # Check for duplicate email or CMS number
-    if db.query(User).filter(User.email == payload.email).first():
+    if db.query(User).filter(func.lower(User.email) == clean_email).first():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists."
         )
-    if db.query(User).filter(User.cms_number == payload.cms_number).first():
+    if db.query(User).filter(func.upper(User.cms_number) == clean_cms).first():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this CMS number already exists."
         )
 
     user = User(
-        full_name=payload.full_name,
-        email=payload.email,
-        cms_number=payload.cms_number,
+        full_name=payload.full_name.strip(),
+        email=clean_email,
+        cms_number=clean_cms,
         password_hash=hash_password(payload.password),
     )
     db.add(user)
@@ -55,7 +60,8 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     The frontend stores this in localStorage and sends it as:
       Authorization: Bearer <token>
     """
-    user = db.query(User).filter(User.email == payload.email).first()
+    clean_email = payload.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -23,10 +23,20 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        const messages = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`).join(', ');
+        setError(messages || 'Validation error. Please check your inputs.');
+      } else if (typeof detail === 'string') {
+        setError(detail);
+      } else if (!err.response) {
+        setError('Cannot connect to backend server. Please verify the backend is running on http://localhost:8000.');
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

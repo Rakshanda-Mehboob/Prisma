@@ -25,6 +25,7 @@ from schemas import (
 )
 from auth.utils import get_current_user
 from assessment.scoring import calculate_scores, identify_weak_constructs
+from assessment.ai_generator import get_or_create_hybrid_scenarios
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
@@ -90,11 +91,12 @@ def get_pre_scenarios(
             status_code=status.HTTP_409_CONFLICT,
             detail="You have already completed the pre-assessment."
         )
-    scenarios = _fetch_scenarios(db, "pre")
+    # Hybrid AI scenario generation: blend vetted baseline scenarios with dynamic AI scenarios
+    scenarios = get_or_create_hybrid_scenarios(db, stage="pre", target_count_per_construct=4, ai_ratio=0.5)
     if not scenarios:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="No scenarios found. Please ask admin to run seed.py first."
+            detail="No scenarios available. Please check server logs."
         )
     return scenarios
 
@@ -198,11 +200,12 @@ def get_post_scenarios(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Complete all assigned learning modules before taking the post-assessment."
         )
-    scenarios = _fetch_scenarios(db, "post")
+    # Hybrid AI scenario generation for post-assessment
+    scenarios = get_or_create_hybrid_scenarios(db, stage="post", target_count_per_construct=4, ai_ratio=0.5)
     if not scenarios:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="No post scenarios found. Please ask admin to run seed.py first."
+            detail="No post scenarios available. Please check server logs."
         )
     return scenarios
 
