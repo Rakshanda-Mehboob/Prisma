@@ -60,50 +60,28 @@ export default function Register() {
 
   const strengthColor =
     passwordStrength <= 25 ? 'var(--color-danger)' :
-    passwordStrength <= 50 ? 'var(--color-warning)' :
-    passwordStrength <= 75 ? 'var(--color-accent)' : 'var(--color-success)';
+      passwordStrength <= 50 ? 'var(--color-warning)' :
+        passwordStrength <= 75 ? 'var(--color-accent)' : 'var(--color-success)';
 
   const strengthLabel =
     passwordStrength <= 25 ? 'Weak' :
-    passwordStrength <= 50 ? 'Fair' :
-    passwordStrength <= 75 ? 'Good' : 'Strong';
+      passwordStrength <= 50 ? 'Fair' :
+        passwordStrength <= 75 ? 'Good' : 'Strong';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    const trimmedForm = {
-      full_name: form.full_name.trim(),
-      email: form.email.trim(),
-      cms_number: form.cms_number.trim(),
-      password: form.password,
-      department: form.department || null,
-      living_situation: form.living_situation || null,
-    };
-
-    if (trimmedForm.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
 
     setLoading(true);
     try {
-      await authApi.register(trimmedForm);
-      navigate('/login', {
-        state: { message: 'Account successfully registered! Please sign in with your credentials.' },
-      });
+      await authApi.register(form);
+      navigate('/login', { state: { message: 'Account created! Please sign in.' } });
     } catch (err) {
-      const detail = err.response?.data?.detail;
-      if (Array.isArray(detail)) {
-        const messages = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`).join(', ');
-        setError(messages || 'Validation failed. Please check your inputs.');
-      } else if (typeof detail === 'string') {
-        setError(detail);
-      } else if (!err.response) {
-        setError('Cannot connect to backend server. Please verify the backend is running on http://localhost:8000.');
-      } else {
-        setError('Registration failed. Please check your inputs and try again.');
-      }
+      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
