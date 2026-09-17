@@ -22,6 +22,8 @@ class User(Base):
     cms_number: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(10), default="student")
+    department: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    living_situation: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     # Relationships

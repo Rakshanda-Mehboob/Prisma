@@ -1,3 +1,4 @@
+
 """
 database.py — SQLAlchemy engine, session factory, and get_db dependency.
 SQLite file: server/app.db (auto-created on first run, gitignored).

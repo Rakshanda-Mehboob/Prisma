@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from database import SessionLocal, engine
 import models
+from interventions.quizzes import QUIZ_MAP
 
 # Create tables if they don't exist yet
 models.Base.metadata.create_all(bind=engine)
@@ -927,26 +928,7 @@ INTERVENTIONS = [
         "target_construct": "Attitude",
         "title": "Attitude Self-Assessment Quiz",
         "content_type": "quiz",
-        "content_body": (
-            "# Attitude Self-Assessment Quiz\n\n"
-            "Answer honestly — this is for personal reflection only.\n\n"
-            "**Q1.** True or False: If the person being targeted doesn't complain, it's not cyberbullying.\n"
-            "→ **False.** Harm occurs regardless of whether the victim verbalizes it.\n\n"
-            "**Q2.** Which of the following is NOT a form of cyberbullying?\n"
-            "a) Sharing embarrassing photos without consent\n"
-            "b) Sending a constructive critique of someone's project\n"
-            "c) Repeatedly excluding someone from online study groups\n"
-            "d) Posting false rumors about a classmate\n"
-            "→ **Answer: b** — Constructive, respectful feedback is not cyberbullying.\n\n"
-            "**Q3.** Why is cyberbullying sometimes considered harder to escape than physical bullying?\n"
-            "→ It occurs 24/7, can be anonymous, reaches large audiences instantly, "
-            "and leaves permanent digital traces.\n\n"
-            "**Q4.** Complete the sentence: 'I am responsible for my online behavior because...'\n"
-            "→ Personal reflection — there is no single answer. Consider: impact on others, "
-            "digital permanence, community standards.\n\n"
-            "**Reflection:** Review your answers. Were any surprising? What does this reveal "
-            "about assumptions you held before this module?"
-        ),
+        "content_body": QUIZ_MAP["Attitude"],
         "estimated_minutes": 10,
     },
 
@@ -1032,21 +1014,7 @@ INTERVENTIONS = [
         "target_construct": "SubjectiveNorm",
         "title": "Social Responsibility Reflection Quiz",
         "content_type": "quiz",
-        "content_body": (
-            "# Social Responsibility Reflection Quiz\n\n"
-            "**Q1.** According to the Theory of Planned Behavior, what does 'Subjective Norm' measure?\n"
-            "→ The perceived social pressure from important people in your life to perform or avoid a behavior.\n\n"
-            "**Q2.** True or False: Being a bystander who does nothing is a neutral act.\n"
-            "→ **False.** Bystander silence signals implicit approval and often escalates bullying.\n\n"
-            "**Q3.** Name two people in your life whose opinion on cyberbullying would influence your behavior.\n"
-            "→ Personal reflection. Consider: a family member, a mentor, a close friend.\n\n"
-            "**Q4.** What is the bystander effect, and what is ONE concrete thing you can do to overcome it?\n"
-            "→ The bystander effect is the tendency to not intervene when others are present. "
-            "One action: Directly address the victim ('Are you okay?') rather than waiting for someone else.\n\n"
-            "**Q5.** If 85% of your class considered intervening a social responsibility, how would that "
-            "affect your own behavior?\n"
-            "→ Personal reflection — think about the relationship between majority norms and individual action."
-        ),
+        "content_body": QUIZ_MAP["SubjectiveNorm"],
         "estimated_minutes": 8,
     },
 
@@ -1140,27 +1108,7 @@ INTERVENTIONS = [
         "target_construct": "PBC",
         "title": "Building Your Action Plan — PBC Skills Quiz",
         "content_type": "quiz",
-        "content_body": (
-            "# Building Your Action Plan — PBC Skills Quiz\n\n"
-            "**Q1.** You see a classmate being targeted in a group chat you're part of. "
-            "Name TWO actions you could take RIGHT NOW using platform features.\n"
-            "→ Possible answers: Report the message/post, Screenshot as evidence, "
-            "Block the aggressor, Message the victim privately.\n\n"
-            "**Q2.** A victim tells you they're afraid to report because they fear retaliation. "
-            "What would you say?\n"
-            "→ Sample response: 'Reporting can be done confidentially. I can help you document "
-            "the evidence and we can do this together. Your safety matters.'\n\n"
-            "**Q3.** True or False: 'Blocking someone resolves the underlying problem of cyberbullying.'\n"
-            "→ **False.** Blocking protects you but does not stop the bully from targeting others "
-            "or addressing the root behavior. Reporting is important.\n\n"
-            "**Q4.** What is the single most important thing to do BEFORE blocking someone who "
-            "is harassing you or someone you know?\n"
-            "→ Screenshot and preserve evidence. Once blocked, evidence may become harder to access.\n\n"
-            "**Q5.** Write your personal 'Upstander Commitment Statement' — one sentence you "
-            "commit to acting on.\n"
-            "→ Example: 'When I see cyberbullying, I will at minimum privately reach out to the "
-            "victim so they know they are not alone.'"
-        ),
+        "content_body": QUIZ_MAP["PBC"],
         "estimated_minutes": 10,
     },
 ]

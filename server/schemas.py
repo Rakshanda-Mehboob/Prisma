@@ -17,6 +17,8 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     cms_number: str = Field(..., min_length=3, max_length=20)
     password: str = Field(..., min_length=6)
+    department: Optional[str] = None
+    living_situation: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
@@ -35,9 +37,17 @@ class UserOut(BaseModel):
     email: str
     cms_number: str
     role: str
+    department: Optional[str] = None
+    living_situation: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ProfileUpdateRequest(BaseModel):
+    """Payload for PATCH /auth/profile — only the two optional profile fields."""
+    department: Optional[str] = Field(None, max_length=100)
+    living_situation: Optional[str] = Field(None, max_length=100)
 
 
 # ──────────────────────────────────────────────

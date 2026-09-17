@@ -1,17 +1,22 @@
-/**
- * pages/Assessment.jsx — Scenario-based assessment flow (pre and post stages).
- * One scenario card at a time, with progress bar and animated transitions.
- */
-
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { assessmentApi } from '../api';
-import { ChevronLeft, ChevronRight, Send, CheckCircle2, Lock } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, Send, CheckCircle2, Lock,
+  HelpCircle, AlertTriangle, Sparkles, BookOpen, Trophy,
+  ListFilter, Eye, Check, RefreshCw
+} from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Badge from '../components/ui/Badge';
+import Skeleton from '../components/ui/Skeleton';
+import ThreatGauge from '../components/cyber/ThreatGauge';
 
 const CONSTRUCT_INFO = {
-  Attitude: { label: 'Attitude', color: '#6366f1', emoji: '💭' },
-  SubjectiveNorm: { label: 'Subjective Norm', color: '#06b6d4', emoji: '👥' },
-  PBC: { label: 'Perceived Behavioral Control', color: '#10b981', emoji: '💪' },
+  Attitude: { label: 'Attitude (Harm Evaluation)', color: '#8b5cf6', badge: 'primary', emoji: '💭' },
+  SubjectiveNorm: { label: 'Subjective Norm (Peer Culture)', color: '#00f5ff', badge: 'cyan', emoji: '👥' },
+  PBC: { label: 'Perceived Control (Intervention)', color: '#10b981', badge: 'success', emoji: '💪' },
 };
 
 export default function Assessment() {
@@ -28,6 +33,7 @@ export default function Assessment() {
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -56,7 +62,7 @@ export default function Assessment() {
           : await assessmentApi.getPostScenarios();
         setScenarios(res.data);
       } catch (err) {
-        setError(err.response?.data?.detail || `Failed to load ${stage}-assessment.`);
+        setError(err.response?.data?.detail || `Failed to load ${stage}-assessment scenarios.`);
       } finally {
         setLoading(false);
       }
@@ -67,7 +73,7 @@ export default function Assessment() {
   const current = scenarios[currentIdx];
   const totalQ = scenarios.length;
   const answeredCount = Object.keys(answers).length;
-  const progress = totalQ > 0 ? (answeredCount / totalQ) * 100 : 0;
+  const progress = totalQ > 0 ? Math.round((answeredCount / totalQ) * 100) : 0;
 
   const selectOption = (scenarioId, score) => {
     setAnswers((a) => ({ ...a, [scenarioId]: score }));
@@ -76,9 +82,27 @@ export default function Assessment() {
   const goNext = () => { if (currentIdx < totalQ - 1) setCurrentIdx((i) => i + 1); };
   const goPrev = () => { if (currentIdx > 0) setCurrentIdx((i) => i - 1); };
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key === 'ArrowRight') goNext();
+      if (e.key === 'ArrowLeft') goPrev();
+      if (current && ['1', '2', '3', '4', '5'].includes(e.key)) {
+        const scoreNum = parseInt(e.key);
+        // Match option score if available
+        const opt = current.options.find((o) => o.score === scoreNum);
+        if (opt) selectOption(current.id, opt.score);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIdx, totalQ, current]);
+
   const handleSubmit = async () => {
     if (answeredCount < totalQ) {
       setError(`Please answer all ${totalQ} questions before submitting.`);
+      setReviewModalOpen(true);
       return;
     }
     setSubmitting(true);
@@ -93,6 +117,7 @@ export default function Assessment() {
         : await assessmentApi.submitPost(responses);
       setResult(res.data);
       setSubmitted(true);
+      setReviewModalOpen(false);
     } catch (err) {
       setError(err.response?.data?.detail || 'Submission failed. Please try again.');
     } finally {
@@ -100,99 +125,177 @@ export default function Assessment() {
     }
   };
 
-  if (loading) return <div className="loading-center"><div className="spinner" /></div>;
-
-  if (error && !scenarios.length) {
+  if (loading) {
     return (
-      <div>
-        <h1 style={{ marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 700 }}>
-          {stage === 'pre' ? 'Pre' : 'Post'}-Assessment
-        </h1>
-        <div className="alert alert-danger">{error}</div>
-        {stage === 'post' && (
-          <div className="empty-state">
-            <div className="empty-icon"><Lock size={40} /></div>
-            <div className="empty-title">Post-Assessment Locked</div>
-            <div className="empty-desc">Complete all assigned learning modules to unlock this stage.</div>
-            <button className="btn btn-primary" style={{ marginTop: '1.25rem' }} onClick={() => navigate('/interventions')}>
-              Go to Learning Modules
-            </button>
-          </div>
-        )}
+      <div style={{ maxWidth: '860px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <Skeleton height="60px" width="70%" />
+        <Skeleton height="12px" width="100%" borderRadius="var(--radius-full)" />
+        <Skeleton height="360px" width="100%" borderRadius="var(--radius-xl)" />
       </div>
     );
   }
 
+  if (error && !scenarios.length) {
+    return (
+      <div style={{ maxWidth: '720px', margin: '2rem auto', textAlign: 'center' }}>
+        <Card glow="primary" style={{ padding: '3rem 2rem' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', color: 'var(--color-danger-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+            <Lock size={32} />
+          </div>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem' }}>
+            {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
+          </h2>
+          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '480px', margin: '0 auto 2rem' }}>
+            {error}
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            {stage === 'post' && (
+              <Button variant="cyan" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
+                Go to Learning Modules
+              </Button>
+            )}
+            <Button variant="secondary" onClick={() => navigate('/dashboard')}>
+              Back to Dashboard
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Submitted celebration screen
   if (submitted && result) {
     const scores = [
-      { label: 'Attitude', value: result.attitude_score, color: '#6366f1' },
-      { label: 'Subjective Norm', value: result.subjective_norm_score, color: '#06b6d4' },
-      { label: 'PBC', value: result.pbc_score, color: '#10b981' },
+      { label: 'Harm Attitude', value: result.attitude_score, color: '#8b5cf6' },
+      { label: 'Subjective Norms', value: result.subjective_norm_score, color: '#00f5ff' },
+      { label: 'Perceived Control (PBC)', value: result.pbc_score, color: '#10b981' },
     ];
+    const mean = Math.round((result.attitude_score + result.subjective_norm_score + result.pbc_score) / 3);
+
     return (
-      <div>
-        <div className="card" style={{ textAlign: 'center', padding: '3rem', marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {stage === 'pre' ? 'Pre' : 'Post'}-Assessment Complete!
-          </h1>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-            {stage === 'pre'
-              ? 'Your scores have been recorded. Personalized learning modules have been assigned based on your results.'
-              : 'Excellent! Your post-assessment results are saved. Check your dashboard for the full comparison.'}
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '400px', margin: '0 auto 2rem' }}>
-            {scores.map((s) => (
-              <div key={s.label}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-                  <span style={{ color: 'var(--color-text-muted)' }}>{s.label}</span>
-                  <span style={{ fontWeight: 700, color: s.color }}>{s.value.toFixed(1)} / 100</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${s.value}%`, background: s.color }} />
-                </div>
-              </div>
-            ))}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.35 }}
+        style={{ maxWidth: '800px', margin: '0 auto' }}
+      >
+        <Card glow="primary" style={{ textAlign: 'center', padding: '3.5rem 2rem', position: 'relative' }}>
+          <div
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              margin: '0 auto 1.5rem',
+              boxShadow: '0 0 30px var(--color-primary-glow)',
+            }}
+          >
+            <Trophy size={36} />
           </div>
+
+          <Badge variant="cyan" icon={<Sparkles size={12} />} style={{ marginBottom: '1rem' }}>
+            Assessment Record Verified
+          </Badge>
+
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff' }}>
+            {stage === 'pre' ? 'Baseline Assessment Recorded!' : 'Post-Assessment Completed!'}
+          </h1>
+          <p style={{ color: 'var(--color-text-muted)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
+            {stage === 'pre'
+              ? 'Your cognitive baseline has been mapped. The system has diagnosed your TPB constructs and assigned personalized micro-interventions.'
+              : 'Outstanding effort! Your post-assessment behavioral delta has been recorded. Review your growth in the dashboard.'}
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem', alignItems: 'center', marginBottom: '2.5rem', textAlign: 'left' }}>
+            <ThreatGauge score={mean} label="Overall Anti-Bullying Score" size={170} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {scores.map((s) => (
+                <div key={s.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '0.35rem' }}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>{s.label}</span>
+                    <span style={{ fontWeight: 700, color: s.color, fontFamily: 'var(--font-mono)' }}>
+                      {s.value.toFixed(1)} / 100
+                    </span>
+                  </div>
+                  <div className="score-bar-track">
+                    <div
+                      className="score-bar-fill"
+                      style={{ width: `${s.value}%`, background: s.color, boxShadow: `0 0 10px ${s.color}66` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {result.weak_constructs?.length > 0 && stage === 'pre' && (
-            <div className="alert alert-info" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
-              <strong>Areas for improvement:</strong> {result.weak_constructs.join(', ')}<br/>
-              <span style={{ fontSize: '0.82rem' }}>Personalized modules have been assigned in your Learning section.</span>
+            <div className="alert alert-warning" style={{ textAlign: 'left', marginBottom: '2rem' }}>
+              <AlertTriangle size={18} style={{ flexShrink: 0 }} />
+              <div>
+                <strong>Vulnerability Focus Areas:</strong> {result.weak_constructs.join(', ')}<br />
+                <span style={{ fontSize: '0.82rem', color: 'var(--color-text)' }}>
+                  Personalized learning modules have been assigned to your Learning hub to bolster these constructs.
+                </span>
+              </div>
             </div>
           )}
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {stage === 'pre' && (
-              <button className="btn btn-primary" onClick={() => navigate('/interventions')}>
-                Go to Learning Modules
-              </button>
+
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {stage === 'pre' ? (
+              <Button variant="cyan" size="lg" onClick={() => navigate('/interventions')} iconRight={<ChevronRight size={18} />}>
+                Proceed to Learning Modules
+              </Button>
+            ) : (
+              <Button variant="cyan" size="lg" onClick={() => navigate('/dashboard')} iconRight={<ChevronRight size={18} />}>
+                View Dashboard Analytics
+              </Button>
             )}
-            <button className="btn btn-secondary" onClick={() => navigate('/dashboard')}>
-              View Dashboard
-            </button>
+            <Button variant="secondary" size="lg" onClick={() => navigate('/dashboard')}>
+              Go to Dashboard
+            </Button>
           </div>
-        </div>
-      </div>
+        </Card>
+      </motion.div>
     );
   }
 
   const constructInfo = current ? CONSTRUCT_INFO[current.construct] : null;
-  const isAnswered = current && answers[current.id] != null;
 
   return (
-    <div>
-      {/* Header */}
-      <div className="assessment-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-          <span className="badge badge-primary">
-            {stage === 'pre' ? 'Pre-Assessment' : 'Post-Assessment'}
-          </span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-            Question {currentIdx + 1} of {totalQ}
-          </span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginLeft: 'auto' }}>
-            {answeredCount} answered
-          </span>
+    <div className="assessment-container">
+      {/* Assessment Header */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Badge variant={stage === 'pre' ? 'primary' : 'cyan'}>
+              {stage === 'pre' ? 'Baseline Pre-Assessment' : 'Post-Intervention Audit'}
+            </Badge>
+            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Scenario {currentIdx + 1} of {totalQ}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Button
+              variant="outline"
+              size="sm"
+              icon={<ListFilter size={14} />}
+              onClick={() => setReviewModalOpen(true)}
+            >
+              Review ({answeredCount}/{totalQ})
+            </Button>
+            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+              {progress}%
+            </span>
+          </div>
         </div>
+
+        {/* Glowing Progress Bar */}
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
@@ -200,96 +303,222 @@ export default function Assessment() {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {current && (
-        <div className="scenario-card">
-          {/* Scenario Top */}
-          <div className="scenario-top">
-            <div className="scenario-construct-tag" style={{ color: constructInfo?.color, background: `${constructInfo?.color}20` }}>
-              {constructInfo?.emoji} {constructInfo?.label}
+      {/* Scenario Card with Framer Motion Transition */}
+      <AnimatePresence mode="wait">
+        {current && (
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.25 }}
+            className="scenario-card"
+          >
+            {/* Scenario Top */}
+            <div className="scenario-top">
+              <div
+                className="scenario-construct-tag"
+                style={{
+                  color: constructInfo?.color,
+                  background: `${constructInfo?.color}20`,
+                  border: `1px solid ${constructInfo?.color}40`,
+                }}
+              >
+                {constructInfo?.emoji} {constructInfo?.label}
+              </div>
+              <p className="scenario-text">{current.scenario_text}</p>
             </div>
-            <p className="scenario-text">{current.scenario_text}</p>
-          </div>
 
-          {/* Question + Options */}
-          <div className="scenario-bottom">
-            <p className="scenario-question">{current.question_text}</p>
-            <div className="options-list">
-              {current.options
-                .slice()
-                .sort((a, b) => b.score - a.score) // show most-positive first
-                .map((opt) => {
-                  const selected = answers[current.id] === opt.score;
-                  return (
-                    <button
-                      key={opt.id}
-                      className={`option-btn ${selected ? 'selected' : ''}`}
-                      onClick={() => selectOption(current.id, opt.score)}
-                    >
-                      <div className="option-radio" />
-                      <span>{opt.option_text}</span>
-                    </button>
-                  );
-                })}
+            {/* Question + Likert Options */}
+            <div className="scenario-bottom">
+              <p className="scenario-question">{current.question_text}</p>
+
+              <div className="options-list">
+                {current.options
+                  .slice()
+                  .sort((a, b) => b.score - a.score)
+                  .map((opt, idx) => {
+                    const selected = answers[current.id] === opt.score;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        className={`option-btn ${selected ? 'selected' : ''}`}
+                        onClick={() => selectOption(current.id, opt.score)}
+                      >
+                        <div className="option-radio" />
+                        <span style={{ flex: 1 }}>{opt.option_text}</span>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: selected ? 'var(--color-accent)' : 'var(--color-text-subtle)',
+                            fontFamily: 'var(--font-mono)',
+                            padding: '0.15rem 0.45rem',
+                            borderRadius: 'var(--radius-sm)',
+                            background: selected ? 'rgba(0, 245, 255, 0.1)' : 'transparent',
+                          }}
+                        >
+                          Key {idx + 1}
+                        </span>
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Navigation */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <button
-          className="btn btn-secondary"
+      {/* Bottom Navigation Controls */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          marginTop: '1rem',
+        }}
+      >
+        <Button
+          variant="secondary"
           onClick={goPrev}
           disabled={currentIdx === 0}
+          icon={<ChevronLeft size={16} />}
         >
-          <ChevronLeft size={16} /> Previous
-        </button>
+          Previous
+        </Button>
 
-        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {scenarios.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIdx(i)}
-              style={{
-                width: 28, height: 28, borderRadius: '50%', border: 'none',
-                cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600,
-                background: answers[scenarios[i]?.id] != null
-                  ? 'var(--color-primary)'
-                  : i === currentIdx ? 'var(--color-surface-2)' : 'transparent',
-                color: answers[scenarios[i]?.id] != null
-                  ? 'white'
-                  : i === currentIdx ? 'var(--color-text)' : 'var(--color-text-subtle)',
-                outline: i === currentIdx ? '2px solid var(--color-primary)' : 'none',
-              }}
-            >
-              {i + 1}
-            </button>
-          ))}
+        {/* Quick jump dot navigator */}
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {scenarios.map((s, i) => {
+            const isAnswered = answers[s.id] != null;
+            const isCur = i === currentIdx;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setCurrentIdx(i)}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 'var(--radius-sm)',
+                  border: isCur ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  background: isAnswered
+                    ? 'rgba(124, 58, 237, 0.4)'
+                    : isCur
+                    ? 'var(--color-surface-2)'
+                    : 'transparent',
+                  color: isAnswered ? '#fff' : isCur ? 'var(--color-accent)' : 'var(--color-text-subtle)',
+                  transition: 'var(--transition)',
+                }}
+                title={`Question ${i + 1} - ${isAnswered ? 'Answered' : 'Unanswered'}`}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
         </div>
 
         {currentIdx < totalQ - 1 ? (
-          <button className="btn btn-primary" onClick={goNext}>
-            Next <ChevronRight size={16} />
-          </button>
+          <Button variant="primary" onClick={goNext} iconRight={<ChevronRight size={16} />}>
+            Next
+          </Button>
         ) : (
-          <button
-            className="btn btn-primary"
-            onClick={handleSubmit}
-            disabled={submitting || answeredCount < totalQ}
+          <Button
+            variant="cyan"
+            onClick={() => setReviewModalOpen(true)}
+            disabled={submitting}
+            iconRight={<Send size={15} />}
           >
-            {submitting ? (
-              <><div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Submitting...</>
-            ) : (
-              <><Send size={15} /> Submit Assessment</>
-            )}
-          </button>
+            Review & Submit
+          </Button>
         )}
       </div>
 
-      {answeredCount < totalQ && currentIdx === totalQ - 1 && (
-        <p style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.82rem', color: 'var(--color-warning)' }}>
-          ⚠ {totalQ - answeredCount} question(s) unanswered. Use the number buttons above to jump back.
-        </p>
+      {/* Review Answers Modal */}
+      {reviewModalOpen && (
+        <div className="content-viewer-overlay" onClick={(e) => e.target === e.currentTarget && setReviewModalOpen(false)}>
+          <div className="content-viewer" style={{ maxWidth: '680px' }}>
+            <div className="content-viewer-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ListFilter size={18} color="var(--color-accent)" />
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Review Answers Summary</h3>
+              </div>
+              <span className="badge badge-primary">
+                {answeredCount} of {totalQ} Answered
+              </span>
+            </div>
+
+            <div className="content-viewer-body" style={{ maxHeight: '60vh' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                {scenarios.map((s, idx) => {
+                  const ans = answers[s.id];
+                  const hasAnswer = ans != null;
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => {
+                        setCurrentIdx(idx);
+                        setReviewModalOpen(false);
+                      }}
+                      style={{
+                        padding: '0.85rem 1rem',
+                        background: hasAnswer ? 'var(--color-surface-2)' : 'rgba(239, 68, 68, 0.08)',
+                        border: hasAnswer ? '1px solid var(--color-border)' : '1px solid rgba(239, 68, 68, 0.3)',
+                        borderRadius: 'var(--radius-md)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                      }}
+                      className="card-hover"
+                    >
+                      <div>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)' }}>
+                          Question {idx + 1} • {s.construct}
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text)', marginTop: 2 }}>
+                          {s.scenario_text.slice(0, 75)}...
+                        </div>
+                      </div>
+
+                      <div>
+                        {hasAnswer ? (
+                          <span className="badge badge-success">
+                            <Check size={12} /> Score: {ans}/5
+                          </span>
+                        ) : (
+                          <span className="badge badge-danger">Unanswered</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="content-viewer-footer">
+              <Button variant="secondary" size="sm" onClick={() => setReviewModalOpen(false)}>
+                Back to Questions
+              </Button>
+              <Button
+                variant="cyan"
+                size="sm"
+                onClick={handleSubmit}
+                loading={submitting}
+                disabled={answeredCount < totalQ}
+                iconRight={<Send size={14} />}
+              >
+                Confirm & Submit
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
