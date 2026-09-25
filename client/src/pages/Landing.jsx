@@ -30,7 +30,7 @@ export default function Landing() {
     },
     {
       q: 'Can this platform be scaled to other academic institutions?',
-      a: 'Yes. The system is built on a high-throughput FastAPI asynchronous architecture with modular scenario generation powered by OpenAI GPT-4o, making it effortlessly deployable across colleges, universities, and secondary institutions.'
+      a: 'Yes. The system is built on a high-throughput FastAPI asynchronous architecture with modular scenario generation powered by Google Gemini (with an automatic template-based fallback when no API key is configured), making it effortlessly deployable across colleges, universities, and secondary institutions.'
     },
   ];
 
@@ -50,10 +50,10 @@ export default function Landing() {
         }}
       >
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          <Badge variant="cyan" icon={<Sparkles size={13} />}>
+          <Badge variant="success" icon={<Sparkles size={13} />}>
             Next-Gen AI Behavioral Defense Architecture
           </Badge>
-          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-subtle)', fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
             v1.0 • Riphah Final Year Project
           </span>
         </div>
@@ -66,7 +66,7 @@ export default function Landing() {
             letterSpacing: '-0.04em',
             maxWidth: '960px',
             margin: '0 auto 1.5rem',
-            background: 'linear-gradient(180deg, #FFFFFF 30%, #A78BFA 85%, #00F5FF 100%)',
+            background: 'linear-gradient(135deg, #111827 30%, #1a5632 85%, #0d9488 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}
@@ -89,7 +89,7 @@ export default function Landing() {
         {/* CTA Buttons */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '3.5rem' }}>
           <Link to={user ? '/dashboard' : '/register'}>
-            <Button variant="cyan" size="lg" iconRight={<ArrowRight size={18} />}>
+            <Button variant="primary" size="lg" iconRight={<ArrowRight size={18} />}>
               {user ? 'Open Security Dashboard' : 'Start Free Assessment'}
             </Button>
           </Link>
@@ -100,7 +100,7 @@ export default function Landing() {
           </Link>
         </div>
 
-        {/* High-Tech Terminal Hero Card */}
+        {/* Calm Information Hero Card */}
         <div
           style={{
             maxWidth: '920px',
@@ -108,7 +108,7 @@ export default function Landing() {
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-xl)',
-            boxShadow: 'var(--shadow-lg), 0 0 50px rgba(124, 58, 237, 0.15)',
+            boxShadow: 'var(--shadow-md)',
             overflow: 'hidden',
             textAlign: 'left',
           }}
@@ -127,14 +127,23 @@ export default function Landing() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b', display: 'inline-block' }} />
-              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-              <span style={{ marginLeft: '0.75rem', fontSize: '0.78rem', color: 'var(--color-text-subtle)', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+              <span style={{ marginLeft: '0.75rem', fontSize: '0.78rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
                 tpb-sentinel://behavioral-diagnostics-engine.py
               </span>
             </div>
-            <span className="badge badge-success" style={{ fontSize: '0.7rem' }}>
-              ENGINE ONLINE
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span
+                className="badge badge-muted"
+                style={{ fontSize: '0.68rem', cursor: 'help' }}
+                title="This terminal output is an interactive demonstration visualization."
+              >
+                Demo Visualization
+              </span>
+              <span className="badge badge-success" style={{ fontSize: '0.7rem' }}>
+                ENGINE ONLINE
+              </span>
+            </div>
           </div>
 
           {/* Terminal Body */}
@@ -147,26 +156,26 @@ export default function Landing() {
               color: 'var(--color-text-muted)',
             }}
           >
-            <p style={{ color: 'var(--color-accent)' }}>
+            <p style={{ color: 'var(--color-primary)' }}>
               &gt; Initializing TPB Tri-Construct Multi-Factor Assessment Model...
             </p>
             <p>
-              [+] Attitude Index: <span style={{ color: '#10b981' }}>EVALUATING</span> (Social Harm vs. Detachment)
+              [+] Attitude Index: <span style={{ color: 'var(--color-primary)' }}>EVALUATING</span> (Social Harm vs. Detachment)
             </p>
             <p>
-              [+] Subjective Norm Vector: <span style={{ color: '#60a5fa' }}>MONITORING</span> (Peer Bystander Effect)
+              [+] Subjective Norm Vector: <span style={{ color: 'var(--color-secondary)' }}>MONITORING</span> (Peer Bystander Effect)
             </p>
             <p>
-              [+] Perceived Behavioral Control: <span style={{ color: '#a78bfa' }}>CALIBRATING</span> (Intervention Efficacy)
+              [+] Perceived Behavioral Control: <span style={{ color: 'var(--color-primary-light)' }}>CALIBRATING</span> (Intervention Efficacy)
             </p>
             <div
               style={{
                 marginTop: '1rem',
                 padding: '0.85rem 1rem',
-                background: 'rgba(124, 58, 237, 0.1)',
-                border: '1px solid rgba(124, 58, 237, 0.3)',
+                background: 'rgba(26, 86, 50, 0.06)',
+                border: '1px solid rgba(26, 86, 50, 0.2)',
                 borderRadius: 'var(--radius-md)',
-                color: '#fff',
+                color: 'var(--color-text-primary)',
               }}
             >
               <strong>⚡ Active Diagnosis:</strong> Detected high bystander inertia in online forums. Generating targeted micro-intervention module: <em>"De-escalation Strategies in Group Chats"</em>.
@@ -189,7 +198,7 @@ export default function Landing() {
           <Badge variant="primary" icon={<Layers size={13} />}>
             The Lifecycle
           </Badge>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
             How Prisma Works
           </h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: '600px', margin: '0 auto' }}>
@@ -201,12 +210,12 @@ export default function Landing() {
           {/* Step 1 */}
           <Card glow="primary" hover>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(124, 58, 237, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary-light)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(26, 86, 50, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
                 <Brain size={22} />
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-subtle)' }}>01</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-secondary)' }}>01</span>
             </div>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>TPB Baseline Audit</h3>
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>TPB Baseline Audit</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
               Students undergo scenario-based testing across Attitude, Subjective Norms, and Perceived Control using empirical Likert metrics.
             </p>
@@ -215,12 +224,12 @@ export default function Landing() {
           {/* Step 2 */}
           <Card glow="cyan" hover>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(0, 245, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-accent)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(13, 148, 136, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-secondary)' }}>
                 <Activity size={22} />
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-subtle)' }}>02</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-secondary)' }}>02</span>
             </div>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Cognitive Risk Scoring</h3>
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>Cognitive Risk Scoring</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
               The scoring algorithm isolates weak constructs (&lt;60/100) and maps risk vectors into personalized intervention requirements.
             </p>
@@ -229,12 +238,12 @@ export default function Landing() {
           {/* Step 3 */}
           <Card glow="primary" hover>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success-light)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(22, 163, 74, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success)' }}>
                 <BookOpen size={22} />
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-subtle)' }}>03</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-secondary)' }}>03</span>
             </div>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Targeted Interventions</h3>
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>Targeted Interventions</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
               Interactive quizzes, real-world case simulations, and multimedia resources provide tangible bystander de-escalation skills.
             </p>
@@ -243,12 +252,12 @@ export default function Landing() {
           {/* Step 4 */}
           <Card glow="cyan" hover>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-warning-light)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-md)', background: 'rgba(212, 160, 23, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-accent)' }}>
                 <BarChart3 size={22} />
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-subtle)' }}>04</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-secondary)' }}>04</span>
             </div>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>Post-Audit Delta</h3>
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>Post-Audit Delta</h3>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
               Post-assessment measures behavioral growth (Post − Pre delta) and generates a verifiable, exportable cybersecurity reflection report.
             </p>
@@ -267,10 +276,10 @@ export default function Landing() {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <Badge variant="cyan" icon={<Zap size={13} />}>
+          <Badge variant="primary" icon={<Zap size={13} />}>
             Platform Capabilities
           </Badge>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
             Built with Cybersecurity Standards
           </h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: '600px', margin: '0 auto' }}>
@@ -281,11 +290,11 @@ export default function Landing() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
           <Card hover>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(124, 58, 237, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary-light)', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(26, 86, 50, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
                 <Lock size={20} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Zero-Trust Privacy</h4>
+                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>Zero-Trust Privacy</h4>
                 <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                   JWT token authentication with PBKDF2-SHA256 password hashing. Individual response records are kept confidential to encourage honest self-reporting.
                 </p>
@@ -295,13 +304,13 @@ export default function Landing() {
 
           <Card hover>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(0, 245, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-accent)', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(13, 148, 136, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-secondary)', flexShrink: 0 }}>
                 <Cpu size={20} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>OpenAI GPT-4o Hybrid Scenarios</h4>
+                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>Google Gemini Hybrid Scenarios</h4>
                 <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                  Dynamic AI scenario generator creates realistic university online bullying dilemmas (Discord, WhatsApp, anonymous confession pages) paired with human-vetted baselines.
+                  Dynamic AI scenario generator powered by Google Gemini creates realistic university online bullying dilemmas (Discord, WhatsApp, anonymous confession pages) paired with human-vetted baselines and an automatic template fallback.
                 </p>
               </div>
             </div>
@@ -309,11 +318,11 @@ export default function Landing() {
 
           <Card hover>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success-light)', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(22, 163, 74, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success)', flexShrink: 0 }}>
                 <BarChart3 size={20} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Interactive Recharts Analytics</h4>
+                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>Interactive Recharts Analytics</h4>
                 <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                   Real-time radar profiles, pre vs. post delta comparative bars, and progress rings that translate psychological concepts into clear visuals.
                 </p>
@@ -323,11 +332,11 @@ export default function Landing() {
 
           <Card hover>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-warning-light)', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'rgba(212, 160, 23, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-accent)', flexShrink: 0 }}>
                 <Users size={20} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem' }}>Faculty & Cohort Admin Telemetry</h4>
+                <h4 style={{ fontSize: '1.05rem', marginBottom: '0.4rem', color: 'var(--color-text-primary)' }}>Faculty & Cohort Admin Telemetry</h4>
                 <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                   Comprehensive institutional analytics to spot high-risk departments, monitor intervention adherence, and download research-ready datasets.
                 </p>
@@ -351,7 +360,7 @@ export default function Landing() {
           <Badge variant="primary" icon={<HelpCircle size={13} />}>
             Frequently Asked Questions
           </Badge>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: '0.5rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
             Platform Science & Architecture
           </h2>
         </div>
@@ -365,6 +374,7 @@ export default function Landing() {
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-lg)',
                 overflow: 'hidden',
+                boxShadow: 'var(--shadow-xs)',
                 transition: 'var(--transition)',
               }}
             >
@@ -379,7 +389,7 @@ export default function Landing() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  color: '#fff',
+                  color: 'var(--color-text-primary)',
                   fontSize: '1rem',
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -392,7 +402,7 @@ export default function Landing() {
                   style={{
                     transform: activeFaq === idx ? 'rotate(90deg)' : 'none',
                     transition: 'transform 0.2s ease',
-                    color: 'var(--color-primary-light)',
+                    color: 'var(--color-primary)',
                     flexShrink: 0,
                     marginLeft: '1rem',
                   }}
@@ -405,7 +415,7 @@ export default function Landing() {
                     color: 'var(--color-text-muted)',
                     fontSize: '0.92rem',
                     lineHeight: 1.7,
-                    borderTop: '1px solid rgba(255, 255, 255, 0.04)',
+                    borderTop: '1px solid var(--color-border)',
                     paddingTop: '1rem',
                   }}
                 >
@@ -430,14 +440,14 @@ export default function Landing() {
       >
         <div
           style={{
-            background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(0, 245, 255, 0.12)), var(--color-surface)',
-            border: '1px solid rgba(124, 58, 237, 0.4)',
+            background: 'linear-gradient(135deg, rgba(26, 86, 50, 0.08), rgba(13, 148, 136, 0.08)), var(--color-surface)',
+            border: '1px solid rgba(26, 86, 50, 0.2)',
             borderRadius: 'var(--radius-xl)',
             padding: '4rem 2rem',
-            boxShadow: 'var(--shadow-lg), 0 0 50px rgba(124, 58, 237, 0.15)',
+            boxShadow: 'var(--shadow-md)',
           }}
         >
-          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--color-text-primary)' }}>
             Elevate Your Campus Cognitive Defense
           </h2>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: '620px', margin: '0 auto 2rem', fontSize: '1.05rem', lineHeight: 1.6 }}>
@@ -445,7 +455,7 @@ export default function Landing() {
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <Link to={user ? '/dashboard' : '/register'}>
-              <Button variant="cyan" size="lg" iconRight={<ArrowRight size={18} />}>
+              <Button variant="primary" size="lg" iconRight={<ArrowRight size={18} />}>
                 {user ? 'Go to Dashboard' : 'Create Free Account'}
               </Button>
             </Link>

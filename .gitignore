@@ -1,35 +1,84 @@
-# Python
+# ==============================================================================
+# TPB Cyberbullying Intervention System — Git Ignore Rules
+# ==============================================================================
+
+# ── Python & Bytecode ─────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
+*$py.class
 *.pyo
 *.pyd
 .Python
 *.egg-info/
-dist/
-build/
-.eggs/
-.env
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ── Virtual Environments ──────────────────────────────────────────────────────
 .venv/
 venv/
 env/
+ENV/
+env.bak/
+venv.bak/
 
-# SQLite database (do NOT commit — each dev runs their own)
-server/app.db
+# ── SQLite Database (Each developer/environment generates their own) ─────────
 *.db
+*.sqlite
+*.sqlite3
+server/app.db
 
-# Node / React
-node_modules/
-client/dist/
-client/.env
-.env.local
-.env.production
-
-# IDEs
+# ── Database Tooling & IDE Artifacts ─────────────────────────────────────────
+*.sqbpro
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+*.sublime-project
+*.sublime-workspace
 
-# OS
+# ── Logs, Caches & Temporary Files ───────────────────────────────────────────
+*.log
+*.tmp
+*.cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+.stylelintcache
+
+# ── Environment Variables & Secrets ──────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+server/.env
+client/.env
+
+# Do NOT ignore environment templates
+!.env.example
+!server/.env.example
+!client/.env.example
+
+# ── Node / React Build Output ────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+client/dist/
+client/dist-ssr/
+
+# ── Operating System Files ────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini

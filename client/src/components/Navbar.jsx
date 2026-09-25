@@ -102,7 +102,7 @@ export default function Navbar() {
             display: 'none',
             background: 'none',
             border: 'none',
-            color: '#fff',
+            color: 'var(--color-text-primary)',
             cursor: 'pointer',
             padding: 4,
           }}

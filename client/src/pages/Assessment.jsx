@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { assessmentApi } from '../api';
 import {
-  ChevronLeft, ChevronRight, Send, CheckCircle2, Lock,
-  HelpCircle, AlertTriangle, Sparkles, BookOpen, Trophy,
-  ListFilter, Eye, Check, RefreshCw
+  ChevronLeft, ChevronRight, Send, Lock,
+  AlertTriangle, Sparkles, BookOpen, Trophy,
+  ListFilter, Check
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
@@ -14,9 +14,9 @@ import Skeleton from '../components/ui/Skeleton';
 import ThreatGauge from '../components/cyber/ThreatGauge';
 
 const CONSTRUCT_INFO = {
-  Attitude: { label: 'Attitude (Harm Evaluation)', color: '#8b5cf6', badge: 'primary', emoji: '💭' },
-  SubjectiveNorm: { label: 'Subjective Norm (Peer Culture)', color: '#00f5ff', badge: 'cyan', emoji: '👥' },
-  PBC: { label: 'Perceived Control (Intervention)', color: '#10b981', badge: 'success', emoji: '💪' },
+  Attitude: { label: 'Attitude (Harm Evaluation)', color: '#16a34a', badge: 'primary', emoji: '💭' },
+  SubjectiveNorm: { label: 'Subjective Norm (Peer Culture)', color: '#0d9488', badge: 'secondary', emoji: '👥' },
+  PBC: { label: 'Perceived Control (Intervention)', color: '#1a5632', badge: 'success', emoji: '💪' },
 };
 
 export default function Assessment() {
@@ -24,7 +24,6 @@ export default function Assessment() {
   const [searchParams] = useSearchParams();
   const stage = searchParams.get('stage') || 'pre';
 
-  const [status, setStatus] = useState(null);
   const [scenarios, setScenarios] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState({}); // { scenarioId: selectedScore }
@@ -41,7 +40,6 @@ export default function Assessment() {
       setError('');
       try {
         const statusRes = await assessmentApi.getStatus();
-        setStatus(statusRes.data);
 
         if (stage === 'post' && !statusRes.data.post_unlocked) {
           setError('Complete all assigned learning modules before taking the post-assessment.');
@@ -139,10 +137,10 @@ export default function Assessment() {
     return (
       <div style={{ maxWidth: '720px', margin: '2rem auto', textAlign: 'center' }}>
         <Card glow="primary" style={{ padding: '3rem 2rem' }}>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', color: 'var(--color-danger-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
             <Lock size={32} />
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
             {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
           </h2>
           <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '480px', margin: '0 auto 2rem' }}>
@@ -150,7 +148,7 @@ export default function Assessment() {
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             {stage === 'post' && (
-              <Button variant="cyan" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
+              <Button variant="primary" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
                 Go to Learning Modules
               </Button>
             )}
@@ -166,9 +164,9 @@ export default function Assessment() {
   // Submitted celebration screen
   if (submitted && result) {
     const scores = [
-      { label: 'Harm Attitude', value: result.attitude_score, color: '#8b5cf6' },
-      { label: 'Subjective Norms', value: result.subjective_norm_score, color: '#00f5ff' },
-      { label: 'Perceived Control (PBC)', value: result.pbc_score, color: '#10b981' },
+      { label: 'Harm Attitude', value: result.attitude_score, color: '#16a34a' },
+      { label: 'Subjective Norms', value: result.subjective_norm_score, color: '#0d9488' },
+      { label: 'Perceived Control (PBC)', value: result.pbc_score, color: '#1a5632' },
     ];
     const mean = Math.round((result.attitude_score + result.subjective_norm_score + result.pbc_score) / 3);
 
@@ -185,23 +183,23 @@ export default function Assessment() {
               width: 72,
               height: 72,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+              background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#fff',
               margin: '0 auto 1.5rem',
-              boxShadow: '0 0 30px var(--color-primary-glow)',
+              boxShadow: '0 4px 20px var(--color-primary-glow)',
             }}
           >
             <Trophy size={36} />
           </div>
 
-          <Badge variant="cyan" icon={<Sparkles size={12} />} style={{ marginBottom: '1rem' }}>
+          <Badge variant="primary" icon={<Sparkles size={12} />} style={{ marginBottom: '1rem' }}>
             Assessment Record Verified
           </Badge>
 
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff' }}>
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
             {stage === 'pre' ? 'Baseline Assessment Recorded!' : 'Post-Assessment Completed!'}
           </h1>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.6 }}>
@@ -225,7 +223,7 @@ export default function Assessment() {
                   <div className="score-bar-track">
                     <div
                       className="score-bar-fill"
-                      style={{ width: `${s.value}%`, background: s.color, boxShadow: `0 0 10px ${s.color}66` }}
+                      style={{ width: `${s.value}%`, background: s.color, boxShadow: `0 2px 6px ${s.color}33` }}
                     />
                   </div>
                 </div>
@@ -238,7 +236,7 @@ export default function Assessment() {
               <AlertTriangle size={18} style={{ flexShrink: 0 }} />
               <div>
                 <strong>Vulnerability Focus Areas:</strong> {result.weak_constructs.join(', ')}<br />
-                <span style={{ fontSize: '0.82rem', color: 'var(--color-text)' }}>
+                <span style={{ fontSize: '0.82rem', color: 'var(--color-text-primary)' }}>
                   Personalized learning modules have been assigned to your Learning hub to bolster these constructs.
                 </span>
               </div>
@@ -247,11 +245,11 @@ export default function Assessment() {
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             {stage === 'pre' ? (
-              <Button variant="cyan" size="lg" onClick={() => navigate('/interventions')} iconRight={<ChevronRight size={18} />}>
+              <Button variant="primary" size="lg" onClick={() => navigate('/interventions')} iconRight={<ChevronRight size={18} />}>
                 Proceed to Learning Modules
               </Button>
             ) : (
-              <Button variant="cyan" size="lg" onClick={() => navigate('/dashboard')} iconRight={<ChevronRight size={18} />}>
+              <Button variant="primary" size="lg" onClick={() => navigate('/dashboard')} iconRight={<ChevronRight size={18} />}>
                 View Dashboard Analytics
               </Button>
             )}
@@ -272,7 +270,7 @@ export default function Assessment() {
       <div style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.85rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Badge variant={stage === 'pre' ? 'primary' : 'cyan'}>
+            <Badge variant="primary">
               {stage === 'pre' ? 'Baseline Pre-Assessment' : 'Post-Intervention Audit'}
             </Badge>
             <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -289,7 +287,7 @@ export default function Assessment() {
             >
               Review ({answeredCount}/{totalQ})
             </Button>
-            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
               {progress}%
             </span>
           </div>
@@ -320,8 +318,8 @@ export default function Assessment() {
                 className="scenario-construct-tag"
                 style={{
                   color: constructInfo?.color,
-                  background: `${constructInfo?.color}20`,
-                  border: `1px solid ${constructInfo?.color}40`,
+                  background: `${constructInfo?.color}15`,
+                  border: `1px solid ${constructInfo?.color}30`,
                 }}
               >
                 {constructInfo?.emoji} {constructInfo?.label}
@@ -351,11 +349,11 @@ export default function Assessment() {
                         <span
                           style={{
                             fontSize: '0.75rem',
-                            color: selected ? 'var(--color-accent)' : 'var(--color-text-subtle)',
+                            color: selected ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                             fontFamily: 'var(--font-mono)',
                             padding: '0.15rem 0.45rem',
                             borderRadius: 'var(--radius-sm)',
-                            background: selected ? 'rgba(0, 245, 255, 0.1)' : 'transparent',
+                            background: selected ? 'rgba(26, 86, 50, 0.1)' : 'transparent',
                           }}
                         >
                           Key {idx + 1}
@@ -403,17 +401,17 @@ export default function Assessment() {
                   width: 30,
                   height: 30,
                   borderRadius: 'var(--radius-sm)',
-                  border: isCur ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                  border: isCur ? '2px solid var(--color-primary)' : '1px solid var(--color-border)',
                   cursor: 'pointer',
                   fontSize: '0.75rem',
                   fontFamily: 'var(--font-mono)',
                   fontWeight: 700,
                   background: isAnswered
-                    ? 'rgba(124, 58, 237, 0.4)'
+                    ? 'var(--color-primary)'
                     : isCur
                     ? 'var(--color-surface-2)'
                     : 'transparent',
-                  color: isAnswered ? '#fff' : isCur ? 'var(--color-accent)' : 'var(--color-text-subtle)',
+                  color: isAnswered ? '#ffffff' : isCur ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                   transition: 'var(--transition)',
                 }}
                 title={`Question ${i + 1} - ${isAnswered ? 'Answered' : 'Unanswered'}`}
@@ -430,7 +428,7 @@ export default function Assessment() {
           </Button>
         ) : (
           <Button
-            variant="cyan"
+            variant="primary"
             onClick={() => setReviewModalOpen(true)}
             disabled={submitting}
             iconRight={<Send size={15} />}
@@ -446,8 +444,8 @@ export default function Assessment() {
           <div className="content-viewer" style={{ maxWidth: '680px' }}>
             <div className="content-viewer-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <ListFilter size={18} color="var(--color-accent)" />
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Review Answers Summary</h3>
+                <ListFilter size={18} color="var(--color-primary)" />
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Review Answers Summary</h3>
               </div>
               <span className="badge badge-primary">
                 {answeredCount} of {totalQ} Answered
@@ -479,10 +477,10 @@ export default function Assessment() {
                       className="card-hover"
                     >
                       <div>
-                        <div style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)' }}>
+                        <div style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
                           Question {idx + 1} • {s.construct}
                         </div>
-                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text)', marginTop: 2 }}>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text-primary)', marginTop: 2 }}>
                           {s.scenario_text.slice(0, 75)}...
                         </div>
                       </div>
@@ -507,7 +505,7 @@ export default function Assessment() {
                 Back to Questions
               </Button>
               <Button
-                variant="cyan"
+                variant="primary"
                 size="sm"
                 onClick={handleSubmit}
                 loading={submitting}

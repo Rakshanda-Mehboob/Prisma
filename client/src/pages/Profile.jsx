@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { dashboardApi, assessmentApi, authApi } from '../api';
+import { dashboardApi, authApi } from '../api';
 import {
-  User, Shield, Mail, Award, Clock, CheckCircle2,
-  Calendar, Key, Sparkles, Terminal, Activity, FileText,
+  Mail, Award, CheckCircle2,
+  Calendar, Key, Sparkles, Activity,
   Building2, Home, Edit2, Save, X as CloseIcon
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import Skeleton from '../components/ui/Skeleton';
 
 const DEPARTMENTS = [
   'Computer Science',
@@ -36,8 +35,6 @@ const LIVING_SITUATIONS = [
 export default function Profile() {
   const { user, updateUser } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
-  const [statusData, setStatusData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   // Inline editing state
   const [editing, setEditing] = useState(false);
@@ -47,13 +44,11 @@ export default function Profile() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
-    Promise.all([dashboardApi.getDashboard(), assessmentApi.getStatus()])
-      .then(([dashRes, statRes]) => {
+    dashboardApi.getDashboard()
+      .then((dashRes) => {
         setDashboardData(dashRes.data);
-        setStatusData(statRes.data);
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, []);
 
   const startEditing = () => {
@@ -147,14 +142,14 @@ export default function Profile() {
               width: 84,
               height: 84,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+              background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '2rem',
               fontWeight: 800,
               color: '#fff',
-              boxShadow: '0 0 30px var(--color-primary-glow)',
+              boxShadow: '0 4px 15px var(--color-primary-glow)',
               flexShrink: 0,
             }}
           >
@@ -163,19 +158,19 @@ export default function Profile() {
 
           <div style={{ flex: 1, minWidth: '240px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff' }}>
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
                 {user?.full_name || 'Enrolled Student'}
               </h1>
-              <Badge variant="cyan">{user?.role === 'admin' ? 'Security Admin' : 'Student Sentinel'}</Badge>
-              <Badge variant="primary">CMS: {user?.cms_number || 'N/A'}</Badge>
+              <Badge variant="primary">{user?.role === 'admin' ? 'Security Admin' : 'Student Sentinel'}</Badge>
+              <Badge variant="secondary">CMS: {user?.cms_number || 'N/A'}</Badge>
             </div>
 
             <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.86rem', color: 'var(--color-text-muted)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <Mail size={14} color="var(--color-accent)" /> {user?.email}
+                <Mail size={14} color="var(--color-primary)" /> {user?.email}
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <Calendar size={14} color="var(--color-primary-light)" /> Enrolled {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Active'}
+                <Calendar size={14} color="var(--color-secondary)" /> Enrolled {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Active'}
               </span>
             </div>
           </div>
@@ -186,7 +181,7 @@ export default function Profile() {
       <Card glow="primary">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
           <h2 className="card-title" style={{ margin: 0 }}>
-            <Sparkles size={18} color="var(--color-primary-light)" />
+            <Sparkles size={18} color="var(--color-primary)" />
             Profile Context
           </h2>
           {!editing ? (
@@ -212,7 +207,7 @@ export default function Profile() {
           </div>
         )}
 
-        <p style={{ fontSize: '0.83rem', color: 'var(--color-text-subtle)', marginBottom: '1.25rem' }}>
+        <p style={{ fontSize: '0.83rem', color: 'var(--color-text-secondary)', marginBottom: '1.25rem' }}>
           Your department and living situation help the AI generate contextually relevant cyberbullying scenarios tailored to your environment.
         </p>
 
@@ -227,8 +222,8 @@ export default function Profile() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: '0.5rem' }}>
-              <Building2 size={15} color="var(--color-primary-light)" />
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <Building2 size={15} color="var(--color-primary)" />
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Department
               </span>
             </div>
@@ -246,7 +241,7 @@ export default function Profile() {
                 ))}
               </select>
             ) : (
-              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: user?.department ? '#fff' : 'var(--color-text-subtle)' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: user?.department ? 'var(--color-text-primary)' : 'var(--color-text-subtle)' }}>
                 {user?.department || <span style={{ fontStyle: 'italic' }}>Not set — click Edit to add</span>}
               </div>
             )}
@@ -262,8 +257,8 @@ export default function Profile() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: '0.5rem' }}>
-              <Home size={15} color="var(--color-accent)" />
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <Home size={15} color="var(--color-secondary)" />
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Living Situation
               </span>
             </div>
@@ -281,7 +276,7 @@ export default function Profile() {
                 ))}
               </select>
             ) : (
-              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: user?.living_situation ? '#fff' : 'var(--color-text-subtle)' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: user?.living_situation ? 'var(--color-text-primary)' : 'var(--color-text-subtle)' }}>
                 {user?.living_situation || <span style={{ fontStyle: 'italic' }}>Not set — click Edit to add</span>}
               </div>
             )}
@@ -292,9 +287,9 @@ export default function Profile() {
       {/* Grid: Assessment History & Milestones */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
         {/* Assessment Timeline */}
-        <Card glow="cyan">
+        <Card glow="primary">
           <h2 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Activity size={18} color="var(--color-accent)" />
+            <Activity size={18} color="var(--color-primary)" />
             Assessment Telemetry History
           </h2>
 
@@ -309,7 +304,7 @@ export default function Profile() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.92rem', color: '#fff' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)' }}>
                   Pre-Assessment (Baseline)
                 </span>
                 <span className={`badge ${pre ? 'badge-success' : 'badge-muted'}`}>
@@ -319,12 +314,12 @@ export default function Profile() {
 
               {pre ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
-                  <div>Attitude: <strong style={{ color: 'var(--color-primary-light)' }}>{pre.attitude?.toFixed(0)}</strong></div>
-                  <div>Norms: <strong style={{ color: 'var(--color-accent)' }}>{pre.subjective_norm?.toFixed(0)}</strong></div>
-                  <div>PBC: <strong style={{ color: 'var(--color-success-light)' }}>{pre.pbc?.toFixed(0)}</strong></div>
+                  <div>Attitude: <strong style={{ color: 'var(--color-primary)' }}>{pre.attitude?.toFixed(0)}</strong></div>
+                  <div>Norms: <strong style={{ color: 'var(--color-secondary)' }}>{pre.subjective_norm?.toFixed(0)}</strong></div>
+                  <div>PBC: <strong style={{ color: 'var(--color-success)' }}>{pre.pbc?.toFixed(0)}</strong></div>
                 </div>
               ) : (
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
                   Initial diagnostic has not been recorded yet.
                 </p>
               )}
@@ -340,7 +335,7 @@ export default function Profile() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.92rem', color: '#fff' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)' }}>
                   Post-Assessment (Maturation)
                 </span>
                 <span className={`badge ${post ? 'badge-success' : 'badge-muted'}`}>
@@ -350,12 +345,12 @@ export default function Profile() {
 
               {post ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
-                  <div>Attitude: <strong style={{ color: 'var(--color-primary-light)' }}>{post.attitude?.toFixed(0)}</strong></div>
-                  <div>Norms: <strong style={{ color: 'var(--color-accent)' }}>{post.subjective_norm?.toFixed(0)}</strong></div>
-                  <div>PBC: <strong style={{ color: 'var(--color-success-light)' }}>{post.pbc?.toFixed(0)}</strong></div>
+                  <div>Attitude: <strong style={{ color: 'var(--color-primary)' }}>{post.attitude?.toFixed(0)}</strong></div>
+                  <div>Norms: <strong style={{ color: 'var(--color-secondary)' }}>{post.subjective_norm?.toFixed(0)}</strong></div>
+                  <div>PBC: <strong style={{ color: 'var(--color-success)' }}>{post.pbc?.toFixed(0)}</strong></div>
                 </div>
               ) : (
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
                   Unlocks when all personalized modules have been marked finished.
                 </p>
               )}
@@ -363,8 +358,8 @@ export default function Profile() {
 
             {/* Trajectory Delta */}
             {dashboardData?.deltas && (
-              <div style={{ padding: '0.85rem 1rem', background: 'rgba(16, 185, 129, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-success-light)', marginBottom: 4 }}>
+              <div style={{ padding: '0.85rem 1rem', background: 'rgba(22, 163, 74, 0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(22, 163, 74, 0.25)' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--color-success)', marginBottom: 4 }}>
                   ✓ Quantified Behavioral Growth Verified
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
@@ -378,7 +373,7 @@ export default function Profile() {
         {/* Milestone & Achievement Badges */}
         <Card>
           <h2 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Award size={18} color="var(--color-warning)" />
+            <Award size={18} color="var(--color-accent)" />
             Earned Behavioral Milestones
           </h2>
 
@@ -394,12 +389,12 @@ export default function Profile() {
                   background: 'var(--color-surface-2)',
                   borderRadius: 'var(--radius-md)',
                   border: '1px solid var(--color-border)',
-                  opacity: ach.unlocked ? 1 : 0.45,
+                  opacity: ach.unlocked ? 1 : 0.55,
                 }}
               >
                 <div style={{ fontSize: '1.5rem', flexShrink: 0 }}>{ach.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
                     {ach.title}
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
@@ -420,13 +415,13 @@ export default function Profile() {
       {/* Account Security Settings */}
       <Card>
         <h2 className="card-title" style={{ marginBottom: '1rem' }}>
-          <Key size={18} color="var(--color-primary-light)" />
+          <Key size={18} color="var(--color-primary)" />
           Account Credentials &amp; Security
         </h2>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
           <div style={{ padding: '1rem', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', marginBottom: 4 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 4 }}>
               Password Encryption
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.85rem' }}>
@@ -438,7 +433,7 @@ export default function Profile() {
           </div>
 
           <div style={{ padding: '1rem', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#fff', marginBottom: 4 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 4 }}>
               Privacy &amp; Audit Telemetry
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.85rem' }}>

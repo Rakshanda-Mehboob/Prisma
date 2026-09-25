@@ -20,12 +20,15 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Scenario, Assessment, AssessmentResponse, Intervention, UserInterventionProgress
 from schemas import (
-    ScenarioOut, AssessmentSubmitRequest, AssessmentScores,
-    AssessmentOut, AssessmentStatusOut
+    ScenarioOut,
+    AssessmentSubmitRequest,
+    AssessmentScores,
+    AssessmentStatusOut,
 )
 from auth.utils import get_current_user
 from assessment.scoring import calculate_scores, identify_weak_constructs
 from assessment.ai_generator import get_or_create_hybrid_scenarios
+import random
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
@@ -98,6 +101,9 @@ def get_pre_scenarios(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No scenarios available. Please check server logs."
         )
+    # Shuffle answer options for each scenario to prevent fixed ordering
+    for scenario in scenarios:
+        random.shuffle(scenario.options)
     return scenarios
 
 
@@ -207,6 +213,9 @@ def get_post_scenarios(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No post scenarios available. Please check server logs."
         )
+    # Shuffle answer options for each scenario to prevent fixed ordering
+    for scenario in scenarios:
+        random.shuffle(scenario.options)
     return scenarios
 
 

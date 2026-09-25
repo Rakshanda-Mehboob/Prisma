@@ -20,6 +20,8 @@ const RATING_LABELS = {
   5: 'Exceptional / Highly Actionable',
 };
 
+const STAR_GOLD = '#d4a017';
+
 export default function Feedback() {
   const navigate = useNavigate();
   const [interventions, setInterventions] = useState([]);
@@ -121,10 +123,10 @@ export default function Feedback() {
       {/* Header */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-          <Badge variant="cyan" icon={<Sparkles size={12} />}>
+          <Badge variant="primary" icon={<Sparkles size={12} />}>
             Quality & Efficacy Telemetry
           </Badge>
-          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)', fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
             FEEDBACK_LOG: {feedbacks.length}
           </span>
         </div>
@@ -139,7 +141,7 @@ export default function Feedback() {
 
       {completedModules.length === 0 ? (
         <EmptyState
-          icon={<MessageSquare size={36} color="var(--color-accent)" />}
+          icon={<MessageSquare size={36} color="var(--color-primary)" />}
           title="No Completed Modules Ready for Feedback"
           description="You can provide feedback once you have completed at least one personalized learning module in your Learning hub."
           actionLabel="Go to Learning Modules"
@@ -150,7 +152,7 @@ export default function Feedback() {
           {/* Submission Form */}
           <Card glow="primary">
             <h2 className="card-title" style={{ marginBottom: '1.25rem' }}>
-              <MessageSquare size={18} color="var(--color-primary-light)" />
+              <MessageSquare size={18} color="var(--color-primary)" />
               Submit Module Evaluation
             </h2>
 
@@ -164,7 +166,7 @@ export default function Feedback() {
                   className="form-input"
                   value={selectedInterventionId}
                   onChange={(e) => setSelectedInterventionId(e.target.value)}
-                  style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)' }}
+                  style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)' }}
                   required
                 >
                   <option value="" disabled>-- Select completed module --</option>
@@ -195,7 +197,7 @@ export default function Feedback() {
                       <label className="form-label" style={{ marginBottom: 0 }}>
                         Efficacy Rating
                       </label>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-warning)', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--color-accent)', fontWeight: 700 }}>
                         {RATING_LABELS[hoverRating || rating]}
                       </span>
                     </div>
@@ -215,13 +217,13 @@ export default function Feedback() {
                               border: 'none',
                               cursor: 'pointer',
                               padding: 4,
-                              color: active ? '#f59e0b' : 'var(--color-text-subtle)',
+                              color: active ? STAR_GOLD : 'var(--color-text-subtle)',
                               transition: 'transform 0.15s ease, color 0.15s ease',
                               transform: (hoverRating || rating) === star ? 'scale(1.18)' : 'scale(1)',
                             }}
                             title={`${star} Star${star > 1 ? 's' : ''}`}
                           >
-                            <Star size={30} fill={active ? '#f59e0b' : 'none'} />
+                            <Star size={30} fill={active ? STAR_GOLD : 'none'} stroke={active ? STAR_GOLD : 'var(--color-text-subtle)'} />
                           </button>
                         );
                       })}
@@ -246,7 +248,7 @@ export default function Feedback() {
 
                   <Button
                     type="submit"
-                    variant="cyan"
+                    variant="primary"
                     size="lg"
                     style={{ width: '100%', marginTop: '1rem' }}
                     loading={submitting}
@@ -261,10 +263,10 @@ export default function Feedback() {
           </Card>
 
           {/* Feedback History */}
-          <Card glow="cyan">
+          <Card glow="primary">
             <div className="card-header">
               <h2 className="card-title">
-                <CheckCircle2 size={18} color="var(--color-success-light)" />
+                <CheckCircle2 size={18} color="var(--color-success)" />
                 Your Evaluation History ({feedbacks.length})
               </h2>
               <span className="badge badge-primary">{feedbacks.length} Logged</span>
@@ -273,7 +275,7 @@ export default function Feedback() {
             {feedbacks.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--color-text-muted)' }}>
                 <p>No feedback records logged yet.</p>
-                <p style={{ fontSize: '0.82rem', marginTop: '0.5rem', color: 'var(--color-text-subtle)' }}>
+                <p style={{ fontSize: '0.82rem', marginTop: '0.5rem', color: 'var(--color-text-secondary)' }}>
                   Select a completed module and record your initial review.
                 </p>
               </div>
@@ -292,7 +294,7 @@ export default function Feedback() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem', gap: '0.5rem' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.92rem', color: '#fff' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--color-text-primary)' }}>
                           {interv?.title || `Module #${f.intervention_id}`}
                         </span>
                         <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
@@ -300,8 +302,9 @@ export default function Feedback() {
                             <Star
                               key={s}
                               size={13}
-                              color={s <= f.rating ? '#f59e0b' : 'var(--color-text-subtle)'}
-                              fill={s <= f.rating ? '#f59e0b' : 'none'}
+                              color={s <= f.rating ? STAR_GOLD : 'var(--color-text-subtle)'}
+                              fill={s <= f.rating ? STAR_GOLD : 'none'}
+                              stroke={s <= f.rating ? STAR_GOLD : 'var(--color-text-subtle)'}
                             />
                           ))}
                         </div>
@@ -313,7 +316,7 @@ export default function Feedback() {
                         </p>
                       )}
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-subtle)', marginTop: '0.5rem', fontFamily: 'var(--font-mono)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem', fontFamily: 'var(--font-mono)' }}>
                         <span>Target: {interv?.target_construct || 'TPB'}</span>
                         <span>{f.submitted_at ? new Date(f.submitted_at).toLocaleDateString() : 'Archived'}</span>
                       </div>

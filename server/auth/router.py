@@ -1,44 +1,56 @@
 """
-auth/router.py — Authentication endpoints.
+auth/router.py — Authentication and student profile endpoints.
 
 Routes:
-  POST /auth/register  → create new student account
-  POST /auth/login     → validate credentials, return JWT
-  GET  /auth/me        → return current user profile (JWT required)
+  POST  /auth/register  → Register a new student account
+  POST  /auth/login     → Authenticate credentials and return signed JWT
+  GET   /auth/me        → Return currently authenticated user profile
+  PATCH /auth/profile   → Update mutable profile fields (department, living situation)
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import User
-from schemas import RegisterRequest, LoginRequest, TokenResponse, UserOut, ProfileUpdateRequest
-from auth.utils import hash_password, verify_password, create_access_token, get_current_user
+from schemas import (
+    RegisterRequest,
+    LoginRequest,
+    TokenResponse,
+    UserOut,
+    ProfileUpdateRequest,
+)
+from auth.utils import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user,
+)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-
-from sqlalchemy import func
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     """
     Register a new student account.
-    Returns the created user (without password).
+    Validates uniqueness of email and CMS identifier, hashes password with bcrypt,
+    and returns the created user entity (excluding confidential credentials).
     """
     clean_email = payload.email.strip().lower()
     clean_cms = payload.cms_number.strip().upper()
 
-    # Check for duplicate email or CMS number
+    # Verify absence of duplicate email or CMS number
     if db.query(User).filter(func.lower(User.email) == clean_email).first():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this email already exists."
+            detail="An account with this email already exists.",
         )
     if db.query(User).filter(func.upper(User.cms_number) == clean_cms).first():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this CMS number already exists."
+            detail="An account with this CMS number already exists.",
         )
 
     user = User(
@@ -58,16 +70,15 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     """
-    Validate email + password, return a signed JWT access token.
-    The frontend stores this in localStorage and sends it as:
-      Authorization: Bearer <token>
+    Validate email and password, issuing a signed JWT access bearer token upon success.
+    Frontend persists this token in localStorage and includes it in Authorization headers.
     """
     clean_email = payload.email.strip().lower()
     user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password."
+            detail="Incorrect email or password.",
         )
 
     token = create_access_token(data={"sub": str(user.id)})
@@ -76,7 +87,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserOut)
 def get_me(current_user: User = Depends(get_current_user)):
-    """Return the profile of the currently authenticated user."""
+    """Return the profile data of the currently authenticated user."""
     return current_user
 
 
@@ -87,8 +98,8 @@ def update_profile(
     db: Session = Depends(get_db),
 ):
     """
-    Update the student's optional profile fields (department, living_situation).
-    Only these two fields are writable post-registration.
+    Update optional profile attributes (department, living_situation).
+    Immutable credentials (email, CMS number, password) are protected against modification here.
     """
     if payload.department is not None:
         current_user.department = payload.department.strip() or None

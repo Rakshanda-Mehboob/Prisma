@@ -20,9 +20,9 @@ import ThreatGauge from '../components/cyber/ThreatGauge';
 import EmptyState from '../components/ui/EmptyState';
 
 const CONSTRUCT_COLORS = {
-  attitude: '#8b5cf6',
-  subjective_norm: '#00f5ff',
-  pbc: '#10b981',
+  attitude: '#16a34a',
+  subjective_norm: '#0d9488',
+  pbc: '#1a5632',
 };
 
 function ScoreBar({ label, preScore, postScore, color }) {
@@ -34,7 +34,7 @@ function ScoreBar({ label, preScore, postScore, color }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.45rem', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'inline-block' }} />
-          <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text)' }}>{label}</span>
+          <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</span>
           {isWeak && preScore != null && (
             <Badge variant="warning" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem' }}>
               Target Area
@@ -44,7 +44,7 @@ function ScoreBar({ label, preScore, postScore, color }) {
 
         <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', fontFamily: 'var(--font-mono)' }}>
           {preScore != null && (
-            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)' }}>
+            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)' }}>
               Pre: {preScore.toFixed(0)}
             </span>
           )}
@@ -69,8 +69,8 @@ function ScoreBar({ label, preScore, postScore, color }) {
             className="score-bar-fill"
             style={{
               width: `${Math.min(100, Math.max(5, currentScore))}%`,
-              background: `linear-gradient(90deg, ${color}66, ${color})`,
-              boxShadow: `0 0 10px ${color}44`,
+              background: `linear-gradient(90deg, ${color}88, ${color})`,
+              boxShadow: `0 2px 6px ${color}33`,
             }}
           />
         )}
@@ -99,7 +99,7 @@ function StageSteps({ preCompleted, intervCompleted, postCompleted }) {
               <div className={`stage-dot ${s.done ? 'done' : isCurrent ? 'active' : ''}`}>
                 {s.done ? '✓' : s.icon}
               </div>
-              <span className="stage-label" style={{ color: s.done ? 'var(--color-success-light)' : isCurrent ? '#fff' : 'var(--color-text-subtle)' }}>
+              <span className="stage-label" style={{ color: s.done ? 'var(--color-success)' : isCurrent ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
                 {s.label}
               </span>
             </div>
@@ -195,8 +195,8 @@ export default function Dashboard() {
       {/* Welcome & Security Posture Card */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(0, 245, 255, 0.08)), var(--color-surface)',
-          border: '1px solid rgba(124, 58, 237, 0.3)',
+          background: 'linear-gradient(135deg, rgba(26, 86, 50, 0.06), rgba(13, 148, 136, 0.04)), var(--color-surface)',
+          border: '1px solid rgba(26, 86, 50, 0.15)',
           borderRadius: 'var(--radius-xl)',
           padding: '2rem',
           display: 'flex',
@@ -204,20 +204,20 @@ export default function Dashboard() {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '1.5rem',
-          boxShadow: 'var(--shadow-md)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
-            <Badge variant="cyan" icon={<Sparkles size={12} />}>
+            <Badge variant="primary" icon={<Sparkles size={12} />}>
               Active Session
             </Badge>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)', fontFamily: 'var(--font-mono)' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
               CMS: {user?.cms_number || 'ENROLLED'}
             </span>
           </div>
 
-          <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
+          <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
             Welcome back, {user?.full_name?.split(' ')[0]} 👋
           </h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.92rem', maxWidth: '620px', lineHeight: 1.6 }}>
@@ -228,7 +228,7 @@ export default function Dashboard() {
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           {!pre ? (
             <Link to="/assessment?stage=pre">
-              <Button variant="cyan" size="lg" iconRight={<ArrowRight size={16} />}>
+              <Button variant="primary" size="lg" iconRight={<ArrowRight size={16} />}>
                 Launch Pre-Assessment
               </Button>
             </Link>
@@ -240,7 +240,7 @@ export default function Dashboard() {
             </Link>
           ) : postUnlocked && !post ? (
             <Link to="/assessment?stage=post">
-              <Button variant="cyan" size="lg" iconRight={<ArrowRight size={16} />}>
+              <Button variant="primary" size="lg" iconRight={<ArrowRight size={16} />}>
                 Start Post-Assessment
               </Button>
             </Link>
@@ -277,14 +277,14 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-label">Baseline Audit</span>
-            <div className="stat-icon-wrapper" style={{ background: 'rgba(124, 58, 237, 0.12)', color: 'var(--color-primary-light)' }}>
+            <div className="stat-icon-wrapper" style={{ background: 'rgba(26, 86, 50, 0.1)', color: 'var(--color-primary)' }}>
               <ClipboardList size={20} />
             </div>
           </div>
-          <div className="stat-value" style={{ color: pre ? 'var(--color-primary-light)' : 'var(--color-text-subtle)' }}>
+          <div className="stat-value" style={{ color: pre ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}>
             {pre ? 'COMPLETED' : 'PENDING'}
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
             {pre ? 'Pre-stage diagnostic verified' : 'Required before module release'}
           </span>
         </div>
@@ -292,14 +292,14 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-label">Active Modules</span>
-            <div className="stat-icon-wrapper" style={{ background: 'rgba(0, 245, 255, 0.12)', color: 'var(--color-accent)' }}>
+            <div className="stat-icon-wrapper" style={{ background: 'rgba(13, 148, 136, 0.1)', color: 'var(--color-secondary)' }}>
               <BookOpen size={20} />
             </div>
           </div>
-          <div className="stat-value" style={{ color: 'var(--color-accent)' }}>
+          <div className="stat-value" style={{ color: 'var(--color-secondary)' }}>
             {intervDone}/{intervTotal}
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
             {intervTotal === 0 ? 'No modules assigned yet' : `${intervTotal - intervDone} modules remaining`}
           </span>
         </div>
@@ -307,14 +307,14 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-label">Module Completion</span>
-            <div className="stat-icon-wrapper" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--color-warning)' }}>
+            <div className="stat-icon-wrapper" style={{ background: 'rgba(212, 160, 23, 0.12)', color: 'var(--color-accent)' }}>
               <Activity size={20} />
             </div>
           </div>
-          <div className="stat-value" style={{ color: 'var(--color-warning)' }}>
+          <div className="stat-value" style={{ color: 'var(--color-accent)' }}>
             {pct.toFixed(0)}%
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
             {postUnlocked ? 'Post-assessment unlocked' : 'Post-assessment locked'}
           </span>
         </div>
@@ -322,14 +322,14 @@ export default function Dashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <span className="stat-label">Post-Intervention Audit</span>
-            <div className="stat-icon-wrapper" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--color-success-light)' }}>
+            <div className="stat-icon-wrapper" style={{ background: 'rgba(22, 163, 74, 0.1)', color: 'var(--color-success)' }}>
               <Trophy size={20} />
             </div>
           </div>
-          <div className="stat-value" style={{ color: post ? 'var(--color-success-light)' : 'var(--color-text-subtle)' }}>
+          <div className="stat-value" style={{ color: post ? 'var(--color-success)' : 'var(--color-text-secondary)' }}>
             {post ? 'VERIFIED' : postUnlocked ? 'UNLOCKED' : 'LOCKED'}
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
             {post ? 'Behavioral delta computed' : postUnlocked ? 'Ready to take now' : 'Requires module completion'}
           </span>
         </div>
@@ -341,7 +341,7 @@ export default function Dashboard() {
           {/* Left: Threat Gauge & Construct Bars */}
           <Card glow="cyan">
             <h2 className="card-title" style={{ marginBottom: '1.5rem' }}>
-              <Shield size={18} color="var(--color-accent)" />
+              <Shield size={18} color="var(--color-primary)" />
               Cyber Risk Posture & Construct Breakdown
             </h2>
 
@@ -367,7 +367,7 @@ export default function Dashboard() {
                   postScore={post?.pbc}
                   color={CONSTRUCT_COLORS.pbc}
                 />
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)', marginTop: '0.75rem' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.75rem' }}>
                   Scores below 60/100 indicate high-risk vulnerability points targeted by intervention.
                 </div>
               </div>
@@ -377,7 +377,7 @@ export default function Dashboard() {
           {/* Right: TPB Radar Visualizer */}
           <Card glow="primary">
             <h2 className="card-title" style={{ marginBottom: '1rem' }}>
-              <Zap size={18} color="var(--color-primary-light)" />
+              <Zap size={18} color="var(--color-primary)" />
               TPB Multi-Axis Cognitive Profile
             </h2>
             <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem' }}>
@@ -386,30 +386,30 @@ export default function Dashboard() {
 
             <ResponsiveContainer width="100%" height={260}>
               <RadarChart data={radarData} outerRadius={85}>
-                <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <PolarGrid stroke="var(--color-border)" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#4b5563', fontSize: 10 }} />
                 <Radar
                   name="Pre-Assessment"
                   dataKey="Pre"
-                  stroke="#7c3aed"
-                  fill="#7c3aed"
-                  fillOpacity={0.25}
+                  stroke="#1a5632"
+                  fill="#1a5632"
+                  fillOpacity={0.2}
                   strokeWidth={2}
                 />
                 {post && (
                   <Radar
                     name="Post-Assessment"
                     dataKey="Post"
-                    stroke="#00f5ff"
-                    fill="#00f5ff"
-                    fillOpacity={0.2}
+                    stroke="#0d9488"
+                    fill="#0d9488"
+                    fillOpacity={0.25}
                     strokeWidth={2}
                   />
                 )}
-                <Legend wrapperStyle={{ fontSize: 12, color: '#94a3b8' }} />
+                <Legend wrapperStyle={{ fontSize: 12, color: '#4b5563' }} />
                 <Tooltip
-                  contentStyle={{ background: '#0d1224', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                  labelStyle={{ color: '#f8fafc', fontSize: 12 }}
+                  contentStyle={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                  labelStyle={{ color: '#111827', fontSize: 12, fontWeight: 600 }}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -423,7 +423,7 @@ export default function Dashboard() {
           <div className="card-header">
             <div>
               <h2 className="card-title">
-                <TrendingUp size={18} color="var(--color-accent)" />
+                <TrendingUp size={18} color="var(--color-primary)" />
                 Trajectory Score Comparison (0–100)
               </h2>
               <p className="card-subtitle">
@@ -441,17 +441,17 @@ export default function Dashboard() {
 
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={barData} barGap={8}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey="name" tick={{ fill: '#4b5563', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fill: '#4b5563', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip
-                contentStyle={{ background: '#0d1224', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                labelStyle={{ color: '#f8fafc', fontSize: 12 }}
+                contentStyle={{ background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                labelStyle={{ color: '#111827', fontSize: 12, fontWeight: 600 }}
                 itemStyle={{ fontSize: 12 }}
               />
-              <Legend wrapperStyle={{ fontSize: 12, color: '#94a3b8' }} />
-              <Bar dataKey="Pre" fill="#7c3aed" radius={[6, 6, 0, 0]} maxBarSize={36} />
-              {post && <Bar dataKey="Post" fill="#00f5ff" radius={[6, 6, 0, 0]} maxBarSize={36} />}
+              <Legend wrapperStyle={{ fontSize: 12, color: '#4b5563' }} />
+              <Bar dataKey="Pre" fill="#1a5632" radius={[6, 6, 0, 0]} maxBarSize={36} />
+              {post && <Bar dataKey="Post" fill="#0d9488" radius={[6, 6, 0, 0]} maxBarSize={36} />}
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -461,14 +461,14 @@ export default function Dashboard() {
       {data?.feedback_text?.length > 0 && (
         <Card glow="primary">
           <h2 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Trophy size={18} color="var(--color-warning)" />
+            <Trophy size={18} color="var(--color-accent)" />
             AI Diagnostic Insights & Personalized Feedback
           </h2>
           <div className="feedback-messages">
             {data.feedback_text.map((msg, i) => (
               <div key={i} className="feedback-message">
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
-                  <Sparkles size={16} color="var(--color-primary-light)" style={{ flexShrink: 0, marginTop: 3 }} />
+                  <Sparkles size={16} color="var(--color-primary)" style={{ flexShrink: 0, marginTop: 3 }} />
                   <div>{msg}</div>
                 </div>
               </div>
@@ -480,7 +480,7 @@ export default function Dashboard() {
       {/* Empty State when no assessment started */}
       {!pre && (
         <EmptyState
-          icon={<ClipboardList size={36} color="var(--color-accent)" />}
+          icon={<ClipboardList size={36} color="var(--color-primary)" />}
           title="No Baseline Telemetry Recorded"
           description="You have not completed your TPB baseline pre-assessment yet. Take the 10-minute diagnostic to unlock personalized learning modules and start monitoring your cyber risk footprint."
           actionLabel="Start Pre-Assessment Now"
@@ -493,7 +493,7 @@ export default function Dashboard() {
         {/* Quick Actions Launchpad */}
         <Card>
           <h3 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Zap size={16} color="var(--color-accent)" />
+            <Zap size={16} color="var(--color-primary)" />
             Quick Launchpad
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -507,22 +507,22 @@ export default function Dashboard() {
                 background: 'var(--color-surface-2)',
                 borderRadius: 'var(--radius-md)',
                 textDecoration: 'none',
-                color: 'var(--color-text)',
+                color: 'var(--color-text-primary)',
                 border: '1px solid var(--color-border)',
                 transition: 'var(--transition)',
               }}
               className="card-hover"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <ClipboardList size={18} color="var(--color-primary-light)" />
+                <ClipboardList size={18} color="var(--color-primary)" />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Assessment Center</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
                     {pre ? (post ? 'Assessments complete' : 'Post-assessment') : 'Start pre-assessment'}
                   </div>
                 </div>
               </div>
-              <ChevronRight size={16} color="var(--color-text-subtle)" />
+              <ChevronRight size={16} color="var(--color-text-secondary)" />
             </Link>
 
             <Link
@@ -535,22 +535,22 @@ export default function Dashboard() {
                 background: 'var(--color-surface-2)',
                 borderRadius: 'var(--radius-md)',
                 textDecoration: 'none',
-                color: 'var(--color-text)',
+                color: 'var(--color-text-primary)',
                 border: '1px solid var(--color-border)',
                 transition: 'var(--transition)',
               }}
               className="card-hover"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <BookOpen size={18} color="var(--color-accent)" />
+                <BookOpen size={18} color="var(--color-secondary)" />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Assigned Learning Modules</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
                     {intervDone} of {intervTotal} completed
                   </div>
                 </div>
               </div>
-              <ChevronRight size={16} color="var(--color-text-subtle)" />
+              <ChevronRight size={16} color="var(--color-text-secondary)" />
             </Link>
 
             <Link
@@ -563,32 +563,41 @@ export default function Dashboard() {
                 background: 'var(--color-surface-2)',
                 borderRadius: 'var(--radius-md)',
                 textDecoration: 'none',
-                color: 'var(--color-text)',
+                color: 'var(--color-text-primary)',
                 border: '1px solid var(--color-border)',
                 transition: 'var(--transition)',
               }}
               className="card-hover"
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Trophy size={18} color="var(--color-warning)" />
+                <Trophy size={18} color="var(--color-accent)" />
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Evaluation & Feedback</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>
                     Submit module rating & thoughts
                   </div>
                 </div>
               </div>
-              <ChevronRight size={16} color="var(--color-text-subtle)" />
+              <ChevronRight size={16} color="var(--color-text-secondary)" />
             </Link>
           </div>
         </Card>
 
         {/* Security Audit Feed */}
         <Card>
-          <h3 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Terminal size={16} color="var(--color-primary-light)" />
-            Session Audit Trail
-          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 className="card-title" style={{ margin: 0 }}>
+              <Terminal size={16} color="var(--color-primary)" />
+              Session Audit Trail
+            </h3>
+            <span
+              className="badge badge-muted"
+              style={{ fontSize: '0.68rem', cursor: 'help' }}
+              title="Demonstration visualization: simulates live session telemetry and status checks."
+            >
+              Demo Data
+            </span>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
               <span>AUTH: Token validated</span>
@@ -596,24 +605,27 @@ export default function Dashboard() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
               <span>PRE_AUDIT: {pre ? 'Archived' : 'Awaiting initialization'}</span>
-              <span style={{ color: pre ? 'var(--color-accent)' : 'var(--color-warning)' }}>
+              <span style={{ color: pre ? 'var(--color-primary)' : 'var(--color-warning)' }}>
                 {pre ? 'VERIFIED' : 'PENDING'}
               </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
               <span>MODULE_ENGINE: {intervTotal} items mapped</span>
-              <span style={{ color: intervDone === intervTotal && intervTotal > 0 ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
+              <span style={{ color: intervDone === intervTotal && intervTotal > 0 ? 'var(--color-success)' : 'var(--color-text-secondary)' }}>
                 {intervDone}/{intervTotal}
               </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-muted)' }}>
               <span>POST_GATEWAY: {postUnlocked ? 'Unlocked' : 'Locked'}</span>
-              <span style={{ color: postUnlocked ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
+              <span style={{ color: postUnlocked ? 'var(--color-success)' : 'var(--color-text-secondary)' }}>
                 {postUnlocked ? 'ACTIVE' : 'LOCKED'}
               </span>
             </div>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.65rem', color: 'var(--color-text-subtle)', fontSize: '0.75rem' }}>
-              Encryption: TLS 1.3 • Zero-Trust Access Token
+            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
+              <span>Encryption: TLS 1.3 • Zero-Trust Access Token</span>
+              <span style={{ fontStyle: 'italic', color: 'var(--color-text-subtle)', fontSize: '0.7rem' }}>
+                * Demo visualization
+              </span>
             </div>
           </div>
         </Card>

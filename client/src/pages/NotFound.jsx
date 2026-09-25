@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Terminal, ShieldAlert, ArrowLeft, Home } from 'lucide-react';
+import { ShieldAlert, ArrowLeft, Home } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -14,13 +14,13 @@ export default function NotFound() {
             width: 72,
             height: 72,
             borderRadius: '50%',
-            background: 'rgba(239, 68, 68, 0.15)',
-            color: 'var(--color-danger-light)',
+            background: 'rgba(239, 68, 68, 0.1)',
+            color: 'var(--color-danger)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 1.5rem',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
           }}
         >
           <ShieldAlert size={36} />
@@ -30,7 +30,7 @@ export default function NotFound() {
           ERROR 404: RESOURCE_NOT_FOUND
         </Badge>
 
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', color: '#fff' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
           Cognitive Node Not Located
         </h1>
 
@@ -47,12 +47,12 @@ export default function NotFound() {
             padding: '1rem',
             fontFamily: 'var(--font-mono)',
             fontSize: '0.8rem',
-            color: 'var(--color-text-subtle)',
+            color: 'var(--color-text-secondary)',
             textAlign: 'left',
             marginBottom: '2rem',
           }}
         >
-          <div style={{ color: 'var(--color-danger-light)' }}>
+          <div style={{ color: 'var(--color-danger)' }}>
             [!] ROUTE_FAULT: 404_NULL_POINTER
           </div>
           <div>[i] Path: {window.location.pathname}</div>

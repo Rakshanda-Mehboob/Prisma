@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api';
 import {
-  UserPlus, Lock, CheckCircle2,
-  Sparkles, Eye, EyeOff, AlertCircle, Building2, Home
+  UserPlus, CheckCircle2,
+  Sparkles, Eye, EyeOff, Building2, Home
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -106,8 +106,8 @@ export default function Register() {
               <PrismaLogo size={42} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>Prisma</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text-primary)' }}>Prisma</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
                 ACADEMIC ENROLLMENT PORTAL
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function Register() {
             Evidence-Based Peer Protection
           </Badge>
 
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem', color: 'var(--color-text-primary)' }}>
             Join the Anti-Cyberbullying Cohort.
           </h2>
 
@@ -131,8 +131,8 @@ export default function Register() {
               'AI Scenario Personalization via Profile Context',
               'Completion Certification & Delta Reflection Report',
             ].map((text, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(124, 58, 237, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary-light)', flexShrink: 0 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(26, 86, 50, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
                   <CheckCircle2 size={14} />
                 </div>
                 <span>{text}</span>
@@ -141,7 +141,7 @@ export default function Register() {
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
+        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
           <span>Riphah International University</span>
           <span style={{ fontFamily: 'var(--font-mono)' }}>FYP-COMPUTING-2026</span>
         </div>
@@ -151,7 +151,7 @@ export default function Register() {
       <div className="auth-form-side">
         <div className="auth-card-modern">
           <div style={{ marginBottom: '1.75rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
               Create Account
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>

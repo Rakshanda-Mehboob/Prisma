@@ -12,16 +12,14 @@ Persists new scenarios to the database so that IDs, foreign keys, and
 psychometric scoring function consistently across pre and post stages.
 """
 
-import os
 import json
 import random
 import urllib.request
-import urllib.error
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 import models
+from config import GEMINI_API_KEY
 
 # ── Dynamic Generative Synthesizer Banks ──────────────────────────────────────
 # Combinatorial pools ensuring high variability and contextual realism
@@ -183,12 +181,11 @@ SCENARIO_TEMPLATES = {
 
 
 def _call_gemini_api(prompt: str) -> Optional[dict]:
-    """Call Gemini API if GEMINI_API_KEY is available."""
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
+    """Call Gemini API if GEMINI_API_KEY is configured in the environment."""
+    if not GEMINI_API_KEY:
         return None
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.7, "responseMimeType": "application/json"},

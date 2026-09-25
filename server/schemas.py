@@ -3,9 +3,16 @@ schemas.py — Pydantic v2 request/response models for all API routes.
 These are separate from SQLAlchemy models — they define the API contract.
 """
 
+import warnings
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
+
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "construct" in "ScenarioOut" shadows an attribute in parent "BaseModel"',
+    category=UserWarning,
+)
 
 
 # ──────────────────────────────────────────────
