@@ -87,7 +87,7 @@ Installation
 ### Clone the Repository
 
 bash
-git clone https://github.com/your-username/TPB-Based-AI-Cyberbullying-Intervention-System.git
+git clone https://github.com/Rakshanda-Mehboob/Prisma
 
 cd TPB-Based-AI-Cyberbullying-Intervention-System
 
@@ -188,7 +188,7 @@ Authors
 
 Final Year Project
 
-Department of Computer Science
+Department of Software Engineering
 
 ---
 
