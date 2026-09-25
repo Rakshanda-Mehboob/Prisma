@@ -93,6 +93,7 @@ $$\text{Normalized Score} = \left( \frac{\bar{x}_{\text{raw}} - 1}{4} \right) \t
 
 ### System Architecture
 
+<<<<<<< HEAD
 ```mermaid
 flowchart TB
     subgraph Client["Frontend Client (React 19 + Vite)"]
@@ -100,6 +101,10 @@ flowchart TB
         Axios[Axios API Client + JWT Interceptors]
         Context[Auth Context / Local Storage]
     end
+=======
+bash
+git clone https://github.com/Rakshanda-Mehboob/Prisma
+>>>>>>> 7e18722d38ea8704c03dd57fa0e57cbedf03af58
 
     subgraph Server["Backend Server (FastAPI)"]
         Main[main.py: App Entrypoint & CORS]
@@ -427,7 +432,13 @@ Default demo credentials created:
 
 ## License
 
+<<<<<<< HEAD
 This project was developed for academic and scientific research purposes as a Senior Capstone Project at the Faculty of Computing, Riphah International University. All rights reserved.
+=======
+Final Year Project
+
+Department of Software Engineering
+>>>>>>> 7e18722d38ea8704c03dd57fa0e57cbedf03af58
 
 ---
 
