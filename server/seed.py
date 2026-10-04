@@ -1111,6 +1111,97 @@ INTERVENTIONS = [
         "content_body": QUIZ_MAP["PBC"],
         "estimated_minutes": 10,
     },
+
+    # ── BEHAVIORAL INTENTION Interventions ──────────────────────────────────
+
+    {
+        "target_construct": "BehavioralIntention",
+        "title": "Bridging the Gap: Turning Prosocial Intentions into Digital Action",
+        "content_type": "reading",
+        "content_body": (
+            "# Bridging the Gap: Turning Prosocial Intentions into Digital Action\n\n"
+            "## What Is Behavioral Intention in TPB?\n"
+            "According to Icek Ajzen's Theory of Planned Behavior (1991), **Behavioral Intention** "
+            "represents a person's conscious decision and commitment to exert effort in carrying out "
+            "a specific target behavior. It is the immediate cognitive gateway to real action.\n\n"
+            "Many university students recognize that cyberbullying is harmful (Attitude), perceive "
+            "that their peers dislike toxicity (Subjective Norms), and know how to report incidents "
+            "(Perceived Behavioral Control), yet fail to act when an incident actually occurs. "
+            "This phenomenon is known in behavioral psychology as the **Intention-Behavior Gap**.\n\n"
+            "## Overcoming the Intention-Behavior Gap with Implementation Intentions\n"
+            "Research by Peter Gollwitzer demonstrates that people who pre-commit to **'If-Then' "
+            "plans** are over 2.5 times more likely to act prosocially under pressure.\n\n"
+            "### How to Formulate Your If-Then Digital Action Plans:\n"
+            "1. **Trigger Identification (IF)**: Pinpoint the precise context where harm happens.\n"
+            "   - *'If someone posts a derogatory screenshot in our class group chat...'* \n"
+            "2. **Specific Action Commitment (THEN)**: Predetermine your safe, constructive response.\n"
+            "   - *'...then I will immediately DM the target student a message of support and report the message to the group admin.'*\n\n"
+            "3. **Peer Support Commitment**:\n"
+            "   - *'If a classmate is being mocked during an online team project meeting, then I will redirect the conversation back to the agenda.'*\n\n"
+            "## The 30-Day Digital Citizenship Pledge\n"
+            "Over the next 30 days, make a personal commitment to:\n"
+            "- **Zero amplification**: Never like, react with humor, or forward humiliating content.\n"
+            "- **Active checking**: Privately message at least one peer if you observe them being targeted.\n"
+            "- **Prompt documentation**: Take screenshots of severe cyberbullying before it gets deleted, ensuring accountability.\n\n"
+            "*References: Ajzen, I. (1991); Gollwitzer, P. M. (1999); Salmivalli, C. (2010).*"
+        ),
+        "estimated_minutes": 12,
+    },
+    {
+        "target_construct": "BehavioralIntention",
+        "title": "Decisive Action: High-Stakes Online Decision-Making Scenarios",
+        "content_type": "video",
+        "content_body": (
+            "https://www.youtube.com/watch?v=A8vE2u6Vl3g\n\n"
+            "**Watch Time: ~8 minutes**\n\n"
+            "This video examines high-stakes digital decision moments in university settings. "
+            "It breaks down real scenarios where students stood at the crossroads between passive bystander apathy "
+            "and active intervention.\n\n"
+            "**Key Discussion Points:**\n"
+            "- The psychological friction when choosing to act versus staying silent\n"
+            "- How decision fatigue affects our online responses late at night\n"
+            "- Concrete scripts and micro-commitments you can adopt immediately\n\n"
+            "**Action Exercise:**\n"
+            "Identify the single online group where you spend the most academic time. "
+            "Formulate one personal boundary statement you will uphold in that space starting today."
+        ),
+        "estimated_minutes": 10,
+    },
+    {
+        "target_construct": "BehavioralIntention",
+        "title": "Case Study: From Reluctant Bystander to Decisive Ally",
+        "content_type": "case-study",
+        "content_body": (
+            "# Case Study: From Reluctant Bystander to Decisive Ally\n\n"
+            "**Context**\n"
+            "During final exam preparations, a private Discord server created for course study began "
+            "circulating malicious rumors and edited screenshots targeting a quiet student, Ayesha. "
+            "Bilal, who considered himself an empathetic person who disliked bullying, watched the notifications "
+            "pile up on his phone for three hours without typing a word.\n\n"
+            "**The Turning Point**\n"
+            "Bilal recognized his hesitation was rooted in fear of social exclusion. He recalled his "
+            "commitment to intervene and executed a two-step decision framework:\n"
+            "1. **Private Solidarity**: He sent a direct message to Ayesha: 'Hey Ayesha, I saw what's being posted. "
+            "It's completely untrue and uncalled for. I've taken screenshots and I'm ready to back you up if you want to report it.'\n"
+            "2. **Norm Reset in Group**: He posted in the server: 'Folks, let's keep this server focused on study prep. "
+            "Personal attacks and fake screenshots have no place here.'\n\n"
+            "Within twenty minutes, three other group members posted in agreement with Bilal, and the server moderator "
+            "removed the offending posts and banned the instigator.\n\n"
+            "**Decision-Making Analysis Questions:**\n"
+            "1. Why did Bilal's initial intention fail to trigger action during the first three hours?\n"
+            "2. What lowered the risk for other group members once Bilal spoke up first?\n"
+            "3. If Bilal had only messaged Ayesha privately without posting publicly, how would that have affected the overall group climate?\n"
+            "4. How does having an explicit pre-planned response reduce hesitation in digital conflicts?"
+        ),
+        "estimated_minutes": 14,
+    },
+    {
+        "target_construct": "BehavioralIntention",
+        "title": "Future Action Planning & Commitment Quiz",
+        "content_type": "quiz",
+        "content_body": QUIZ_MAP["BehavioralIntention"],
+        "estimated_minutes": 10,
+    },
 ]
 
 

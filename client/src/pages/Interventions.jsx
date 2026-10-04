@@ -1,281 +1,209 @@
-/**
- * pages/Interventions.jsx — Learning module library.
- * Shows assigned interventions with status, content viewer modal, and complete button.
- */
-
-import { useState, useEffect } from 'react';
-import { interventionsApi } from '../api';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { interventionsApi } from '../api';
+import { useAuth } from '../context/AuthContext';
 import {
   BookOpen, PlayCircle, FileQuestion, BookMarked,
-  Clock, X, CheckCircle2, ChevronRight, Loader2
+  Clock, X, CheckCircle2, ChevronRight, Check,
+  AlertCircle, RotateCcw, Award, Copy, Filter,
+  ArrowRight, Zap, Lock, Target,
+  TrendingUp, Trophy, BookMarked as BookIcon
 } from 'lucide-react';
-import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton, { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 
+/* ── Config ─────────────────────────────────────────────────────────────── */
 const TYPE_CONFIG = {
-  reading: { icon: <BookOpen size={18} />, color: '#6366f1', label: 'Reading', bg: 'rgba(99,102,241,0.12)' },
-  video: { icon: <PlayCircle size={18} />, color: '#ef4444', label: 'Video', bg: 'rgba(239,68,68,0.12)' },
-  quiz: { icon: <FileQuestion size={18} />, color: '#f59e0b', label: 'Quiz', bg: 'rgba(245,158,11,0.12)' },
-  'case-study': { icon: <BookMarked size={18} />, color: '#06b6d4', label: 'Case Study', bg: 'rgba(6,182,212,0.12)' },
+  reading:      { emoji: '📖', label: 'Reading Guide',    color: '#0f766e', bg: 'linear-gradient(135deg,#0f766e,#14b8a6)' },
+  video:        { emoji: '🎬', label: 'Video Lecture',    color: '#be123c', bg: 'linear-gradient(135deg,#be123c,#f43f5e)' },
+  quiz:         { emoji: '🧩', label: 'Interactive Quiz', color: '#d97706', bg: 'linear-gradient(135deg,#d97706,#f59e0b)' },
+  'case-study': { emoji: '📋', label: 'Case Study',       color: '#7c2d12', bg: 'linear-gradient(135deg,#7c2d12,#b45309)' },
+};
+const CONSTRUCT_CONFIG = {
+  Attitude:            { label: 'Attitude',    icon: '💭', color: '#0f766e', bg: 'rgba(15,118,110,0.08)'  },
+  SubjectiveNorm:      { label: 'Peer Norms',  icon: '👥', color: '#d97706', bg: 'rgba(217,119,6,0.08)'   },
+  PBC:                 { label: 'Efficacy',    icon: '💪', color: '#7c2d12', bg: 'rgba(124,45,18,0.08)'   },
+  BehavioralIntention: { label: 'Commitment',  icon: '🎯', color: '#15803d', bg: 'rgba(21,128,61,0.08)'   },
+};
+const DIFFICULTY = { reading: 'Beginner', video: 'Beginner', quiz: 'Intermediate', 'case-study': 'Advanced' };
+const DIFF_COLOR  = { Beginner: '#10b981', Intermediate: '#d97706', Advanced: '#7c3aed' };
+
+const MARKDOWN_COMPONENTS = {
+  h1: ({ children }) => <h1 style={{ fontSize: '1.4rem', marginBottom: '0.75rem', color: '#0b1c30' }}>{children}</h1>,
+  h2: ({ children }) => <h2 style={{ fontSize: '1.15rem', margin: '1.25rem 0 0.5rem', color: '#0f766e' }}>{children}</h2>,
+  h3: ({ children }) => <h3 style={{ fontSize: '1rem', margin: '1rem 0 0.35rem', color: '#0b1c30' }}>{children}</h3>,
+  p:  ({ children }) => <p  style={{ marginBottom: '0.85rem', color: '#64748b', lineHeight: 1.7 }}>{children}</p>,
+  strong: ({ children }) => <strong style={{ color: '#0b1c30', fontWeight: 600 }}>{children}</strong>,
+  ul: ({ children }) => <ul style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'disc' }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'decimal' }}>{children}</ol>,
+  li: ({ children }) => <li style={{ marginBottom: '0.35rem', color: '#64748b', lineHeight: 1.6 }}>{children}</li>,
+  a:  ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#0f766e', textDecoration: 'underline' }}>{children}</a>,
 };
 
-const CONSTRUCT_COLORS = {
-  Attitude: '#8b5cf6',
-  SubjectiveNorm: '#00f5ff',
-  PBC: '#10b981',
-};
-
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text
-    .replace(/^# (.+)$/gm, '<h1 style="font-size: 1.4rem; margin-bottom: 0.75rem; color: #fff;">$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-size: 1.15rem; margin: 1.25rem 0 0.5rem; color: #a78bfa;">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 style="font-size: 1rem; margin: 1rem 0 0.35rem; color: #fff;">$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #fff;">$1</strong>')
-    .replace(/^- (.+)$/gm, '<li style="margin-left: 1.25rem; margin-bottom: 0.35rem; color: var(--color-text-muted);">$1</li>')
-    .replace(/(<li[\s\S]+?<\/li>)/g, '<ul style="margin: 0.5rem 0 1rem;">$1</ul>')
-    .replace(/\n\n/g, '</p><p style="margin-bottom: 0.85rem;">')
-    .replace(/^(?!<[a-z])/gm, '<p style="margin-bottom: 0.85rem; color: var(--color-text-muted); line-height: 1.7;">$&</p>');
+/* ── Progress Ring SVG ───────────────────────────────────────────────────── */
+function ProgressRing({ pct, size = 100 }) {
+  const r = (size - 12) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = circ * (1 - pct / 100);
+  return (
+    <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={10} />
+      <motion.circle
+        cx={size/2} cy={size/2} r={r} fill="none"
+        stroke="#10b981" strokeWidth={10} strokeLinecap="round"
+        strokeDasharray={circ}
+        initial={{ strokeDashoffset: circ }}
+        animate={{ strokeDashoffset: dash }}
+        transition={{ duration: 1.2, ease: 'easeOut' }}
+      />
+      <text x={size/2} y={size/2 + 5} textAnchor="middle"
+        style={{ fontSize: '1.1rem', fontWeight: 800, fill: '#fff', transform: 'rotate(90deg)', transformOrigin: `${size/2}px ${size/2}px` }}>
+        {pct}%
+      </text>
+    </svg>
+  );
 }
 
+/* ── Quiz Viewer ─────────────────────────────────────────────────────────── */
 function InteractiveQuizViewer({ quizData, record, onComplete, onClose }) {
   const { intervention, status } = record;
   const questions = quizData.questions || [];
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-
-  const totalQuestions = questions.length;
-  const answeredCount = Object.keys(selectedAnswers).length;
-  const isAllAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
-
-  let correctCount = 0;
-  questions.forEach((q) => {
-    if (selectedAnswers[q.id] === q.correct_index) {
-      correctCount++;
-    }
-  });
-  const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-
-  const handleSelectOption = (qId, optionIdx) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [qId]: optionIdx,
-    }));
-  };
-
-  const handleReset = () => {
-    setSelectedAnswers({});
-  };
-
-  const handleFinish = () => {
-    onComplete(record.progress_id, intervention.id);
-    onClose();
-  };
+  const [answers, setAnswers] = useState({});
+  const total = questions.length;
+  const answered = Object.keys(answers).length;
+  const allDone = total > 0 && answered === total;
+  let correct = 0;
+  questions.forEach(q => { if (answers[q.id] === q.correct_index) correct++; });
+  const score = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Quiz Banner & Live Score */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(124, 58, 237, 0.15))',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.25rem 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
+      {/* Header */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(124,58,237,0.08), rgba(79,70,229,0.06))',
+        border: '1px solid rgba(124,58,237,0.18)',
+        borderRadius: 16, padding: '1.25rem 1.5rem',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
+      }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-warning)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#7c3aed', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Award size={20} /> Interactive Scenario Quiz
           </div>
-          <div style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', marginTop: 4 }}>
-            {quizData.instructions || 'Select the most ethically responsible anti-cyberbullying action.'}
+          <div style={{ fontSize: '0.84rem', color: '#64748b', marginTop: 4 }}>
+            {quizData.instructions || 'Select the most ethically responsible response for each scenario.'}
           </div>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontFamily: 'var(--font-mono)' }}>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-subtle)', textTransform: 'uppercase' }}>Questions</div>
-            <div style={{ fontWeight: 800, fontSize: '1.1rem', color: isAllAnswered ? 'var(--color-success)' : '#fff' }}>
-              {answeredCount} / {totalQuestions}
-            </div>
+        <div style={{ display: 'flex', gap: '1.5rem', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Answered</div>
+            <div style={{ fontWeight: 800, fontSize: '1.2rem', color: allDone ? '#10b981' : '#0b1c30' }}>{answered}/{total}</div>
           </div>
-          {answeredCount > 0 && (
-            <div style={{ borderLeft: '1px solid var(--color-border)', paddingLeft: '1.25rem' }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--color-text-subtle)', textTransform: 'uppercase' }}>Score</div>
-              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: scorePercent >= 75 ? 'var(--color-success-light)' : 'var(--color-warning)' }}>
-                {correctCount}/{answeredCount} ({scorePercent}%)
-              </div>
+          {answered > 0 && (
+            <div style={{ textAlign: 'center', borderLeft: '1px solid #e2e8f0', paddingLeft: '1.5rem' }}>
+              <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Score</div>
+              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: score >= 75 ? '#10b981' : '#f59e0b' }}>{score}%</div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Question Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {questions.map((q, idx) => {
-          const selected = selectedAnswers[q.id];
-          const hasAnswered = selected !== undefined;
-          const isCorrect = selected === q.correct_index;
-
-          return (
-            <div
-              key={q.id}
-              style={{
-                background: 'var(--color-surface-2)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem' }}>
-                <span className="badge badge-primary" style={{ fontSize: '0.72rem' }}>
-                  Question {idx + 1} of {totalQuestions}
-                </span>
-                {hasAnswered && (
-                  <span className={`badge ${isCorrect ? 'badge-success' : 'badge-danger'}`}>
-                    {isCorrect ? <Check size={12} /> : <AlertCircle size={12} />}
-                    {isCorrect ? 'Correct Decision' : 'Incorrect Choice'}
-                  </span>
-                )}
-              </div>
-
-              <h4 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', marginBottom: '1.15rem', lineHeight: 1.5 }}>
-                {q.question}
-              </h4>
-
-              {/* Options */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                {q.options.map((opt, optIdx) => {
-                  const isThisSelected = selected === optIdx;
-                  const isThisCorrect = optIdx === q.correct_index;
-
-                  let border = '1px solid var(--color-border)';
-                  let bg = 'rgba(255, 255, 255, 0.02)';
-                  let icon = null;
-
-                  if (hasAnswered) {
-                    if (isThisCorrect) {
-                      border = '1px solid rgba(16, 185, 129, 0.6)';
-                      bg = 'rgba(16, 185, 129, 0.12)';
-                      icon = <Check size={16} color="var(--color-success)" />;
-                    } else if (isThisSelected && !isThisCorrect) {
-                      border = '1px solid rgba(239, 68, 68, 0.6)';
-                      bg = 'rgba(239, 68, 68, 0.12)';
-                      icon = <X size={16} color="var(--color-danger)" />;
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={optIdx}
-                      type="button"
-                      onClick={() => handleSelectOption(q.id, optIdx)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.85rem',
-                        textAlign: 'left',
-                        padding: '0.9rem 1.15rem',
-                        borderRadius: 'var(--radius-md)',
-                        border,
-                        background: bg,
-                        color: 'var(--color-text)',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem',
-                        transition: 'var(--transition)',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          background: isThisSelected
-                            ? isThisCorrect ? 'var(--color-success)' : 'var(--color-danger)'
-                            : 'rgba(255,255,255,0.06)',
-                          color: '#fff',
-                          fontFamily: 'var(--font-mono)',
-                        }}
-                      >
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      <span style={{ flex: 1 }}>{opt}</span>
-                      {icon}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Rationale / Explanation Box */}
-              {hasAnswered && (
-                <div
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.95rem 1.15rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-                    borderLeft: `4px solid ${isCorrect ? 'var(--color-success)' : 'var(--color-warning)'}`,
-                    fontSize: '0.86rem',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  <strong style={{ color: isCorrect ? 'var(--color-success-light)' : 'var(--color-warning-light)', display: 'block', marginBottom: 4 }}>
-                    💡 Behavioral Analysis:
-                  </strong>
-                  {q.explanation}
-                </div>
-              )}
+      {questions.map((q, idx) => {
+        const sel = answers[q.id];
+        const has = sel !== undefined;
+        const ok  = sel === q.correct_index;
+        return (
+          <div key={q.id} style={{
+            background: '#fff', borderRadius: 16, padding: '1.5rem',
+            border: `1px solid ${has ? (ok ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)') : '#e2e8f0'}`,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.85rem' }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: '50%', flexShrink: 0, zIndex: 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: has ? (ok ? '#ecfdf5' : '#fef2f2') : 'rgba(15,118,110,0.08)',
+                border: `2px solid ${has ? (ok ? '#10b981' : '#ef4444') : '#14b8a6'}`,
+                color: has ? (ok ? '#10b981' : '#ef4444') : '#0f766e',
+                fontSize: '0.78rem', fontWeight: 700,
+              }}>
+                {has ? (ok ? <Check size={13} /> : <AlertCircle size={13} />) : idx + 1}
+              </span>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Question {idx + 1} of {total}</span>
+              {has && <span style={{ fontSize: '0.76rem', fontWeight: 700, padding: '2px 10px', borderRadius: 999, background: ok ? '#ecfdf5' : '#fef2f2', color: ok ? '#047857' : '#dc2626' }}>{ok ? 'Correct ✓' : 'Incorrect'}</span>}
             </div>
-          );
-        })}
-      </div>
+            <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#0b1c30', marginBottom: '1rem', lineHeight: 1.5 }}>{q.question}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              {q.options.map((opt, i) => {
+                const isSelected = sel === i;
+                const isCorrect  = i === q.correct_index;
+                let bg = '#f8fafc', border = '#e2e8f0';
+                if (has) {
+                  if (isCorrect) { bg = 'rgba(16,185,129,0.07)'; border = 'rgba(16,185,129,0.4)'; }
+                  else if (isSelected) { bg = 'rgba(239,68,68,0.07)'; border = 'rgba(239,68,68,0.4)'; }
+                }
+                return (
+                  <button key={i} type="button"
+                    onClick={() => setAnswers(prev => ({ ...prev, [q.id]: i }))}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.85rem',
+                      textAlign: 'left', padding: '0.85rem 1rem',
+                      borderRadius: 10, border: `1px solid ${border}`, background: bg,
+                      color: '#0b1c30', cursor: 'pointer', fontSize: '0.88rem',
+                      transition: 'all 0.15s', width: '100%',
+                    }}
+                  >
+                    <span style={{
+                      width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.75rem', fontWeight: 700,
+                      background: isSelected ? (isCorrect ? '#10b981' : '#ef4444') : has && isCorrect ? '#10b981' : '#e2e8f0',
+                      color: isSelected || (has && isCorrect) ? '#fff' : '#64748b',
+                    }}>
+                      {has && isCorrect ? <Check size={13} /> : String.fromCharCode(65 + i)}
+                    </span>
+                    <span style={{ flex: 1 }}>{opt}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {has && (
+              <div style={{
+                marginTop: '1rem', padding: '0.9rem 1.1rem', borderRadius: 10,
+                background: ok ? 'rgba(16,185,129,0.07)' : 'rgba(245,158,11,0.07)',
+                borderLeft: `3px solid ${ok ? '#10b981' : '#f59e0b'}`,
+                fontSize: '0.84rem', color: '#64748b', lineHeight: 1.6,
+              }}>
+                <strong style={{ color: ok ? '#047857' : '#b45309', display: 'block', marginBottom: 4 }}>💡 Explanation:</strong>
+                {q.explanation}
+              </div>
+            )}
+          </div>
+        );
+      })}
 
-      {/* Completion Summary Card */}
-      {isAllAnswered && (
-        <div
-          style={{
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.75rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.75rem',
-          }}
-        >
+      {allDone && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.07), rgba(20,184,166,0.06))',
+          border: '1px solid rgba(16,185,129,0.2)', borderRadius: 16, padding: '2rem',
+          textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem',
+        }}>
           <div style={{ fontSize: '2.5rem' }}>🎉</div>
-          <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-success-light)' }}>
-            Module Finished! Final Score: {correctCount} / {totalQuestions} ({scorePercent}%)
+          <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#047857' }}>
+            Quiz Complete! Score: {correct}/{total} ({score}%)
           </h4>
-          <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', maxWidth: 500 }}>
-            You have successfully verified your ethical de-escalation skills. Click below to register module completion in your telemetry pipeline.
+          <p style={{ fontSize: '0.86rem', color: '#64748b', maxWidth: 440 }}>
+            Great work! Click below to mark this module as completed.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <Button variant="secondary" size="sm" onClick={handleReset} icon={<RotateCcw size={14} />}>
-              Retry Quiz
-            </Button>
+            <Button variant="secondary" size="sm" onClick={() => setAnswers({})} icon={<RotateCcw size={14} />}>Retry Quiz</Button>
             {status !== 'completed' && (
-              <Button variant="cyan" size="sm" onClick={handleFinish} iconRight={<CheckCircle2 size={14} />}>
-                Record Completion
+              <Button variant="primary" size="sm"
+                onClick={() => { onComplete(record.progress_id, intervention.id); onClose(); }}
+                iconRight={<CheckCircle2 size={14} />}>
+                Mark Complete
               </Button>
             )}
           </div>
@@ -285,354 +213,270 @@ function InteractiveQuizViewer({ quizData, record, onComplete, onClose }) {
   );
 }
 
-function InteractiveQuizViewer({ quizData, record, onComplete, onClose }) {
-  const { intervention, status } = record;
-  const questions = quizData.questions || [];
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-
-  const totalQuestions = questions.length;
-  const answeredCount = Object.keys(selectedAnswers).length;
-  const isAllAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
-
-  // Calculate live score
-  let correctCount = 0;
-  questions.forEach((q) => {
-    if (selectedAnswers[q.id] === q.correct_index) {
-      correctCount++;
-    }
-  });
-  const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-
-  const handleSelectOption = (qId, optionIdx) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [qId]: optionIdx,
-    }));
-  };
-
-  const handleReset = () => {
-    setSelectedAnswers({});
-  };
-
-  const handleFinish = () => {
-    onComplete(record.progress_id, intervention.id);
-    onClose();
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Quiz Header & Score Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(99, 102, 241, 0.12))',
-        border: '1px solid rgba(245, 158, 11, 0.3)',
-        borderRadius: 'var(--radius-md)',
-        padding: '1rem 1.25rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '0.75rem',
-      }}>
-        <div>
-          <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-warning)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Award size={18} /> Interactive Knowledge Quiz
-          </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: 3 }}>
-            {quizData.instructions || 'Select the best option for each question to test your knowledge.'}
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Progress</div>
-            <div style={{ fontWeight: 700, fontSize: '1rem', color: isAllAnswered ? 'var(--color-success)' : 'var(--color-text)' }}>
-              {answeredCount} / {totalQuestions}
-            </div>
-          </div>
-          {answeredCount > 0 && (
-            <div style={{ textAlign: 'right', borderLeft: '1px solid var(--color-border)', paddingLeft: '1rem' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Score</div>
-              <div style={{ fontWeight: 700, fontSize: '1rem', color: scorePercent >= 75 ? 'var(--color-success)' : 'var(--color-warning)' }}>
-                {correctCount}/{answeredCount} ({scorePercent}%)
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Questions */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        {questions.map((q, idx) => {
-          const selected = selectedAnswers[q.id];
-          const hasAnswered = selected !== undefined;
-          const isCorrect = selected === q.correct_index;
-
-          return (
-            <div
-              key={q.id}
-              style={{
-                background: 'var(--color-surface-2)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.25rem',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.15)', color: 'var(--color-primary-light)', fontSize: '0.75rem' }}>
-                  Question {idx + 1} of {totalQuestions}
-                </span>
-                {hasAnswered && (
-                  <span className={`badge ${isCorrect ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {isCorrect ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
-                    {isCorrect ? 'Correct!' : 'Incorrect'}
-                  </span>
-                )}
-              </div>
-
-              <h3 style={{ fontSize: '0.98rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '1rem', lineHeight: 1.5 }}>
-                {q.question}
-              </h3>
-
-              {/* Options */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-                {q.options.map((opt, optIdx) => {
-                  const isThisSelected = selected === optIdx;
-                  const isThisCorrect = optIdx === q.correct_index;
-
-                  let border = '1px solid var(--color-border)';
-                  let bg = 'rgba(255, 255, 255, 0.02)';
-                  let icon = null;
-
-                  if (hasAnswered) {
-                    if (isThisCorrect) {
-                      border = '1px solid rgba(16, 185, 129, 0.6)';
-                      bg = 'rgba(16, 185, 129, 0.12)';
-                      icon = <Check size={16} color="var(--color-success)" />;
-                    } else if (isThisSelected && !isThisCorrect) {
-                      border = '1px solid rgba(239, 68, 68, 0.6)';
-                      bg = 'rgba(239, 68, 68, 0.12)';
-                      icon = <X size={16} color="var(--color-danger)" />;
-                    }
-                  }
-
-                  return (
-                    <button
-                      key={optIdx}
-                      type="button"
-                      onClick={() => handleSelectOption(q.id, optIdx)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '0.75rem',
-                        textAlign: 'left',
-                        padding: '0.85rem 1rem',
-                        borderRadius: 'var(--radius-md)',
-                        border,
-                        background: bg,
-                        color: 'var(--color-text)',
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        lineHeight: 1.5,
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          background: isThisSelected ? (isThisCorrect ? 'var(--color-success)' : 'var(--color-danger)') : 'rgba(255,255,255,0.06)',
-                          color: '#fff',
-                        }}
-                      >
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      <span style={{ flex: 1 }}>{opt}</span>
-                      {icon}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Instant Explanation Box */}
-              {hasAnswered && (
-                <div
-                  style={{
-                    marginTop: '0.9rem',
-                    padding: '0.85rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: isCorrect ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-                    borderLeft: `4px solid ${isCorrect ? 'var(--color-success)' : 'var(--color-warning)'}`,
-                    fontSize: '0.84rem',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  <strong style={{ color: isCorrect ? 'var(--color-success)' : 'var(--color-warning)', display: 'block', marginBottom: 2 }}>
-                    💡 Explanation:
-                  </strong>
-                  {q.explanation}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Completion Summary Card */}
-      {isAllAnswered && (
-        <div
-          style={{
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.25rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.6rem',
-            marginTop: '0.5rem',
-          }}
-        >
-          <div style={{ fontSize: '2rem' }}>🎉</div>
-          <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-success)' }}>
-            Quiz Completed! Final Score: {correctCount} / {totalQuestions} ({scorePercent}%)
-          </h4>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', maxWidth: 500 }}>
-            You have successfully completed this interactive module. Click below to record your progress!
-          </p>
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button className="btn btn-secondary btn-sm" onClick={handleReset}>
-              <RotateCcw size={14} /> Retry Quiz
-            </button>
-            {status !== 'completed' && (
-              <button className="btn btn-primary btn-sm" onClick={handleFinish}>
-                <CheckCircle2 size={14} /> Complete Module
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
+/* ── Content Modal ───────────────────────────────────────────────────────── */
 function ContentModal({ record, onClose, onStart, onComplete }) {
   const { intervention, status } = record;
   const cfg = TYPE_CONFIG[intervention.content_type] || TYPE_CONFIG.reading;
   const isVideo = intervention.content_type === 'video';
-  const isQuiz = intervention.content_type === 'quiz';
+  const isQuiz  = intervention.content_type === 'quiz';
   const videoUrl = isVideo ? intervention.content_body?.split('\n')[0]?.trim() : null;
-
   let quizData = null;
-  if (isQuiz) {
-    try {
-      quizData = JSON.parse(intervention.content_body);
-    } catch { }
-  }
-
-  let quizData = null;
-  if (isQuiz) {
-    try {
-      quizData = JSON.parse(intervention.content_body);
-    } catch { }
-  }
+  if (isQuiz) { try { quizData = JSON.parse(intervention.content_body); } catch {} }
 
   useEffect(() => {
-    if (status === 'assigned') {
-      onStart(record.progress_id, intervention.id);
-    }
+    if (status === 'assigned') onStart(record.progress_id, intervention.id);
   }, []);
 
-  const copyIntervention = () => {
-    const text = `${intervention.title}\nConstruct: ${intervention.target_construct}\n\n${intervention.content_body}`;
-    navigator.clipboard.writeText(text);
-    alert('Intervention summary copied to clipboard!');
-  };
-
   return (
-    <div className="content-viewer-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="content-viewer-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="content-viewer">
         <div className="content-viewer-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flex: 1, minWidth: 0 }}>
-            <div className="intervention-type-icon" style={{ background: cfg.bg, color: cfg.color, flexShrink: 0 }}>
-              {cfg.icon}
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', flexShrink: 0 }}>
+              {cfg.emoji}
             </div>
             <div style={{ minWidth: 0 }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>{intervention.title}</h2>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: 2 }}>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0b1c30' }}>{intervention.title}</h2>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: 3 }}>
                 <Badge variant="primary">{cfg.label}</Badge>
                 {intervention.estimated_minutes && (
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <Clock size={11} /> {intervention.estimated_minutes} min read
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Clock size={12} /> {intervention.estimated_minutes} min
                   </span>
                 )}
               </div>
             </div>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <button
-              onClick={copyIntervention}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-              title="Copy module content"
-            >
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button onClick={() => navigator.clipboard.writeText(intervention.content_body || '')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: 4 }} title="Copy">
               <Copy size={16} />
             </button>
-            <button
-              onClick={onClose}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
-            >
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: 4 }}>
               <X size={20} />
             </button>
           </div>
         </div>
-
         <div className="content-viewer-body">
-          {isVideo && videoUrl && (
-            <div style={{ marginBottom: '1.25rem', borderRadius: 8, overflow: 'hidden', background: '#000' }}>
-              <iframe
-                src={videoUrl.replace('watch?v=', 'embed/')}
-                width="100%"
-                height="280"
-                frameBorder="0"
-                allowFullScreen
-                title={intervention.title}
-                style={{ display: 'block' }}
-              />
-            </div>
+          {isQuiz && quizData?.questions ? (
+            <InteractiveQuizViewer quizData={quizData} record={record} onComplete={onComplete} onClose={onClose} />
+          ) : (
+            <>
+              {isVideo && videoUrl && (
+                <div style={{ marginBottom: '1.5rem', borderRadius: 12, overflow: 'hidden', background: '#000', border: '1px solid #e2e8f0' }}>
+                  <iframe src={videoUrl.replace('watch?v=', 'embed/')} width="100%" height="320" frameBorder="0" allowFullScreen title={intervention.title} style={{ display: 'block' }} />
+                </div>
+              )}
+              <ReactMarkdown components={MARKDOWN_COMPONENTS}>
+                {isVideo ? intervention.content_body?.split('\n').slice(1).join('\n').trim() || '' : intervention.content_body || ''}
+              </ReactMarkdown>
+            </>
           )}
-          <div
-            dangerouslySetInnerHTML={{
-              __html: renderMarkdown(isVideo
-                ? intervention.content_body?.split('\n').slice(1).join('\n').trim()
-                : intervention.content_body
-              )
-            }}
-            style={{ lineHeight: 1.7 }}
-          />
+        </div>
+        <div className="content-viewer-footer">
+          <Button variant="secondary" size="sm" onClick={onClose}>Close</Button>
+          {!isQuiz && status !== 'completed' && (
+            <Button variant="primary" size="sm"
+              onClick={() => { onComplete(record.progress_id, intervention.id); onClose(); }}
+              iconRight={<CheckCircle2 size={14} />}>
+              Mark as Completed
+            </Button>
+          )}
+          {status === 'completed' && <Badge variant="success"><CheckCircle2 size={12} /> Completed</Badge>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Course Card (Coursera Style) ────────────────────────────────────────── */
+function CourseCard({ record, onOpen, onComplete, actionLoading }) {
+  const { intervention, status } = record;
+  const cfg  = TYPE_CONFIG[intervention.content_type] || TYPE_CONFIG.reading;
+  const cc   = CONSTRUCT_CONFIG[intervention.target_construct] || CONSTRUCT_CONFIG.Attitude;
+  const diff = DIFFICULTY[intervention.content_type] || 'Beginner';
+  const diffColor = DIFF_COLOR[diff] || '#10b981';
+
+  const isCompleted  = status === 'completed';
+  const isInProgress = status === 'in-progress';
+  const progressPct  = isCompleted ? 100 : isInProgress ? 60 : 0;
+
+  let previewText = '';
+  if (intervention.content_type === 'quiz') {
+    try { const q = JSON.parse(intervention.content_body); previewText = q.instructions || 'Test your ethical judgment in realistic scenarios.'; }
+    catch { previewText = 'Interactive scenario quiz with ethical decision-making challenges.'; }
+  } else {
+    previewText = (intervention.content_body?.replace(/[#*[\]]/g, '').slice(0, 100) || '') + '…';
+  }
+
+  return (
+    <motion.div
+      whileHover={{ y: -4, boxShadow: '0 10px 30px rgba(15,23,42,0.1)' }}
+      transition={{ duration: 0.2 }}
+      style={{
+        background: '#fff', borderRadius: 20, overflow: 'hidden',
+        border: isCompleted ? '1px solid rgba(16,185,129,0.25)' : '1px solid #e2e8f0',
+        boxShadow: '0 1px 3px rgba(15,23,42,0.04)',
+        display: 'flex', flexDirection: 'column', position: 'relative',
+      }}
+    >
+      {/* Thumbnail */}
+      <div style={{
+        height: 100, background: cfg.bg, position: 'relative',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '2.5rem',
+      }}>
+        {cfg.emoji}
+        {isCompleted && (
+          <div style={{
+            position: 'absolute', top: 10, right: 10,
+            background: '#10b981', color: '#fff',
+            borderRadius: 999, padding: '3px 10px',
+            fontSize: '0.7rem', fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            <CheckCircle2 size={11} /> Done
+          </div>
+        )}
+        {isInProgress && !isCompleted && (
+          <div style={{
+            position: 'absolute', top: 10, right: 10,
+            background: 'rgba(245,158,11,0.9)', color: '#fff',
+            borderRadius: 999, padding: '3px 10px',
+            fontSize: '0.7rem', fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            <Zap size={10} /> In Progress
+          </div>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: '1rem 1.15rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+        {/* Tags */}
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 9px', borderRadius: 999, background: cc.bg, color: cc.color }}>
+            {cc.icon} {cc.label}
+          </span>
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '2px 9px', borderRadius: 999, background: `${diffColor}15`, color: diffColor }}>
+            {diff}
+          </span>
         </div>
 
-        <div className="content-viewer-footer">
-          <button className="btn btn-secondary btn-sm" onClick={onClose}>Close</button>
-          {status !== 'completed' && (
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => { onComplete(record.progress_id, intervention.id); onClose(); }}
-            >
-              <CheckCircle2 size={14} /> Mark Complete
+        <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0b1c30', lineHeight: 1.4, margin: 0 }}>
+          {intervention.title}
+        </h3>
+        <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: 1.55, margin: 0, flex: 1 }}>
+          {previewText}
+        </p>
+
+        {/* Meta */}
+        <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.76rem', color: '#94a3b8', alignItems: 'center' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}><Clock size={11} /> {intervention.estimated_minutes || '—'} min</span>
+          <span>{cfg.label}</span>
+        </div>
+
+        {/* Progress bar */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.72rem', color: '#94a3b8' }}>
+            <span>Progress</span><span style={{ fontWeight: 700 }}>{progressPct}%</span>
+          </div>
+          <div style={{ height: 5, background: '#f1f5f9', borderRadius: 999, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: 999,
+              width: `${progressPct}%`,
+              background: isCompleted ? '#10b981' : isInProgress ? '#0f766e' : '#e2e8f0',
+              transition: 'width 0.6s ease',
+            }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ padding: '0 1.15rem 1.15rem', display: 'flex', gap: '0.5rem' }}>
+        <button
+          onClick={() => onOpen(record)}
+          style={{
+            flex: 1, padding: '9px 14px', borderRadius: 10, cursor: 'pointer',
+            fontSize: '0.84rem', fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            border: isCompleted ? '1px solid #a7f3d0' : 'none',
+            background: isCompleted ? '#ecfdf5' : '#0f766e',
+            color: isCompleted ? '#047857' : '#fff',
+            transition: 'all 0.15s',
+          }}
+        >
+          {isCompleted ? '✓ Review' : isInProgress ? 'Continue' : 'Start Module'}
+          {!isCompleted && <ChevronRight size={14} />}
+        </button>
+        {!isCompleted && (
+          <button
+            onClick={() => onComplete(record.progress_id, intervention.id)}
+            disabled={actionLoading}
+            title="Quick mark complete"
+            style={{
+              width: 36, height: 36, borderRadius: 10, border: '1px solid #e2e8f0',
+              background: '#f8fafc', cursor: 'pointer', color: '#64748b',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <CheckCircle2 size={16} />
+          </button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Roadmap Node ────────────────────────────────────────────────────────── */
+function RoadmapNode({ record, index, onOpen, isLast }) {
+  const { intervention, status } = record;
+  const done   = status === 'completed';
+  const active = status === 'in-progress';
+  return (
+    <div style={{ display: 'flex', gap: '1rem', position: 'relative' }}>
+      {!isLast && (
+        <div style={{
+          position: 'absolute', left: 19, top: 42, width: 2, height: 'calc(100% - 4px)',
+          background: done ? '#10b981' : '#e2e8f0',
+        }} />
+      )}
+      <div style={{
+        width: 40, height: 40, borderRadius: '50%', flexShrink: 0, zIndex: 1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: done ? '#ecfdf5' : active ? 'rgba(15,118,110,0.1)' : '#f8fafc',
+        border: `2px solid ${done ? '#10b981' : active ? '#0f766e' : '#e2e8f0'}`,
+        color: done ? '#10b981' : active ? '#0f766e' : '#94a3b8',
+        boxShadow: active ? '0 0 0 4px rgba(15,118,110,0.1)' : 'none',
+        fontSize: done ? '1rem' : '0.82rem',
+      }}>
+        {done ? <CheckCircle2 size={18} /> : active ? <Zap size={16} /> : <Lock size={14} />}
+      </div>
+      <div style={{ flex: 1, paddingBottom: isLast ? 0 : '1.5rem' }}>
+        <div style={{
+          background: '#fff', border: `1px solid ${active ? 'rgba(15,118,110,0.2)' : '#e2e8f0'}`,
+          borderRadius: 12, padding: '0.9rem 1.1rem',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.65rem',
+          boxShadow: active ? '0 2px 8px rgba(15,118,110,0.08)' : 'none',
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: 3 }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8' }}>MODULE {index + 1}</span>
+              {active && <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '1px 8px', borderRadius: 999, background: 'rgba(15,118,110,0.08)', color: '#0f766e' }}>● Active</span>}
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0b1c30' }}>{intervention.title}</div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 2 }}>
+              {done ? 'Completed ✓' : active ? 'In progress — continue learning' : 'Locked'}
+            </div>
+          </div>
+          {(active || done) && (
+            <button onClick={() => onOpen(record)} style={{
+              padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
+              background: done ? '#ecfdf5' : '#0f766e', color: done ? '#047857' : '#fff',
+              fontSize: '0.8rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              {done ? 'Review' : 'Resume →'}
             </button>
-          )}
-          {status === 'completed' && (
-            <Badge variant="success">
-              <CheckCircle2 size={12} /> Module Completed
-            </Badge>
           )}
         </div>
       </div>
@@ -640,310 +484,335 @@ function ContentModal({ record, onClose, onStart, onComplete }) {
   );
 }
 
+/* ── Main Page ────────────────────────────────────────────────────────────── */
 export default function Interventions() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [openRecord, setOpenRecord] = useState(null);
+  const { user }  = useAuth();
+  const [records, setRecords]             = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState('');
+  const [openRecord, setOpenRecord]       = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [constructFilter, setConstructFilter] = useState('ALL'); // 'ALL' | 'Attitude' | 'SubjectiveNorm' | 'PBC'
-  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [constructFilter, setConstructFilter] = useState('ALL');
+  const [typeFilter, setTypeFilter]       = useState('ALL');
 
   const load = async () => {
     try {
       const res = await interventionsApi.getMyInterventions();
       setRecords(res.data);
     } catch {
-      setError('Failed to load personalized learning modules.');
+      setError('Could not load your learning modules. Please refresh.');
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => { load(); }, []);
 
   const handleStart = async (progressId, interventionId) => {
-    try { await interventionsApi.startIntervention(interventionId); } catch { }
-    setRecords((rs) => rs.map((r) => r.progress_id === progressId ? { ...r, status: 'in-progress' } : r));
+    try { await interventionsApi.startIntervention(interventionId); } catch {}
+    setRecords(rs => rs.map(r => r.progress_id === progressId ? { ...r, status: 'in-progress' } : r));
   };
-
   const handleComplete = async (progressId, interventionId) => {
     setActionLoading(true);
     try {
       await interventionsApi.completeIntervention(interventionId);
-      setRecords((rs) => rs.map((r) => r.progress_id === progressId ? { ...r, status: 'completed' } : r));
-    } catch { }
+      setRecords(rs => rs.map(r => r.progress_id === progressId ? { ...r, status: 'completed' } : r));
+    } catch {}
     setActionLoading(false);
-  };
-
-  const printReport = () => {
-    window.print();
   };
 
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <Skeleton height="70px" width="50%" />
-        <Skeleton height="12px" width="100%" borderRadius="var(--radius-full)" />
-        <div className="intervention-grid">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+        <Skeleton height="220px" width="100%" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+          <SkeletonCard /><SkeletonCard /><SkeletonCard />
         </div>
       </div>
     );
   }
 
-  const total = records.length;
-  const done = records.filter((r) => r.status === 'completed').length;
-  const pct = total > 0 ? (done / total) * 100 : 0;
+  const total   = records.length;
+  const done    = records.filter(r => r.status === 'completed').length;
+  const inProg  = records.filter(r => r.status === 'in-progress').length;
+  const pct     = total > 0 ? Math.round((done / total) * 100) : 0;
   const allDone = total > 0 && done === total;
+  const currentModule = records.find(r => r.status === 'in-progress') || records.find(r => r.status === 'assigned');
 
-  // Filtered records
-  const filteredRecords = records.filter((r) => {
+  const filtered = records.filter(r => {
     if (constructFilter !== 'ALL' && r.intervention.target_construct !== constructFilter) return false;
     if (typeFilter !== 'ALL' && r.intervention.content_type !== typeFilter) return false;
     return true;
   });
 
+  const userName = user?.full_name?.split(' ')[0] || 'Student';
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+      transition={{ duration: 0.35 }}
+      style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', fontFamily: 'Plus Jakarta Sans, Inter, sans-serif' }}
     >
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-            <Badge variant="cyan" icon={<Sparkles size={12} />}>
-              Personalized Learning Path
-            </Badge>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)', fontFamily: 'var(--font-mono)' }}>
-              MODULES: {total}
-            </span>
-          </div>
-          <h1 className="dashboard-greeting">Targeted Cognitive Interventions</h1>
-          <p className="dashboard-subtitle">
-            Curated behavioral modules assigned based on your baseline diagnostic to mitigate hostility and boost intervention readiness.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Button variant="secondary" size="sm" onClick={printReport} icon={<Printer size={14} />}>
-            Print Action Plan
-          </Button>
-        </div>
-      </div>
-
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Progress & Unlock Banner */}
+      {/* ── Hero Section (Coursera-Style) ────────────────────────────────── */}
       {total > 0 && (
-        <Card glow={allDone ? 'cyan' : 'primary'}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-              Module Completion Progress: {done} of {total} Finished
-            </span>
-            <span style={{ fontWeight: 800, color: allDone ? 'var(--color-success)' : 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
-              {pct.toFixed(0)}%
-            </span>
-          </div>
+        <div style={{
+          background: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #10b981 100%)',
+          borderRadius: 24, padding: '2.25rem 2rem', color: '#fff',
+          position: 'relative', overflow: 'hidden',
+          boxShadow: '0 10px 40px rgba(15,118,110,0.25)',
+        }}>
+          {/* Background decorative circles */}
+          {[{s:220,x:'80%',y:'-30%',o:0.07},{s:160,x:'90%',y:'60%',o:0.06},{s:90,x:'15%',y:'80%',o:0.08}].map((c,i) => (
+            <div key={i} style={{
+              position: 'absolute', left: c.x, top: c.y,
+              width: c.s, height: c.s, borderRadius: '50%',
+              background: `rgba(255,255,255,${c.o})`,
+              transform: 'translate(-50%,-50%)', pointerEvents: 'none',
+            }} />
+          ))}
 
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${pct}%` }} />
-          </div>
-
-          {allDone ? (
-            <div
-              style={{
-                marginTop: '1.25rem',
-                padding: '1rem 1.25rem',
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '1rem',
-              }}
-            >
-              <div>
-                <strong style={{ color: 'var(--color-success-light)' }}>
-                  🎉 All Assigned Modules Completed!
-                </strong>
-                <div style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
-                  Your post-assessment audit is now unlocked. Take the post-audit to measure your behavioral delta!
-                </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', position: 'relative' }}>
+            <div style={{ flex: 1, minWidth: 260 }}>
+              <div style={{ fontSize: '1.65rem', fontWeight: 800, marginBottom: '0.35rem', letterSpacing: '-0.02em' }}>
+                Welcome back, {userName}! 👋
               </div>
-              <Button
-                variant="cyan"
-                size="sm"
-                onClick={() => navigate('/assessment?stage=post')}
-                iconRight={<ArrowRight size={14} />}
-              >
-                Launch Post-Assessment
-              </Button>
+              <div style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.85)', marginBottom: '1.25rem' }}>
+                Continue your cyberbullying intervention learning journey
+              </div>
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+                {[
+                  `${pct}% Overall Progress`,
+                  `${done} of ${total} Modules Done`,
+                  inProg > 0 ? `${inProg} In Progress ⚡` : 'All caught up!',
+                ].map(label => (
+                  <span key={label} style={{
+                    padding: '6px 14px', borderRadius: 999, fontSize: '0.82rem', fontWeight: 700,
+                    background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)',
+                    backdropFilter: 'blur(6px)',
+                  }}>
+                    {label}
+                  </span>
+                ))}
+              </div>
+              {currentModule && (
+                <button
+                  onClick={() => setOpenRecord(currentModule)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '11px 22px', borderRadius: 12, border: 'none',
+                    background: '#fff', color: '#0f766e', fontSize: '0.9rem', fontWeight: 800,
+                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,23,42,0.15)',
+                    transition: 'transform 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <Zap size={16} /> Resume Learning
+                </button>
+              )}
             </div>
-          ) : (
-            <div style={{ fontSize: '0.82rem', color: 'var(--color-text-subtle)', marginTop: '0.75rem' }}>
-              Post-assessment unlocks automatically once all {total} modules are marked completed.
+
+            {/* Progress Ring */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+              <ProgressRing pct={pct} size={110} />
+              <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>Curriculum Done</span>
             </div>
-          )}
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* Filter Tabs */}
+      {/* ── XP / Level Card ─────────────────────────────────────────────── */}
       {total > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          {/* Construct Tabs */}
+        <div style={{
+          background: '#fff', border: '1px solid #e2e8f0', borderRadius: 20,
+          padding: '1.25rem 1.5rem',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem',
+          boxShadow: '0 1px 3px rgba(15,23,42,0.04)',
+        }}>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#64748b', marginBottom: 4 }}>
+              <Trophy size={14} style={{ marginRight: 5, verticalAlign: 'middle' }} />
+              Your Level: <span style={{ color: '#0f766e' }}>Cyber Safety Learner</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#94a3b8', marginBottom: 4 }}>
+              <span>Level 2</span><span style={{ fontWeight: 700 }}>{Math.round(pct * 10)} / 1000 XP</span>
+            </div>
+            <div style={{ height: 8, background: '#f1f5f9', borderRadius: 999, overflow: 'hidden' }}>
+              <motion.div
+                initial={{ width: 0 }} animate={{ width: `${pct}%` }}
+                transition={{ duration: 1.0, ease: 'easeOut' }}
+                style={{ height: '100%', borderRadius: 999, background: 'linear-gradient(90deg, #0f766e, #14b8a6)' }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {[
+              { label: '🛡️ Enrolled',   earned: true  },
+              { label: '📋 Pre-Done',    earned: true  },
+              { label: '🔒 All Modules', earned: allDone },
+              { label: '🔒 Certified',   earned: false },
+            ].map(({ label, earned }) => (
+              <span key={label} style={{
+                fontSize: '0.76rem', fontWeight: 700, padding: '4px 12px', borderRadius: 999,
+                background: earned ? '#ecfdf5' : '#f8fafc',
+                color: earned ? '#047857' : '#94a3b8',
+                border: `1px solid ${earned ? '#a7f3d0' : '#e2e8f0'}`,
+              }}>
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── All Done Banner ─────────────────────────────────────────────── */}
+      {allDone && (
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+          style={{
+            background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(20,184,166,0.07))',
+            border: '1px solid rgba(16,185,129,0.25)', borderRadius: 20, padding: '1.5rem',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ fontSize: '2rem' }}>🎉</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#047857', fontSize: '1rem' }}>All Modules Completed!</div>
+              <div style={{ fontSize: '0.84rem', color: '#64748b', marginTop: 2 }}>Your post-assessment is now unlocked. Measure your growth!</div>
+            </div>
+          </div>
+          <Button variant="primary" size="sm" onClick={() => navigate('/assessment?stage=post')} iconRight={<ArrowRight size={14} />}>
+            Start Post-Assessment
+          </Button>
+        </motion.div>
+      )}
+
+      {/* ── Empty State ─────────────────────────────────────────────────── */}
+      {total === 0 && (
+        <EmptyState
+          icon={<BookOpen size={36} color="#0f766e" />}
+          title="No Modules Assigned Yet"
+          description="Complete the pre-assessment first. Your personalized modules will appear here based on your results."
+          actionLabel="Take Pre-Assessment"
+          onAction={() => navigate('/assessment?stage=pre')}
+        />
+      )}
+
+      {/* ── Continue Where You Left Off ──────────────────────────────────── */}
+      {currentModule && !allDone && (
+        <div style={{
+          background: '#fff', border: '1px solid rgba(15,118,110,0.15)', borderRadius: 20,
+          padding: '1.5rem', display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center',
+          boxShadow: '0 2px 12px rgba(15,118,110,0.08)',
+        }}>
+          {/* Thumbnail */}
+          <div style={{
+            width: 120, height: 80, borderRadius: 12, flexShrink: 0,
+            background: (TYPE_CONFIG[currentModule.intervention.content_type] || TYPE_CONFIG.reading).bg,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.2rem',
+          }}>
+            {(TYPE_CONFIG[currentModule.intervention.content_type] || TYPE_CONFIG.reading).emoji}
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0f766e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              Continue Learning
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0b1c30', marginBottom: 6 }}>
+              {currentModule.intervention.title}
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ flex: 1, height: 6, background: '#f1f5f9', borderRadius: 999 }}>
+                <div style={{ height: '100%', width: currentModule.status === 'in-progress' ? '60%' : '0%', background: '#0f766e', borderRadius: 999 }} />
+              </div>
+              <span style={{ fontSize: '0.76rem', color: '#64748b' }}>{currentModule.status === 'in-progress' ? '60%' : '0%'} done</span>
+            </div>
+          </div>
+          <button onClick={() => setOpenRecord(currentModule)} style={{
+            padding: '10px 20px', borderRadius: 10, border: 'none',
+            background: '#0f766e', color: '#fff', fontWeight: 700, fontSize: '0.88rem',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            Resume <ArrowRight size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* ── Learning Path Roadmap ─────────────────────────────────────────── */}
+      {total > 0 && (
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 20, padding: '1.5rem', boxShadow: '0 1px 3px rgba(15,23,42,0.04)' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0b1c30', margin: '0 0 0.35rem 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Target size={17} color="#0f766e" /> Your Learning Path
+          </h2>
+          <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 1.5rem' }}>
+            Sequential competencies grounded in the Theory of Planned Behavior
+          </p>
+          {records.map((record, i) => (
+            <RoadmapNode key={record.progress_id} record={record} index={i}
+              onOpen={setOpenRecord} isLast={i === records.length - 1} />
+          ))}
+        </div>
+      )}
+
+      {/* ── Filters ──────────────────────────────────────────────────────── */}
+      {total > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {['ALL', 'Attitude', 'SubjectiveNorm', 'PBC'].map((c) => {
-              const isActive = constructFilter === c;
-              const label =
-                c === 'ALL' ? 'All Constructs' :
-                  c === 'SubjectiveNorm' ? 'Subjective Norms' :
-                    c === 'PBC' ? 'Perceived Control' : c;
+            {[
+              { key: 'ALL', label: 'All Modules' },
+              { key: 'Attitude',       label: '💭 Attitude' },
+              { key: 'SubjectiveNorm', label: '👥 Peer Norms' },
+              { key: 'PBC',            label: '💪 Efficacy' },
+            ].map(({ key, label }) => {
+              const active = constructFilter === key;
               return (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setConstructFilter(c)}
-                  style={{
-                    padding: '0.45rem 0.95rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid',
-                    borderColor: isActive ? 'var(--color-primary)' : 'var(--color-border)',
-                    background: isActive ? 'rgba(124, 58, 237, 0.2)' : 'var(--color-surface)',
-                    color: isActive ? '#fff' : 'var(--color-text-muted)',
-                    fontSize: '0.84rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'var(--transition)',
-                  }}
-                >
+                <button key={key} type="button" onClick={() => setConstructFilter(key)} style={{
+                  padding: '6px 14px', borderRadius: 999, fontSize: '0.82rem', fontWeight: 700,
+                  border: `1px solid ${active ? '#0f766e' : '#e2e8f0'}`,
+                  background: active ? 'rgba(15,118,110,0.08)' : '#fff',
+                  color: active ? '#0f766e' : '#64748b', cursor: 'pointer', transition: 'all 0.15s',
+                }}>
                   {label}
                 </button>
               );
             })}
           </div>
-
-          {/* Type Select */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Filter size={14} color="var(--color-text-subtle)" />
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+            <Filter size={14} color="#64748b" />
+            <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
               className="form-input"
-              style={{ width: 'auto', padding: '0.4rem 0.85rem', fontSize: '0.84rem', height: 34 }}
-            >
-              <option value="ALL">All Media Types</option>
-              <option value="quiz">Interactive Quizzes</option>
-              <option value="video">Video Lectures</option>
-              <option value="reading">Reading Guides</option>
+              style={{ width: 'auto', padding: '6px 12px', fontSize: '0.82rem', height: 34 }}>
+              <option value="ALL">All Types</option>
+              <option value="quiz">Quizzes</option>
+              <option value="video">Videos</option>
+              <option value="reading">Readings</option>
               <option value="case-study">Case Studies</option>
             </select>
           </div>
         </div>
       )}
 
-      {/* Empty State */}
-      {total === 0 && (
-        <EmptyState
-          icon={<BookOpen size={36} color="var(--color-accent)" />}
-          title="No Learning Modules Assigned"
-          description="Learning modules are automatically curated based on the vulnerable constructs identified during your baseline assessment. Complete the pre-assessment to generate your modules."
-          actionLabel="Take Pre-Assessment"
-          onAction={() => navigate('/assessment?stage=pre')}
-        />
+      {/* ── Course Cards Grid ─────────────────────────────────────────────── */}
+      {total > 0 && (
+        filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b', background: '#fff', borderRadius: 20, border: '1px solid #e2e8f0' }}>
+            No modules match the selected filters.
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            {filtered.map(record => (
+              <CourseCard key={record.progress_id} record={record}
+                onOpen={setOpenRecord} onComplete={handleComplete} actionLoading={actionLoading} />
+            ))}
+          </div>
+        )
       )}
 
-      {/* Grouped by Construct */}
-      {Object.entries(groups).map(([construct, recs]) => (
-        <div key={construct} style={{ marginBottom: '2rem' }}>
-          <div className="section-title" style={{ color: CONSTRUCT_COLORS[construct] }}>
-            <span style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: CONSTRUCT_COLORS[construct], display: 'inline-block'
-            }} />
-            {construct === 'SubjectiveNorm' ? 'Subjective Norm' : construct} Track
-          </div>
 
-          <div className="intervention-grid">
-            {recs.map((record) => {
-              const { intervention, status } = record;
-              const cfg = TYPE_CONFIG[intervention.content_type] || TYPE_CONFIG.reading;
 
-              return (
-                <div key={record.progress_id} className="intervention-card card-hover">
-                  <div className="intervention-card-top">
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', gap: '0.45rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                        <span className="badge" style={{ background: cfg.bg, color: cfg.color }}>
-                          {cfg.label}
-                        </span>
-                        {status === 'completed' && (
-                          <span className="badge badge-success">
-                            <CheckCircle2 size={11} /> Done
-                          </span>
-                        )}
-                        {status === 'in-progress' && (
-                          <span className="badge badge-warning">In Progress</span>
-                        )}
-                        {status === 'assigned' && (
-                          <span className="badge badge-muted">Not Started</span>
-                        )}
-                      </div>
-                      <h3 className="intervention-title">{intervention.title}</h3>
-                    </div>
-                    <div className="intervention-type-icon" style={{ background: cfg.bg, color: cfg.color }}>
-                      {cfg.icon}
-                    </div>
-                  </div>
-
-                  <div className="intervention-body">
-                    <div className="intervention-meta">
-                      {intervention.estimated_minutes && (
-                        <span style={{ fontSize: '0.78rem', color: 'var(--color-text-subtle)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                          <Clock size={12} /> {intervention.estimated_minutes} min
-                        </span>
-                      )}
-                    </div>
-                    <p className="intervention-preview">
-                      {intervention.content_body?.replace(/[#*\[\]]/g, '').slice(0, 140)}...
-                    </p>
-                  </div>
-
-                  <div className="intervention-footer">
-                    <button
-                      className={`btn btn-primary btn-sm`}
-                      style={{ flex: 1 }}
-                      onClick={() => setOpenRecord(record)}
-                    >
-                      {status === 'completed' ? 'Review' : status === 'in-progress' ? 'Continue' : 'Start'}{' '}
-                      <ChevronRight size={13} />
-                    </button>
-                    {status !== 'completed' && (
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleComplete(record.progress_id, intervention.id)}
-                        disabled={actionLoading}
-                      >
-                        <CheckCircle2 size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Content Modal */}
+      {/* ── Content Modal ────────────────────────────────────────────────── */}
       {openRecord && (
         <ContentModal
           record={openRecord}

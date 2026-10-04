@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  LogIn, Eye, EyeOff, Lock, AlertCircle,
-  Sparkles, CheckCircle2, ArrowRight
+  LogIn, Eye, EyeOff,
+  Sparkles, CheckCircle2
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -46,77 +46,172 @@ export default function Login() {
     }
   };
 
-  const fillDemo = () => {
-    setForm({
-      email: 'demo@riphah.edu.pk',
-      password: 'Password123!',
-    });
-  };
-
   return (
     <div className="auth-split-layout">
-      {/* Left Brand / Cyber Illustration Side */}
+      {/* Left Brand / Cyber Education Hero Side */}
       <div className="auth-brand-side">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
+        {/* Ambient decorative glow orbs */}
+        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '320px', height: '320px', background: 'radial-gradient(circle, rgba(45, 212, 191, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-15%', right: '-10%', width: '380px', height: '380px', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          {/* Logo & Platform Tag */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '2.5rem' }}>
             <div
               style={{
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
+                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.12)',
+                backdropFilter: 'blur(10px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                filter: 'drop-shadow(0 0 16px var(--color-primary-glow))',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
               }}
             >
-              <PrismaLogo size={42} />
+              <PrismaLogo size={36} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>Prisma</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
-                COGNITIVE CYBER DEFENSE
+              <div style={{ fontWeight: 800, fontSize: '1.3rem', color: '#ffffff', letterSpacing: '-0.02em' }}>Prisma</div>
+              <div style={{ fontSize: '0.72rem', color: '#2dd4bf', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em' }}>
+                AI CYBER INTERVENTION PLATFORM
               </div>
             </div>
           </div>
 
-          <Badge variant="cyan" icon={<Sparkles size={12} />} style={{ marginBottom: '1.25rem' }}>
-            Zero-Trust Behavioral Audit
-          </Badge>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.35rem 0.85rem',
+              borderRadius: '9999px',
+              background: 'rgba(45, 212, 191, 0.15)',
+              border: '1px solid rgba(45, 212, 191, 0.35)',
+              color: '#a7f3d0',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              marginBottom: '1.5rem',
+              letterSpacing: '0.02em',
+            }}
+          >
+            <Sparkles size={13} color="#34d399" /> Free & Private for University Students
+          </div>
 
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem' }}>
-            Intelligent Intervention Against Online Hostility.
+          <h2
+            style={{
+              fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
+              fontWeight: 800,
+              lineHeight: 1.18,
+              marginBottom: '1.25rem',
+              color: '#ffffff',
+              letterSpacing: '-0.03em',
+            }}
+          >
+            Stand strong against online harassment.
           </h2>
 
-          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7, fontSize: '0.95rem', maxWidth: '440px' }}>
-            Empowering university students and academic administrators to identify psychological vulnerability points and strengthen digital peer norms.
+          <p
+            style={{
+              color: '#e2e8f0',
+              lineHeight: 1.75,
+              fontSize: '1.02rem',
+              maxWidth: '480px',
+              marginBottom: '2.5rem',
+              fontWeight: 400,
+            }}
+          >
+            Prisma equips university students with behavioral strategies, empowering scenarios, and personalized AI-guided modules to foster safe digital spaces.
           </p>
 
-          {/* Feature highlights */}
-          <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success-light)' }}>
-                <CheckCircle2 size={14} />
+          {/* Modern Glass Feature Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '480px' }}>
+            <div className="auth-feature-pill">
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '10px',
+                  background: 'rgba(45, 212, 191, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#2dd4bf',
+                  flexShrink: 0,
+                }}
+              >
+                <CheckCircle2 size={18} />
               </div>
-              <span>Empirical Theory of Planned Behavior (TPB) Assessment</span>
+              <div>
+                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Diagnostic Pre-Assessment</div>
+                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Maps your baseline attitude, peer norms & intervention confidence</div>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success-light)' }}>
-                <CheckCircle2 size={14} />
+
+            <div className="auth-feature-pill">
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '10px',
+                  background: 'rgba(56, 189, 248, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#38bdf8',
+                  flexShrink: 0,
+                }}
+              >
+                <CheckCircle2 size={18} />
               </div>
-              <span>AI-Personalized Micro-Intervention Learning Modules</span>
+              <div>
+                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Personalized Interactive Lessons</div>
+                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Scenario simulations, de-escalation drills & bite-sized guides</div>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-success-light)' }}>
-                <CheckCircle2 size={14} />
+
+            <div className="auth-feature-pill">
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '10px',
+                  background: 'rgba(167, 139, 250, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#c4b5fd',
+                  flexShrink: 0,
+                }}
+              >
+                <CheckCircle2 size={18} />
               </div>
-              <span>Pre vs. Post Quantifiable Behavioral Trajectory Tracking</span>
+              <div>
+                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Measurable Skill Growth</div>
+                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Compare your growth with verified post-intervention analytics</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
-          <span>Faculty of Computing • Riphah</span>
-          <span style={{ fontFamily: 'var(--font-mono)' }}>SEC_PROTO: TLS 1.3</span>
+        {/* Footer info */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+            paddingTop: '1.25rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '0.82rem',
+            color: '#94a3b8',
+          }}
+        >
+          <span>Theory of Planned Behavior (TPB)</span>
+          <span>End-to-End Encrypted</span>
         </div>
       </div>
 
@@ -124,11 +219,11 @@ export default function Login() {
       <div className="auth-form-side">
         <div className="auth-card-modern">
           <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
               Welcome back
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Sign in with your university credentials to continue your intervention track.
+              Sign in to continue your learning journey.
             </p>
           </div>
 
@@ -208,35 +303,9 @@ export default function Login() {
               style={{ width: '100%', marginTop: '0.75rem' }}
               iconRight={<LogIn size={16} />}
             >
-              Authenticate & Enter
+              Sign In
             </Button>
           </form>
-
-          {/* Quick 1-Click Demo Fill */}
-          <div
-            style={{
-              marginTop: '1.5rem',
-              padding: '1rem',
-              background: 'var(--color-surface-2)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text)' }}>
-                Demo Student Account
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-subtle)' }}>
-                demo@riphah.edu.pk / Demo1234!
-              </div>
-            </div>
-            <Button variant="secondary" size="sm" onClick={fillDemo}>
-              1-Click Fill
-            </Button>
-          </div>
 
           <div className="auth-footer">
             Don't have an enrolled account?{' '}

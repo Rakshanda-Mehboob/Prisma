@@ -43,6 +43,9 @@ export const authApi = {
   login: (data) => api.post('/auth/login', data),
   me: () => api.get('/auth/me'),
   updateProfile: (data) => api.patch('/auth/profile', data),
+  // Student behavioral profile (onboarding)
+  submitStudentProfile: (data) => api.post('/auth/student-profile', data),
+  getStudentProfile: () => api.get('/auth/student-profile'),
 };
 
 // ── Assessment API ────────────────────────────────────────────────────────────
@@ -53,6 +56,7 @@ export const assessmentApi = {
   submitPre: (responses) => api.post('/assessment/pre', { responses }),
   getPostScenarios: () => api.get('/assessment/post'),
   submitPost: (responses) => api.post('/assessment/post', { responses }),
+  reset: (stage = 'all') => api.post(`/assessment/reset?stage=${stage}`),
 };
 
 // ── Interventions API ─────────────────────────────────────────────────────────

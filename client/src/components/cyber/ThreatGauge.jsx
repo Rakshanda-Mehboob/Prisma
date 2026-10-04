@@ -21,7 +21,7 @@ export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', si
     icon = <AlertTriangle size={24} color={color} />;
   } else if (normalizedScore < 85) {
     riskCategory = 'Good Posture / Guarded';
-    color = 'var(--color-accent)';
+    color = 'var(--color-secondary)';
     icon = <ShieldAlert size={24} color={color} />;
   }
 
@@ -39,7 +39,7 @@ export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', si
             cx="90"
             cy="90"
             r={radius}
-            stroke="rgba(255, 255, 255, 0.06)"
+            stroke="var(--color-surface-3)"
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -56,7 +56,7 @@ export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', si
             strokeLinecap="round"
             style={{
               transition: 'stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.4s ease',
-              filter: `drop-shadow(0 0 8px ${color})`,
+              filter: `drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08))`,
             }}
           />
         </svg>
@@ -79,12 +79,12 @@ export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', si
               fontWeight: 800,
               fontFamily: 'var(--font-mono)',
               lineHeight: 1,
-              color: '#fff',
+              color: 'var(--color-text-primary)',
             }}
           >
             {normalizedScore}
           </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Score / 100
           </div>
         </div>

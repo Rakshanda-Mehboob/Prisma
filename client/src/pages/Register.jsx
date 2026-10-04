@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api';
 import {
-  UserPlus, Lock, CheckCircle2,
-  Sparkles, Eye, EyeOff, AlertCircle, Building2, Home
+  UserPlus, CheckCircle2,
+  Sparkles, Eye, EyeOff, Building2, Home
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -106,33 +106,33 @@ export default function Register() {
               <PrismaLogo size={42} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>Prisma</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text-primary)' }}>Prisma</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
                 ACADEMIC ENROLLMENT PORTAL
               </div>
             </div>
           </div>
 
           <Badge variant="primary" icon={<Sparkles size={12} />} style={{ marginBottom: '1.25rem' }}>
-            Evidence-Based Peer Protection
+            Free for Students
           </Badge>
 
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem' }}>
-            Join the Anti-Cyberbullying Cohort.
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem', color: 'var(--color-text-primary)' }}>
+            Join the program and make a difference.
           </h2>
 
           <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7, fontSize: '0.95rem', maxWidth: '440px' }}>
-            Register your institutional profile to participate in diagnostic behavioral assessments, unlock tailored de-escalation modules, and track personal anti-bullying growth.
+            Create your account to start learning about cyberbullying awareness, get personalised lessons, and track your progress from start to finish.
           </p>
 
           <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {[
-              'Encrypted Student Records & Anonymized Analytics',
-              'AI Scenario Personalization via Profile Context',
-              'Completion Certification & Delta Reflection Report',
+              'Short Assessment to discover your awareness level',
+              'Personalised lessons made just for you',
+              'See your progress before and after the lessons',
             ].map((text, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(124, 58, 237, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary-light)', flexShrink: 0 }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(79, 70, 229, 0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
                   <CheckCircle2 size={14} />
                 </div>
                 <span>{text}</span>
@@ -141,9 +141,9 @@ export default function Register() {
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-subtle)' }}>
-          <span>Riphah International University</span>
-          <span style={{ fontFamily: 'var(--font-mono)' }}>FYP-COMPUTING-2026</span>
+        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
+          <span></span>
+          <span style={{ fontFamily: 'var(--font-mono)' }}></span>
         </div>
       </div>
 
@@ -151,11 +151,11 @@ export default function Register() {
       <div className="auth-form-side">
         <div className="auth-card-modern">
           <div style={{ marginBottom: '1.75rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
               Create Account
             </h1>
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Enter your student information to generate your behavioral profile.
+              Enter your details to create your free student account.
             </p>
           </div>
 
@@ -170,7 +170,7 @@ export default function Register() {
                 type="text"
                 name="full_name"
                 className="form-input"
-                placeholder="e.g. Ayesha Khalil"
+                placeholder="e.g. Rakshanda"
                 value={form.full_name}
                 onChange={handleChange}
                 required

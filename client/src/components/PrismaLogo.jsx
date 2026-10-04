@@ -2,19 +2,17 @@ import React, { useId } from 'react';
 
 /**
  * PrismaLogo — Scalable vector logo for Prisma.
- * Visually combines a precision geometric triangular prism,
- * internal light refraction splitting into a vibrant cyber spectrum
- * (Cyan, Electric Blue, Violet), and a protective cyber shield contour.
+ * Updated to use the indigo/violet/teal palette that matches the new UI theme.
  */
 export default function PrismaLogo({ size = 32, className = '', style = {} }) {
   const uid = useId().replace(/:/g, '');
-  const idShieldBg = `prisma-sbg-${uid}`;
+  const idShieldBg    = `prisma-sbg-${uid}`;
   const idShieldStroke = `prisma-sst-${uid}`;
-  const idGlass = `prisma-gls-${uid}`;
-  const idBeam = `prisma-bm-${uid}`;
-  const idCyan = `prisma-cyn-${uid}`;
-  const idBlue = `prisma-blu-${uid}`;
-  const idViolet = `prisma-vio-${uid}`;
+  const idGlass       = `prisma-gls-${uid}`;
+  const idBeam        = `prisma-bm-${uid}`;
+  const idCyan        = `prisma-cyn-${uid}`;
+  const idBlue        = `prisma-blu-${uid}`;
+  const idViolet      = `prisma-vio-${uid}`;
 
   return (
     <svg
@@ -28,41 +26,48 @@ export default function PrismaLogo({ size = 32, className = '', style = {} }) {
       aria-label="Prisma Logo"
     >
       <defs>
+        {/* Shield background — soft warm pearl tint */}
         <linearGradient id={idShieldBg} x1="24" y1="5" x2="24" y2="43" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#0e1530" />
-          <stop offset="100%" stop-color="#050816" />
+          <stop offset="0%"   stopColor="#f0fdfa" />
+          <stop offset="100%" stopColor="#fffbeb" />
         </linearGradient>
+        {/* Shield stroke — emerald → amber → terracotta */}
         <linearGradient id={idShieldStroke} x1="7" y1="5" x2="41" y2="43" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#7c3aed" />
-          <stop offset="50%" stop-color="#00f5ff" />
-          <stop offset="100%" stop-color="#2563eb" />
+          <stop offset="0%"   stopColor="#0f766e" />
+          <stop offset="50%"  stopColor="#d97706" />
+          <stop offset="100%" stopColor="#7c2d12" />
         </linearGradient>
+        {/* Prism glass fill */}
         <linearGradient id={idGlass} x1="14" y1="12" x2="34" y2="31" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#00f5ff" stop-opacity="0.22" />
-          <stop offset="50%" stop-color="#6366f1" stop-opacity="0.12" />
-          <stop offset="100%" stop-color="#a855f7" stop-opacity="0.28" />
+          <stop offset="0%"   stopColor="#0f766e" stopOpacity="0.16" />
+          <stop offset="50%"  stopColor="#d97706" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="#7c2d12" stopOpacity="0.18" />
         </linearGradient>
+        {/* Incoming beam */}
         <linearGradient id={idBeam} x1="6" y1="24.5" x2="18.5" y2="23" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
-          <stop offset="70%" stop-color="#ffffff" stop-opacity="0.95" />
-          <stop offset="100%" stop-color="#00f5ff" />
+          <stop offset="0%"   stopColor="#0f766e" stopOpacity="0.15" />
+          <stop offset="70%"  stopColor="#0f766e" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#14b8a6" />
         </linearGradient>
+        {/* Top ray — amber */}
         <linearGradient id={idCyan} x1="27.5" y1="19" x2="41" y2="16" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="35%" stop-color="#00f5ff" />
-          <stop offset="100%" stop-color="#38bdf8" />
+          <stop offset="0%"   stopColor="#0f766e" />
+          <stop offset="50%"  stopColor="#d97706" />
+          <stop offset="100%" stopColor="#f59e0b" />
         </linearGradient>
+        {/* Middle ray — emerald teal */}
         <linearGradient id={idBlue} x1="29.5" y1="23" x2="41" y2="23" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#38bdf8" />
-          <stop offset="100%" stop-color="#2563eb" />
+          <stop offset="0%"   stopColor="#0f766e" />
+          <stop offset="100%" stopColor="#14b8a6" />
         </linearGradient>
+        {/* Bottom ray — terracotta */}
         <linearGradient id={idViolet} x1="31.5" y1="27" x2="39" y2="30" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#c084fc" />
-          <stop offset="100%" stop-color="#7c3aed" />
+          <stop offset="0%"   stopColor="#d97706" />
+          <stop offset="100%" stopColor="#7c2d12" />
         </linearGradient>
       </defs>
 
-      {/* Protective Cyber Shield Silhouette */}
+      {/* Protective Shield Silhouette */}
       <path
         d="M 24 5 L 41 12 C 41 26.5 32.5 37 24 43 C 15.5 37 7 26.5 7 12 Z"
         fill={`url(#${idShieldBg})`}
@@ -73,77 +78,35 @@ export default function PrismaLogo({ size = 32, className = '', style = {} }) {
 
       {/* Incident Light Beam */}
       <line
-        x1="6.5"
-        y1="24.5"
-        x2="18.2"
-        y2="23"
+        x1="6.5" y1="24.5" x2="18.2" y2="23"
         stroke={`url(#${idBeam})`}
         strokeWidth="2.2"
         strokeLinecap="round"
       />
 
       {/* Internal Refraction Paths */}
-      <path
-        d="M 18.2 23 L 27.7 19"
-        stroke="#00f5ff"
-        strokeWidth="1.2"
-        strokeOpacity="0.65"
-      />
-      <path
-        d="M 18.2 23 L 29.8 23"
-        stroke="#38bdf8"
-        strokeWidth="1.2"
-        strokeOpacity="0.65"
-      />
-      <path
-        d="M 18.2 23 L 31.9 27"
-        stroke="#a78bfa"
-        strokeWidth="1.2"
-        strokeOpacity="0.65"
-      />
+      <path d="M 18.2 23 L 27.7 19" stroke="#0891b2" strokeWidth="1.2" strokeOpacity="0.5" />
+      <path d="M 18.2 23 L 29.8 23" stroke="#4f46e5" strokeWidth="1.2" strokeOpacity="0.5" />
+      <path d="M 18.2 23 L 31.9 27" stroke="#7c3aed" strokeWidth="1.2" strokeOpacity="0.5" />
 
-      {/* Dispersed Spectrum Rays (Refraction) */}
-      <line
-        x1="27.7"
-        y1="19"
-        x2="41"
-        y2="16"
-        stroke={`url(#${idCyan})`}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <line
-        x1="29.8"
-        y1="23"
-        x2="41"
-        y2="23"
-        stroke={`url(#${idBlue})`}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <line
-        x1="31.9"
-        y1="27"
-        x2="39"
-        y2="30"
-        stroke={`url(#${idViolet})`}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
+      {/* Dispersed Spectrum Rays */}
+      <line x1="27.7" y1="19" x2="41" y2="16" stroke={`url(#${idCyan})`}   strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="29.8" y1="23" x2="41" y2="23" stroke={`url(#${idBlue})`}   strokeWidth="2.2" strokeLinecap="round" />
+      <line x1="31.9" y1="27" x2="39" y2="30" stroke={`url(#${idViolet})`} strokeWidth="2.2" strokeLinecap="round" />
 
       {/* Triangular Geometric Prism Body */}
       <polygon
         points="24,12 34,31 14,31"
         fill={`url(#${idGlass})`}
-        stroke="#00f5ff"
+        stroke="#0891b2"
         strokeWidth="1.6"
-        strokeOpacity="0.85"
+        strokeOpacity="0.65"
         strokeLinejoin="round"
       />
 
       {/* Precision Focal Nodes */}
-      <circle cx="24" cy="12" r="1.4" fill="#ffffff" />
-      <circle cx="18.2" cy="23" r="1.2" fill="#ffffff" />
+      <circle cx="24"   cy="12" r="1.4" fill="#4f46e5" />
+      <circle cx="18.2" cy="23" r="1.2" fill="#4f46e5" />
     </svg>
   );
 }

@@ -1,9 +1,9 @@
 """
-assessment/router.py — Assessment endpoints (pre and post stage).
+assessment/router.py — Assessment endpoints (pre and post stage) — v1.1.
 
 Routes:
   GET  /assessment/status     → which stages are complete, is post unlocked
-  GET  /assessment/pre        → fetch all pre-stage scenarios with options
+  GET  /assessment/pre        → fetch personalized pre-stage scenarios (profile-aware)
   POST /assessment/pre        → submit pre-assessment responses, trigger scoring + intervention assignment
   GET  /assessment/post       → fetch post-stage scenarios (only if post is unlocked)
   POST /assessment/post       → submit post-assessment responses
@@ -12,20 +12,27 @@ Business rules:
   - A user can only have ONE pre and ONE post assessment.
   - Post-assessment is locked until all assigned interventions have status='completed'.
   - Submitting pre-assessment automatically assigns interventions for weak constructs.
+  - Scenarios are generated using the student's behavioral profile for personalization.
+  - All 4 TPB constructs measured: Attitude, SubjectiveNorm, PBC, BehavioralIntention.
+  - 3 scenario blocks × 8 questions = 24 items total.
 """
 
+import json
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import User, Scenario, Assessment, AssessmentResponse, Intervention, UserInterventionProgress
+from models import User, Scenario, Assessment, AssessmentResponse, Intervention, UserInterventionProgress, StudentProfile
 from schemas import (
-    ScenarioOut, AssessmentSubmitRequest, AssessmentScores,
-    AssessmentOut, AssessmentStatusOut
+    ScenarioOut,
+    AssessmentSubmitRequest,
+    AssessmentScores,
+    AssessmentStatusOut,
 )
 from auth.utils import get_current_user
-from assessment.scoring import calculate_scores, identify_weak_constructs
-from assessment.ai_generator import get_or_create_hybrid_scenarios
+from assessment.scoring import calculate_scores, identify_weak_constructs, calculate_overall
+from assessment.ai_generator import generate_personalized_scenario_blocks
+import random
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
@@ -52,8 +59,43 @@ def _all_interventions_complete(db: Session, user_id: int) -> bool:
     return all(p.status == "completed" for p in progress_records)
 
 
-def _fetch_scenarios(db: Session, stage: str) -> list[Scenario]:
-    return db.query(Scenario).filter(Scenario.stage == stage).all()
+def _get_student_profile_data(db: Session, user_id: int) -> dict | None:
+    """
+    Fetch and deserialize the student's behavioral profile for AI scenario personalization.
+    Returns None if no profile exists (AI falls back to generic generation).
+    """
+    profile = (
+        db.query(StudentProfile)
+        .filter(StudentProfile.user_id == user_id)
+        .first()
+    )
+    if not profile:
+        return None
+
+    def _parse(val):
+        if val is None:
+            return None
+        try:
+            return json.loads(val)
+        except Exception:
+            return None
+
+    return {
+        "degree_program": profile.degree_program,
+        "academic_year": profile.academic_year,
+        "faculty_department": profile.faculty_department,
+        "learning_environment": profile.learning_environment,
+        "class_size": profile.class_size,
+        "platforms_used": _parse(profile.platforms_used),
+        "online_activity_level": profile.online_activity_level,
+        "main_online_activities": _parse(profile.main_online_activities),
+        "university_activity_level": profile.university_activity_level,
+        "participation_types": _parse(profile.participation_types),
+        "social_role": profile.social_role,
+        "encounter_frequency": profile.encounter_frequency,
+        "experience_types": _parse(profile.experience_types),
+        "experience_role": profile.experience_role,
+    }
 
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
@@ -83,7 +125,9 @@ def get_pre_scenarios(
     db: Session = Depends(get_db),
 ):
     """
-    Return all pre-stage scenario questions with their options.
+    Return personalized pre-stage scenario questions.
+    Uses the student's behavioral profile to generate contextually relevant,
+    non-generic scenarios covering all 4 TPB constructs.
     Raises 409 if pre-assessment already submitted.
     """
     if _get_assessment(db, current_user.id, "pre"):
@@ -91,13 +135,28 @@ def get_pre_scenarios(
             status_code=status.HTTP_409_CONFLICT,
             detail="You have already completed the pre-assessment."
         )
-    # Hybrid AI scenario generation: blend vetted baseline scenarios with dynamic AI scenarios
-    scenarios = get_or_create_hybrid_scenarios(db, stage="pre", target_count_per_construct=4, ai_ratio=0.5)
+
+    # Fetch student profile for personalization
+    profile_data = _get_student_profile_data(db, current_user.id)
+
+    # Generate 3 personalized scenario blocks (24 questions total: 3×8)
+    scenarios = generate_personalized_scenario_blocks(
+        db=db,
+        stage="pre",
+        profile_data=profile_data,
+        num_blocks=3,
+    )
+
     if not scenarios:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No scenarios available. Please check server logs."
         )
+
+    # Shuffle answer options for each scenario to prevent fixed ordering
+    for scenario in scenarios:
+        random.shuffle(scenario.options)
+
     return scenarios
 
 
@@ -110,7 +169,7 @@ def submit_pre_assessment(
     """
     Submit pre-assessment responses.
     1. Validates no duplicate submission.
-    2. Runs the TPB scoring engine.
+    2. Runs the full TPB scoring engine (4 constructs).
     3. Saves Assessment + AssessmentResponse rows.
     4. Assigns interventions for weak constructs.
     Returns computed scores + list of weak constructs.
@@ -134,8 +193,9 @@ def submit_pre_assessment(
         if s:
             enriched.append({"construct": s.construct, "selected_score": r.selected_score})
 
-    # Score
+    # Score all 4 TPB constructs
     scores = calculate_scores(enriched)
+    overall = calculate_overall(scores)
     weak = identify_weak_constructs(scores)
 
     # Persist Assessment
@@ -145,6 +205,7 @@ def submit_pre_assessment(
         attitude_score=scores.attitude,
         subjective_norm_score=scores.subjective_norm,
         pbc_score=scores.pbc,
+        behavioral_intention_score=scores.behavioral_intention,
     )
     db.add(assessment)
     db.flush()  # get assessment.id before committing
@@ -165,11 +226,21 @@ def submit_pre_assessment(
             .all()
         )
         for intervention in interventions:
-            db.add(UserInterventionProgress(
-                user_id=current_user.id,
-                intervention_id=intervention.id,
-                status="assigned",
-            ))
+            # Avoid duplicate assignments
+            existing = (
+                db.query(UserInterventionProgress)
+                .filter(
+                    UserInterventionProgress.user_id == current_user.id,
+                    UserInterventionProgress.intervention_id == intervention.id,
+                )
+                .first()
+            )
+            if not existing:
+                db.add(UserInterventionProgress(
+                    user_id=current_user.id,
+                    intervention_id=intervention.id,
+                    status="assigned",
+                ))
 
     db.commit()
 
@@ -177,6 +248,8 @@ def submit_pre_assessment(
         attitude_score=scores.attitude,
         subjective_norm_score=scores.subjective_norm,
         pbc_score=scores.pbc,
+        behavioral_intention_score=scores.behavioral_intention,
+        overall_score=overall,
         weak_constructs=weak,
     )
 
@@ -187,7 +260,7 @@ def get_post_scenarios(
     db: Session = Depends(get_db),
 ):
     """
-    Return post-stage scenarios. Only accessible once all interventions are completed.
+    Return personalized post-stage scenarios. Only accessible once all interventions are completed.
     Raises 403 if post is still locked.
     """
     if _get_assessment(db, current_user.id, "post"):
@@ -200,13 +273,28 @@ def get_post_scenarios(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Complete all assigned learning modules before taking the post-assessment."
         )
-    # Hybrid AI scenario generation for post-assessment
-    scenarios = get_or_create_hybrid_scenarios(db, stage="post", target_count_per_construct=4, ai_ratio=0.5)
+
+    # Fetch student profile for personalization
+    profile_data = _get_student_profile_data(db, current_user.id)
+
+    # Generate 3 personalized post-stage scenario blocks
+    scenarios = generate_personalized_scenario_blocks(
+        db=db,
+        stage="post",
+        profile_data=profile_data,
+        num_blocks=3,
+    )
+
     if not scenarios:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No post scenarios available. Please check server logs."
         )
+
+    # Shuffle answer options for each scenario to prevent fixed ordering
+    for scenario in scenarios:
+        random.shuffle(scenario.options)
+
     return scenarios
 
 
@@ -244,6 +332,7 @@ def submit_post_assessment(
             enriched.append({"construct": s.construct, "selected_score": r.selected_score})
 
     scores = calculate_scores(enriched)
+    overall = calculate_overall(scores)
     weak = identify_weak_constructs(scores)
 
     assessment = Assessment(
@@ -252,6 +341,7 @@ def submit_post_assessment(
         attitude_score=scores.attitude,
         subjective_norm_score=scores.subjective_norm,
         pbc_score=scores.pbc,
+        behavioral_intention_score=scores.behavioral_intention,
     )
     db.add(assessment)
     db.flush()
@@ -269,5 +359,31 @@ def submit_post_assessment(
         attitude_score=scores.attitude,
         subjective_norm_score=scores.subjective_norm,
         pbc_score=scores.pbc,
+        behavioral_intention_score=scores.behavioral_intention,
+        overall_score=overall,
         weak_constructs=weak,
     )
+
+
+@router.post("/reset")
+def reset_assessment(
+    stage: str = "all",
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Reset assessment(s) for the current user so they can retake or re-evaluate.
+    Accepts stage='pre', 'post', or 'all'.
+    """
+    stages_to_reset = ["pre", "post"] if stage in ("all", None, "") else [stage]
+    assessments = (
+        db.query(Assessment)
+        .filter(Assessment.user_id == current_user.id, Assessment.stage.in_(stages_to_reset))
+        .all()
+    )
+    for a in assessments:
+        db.query(AssessmentResponse).filter(AssessmentResponse.assessment_id == a.id).delete()
+        db.delete(a)
+
+    db.commit()
+    return {"message": "Assessment reset successfully", "stage": stage}

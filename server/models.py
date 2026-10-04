@@ -1,13 +1,17 @@
 """
 models.py — SQLAlchemy ORM models mirroring the schema in docs/schema.sql.
-All 8 tables are defined here. Base.metadata.create_all(engine) in main.py
+All tables are defined here. Base.metadata.create_all(engine) in main.py
 creates app.db automatically on first run.
+
+v1.1 additions:
+  - StudentProfile: rich behavioral profile for AI personalization
+  - Assessment.behavioral_intention_score: 4th TPB construct
 """
 
 from datetime import datetime
 from typing import Optional
 from sqlalchemy import (
-    Integer, String, Text, Float, DateTime, ForeignKey, CheckConstraint
+    Integer, String, Text, Float, DateTime, ForeignKey, CheckConstraint, Boolean, JSON
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
@@ -25,6 +29,7 @@ class User(Base):
     department: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     living_situation: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    login_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # Relationships
     assessments: Mapped[list["Assessment"]] = relationship("Assessment", back_populates="user")
@@ -32,17 +37,61 @@ class User(Base):
         "UserInterventionProgress", back_populates="user"
     )
     feedbacks: Mapped[list["Feedback"]] = relationship("Feedback", back_populates="user")
+    student_profile: Mapped[Optional["StudentProfile"]] = relationship(
+        "StudentProfile", back_populates="user", uselist=False
+    )
 
     __table_args__ = (
         CheckConstraint("role IN ('student', 'admin')", name="user_role_check"),
     )
 
 
+class StudentProfile(Base):
+    """
+    Rich behavioral profile collected during onboarding.
+    Used by the AI scenario generator to produce personalized, contextually
+    relevant TPB assessment scenarios for each student.
+    """
+    __tablename__ = "student_profiles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+
+    # ── Academic Profile ──────────────────────────────────────────────────────
+    degree_program: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    academic_year: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    faculty_department: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    learning_environment: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    class_size: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+
+    # ── Digital Interaction Profile ───────────────────────────────────────────
+    # JSON arrays stored as Text (SQLite-friendly)
+    platforms_used: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # JSON array
+    online_activity_level: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    main_online_activities: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array
+
+    # ── Social Involvement Profile ────────────────────────────────────────────
+    university_activity_level: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    participation_types: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array
+    social_role: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+
+    # ── Cyberbullying Experience Profile ─────────────────────────────────────
+    encounter_frequency: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    experience_types: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # JSON array
+    experience_role: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship
+    user: Mapped["User"] = relationship("User", back_populates="student_profile")
+
+
 class Scenario(Base):
     __tablename__ = "scenarios"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    construct: Mapped[str] = mapped_column(String(20), nullable=False)
+    construct: Mapped[str] = mapped_column(String(25), nullable=False)
     stage: Mapped[str] = mapped_column(String(5), nullable=False)
     scenario_text: Mapped[str] = mapped_column(Text, nullable=False)
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
@@ -52,7 +101,10 @@ class Scenario(Base):
     responses: Mapped[list["AssessmentResponse"]] = relationship("AssessmentResponse", back_populates="scenario")
 
     __table_args__ = (
-        CheckConstraint("construct IN ('Attitude','SubjectiveNorm','PBC')", name="scenario_construct_check"),
+        CheckConstraint(
+            "construct IN ('Attitude','SubjectiveNorm','PBC','BehavioralIntention')",
+            name="scenario_construct_check"
+        ),
         CheckConstraint("stage IN ('pre','post')", name="scenario_stage_check"),
     )
 
@@ -69,7 +121,7 @@ class ScenarioOption(Base):
     scenario: Mapped["Scenario"] = relationship("Scenario", back_populates="options")
 
     __table_args__ = (
-        CheckConstraint("score BETWEEN 1 AND 5", name="option_score_check"),
+        CheckConstraint("score BETWEEN 1 AND 7", name="option_score_check"),
     )
 
 
@@ -82,6 +134,7 @@ class Assessment(Base):
     attitude_score: Mapped[Optional[float]] = mapped_column(Float)
     subjective_norm_score: Mapped[Optional[float]] = mapped_column(Float)
     pbc_score: Mapped[Optional[float]] = mapped_column(Float)
+    behavioral_intention_score: Mapped[Optional[float]] = mapped_column(Float)
     submitted_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -105,10 +158,10 @@ class AssessmentResponse(Base):
 
     # Relationships
     assessment: Mapped["Assessment"] = relationship("Assessment", back_populates="responses")
-    scenario: Mapped["Scenario"] = relationship("Scenario", back_populates="responses")
+    scenario: Mapped[["Scenario"]] = relationship("Scenario", back_populates="responses")
 
     __table_args__ = (
-        CheckConstraint("selected_score BETWEEN 1 AND 5", name="response_score_check"),
+        CheckConstraint("selected_score BETWEEN 1 AND 7", name="response_score_check"),
     )
 
 
@@ -116,7 +169,7 @@ class Intervention(Base):
     __tablename__ = "interventions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    target_construct: Mapped[str] = mapped_column(String(20), nullable=False)
+    target_construct: Mapped[str] = mapped_column(String(25), nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     content_type: Mapped[str] = mapped_column(String(20), nullable=False)
     content_body: Mapped[Optional[str]] = mapped_column(Text)
@@ -130,7 +183,7 @@ class Intervention(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "target_construct IN ('Attitude','SubjectiveNorm','PBC')",
+            "target_construct IN ('Attitude','SubjectiveNorm','PBC','BehavioralIntention')",
             name="intervention_construct_check"
         ),
         CheckConstraint(

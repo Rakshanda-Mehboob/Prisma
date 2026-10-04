@@ -12,6 +12,8 @@ CREATE TABLE users (
     cms_number  TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role        TEXT DEFAULT 'student' CHECK(role IN ('student','admin')),
+    department  TEXT,
+    living_situation TEXT,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
