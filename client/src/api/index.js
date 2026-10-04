@@ -21,14 +21,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redirect to login on 401
+// Redirect to login on 401 for protected routes (exclude login/register to allow error display)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthEndpoint = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('tpb_token');
       localStorage.removeItem('tpb_user');
-      window.location.href = '/login';
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
