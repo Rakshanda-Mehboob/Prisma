@@ -1,304 +1,470 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Shield, Brain, BookOpen, BarChart3, ArrowRight, CheckCircle2
-} from 'lucide-react';
-import Button from '../components/ui/Button';
-import { useAuth } from '../context/AuthContext';
 
-const STEPS = [
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  BookOpen,
+  Brain,
+  CheckCircle2,
+  ChevronDown,
+  ClipboardList,
+  HeartHandshake,
+  HelpCircle,
+  LockKeyhole,
+  Menu,
+  ShieldCheck,
+  Sparkles,
+  TrendingUp,
+  Users,
+  X,
+} from "lucide-react";
+
+import { useAuth } from "../context/AuthContext";
+import PrismaLogo from "../components/PrismaLogo";
+import "./Landing.css";
+
+const steps = [
   {
-    icon: Brain,
-    label: 'Take the Assessment',
-    description: 'Answer a few scenario-based questions to see how you currently think and feel about cyberbullying.',
-    color: 'var(--color-primary)',
-    bg: 'rgba(26, 86, 50, 0.08)',
-    num: '01',
+    icon: ClipboardList,
+    title: "TPB Baseline Audit",
+    description:
+      "Complete an initial assessment based on Attitude, Subjective Norms, and Perceived Behavioral Control.",
   },
   {
-    icon: BarChart3,
-    label: 'Get Your Results',
-    description: 'We\'ll show you which areas you\'re strong in and which ones you could improve with a bit of learning.',
-    color: 'var(--color-secondary)',
-    bg: 'rgba(13, 148, 136, 0.08)',
-    num: '02',
+    icon: Brain,
+    title: "Cognitive Risk Scoring",
+    description:
+      "Your responses are analyzed to understand the factors influencing your online behavior.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Targeted Interventions",
+    description:
+      "Receive personalized learning activities and scenarios based on your assessment.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Post-Audit Delta",
+    description:
+      "Complete a follow-up assessment to review changes in your understanding and responses.",
+  },
+];
+
+const features = [
+  {
+    icon: ShieldCheck,
+    title: "TPB-Based Assessment",
+    description:
+      "Explore how attitudes, social influences, and perceived control relate to online behavior.",
+    color: "purple",
   },
   {
     icon: BookOpen,
-    label: 'Complete Your Lessons',
-    description: 'Work through short, personalised lessons — readings, examples, and activities — at your own pace.',
-    color: 'var(--color-success)',
-    bg: 'rgba(22, 163, 74, 0.08)',
-    num: '03',
+    title: "Interactive Learning",
+    description:
+      "Learn through scenarios and activities related to cyberbullying and online communication.",
+    color: "teal",
   },
   {
-    icon: Shield,
-    label: 'See How Far You\'ve Come',
-    description: 'Take the Post Assessment and see a clear report showing how much your awareness and confidence has grown.',
-    color: 'var(--color-accent)',
-    bg: 'rgba(212, 160, 23, 0.08)',
-    num: '04',
+    icon: HeartHandshake,
+    title: "Personalized Intervention",
+    description:
+      "Receive guidance based on the areas identified in your initial assessment.",
+    color: "peach",
+  },
+  {
+    icon: TrendingUp,
+    title: "Progress Tracking",
+    description:
+      "Compare your pre-assessment and post-assessment results.",
+    color: "blue",
   },
 ];
 
-const HIGHLIGHTS = [
-  'Based on proven research in human behaviour',
-  'Personalised lessons for every student',
-  'Track your progress from start to finish',
-  'Free and private — no personal data shared',
+const faqs = [
+  {
+    q: "What is the Theory of Planned Behavior (TPB) in cyberbullying prevention?",
+    a: "TPB explains how attitudes, social pressure, and perceived behavioral control influence a person's intention to behave in a particular way. PRISMA uses these three factors to understand students' responses to cyberbullying-related situations.",
+  },
+  {
+    q: "How does the AI personalize learning interventions?",
+    a: "After the initial assessment, PRISMA examines the student's responses and identifies areas where additional learning may be useful. The system then provides relevant scenarios, activities, and guidance.",
+  },
+  {
+    q: "How is student privacy and anonymity preserved?",
+    a: "PRISMA uses account authentication and access controls. The handling of assessment responses and any reports must follow the privacy and security controls implemented in the system.",
+  },
+  {
+    q: "Can this platform be scaled to other academic institutions?",
+    a: "PRISMA is being developed as a university project. Its modular frontend and backend could support future expansion, subject to further development, testing, and institutional requirements.",
+  },
 ];
+
+function Reveal({ children, className = "" }) {
+  return (
+    <div className={`pl-reveal ${className}`}>
+      {children}
+    </div>
+  );
+}
 
 export default function Landing() {
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeFaq, setActiveFaq] = useState(null);
+
+  const startPath = user ? "/dashboard" : "/register";
+
+  useEffect(() => {
+    const elements = document.querySelectorAll(".pl-reveal");
+
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach((element) => element.classList.add("pl-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("pl-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div>
+    <div className="pl-site">
+      {/* HEADER */}
+      <header className="pl-header">
+        <div className="pl-container pl-header-inner">
+          
+<Link to="/" className="pl-brand">
+  <PrismaLogo size={54} />
+  <span className="pl-brand-wordmark">
+    PRISM<span className="pl-brand-letter-a">A</span>
+  </span>
+</Link>
 
-      {/* ── Hero ── */}
-      <section
-        style={{
-          padding: 'clamp(3rem, 6vw, 5.5rem) 0 clamp(2.5rem, 4vw, 4rem)',
-          textAlign: 'center',
-        }}
-      >
-        {/* Platform badge */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'var(--color-primary-subtle)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-full)',
-            padding: '0.35rem 0.9rem',
-            marginBottom: '1.75rem',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            color: 'var(--color-primary)',
-            letterSpacing: '0.02em',
-          }}
-        >
-          <Shield size={13} />
-          Cyberbullying Awareness Program
-        </div>
+          <nav className={`pl-nav ${menuOpen ? "pl-nav-open" : ""}`}>
+            <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+            <a href="#how" onClick={() => setMenuOpen(false)}>How It Works</a>
+            <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+            <a href="#faq" onClick={() => setMenuOpen(false)}>FAQs</a>
+          </nav>
 
-        <h1
-          style={{
-            fontSize: 'clamp(2.2rem, 4.5vw, 3.6rem)',
-            fontWeight: 800,
-            lineHeight: 1.15,
-            letterSpacing: '-0.035em',
-            color: 'var(--color-text-primary)',
-            maxWidth: '820px',
-            margin: '0 auto 1.25rem',
-          }}
-        >
-          Build healthier online communities
-          <span style={{ color: 'var(--color-primary)', display: 'block' }}>
-            through behavioural science.
-          </span>
-        </h1>
+          <div className="pl-header-actions">
+            {user ? (
+              <Link to="/dashboard" className="pl-btn pl-btn-primary">
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="pl-btn pl-btn-outline">
+                  Login
+                </Link>
+                <Link to="/register" className="pl-btn pl-btn-primary">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
 
-        <p
-          style={{
-            fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)',
-            color: 'var(--color-text-muted)',
-            maxWidth: '580px',
-            margin: '0 auto 2.5rem',
-            lineHeight: 1.7,
-          }}
-        >
-          Prisma helps university students understand and improve their response to
-          cyberbullying through personalised assessments and AI-guided learning modules.
-        </p>
-
-        {/* CTAs */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-          <Link to={user ? '/dashboard' : '/register'}>
-            <Button variant="primary" size="lg" iconRight={<ArrowRight size={17} />}>
-              {user ? 'Go to Dashboard' : 'Get Started — it\'s free'}
-            </Button>
-          </Link>
-          <Link to={user ? '/assessment' : '/login'}>
-            <Button variant="secondary" size="lg">
-              {user ? 'Take Assessment' : 'Sign In'}
-            </Button>
-          </Link>
-        </div>
-
-        {/* Quick trust bullets */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: '1.25rem 2rem',
-            marginTop: '2.25rem',
-          }}
-        >
-          {HIGHLIGHTS.map((text, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                fontSize: '0.82rem',
-                color: 'var(--color-text-secondary)',
-              }}
-            >
-              <CheckCircle2 size={14} color="var(--color-primary)" />
-              {text}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Divider ── */}
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: '0 0 4rem' }} />
-
-      {/* ── How It Works ── */}
-      <section style={{ paddingBottom: 'clamp(3rem, 6vw, 5rem)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2.75rem' }}>
-          <h2
-            style={{
-              fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)',
-              marginBottom: '0.6rem',
-            }}
+          <button
+            className="pl-menu-toggle"
+            type="button"
+            aria-label="Toggle navigation"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
           >
-            How Prisma works
-          </h2>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', maxWidth: '480px', margin: '0 auto' }}>
-            Four simple steps to help you grow from awareness to action.
-          </p>
+            {menuOpen ? <X size={21} /> : <Menu size={21} />}
+          </button>
         </div>
+      </header>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-            gap: '1.25rem',
-          }}
-        >
-          {STEPS.map(({ icon: Icon, label, description, color, bg, num }) => (
-            <div
-              key={num}
-              className="card-hover"
-              style={{
-                background: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-xl)',
-                padding: '1.5rem',
-                transition: 'var(--transition)',
-                position: 'relative',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 'var(--radius-md)',
-                  background: bg,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color,
-                  marginBottom: '1rem',
-                }}
-              >
-                <Icon size={20} />
+      <main>
+        {/* HERO */}
+        <section className="pl-hero" id="home">
+          <div className="pl-hero-photo" aria-hidden="true" />
+          <div className="pl-hero-overlay" aria-hidden="true" />
+
+          <div className="pl-container pl-hero-inner">
+            <div className="pl-hero-copy">
+              <div className="pl-eyebrow">
+                <Sparkles size={14} />
+                A Safer Digital Campus
               </div>
 
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '1.25rem',
-                  right: '1.25rem',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  color: 'var(--color-text-subtle)',
-                  opacity: 0.6,
-                }}
-              >
-                {num}
+              <h1>
+                Proactive Cyberbullying Intervention
+                <span> Powered by Behavioral AI</span>
+              </h1>
+
+              <p>
+                An enterprise-grade cognitive security platform utilizing
+                the <strong>Theory of Planned Behavior (TPB)</strong> and{" "}
+                <strong>Generative AI</strong> to diagnose, predict, and
+                mitigate hostile online behaviors across academic digital
+                ecosystems.
+              </p>
+
+              <div className="pl-hero-buttons">
+                <Link to={startPath} className="pl-btn pl-btn-primary">
+                  {user ? "Open Security Dashboard" : "Start Free Assessment"}
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link
+                  to={user ? "/assessment" : "/login"}
+                  className="pl-btn pl-btn-outline"
+                >
+                  {user ? "Take Assessment" : "Sign In with CMS ID"}
+                </Link>
               </div>
 
-              <h3
-                style={{
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  color: 'var(--color-text-primary)',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                {label}
-              </h3>
-              <p
-                style={{
-                  fontSize: '0.86rem',
-                  color: 'var(--color-text-muted)',
-                  lineHeight: 1.65,
-                  margin: 0,
-                }}
-              >
-                {description}
+              <div className="pl-hero-caption">
+                <CheckCircle2 size={15} />
+                Theory of Planned Behavior-based student support
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section className="pl-about" id="about">
+          <div className="pl-container">
+            <Reveal className="pl-about-layout">
+              <div>
+                <span className="pl-kicker">ABOUT PRISMA</span>
+                <h2>
+                  Understanding Online Behavior Through
+                  <span> the Theory of Planned Behavior</span>
+                </h2>
+              </div>
+
+              <div className="pl-about-text">
+                <p>
+                  PRISMA is an adaptive TPB-driven software system for
+                  targeted cyberbullying intervention among university
+                  students.
+                </p>
+                <p>
+                  It focuses on Attitude, Subjective Norms, and Perceived
+                  Behavioral Control to support assessment, personalized
+                  intervention, and follow-up evaluation.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="pl-section" id="how">
+          <div className="pl-container">
+            <Reveal>
+              <div className="pl-section-heading">
+                <span className="pl-kicker">THE PROCESS</span>
+                <h2>How PRISMA Works</h2>
+                <p>
+                  From the initial assessment to personalized intervention
+                  and follow-up evaluation.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="pl-step-grid">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+
+                return (
+                  <Reveal key={step.title}>
+                    <article className="pl-step-card">
+                      <div className="pl-step-top">
+                        <div className="pl-icon-circle">
+                          <Icon size={22} />
+                        </div>
+                        <span className="pl-step-number">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <h3>{step.title}</h3>
+                      <p>{step.description}</p>
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURES */}
+        <section className="pl-section pl-features-section" id="features">
+          <div className="pl-container">
+            <Reveal>
+              <div className="pl-section-heading">
+                <span className="pl-kicker">PLATFORM FEATURES</span>
+                <h2>What PRISMA Provides</h2>
+                <p>
+                  Assessment, learning activities, personalized guidance,
+                  and progress evaluation in one platform.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="pl-feature-grid">
+              {features.map((feature) => {
+                const Icon = feature.icon;
+
+                return (
+                  <Reveal key={feature.title}>
+                    <article className={`pl-feature-card pl-${feature.color}`}>
+                      <div className="pl-feature-icon">
+                        <Icon size={23} />
+                      </div>
+                      <h3>{feature.title}</h3>
+                      <p>{feature.description}</p>
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="pl-section pl-faq-section" id="faq">
+          <div className="pl-container pl-faq-layout">
+            <Reveal>
+              <div className="pl-faq-intro">
+                <span className="pl-kicker">FREQUENTLY ASKED QUESTIONS</span>
+                <h2>Have Questions About PRISMA?</h2>
+                <p>
+                  Find out more about the assessment process, personalized
+                  interventions, and the technology behind PRISMA.
+                </p>
+                <div className="pl-faq-decoration">
+                  <HelpCircle size={36} />
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="pl-faq-list">
+                {faqs.map((faq, index) => (
+                  <div
+                    className={`pl-faq-item ${
+                      activeFaq === index ? "pl-faq-active" : ""
+                    }`}
+                    key={faq.q}
+                  >
+                    <button
+                      type="button"
+                      className="pl-faq-question"
+                      aria-expanded={activeFaq === index}
+                      onClick={() =>
+                        setActiveFaq(activeFaq === index ? null : index)
+                      }
+                    >
+                      <span>{faq.q}</span>
+                      <ChevronDown size={19} />
+                    </button>
+
+                    {activeFaq === index && (
+                      <div className="pl-faq-answer">
+                        <p>{faq.a}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="pl-container pl-cta-section">
+          <Reveal>
+            <div className="pl-cta">
+              <div>
+                <span className="pl-kicker">GET STARTED WITH PRISMA</span>
+                <h2>Start Your Assessment</h2>
+                <p>
+                  Sign in or create your student account to access the
+                  PRISMA assessment and intervention modules.
+                </p>
+              </div>
+
+              <Link to={startPath} className="pl-btn pl-btn-primary">
+                {user ? "Go to Dashboard" : "Get Started"}
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </Reveal>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="pl-footer">
+        <div className="pl-container">
+          <div className="pl-footer-grid">
+            <div className="pl-footer-brand">
+             
+<Link to="/" className="pl-brand pl-footer-brand">
+  <PrismaLogo size={62} />
+  <span className="pl-brand-wordmark">
+    PRISM<span className="pl-brand-letter-a">A</span>
+  </span>
+</Link>
+
+              <p>
+                An adaptive TPB-driven software system for targeted
+                cyberbullying intervention.
+              </p>
+
+              <p className="pl-footer-note">
+                Final Year Project · BS Software Engineering
               </p>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ── Final CTA ── */}
-      <section style={{ paddingBottom: 'clamp(3rem, 6vw, 5rem)' }}>
-        <div
-          style={{
-            background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(217, 119, 6, 0.06))',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-xl)',
-            padding: 'clamp(2rem, 4vw, 3.5rem) 2rem',
-            textAlign: 'center',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 'clamp(1.4rem, 2.5vw, 1.9rem)',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Ready to get started?
-          </h2>
-          <p
-            style={{
-              color: 'var(--color-text-muted)',
-              maxWidth: '480px',
-              margin: '0 auto 2rem',
-              fontSize: '0.95rem',
-              lineHeight: 1.65,
-            }}
-          >
-            Create a free account and take the baseline assessment in under 15 minutes.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-            <Link to={user ? '/dashboard' : '/register'}>
-              <Button variant="primary" size="lg" iconRight={<ArrowRight size={17} />}>
-                {user ? 'Open Dashboard' : 'Create Account'}
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="secondary" size="lg">
-                Sign In
-              </Button>
-            </Link>
+            <div className="pl-footer-column">
+              <h3>Quick Links</h3>
+              <a href="#home">Home</a>
+              <a href="#about">About</a>
+              <a href="#how">How It Works</a>
+              <a href="#features">Features</a>
+            </div>
+
+            <div className="pl-footer-column">
+              <h3>Platform</h3>
+              <Link to={startPath}>Get Started</Link>
+              <Link to={user ? "/dashboard" : "/login"}>
+                {user ? "Dashboard" : "Student Login"}
+              </Link>
+              <a href="#faq">FAQs</a>
+            </div>
+
+            <div className="pl-footer-column">
+              <h3>About the Project</h3>
+              <span>University Student Support</span>
+              <span>TPB-Based Assessment</span>
+              <span>Cyberbullying Intervention</span>
+            </div>
+          </div>
+
+          <div className="pl-footer-bottom">
+            <span>© {new Date().getFullYear()} PRISMA. All rights reserved.</span>
+            <span>Understand · Learn · Support</span>
           </div>
         </div>
-      </section>
-
+      </footer>
     </div>
   );
 }

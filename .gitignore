@@ -84,3 +84,20 @@ client/dist-ssr/
 ehthumbs.db
 Thumbs.db
 desktop.ini
+# Local Python environments
+server/.venv/
+server/.venv_old/
+
+# Local database and backups
+*.db
+*.db.backup
+
+# Downloaded Python packages
+*.whl
+
+# Secrets
+.env
+.env.*
+
+# Local automation
+auto-push.ps1

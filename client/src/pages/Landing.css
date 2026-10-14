@@ -1,0 +1,1146 @@
+
+/* ======================================
+   PRISMA LANDING PAGE
+   Minimal Lavender Theme
+====================================== */
+
+.pl-site {
+  --pl-primary: #6c63ff;
+  --pl-primary-dark: #5148d6;
+  --pl-ink: #172044;
+  --pl-muted: #697391;
+  --pl-bg: #fafafc;
+  --pl-border: #e9e7f5;
+
+  background: var(--pl-bg);
+  color: var(--pl-ink);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  width: 100%;
+  overflow: hidden;
+}
+
+.pl-site * {
+  box-sizing: border-box;
+}
+
+.pl-site a {
+  text-decoration: none;
+}
+
+.pl-container {
+  width: min(1160px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.pl-site h1,
+.pl-site h2,
+.pl-site h3,
+.pl-site p {
+  letter-spacing: normal;
+}
+
+/* Hide shared app header/footer on
+   the landing page only */
+
+body:has(.pl-site) .app-layout > .navbar,
+body:has(.pl-site) .app-layout > footer {
+  display: none;
+}
+
+body:has(.pl-site) .page-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+
+.pl-header {
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid #efedf8;
+  position: relative;
+  z-index: 20;
+}
+
+.pl-header-inner {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.pl-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #3d456d;
+  white-space: nowrap;
+}
+
+.pl-nav {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+}
+
+.pl-nav a {
+  font-size: 12px;
+  font-weight: 500;
+  color: #59627e;
+  transition: color 0.2s;
+}
+
+.pl-nav a:hover {
+  color: var(--pl-primary);
+}
+
+.pl-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.pl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 28px;
+  padding: 11px 20px;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.pl-btn:hover {
+  transform: translateY(-2px);
+}
+
+.pl-btn-primary {
+  color: white !important;
+  background: var(--pl-primary);
+  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.15);
+}
+
+.pl-btn-primary:hover {
+  background: var(--pl-primary-dark);
+}
+
+.pl-btn-outline {
+  color: var(--pl-primary) !important;
+  background: white;
+  border-color: #aaa5ff;
+}
+
+.pl-menu-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  color: var(--pl-ink);
+  cursor: pointer;
+}
+
+/* HERO */
+
+.pl-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 410px;
+  display: flex;
+  align-items: center;
+  background: #f3f1ff;
+  overflow: hidden;
+}
+
+.pl-hero-photo {
+  position: absolute;
+  z-index: -2;
+  inset: 0 0 0 40%;
+  background-image: url("/images/prisma-hero-student.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 45%;
+  opacity: 0.78;
+}
+
+.pl-hero-overlay {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      #f6f4ff 0%,
+      rgba(246, 244, 255, 0.99) 26%,
+      rgba(246, 244, 255, 0.93) 42%,
+      rgba(246, 244, 255, 0.46) 61%,
+      rgba(246, 244, 255, 0.04) 86%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(246, 244, 255, 0.35),
+      transparent 30%
+    );
+}
+
+.pl-hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.pl-hero-copy {
+  width: min(530px, 100%);
+  padding: 48px 0;
+}
+
+.pl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #e9e5ff;
+  color: #5047cb;
+  padding: 8px 13px;
+  border-radius: 25px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pl-hero h1 {
+  margin: 20px 0 14px;
+  font-size: clamp(29px, 3.1vw, 43px);
+  line-height: 1.22;
+  letter-spacing: -1px !important;
+  font-weight: 800;
+  color: #172044;
+}
+
+.pl-hero h1 span {
+  color: var(--pl-primary);
+}
+
+.pl-hero-copy > p {
+  margin: 0;
+  max-width: 505px;
+  color: #606a89;
+  font-size: 13px;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+.pl-hero-copy strong {
+  font-weight: 600;
+}
+
+.pl-hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.pl-hero-caption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #78819c;
+  font-size: 11px;
+  margin-top: 21px;
+}
+
+.pl-hero-caption svg {
+  color: var(--pl-primary);
+}
+
+/* ABOUT */
+
+.pl-about {
+  padding: 48px 0;
+  background: white;
+  border-bottom: 1px solid #f1eff9;
+}
+
+.pl-about-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: center;
+  gap: 70px;
+}
+
+.pl-kicker {
+  color: var(--pl-primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.pl-about h2 {
+  margin: 10px 0 0;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.pl-about h2 span {
+  color: var(--pl-primary);
+}
+
+.pl-about-text p {
+  font-size: 12px;
+  color: var(--pl-muted);
+  line-height: 1.85;
+  margin: 0 0 10px;
+}
+
+/* COMMON SECTIONS */
+
+.pl-section {
+  padding: 65px 0;
+}
+
+.pl-section-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.pl-section-heading h2 {
+  font-size: clamp(23px, 2.5vw, 30px);
+  font-weight: 750;
+  color: var(--pl-ink);
+  margin: 8px 0;
+  line-height: 1.3;
+}
+
+.pl-section-heading p {
+  max-width: 580px;
+  margin: 0 auto;
+  color: var(--pl-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* HOW PRISMA WORKS */
+
+.pl-step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pl-step-grid > .pl-reveal {
+  height: 100%;
+}
+
+.pl-step-card {
+  background: white;
+  border: 1px solid #ebe9f8;
+  border-radius: 15px;
+  padding: 22px 19px;
+  height: 100%;
+  min-height: 190px;
+  box-shadow: 0 5px 24px rgba(39, 33, 95, 0.025);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.pl-step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(39, 33, 95, 0.07);
+}
+
+.pl-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.pl-icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  color: var(--pl-primary);
+  background: #eeebff;
+}
+
+.pl-step-number {
+  color: #c5c0ed;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pl-step-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 9px;
+}
+
+.pl-step-card p {
+  color: var(--pl-muted);
+  font-size: 11.5px;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* FEATURES */
+
+.pl-features-section {
+  background: #fff;
+}
+
+.pl-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pl-feature-grid > .pl-reveal {
+  height: 100%;
+}
+
+.pl-feature-card {
+  padding: 22px 19px;
+  border-radius: 15px;
+  height: 100%;
+  min-height: 180px;
+  border: 1px solid rgba(108, 99, 255, 0.045);
+  transition: transform 0.25s ease;
+}
+
+.pl-feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.pl-feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.pl-purple {
+  background: #f1eeff;
+}
+
+.pl-purple .pl-feature-icon {
+  background: #9868ed;
+}
+
+.pl-teal {
+  background: #eaf8f8;
+}
+
+.pl-teal .pl-feature-icon {
+  background: #42bfc0;
+}
+
+.pl-peach {
+  background: #fff3e9;
+}
+
+.pl-peach .pl-feature-icon {
+  background: #f3aa68;
+}
+
+.pl-blue {
+  background: #edf3ff;
+}
+
+.pl-blue .pl-feature-icon {
+  background: #6598ed;
+}
+
+.pl-feature-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 9px;
+}
+
+.pl-feature-card p {
+  font-size: 11.5px;
+  color: var(--pl-muted);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* FAQ */
+
+.pl-faq-section {
+  background: #faf9ff;
+}
+
+.pl-faq-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 75px;
+  align-items: start;
+}
+
+.pl-faq-intro h2 {
+  font-size: 27px;
+  line-height: 1.35;
+  margin: 11px 0 14px;
+}
+
+.pl-faq-intro p {
+  font-size: 12px;
+  line-height: 1.85;
+  color: var(--pl-muted);
+  max-width: 350px;
+}
+
+.pl-faq-decoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  margin-top: 27px;
+  border-radius: 20px;
+  background: #ebe7ff;
+  color: var(--pl-primary);
+}
+
+.pl-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pl-faq-item {
+  background: white;
+  border: 1px solid var(--pl-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pl-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 19px;
+  text-align: left;
+  color: var(--pl-ink);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pl-faq-question svg {
+  flex-shrink: 0;
+  color: var(--pl-primary);
+  transition: transform 0.2s;
+}
+
+.pl-faq-active .pl-faq-question svg {
+  transform: rotate(180deg);
+}
+
+.pl-faq-answer {
+  padding: 0 19px 17px;
+}
+
+.pl-faq-answer p {
+  font-size: 11.5px;
+  line-height: 1.85;
+  color: var(--pl-muted);
+  margin: 0;
+}
+
+/* CTA */
+
+.pl-cta-section {
+  margin-top: 55px;
+  margin-bottom: 60px;
+}
+
+.pl-cta {
+  background: linear-gradient(110deg, #efedff, #f6f7ff);
+  border: 1px solid #eae7ff;
+  border-radius: 18px;
+  padding: 32px 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.pl-cta h2 {
+  font-size: 24px;
+  margin: 8px 0;
+}
+
+.pl-cta p {
+  font-size: 12px;
+  color: var(--pl-muted);
+  line-height: 1.8;
+  max-width: 570px;
+  margin: 0;
+}
+
+/* FOOTER */
+
+.pl-footer {
+  background: #eeecfa;
+  border-top: 1px solid #e4e1f4;
+  padding: 46px 0 18px;
+}
+
+.pl-footer-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 0.8fr 0.8fr 1.1fr;
+  gap: 45px;
+}
+
+.pl-footer-brand p {
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: #707b9b;
+  max-width: 300px;
+  margin: 15px 0 0;
+}
+
+.pl-footer-brand .pl-footer-note {
+  font-size: 10.5px;
+  margin-top: 12px;
+}
+
+.pl-footer-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.pl-footer-column h3 {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 3px 0 7px;
+  color: #38436c;
+}
+
+.pl-footer-column a,
+.pl-footer-column span {
+  font-size: 11.5px;
+  color: #7983a2;
+  line-height: 1.4;
+}
+
+.pl-footer-column a:hover {
+  color: var(--pl-primary);
+}
+
+.pl-footer-bottom {
+  border-top: 1px solid #d9d6eb;
+  padding-top: 17px;
+  margin-top: 38px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 10.5px;
+  color: #828ba7;
+}
+
+/* SCROLL REVEAL */
+
+.pl-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.65s ease,
+    transform 0.65s ease;
+}
+
+.pl-reveal.pl-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1024px) {
+  .pl-nav {
+    gap: 16px;
+  }
+
+  .pl-step-grid,
+  .pl-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pl-footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px;
+  }
+}
+
+@media (max-width: 760px) {
+  .pl-container {
+    width: calc(100% - 34px);
+  }
+
+  .pl-header-inner {
+    min-height: 66px;
+  }
+
+  .pl-menu-toggle {
+    display: inline-flex;
+  }
+
+  .pl-nav {
+    display: none;
+    position: absolute;
+    top: 66px;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 12px 20px #18134a12;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pl-nav-open {
+    display: flex;
+  }
+
+  .pl-header-actions {
+    margin-left: auto;
+  }
+
+  .pl-header-actions .pl-btn {
+    padding: 9px 13px;
+    font-size: 11px;
+  }
+
+  .pl-hero {
+    min-height: 510px;
+    align-items: flex-start;
+  }
+
+  .pl-hero-photo {
+    inset: 42% 0 0 0;
+    background-position: center 40%;
+  }
+
+  .pl-hero-overlay {
+    background: linear-gradient(
+      180deg,
+      #f6f4ff 0%,
+      #f6f4ff 35%,
+      rgba(246, 244, 255, 0.7) 58%,
+      rgba(246, 244, 255, 0.12) 100%
+    );
+  }
+
+  .pl-hero-copy {
+    padding: 38px 0;
+  }
+
+  .pl-hero h1 {
+    font-size: 31px;
+  }
+
+  .pl-hero-copy > p {
+    font-size: 12px;
+  }
+
+  .pl-about-layout,
+  .pl-faq-layout {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .pl-section {
+    padding: 48px 0;
+  }
+
+  .pl-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pl-brand {
+    font-size: 18px;
+  }
+
+  .pl-header-actions .pl-btn-outline {
+    display: none;
+  }
+
+  .pl-hero {
+    min-height: 560px;
+  }
+
+  .pl-hero h1 {
+    font-size: 29px;
+  }
+
+  .pl-step-grid,
+  .pl-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pl-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 18px;
+  }
+
+  .pl-footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .pl-footer-bottom {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .pl-btn,
+  .pl-step-card,
+  .pl-feature-card {
+    transition: none;
+  }
+}
+
+
+/* =========================================
+   PRISMA — PAGE WIDTH AND LAYOUT FIX
+========================================= */
+
+/* Remove width restrictions from the
+   existing application layout */
+
+body:has(.pl-site) #root {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+body:has(.pl-site) .app-layout,
+body:has(.pl-site) .page-content,
+body:has(.pl-site) main {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Make the landing page full width */
+
+.pl-site {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.pl-site .pl-container {
+  width: min(1160px, calc(100% - 48px));
+  max-width: 1160px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Restore the hero layout */
+
+.pl-site .pl-hero {
+  width: 100%;
+  min-height: 420px;
+}
+
+.pl-site .pl-hero-inner {
+  width: min(1160px, calc(100% - 48px));
+  max-width: 1160px;
+  margin-inline: auto;
+}
+
+.pl-site .pl-hero-copy {
+  width: min(520px, 100%);
+  max-width: 520px;
+}
+
+/* Restore desktop card grids */
+
+@media (min-width: 1025px) {
+  .pl-site .pl-step-grid,
+  .pl-site .pl-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Tablet */
+
+@media (min-width: 761px) and (max-width: 1024px) {
+  .pl-site .pl-step-grid,
+  .pl-site .pl-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 760px) {
+  .pl-site .pl-container,
+  .pl-site .pl-hero-inner {
+    width: calc(100% - 34px);
+  }
+
+  .pl-site .pl-hero-copy {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .pl-site .pl-step-grid,
+  .pl-site .pl-feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   PRISMA — SOFT BACKGROUND ENHANCEMENTS
+   Add at the END of Landing.css
+========================================== */
+
+/* Overall page background */
+.pl-site {
+  background: #faf9ff;
+}
+
+/* About section — gentle lavender tint */
+.pl-about {
+  background:
+    radial-gradient(
+      circle at 5% 30%,
+      rgba(108, 99, 255, 0.07),
+      transparent 38%
+    ),
+    #faf9ff;
+}
+
+/* How PRISMA Works — soft gradient background */
+.pl-site #how {
+  position: relative;
+  background:
+    radial-gradient(
+      ellipse at 8% 75%,
+      rgba(108, 99, 255, 0.09),
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 95% 10%,
+      rgba(79, 209, 197, 0.07),
+      transparent 38%
+    ),
+    #f9f8ff;
+}
+
+/* Decorative shapes behind cards */
+.pl-site #how::before {
+  content: "";
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: rgba(108, 99, 255, 0.035);
+  top: 15px;
+  left: -110px;
+  pointer-events: none;
+}
+
+.pl-site #how > .pl-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Features — subtle blue/lavender background */
+.pl-features-section {
+  background:
+    radial-gradient(
+      ellipse at 85% 35%,
+      rgba(108, 99, 255, 0.07),
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      #f4f2ff 0%,
+      #f8fbff 55%,
+      #f5f3ff 100%
+    );
+}
+
+/* FAQ — soft background, not plain white */
+.pl-faq-section {
+  background:
+    radial-gradient(
+      circle at 10% 15%,
+      rgba(108, 99, 255, 0.055),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 95% 85%,
+      rgba(79, 209, 197, 0.045),
+      transparent 35%
+    ),
+    #fcfbff;
+}
+
+/* Soft borders and shadows on cards */
+.pl-step-card,
+.pl-feature-card {
+  box-shadow: 0 6px 24px rgba(77, 65, 150, 0.045);
+}
+
+/* Subtle hover effects */
+.pl-step-card:hover,
+.pl-feature-card:hover {
+  box-shadow: 0 12px 28px rgba(77, 65, 150, 0.09);
+}
+
+/* CTA — slightly richer lavender */
+.pl-cta {
+  background: linear-gradient(
+    115deg,
+    #eeebff 0%,
+    #f7f5ff 55%,
+    #eef8fc 100%
+  );
+}
+
+/* Gentle transition between sections */
+.pl-about,
+.pl-site #how,
+.pl-features-section,
+.pl-faq-section {
+  border-bottom: 1px solid rgba(108, 99, 255, 0.055);
+}
+
+/* Keep the decoration light on phones */
+@media (max-width: 760px) {
+  .pl-site #how::before {
+    width: 130px;
+    height: 130px;
+    left: -70px;
+  }
+}
+
+/* ======================================
+   PRISMA HEADER LOGO — REFINED
+====================================== */
+
+.pl-site .pl-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.pl-site .pl-brand img {
+  display: block;
+  width: 62px !important;
+  height: 62px !important;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pl-site .pl-brand-wordmark {
+  display: inline-block;
+  font-family: "Arial", "Segoe UI", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1.1px;
+  line-height: 1;
+  white-space: nowrap;
+
+  background: linear-gradient(
+    110deg,
+    #5142b6 0%,
+    #3c418e 65%,
+    #6158d8 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pl-site .pl-brand-letter-a {
+  background: linear-gradient(
+    135deg,
+    #8b6aff 10%,
+    #6558f3 50%,
+    #28bed4 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .pl-site .pl-brand {
+    gap: 3px;
+  }
+
+  .pl-site .pl-brand img {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .pl-site .pl-brand-wordmark {
+    font-size: 23px;
+    letter-spacing: -0.8px;
+  }
+}
+
+/* Align footer logo with footer description */
+
+.pl-site .pl-footer-brand {
+  margin-left: -24px;
+  padding-left: 0;
+  gap: 4px;
+}
+
+@media (max-width: 600px) {
+  .pl-site .pl-footer-brand {
+    margin-left: -16px;
+  }
+}
