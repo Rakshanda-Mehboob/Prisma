@@ -1,0 +1,177 @@
+/* PRISMA Registration — scoped styling */
+.pr-register-page {
+  --rr-purple: #6c63ff;
+  --rr-ink: #272344;
+  --rr-muted: #79748f;
+  min-height: 100vh;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 14% 18%, #ebe6ff 0, transparent 38%),
+              radial-gradient(circle at 88% 88%, #e6f7f7 0, transparent 34%), #faf9ff;
+  color: var(--rr-ink);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+.pr-register-page *, .pr-register-page *::before, .pr-register-page *::after { box-sizing: border-box; }
+.pr-register-card {
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: 43% 57%;
+  overflow: hidden;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 24px 75px rgba(66, 53, 123, .11);
+  border: 1px solid rgba(119, 100, 208, .10);
+}
+.pr-register-story {
+  position: relative;
+  min-width: 0;
+  padding: 29px 37px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: radial-gradient(circle at 90% 30%, rgba(154, 139, 255, .21), transparent 42%),
+              linear-gradient(145deg, #f6f3ff, #eae6ff 65%, #edf9fb);
+}
+.pr-register-brand, .pr-register-mobile-brand {
+  display: inline-flex; align-items: center; gap: 3px; width: fit-content; text-decoration: none;
+}
+.pr-register-brand img, .pr-register-mobile-brand img { width: 52px !important; height: 52px !important; object-fit: contain; }
+.pr-register-wordmark {
+  font: 800 27px/1 Arial, sans-serif; letter-spacing: -1px;
+  background: linear-gradient(110deg, #5142b6, #3c418e 65%, #6158d8);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.pr-register-wordmark span {
+  background: linear-gradient(135deg, #8b6aff, #6558f3 50%, #28bed4);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.pr-register-story-content { padding: 26px 0 16px; }
+.pr-register-kicker { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #7565ec; }
+.pr-register-story h1 { max-width: 360px; margin: 13px 0 11px; font-size: clamp(27px, 2.8vw, 38px); letter-spacing: -1.3px; line-height: 1.16; color: #2d2854; }
+.pr-register-story-content > p { max-width: 370px; margin: 0; font-size: 13px; line-height: 1.65; color: #746e91; }
+.pr-register-visual { position: relative; height: 190px; max-width: 330px; margin: 13px auto 0; display: flex; align-items: center; justify-content: center; }
+.pr-register-glow { position: absolute; width: 245px; height: 145px; border-radius: 50%; background: #d5cbff; filter: blur(34px); opacity: .55; }
+.pr-register-visual-card { position: relative; width: 208px; padding: 16px; background: rgba(255,255,255,.95); border: 5px solid #9586f3; border-radius: 17px; box-shadow: 0 14px 27px rgba(92, 75, 188, .16); transform: rotate(-5deg); }
+.pr-register-visual-top { display: flex; align-items: center; gap: 9px; color: #35b8bc; }
+.pr-register-mini-avatar { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: #eae5ff; color: #7667e9; }
+.pr-register-mini-lines { flex: 1; display: grid; gap: 6px; }
+.pr-register-mini-lines i { height: 7px; border-radius: 8px; background: #ded8f7; }
+.pr-register-mini-lines i:last-child { width: 65%; }
+.pr-register-visual-line { height: 8px; margin-top: 13px; border-radius: 8px; background: #efecfb; }
+.pr-register-visual-line.short { width: 72%; margin-top: 8px; }
+.pr-register-visual-button { display: flex; justify-content: center; align-items: center; gap: 7px; background: #7365ed; border-radius: 8px; color: white; font-size: 11px; font-weight: 700; padding: 10px; margin-top: 15px; }
+.pr-register-float { position: absolute; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: white; box-shadow: 0 10px 25px rgba(77, 65, 154, .14); color: #6c63ff; }
+.pr-register-float-one { top: 18px; right: 17px; transform: rotate(12deg); }
+.pr-register-float-two { bottom: 17px; left: 15px; transform: rotate(-10deg); color: #26a9b6; }
+.pr-register-steps { display: grid; gap: 12px; margin-top: 8px; }
+.pr-register-steps > div { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: #4b456e; }
+.pr-register-steps svg { color: #7162e7; flex-shrink: 0; }
+.pr-register-story-note { display: flex; align-items: center; gap: 8px; border-top: 1px solid #dcd6f4; padding-top: 15px; font-size: 11px; color: #827aa2; }
+.pr-register-form-side { min-width: 0; padding: 32px 44px; display: flex; align-items: center; justify-content: center; }
+.pr-register-form-content { width: 100%; max-width: 480px; }
+.pr-register-mobile-brand { display: none; }
+.pr-register-form-heading { margin-bottom: 23px; }
+.pr-register-form-heading h2 { margin: 9px 0 6px; font-size: 29px; letter-spacing: -1px; color: #272344; }
+.pr-register-form-heading p { margin: 0; font-size: 13px; color: var(--rr-muted); }
+.pr-register-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.pr-register-field { min-width: 0; margin-bottom: 15px; }
+.pr-register-field label { display: block; font-size: 12px; font-weight: 700; color: #38334e; margin-bottom: 7px; }
+.pr-register-field label em { font-size: 11px; font-weight: 400; font-style: normal; color: #9992aa; }
+.pr-register-input { position: relative; display: flex; align-items: center; }
+.pr-register-input > svg { position: absolute; left: 12px; color: #9b93b4; pointer-events: none; flex-shrink: 0; }
+.pr-register-input input, .pr-register-input select {
+  width: 100%; height: 43px; min-width: 0; border-radius: 10px;
+  border: 1px solid #e3dfef; outline: none; background: #fcfbff;
+  padding: 0 12px 0 39px; color: #37314f; font: inherit; font-size: 12px;
+}
+.pr-register-input input::placeholder { color: #aaa4ba; }
+.pr-register-input input:focus, .pr-register-input select:focus { background: white; border-color: #8677f2; box-shadow: 0 0 0 3px rgba(108,99,255,.10); }
+.pr-register-input input:disabled, .pr-register-input select:disabled { opacity: .65; cursor: not-allowed; }
+.pr-register-input select { padding-right: 7px; cursor: pointer; }
+.pr-register-eye { position: absolute; right: 10px; border: 0; padding: 4px; background: none; color: #928aa8; cursor: pointer; display: flex; }
+.pr-register-input:has(.pr-register-eye) input { padding-right: 42px; }
+.pr-register-hint { margin: -3px 0 14px; color: #928ba5; font-size: 11px; line-height: 1.45; }
+.pr-register-strength { margin-top: 8px; }
+.pr-register-strength-label { display: flex; justify-content: space-between; font-size: 11px; color: #8c86a0; }
+.pr-register-strength-label strong { color: #6558db; }
+.pr-register-meter { height: 5px; background: #ece9f5; border-radius: 99px; overflow: hidden; margin-top: 5px; }
+.pr-register-meter span { display: block; height: 100%; border-radius: inherit; background: #ef9e56; transition: width .2s; }
+.pr-register-meter span[data-strength="good"], .pr-register-meter span[data-strength="strong"] { background: #2cb6a7; }
+.pr-register-error { border: 1px solid #ffd2d7; background: #fff2f3; color: #ad394b; padding: 10px 12px; margin-bottom: 16px; border-radius: 10px; font-size: 12px; }
+.pr-register-submit { width: 100%; min-height: 45px; border: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 9px; background: linear-gradient(110deg, #7668f3, #6052d9); color: white; font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; box-shadow: 0 8px 18px rgba(108,99,255,.2); margin-top: 4px; }
+.pr-register-submit:hover:not(:disabled) { filter: brightness(1.04); }
+.pr-register-submit:disabled { opacity: .7; cursor: wait; }
+.pr-register-signin { text-align: center; margin: 18px 0 0; font-size: 12px; color: #837d97; }
+.pr-register-signin a { color: #6658e6; font-weight: 700; text-decoration: none; }
+.pr-register-signin a:hover { text-decoration: underline; }
+@media (max-width: 900px) {
+  .pr-register-page { padding: 15px; align-items: flex-start; }
+  .pr-register-card { grid-template-columns: 1fr; max-width: 640px; }
+  .pr-register-story { display: none; }
+  .pr-register-form-side { padding: 27px; }
+  .pr-register-mobile-brand { display: inline-flex; margin-bottom: 25px; }
+}
+@media (max-width: 520px) {
+  .pr-register-page { padding: 0; background: white; }
+  .pr-register-card { border: 0; border-radius: 0; box-shadow: none; }
+  .pr-register-form-side { padding: 24px 18px 35px; }
+  .pr-register-row { grid-template-columns: 1fr; gap: 0; }
+  .pr-register-form-heading h2 { font-size: 26px; }
+}
+
+/* Back to Home — visible on both desktop and mobile */
+.pr-register-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  color: #6c63ff;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color .2s ease, transform .2s ease;
+}
+.pr-register-back-home:hover { color: #5142b6; transform: translateX(-2px); }
+.pr-register-back-home:focus-visible { outline: 2px solid #6c63ff; outline-offset: 4px; border-radius: 3px; }
+.pr-register-back-desktop { margin-top: 15px; }
+.pr-register-back-mobile { display: none; }
+@media (max-width: 900px) {
+  .pr-register-back-mobile { display: inline-flex; margin-bottom: 20px; }
+  .pr-register-back-desktop { display: none; }
+}
+
+/* Shared top header: logo left, Back to Home right */
+.pr-register-card { position: relative; padding-top: 74px; }
+.pr-register-header {
+  position: absolute; inset: 0 0 auto; height: 74px; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; background: #fff; border-bottom: 1px solid #eeeaf8;
+}
+.pr-register-header .pr-register-brand { margin: 0; }
+.pr-register-header .pr-register-back-home { margin: 0; }
+.pr-register-password-mismatch { color: #bc3b55; font-size: 11px; margin: 6px 0 0; }
+@media (max-width: 900px) {
+  .pr-register-card { padding-top: 68px; }
+  .pr-register-header { height: 68px; padding: 0 20px; }
+  .pr-register-header .pr-register-back-home { display: inline-flex; margin: 0; }
+}
+@media (max-width: 520px) {
+  .pr-register-header { padding: 0 16px; }
+  .pr-register-header .pr-register-brand img { width: 38px !important; height: 38px !important; }
+  .pr-register-header .pr-register-wordmark { font-size: 21px; }
+  .pr-register-header .pr-register-back-home { font-size: 11px; }
+}
+
+/* Compact authentication-only footer */
+.pr-register-card { padding-bottom: 45px; }
+.pr-register-auth-footer {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 45px;
+  display: flex; justify-content: center; align-items: center; gap: 24px;
+  background: #fff; border-top: 1px solid #eeeaf7;
+}
+.pr-register-auth-footer a { font-size: 11px; font-weight: 600; color: #817b98; text-decoration: none; }
+.pr-register-auth-footer a:hover { color: #6c63ff; text-decoration: underline; }
+@media(max-width: 520px) { .pr-register-auth-footer { gap: 14px; } }

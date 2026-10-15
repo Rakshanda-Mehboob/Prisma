@@ -1,448 +1,259 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api';
 import {
-  UserPlus, CheckCircle2,
-  Sparkles, Eye, EyeOff, Building2, Home
+  ArrowRight, Eye, EyeOff, Mail, LockKeyhole, UserRound,
+  GraduationCap, House, ShieldCheck, ClipboardCheck, BookOpen,
+  ChartNoAxesCombined, UserPlus, CheckCircle2
 } from 'lucide-react';
-import Button from '../components/ui/Button';
 import PrismaLogo from '../components/PrismaLogo';
+import './Register.css';
 
 const DEPARTMENTS = [
-  'Computer Science',
-  'Software Engineering',
-  'Information Technology',
-  'Electrical Engineering',
-  'Business Administration',
-  'Psychology',
-  'Education',
-  'Medical Sciences',
-  'Law',
-  'Other',
+  'Computer Science', 'Software Engineering', 'Information Technology',
+  'Electrical Engineering', 'Business Administration', 'Psychology',
+  'Education', 'Medical Sciences', 'Law', 'Other'
 ];
-
 const LIVING_SITUATIONS = [
-  'University Hostel / On-Campus',
-  'Home with Parents / Family',
-  'Off-Campus Shared Accommodation',
-  'Independent / Solo Apartment',
-  'Other',
+  'University Hostel / On-Campus', 'Home with Parents / Family',
+  'Off-Campus Shared Accommodation', 'Independent / Solo Apartment', 'Other'
 ];
 
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    full_name: '',
-    email: '',
-    cms_number: '',
-    password: '',
-    department: '',
-    living_situation: '',
+    full_name: '', email: '', cms_number: '', password: '',
+    department: '', living_situation: ''
   });
   const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const change = (e) => {
+    const { name, value } = e.target;
+    setForm((previous) => ({ ...previous, [name]: value }));
+    if (error) setError('');
+  };
 
-  // Password strength calculation
-  const passwordStrength = useMemo(() => {
+  const strength = useMemo(() => {
     const p = form.password;
     if (!p) return 0;
-    let score = 0;
-    if (p.length >= 6) score += 25;
-    if (p.length >= 8) score += 25;
-    if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score += 25;
-    if (/[0-9]/.test(p) || /[^A-Za-z0-9]/.test(p)) score += 25;
-    return score;
+    return (p.length >= 6 ? 25 : 0) +
+      (p.length >= 8 ? 25 : 0) +
+      (/[A-Z]/.test(p) && /[a-z]/.test(p) ? 25 : 0) +
+      (/[0-9]/.test(p) || /[^A-Za-z0-9]/.test(p) ? 25 : 0);
   }, [form.password]);
 
-  const strengthColor =
-    passwordStrength <= 25 ? 'var(--color-danger)' :
-      passwordStrength <= 50 ? 'var(--color-warning)' :
-        passwordStrength <= 75 ? 'var(--color-accent)' : 'var(--color-success)';
-
-  const strengthLabel =
-    passwordStrength <= 25 ? 'Weak' :
-      passwordStrength <= 50 ? 'Fair' :
-        passwordStrength <= 75 ? 'Good' : 'Strong';
+  const strengthLabel = strength <= 25 ? 'Weak' :
+    strength <= 50 ? 'Fair' : strength <= 75 ? 'Good' : 'Strong';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError('');
     if (form.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError('Your password must have at least 6 characters.');
       return;
     }
-
+    if (form.password !== confirmPassword) {
+      setError('Passwords do not match. Please try again.');
+      return;
+    }
     setLoading(true);
     try {
       await authApi.register(form);
-      navigate('/login', { state: { message: 'Account created! Please sign in.' } });
+      navigate('/login', {
+        replace: true,
+        state: { message: 'Account created! Please sign in.' }
+      });
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      const detail = err.response?.data?.detail;
+      setError(
+        typeof detail === 'string' ? detail :
+        Array.isArray(detail) ? detail.map((x) => x.msg || 'Invalid input').join(', ') :
+        !err.response ? 'Cannot connect to the server. Please check that the backend is running.' :
+        'Registration failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-split-layout">
-      {/* Left Brand / Cyber Education Hero Side */}
-      <div className="auth-brand-side">
-        {/* Ambient decorative glow orbs */}
-        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '320px', height: '320px', background: 'radial-gradient(circle, rgba(45, 212, 191, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-15%', right: '-10%', width: '380px', height: '380px', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+    <main className="pr-register-page">
+      <div className="pr-register-card">
+        <header className="pr-register-header">
+          <Link to="/" className="pr-register-brand" aria-label="PRISMA home">
+            <PrismaLogo size={48} />
+            <span className="pr-register-wordmark">PRISM<span>A</span></span>
+          </Link>
+        </header>
+        <section className="pr-register-story" aria-label="About creating a PRISMA account">
 
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          {/* Logo & Platform Tag */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '2.5rem' }}>
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: '14px',
-                background: 'rgba(255, 255, 255, 0.12)',
-                backdropFilter: 'blur(10px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-              }}
-            >
-              <PrismaLogo size={36} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.3rem', color: '#ffffff', letterSpacing: '-0.02em' }}>Prisma</div>
-              <div style={{ fontSize: '0.72rem', color: '#2dd4bf', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em' }}>
-                AI CYBER INTERVENTION PLATFORM
+          <div className="pr-register-story-content">
+            <span className="pr-register-kicker">GET STARTED WITH PRISMA</span>
+            <h1>A safer online space starts with you.</h1>
+            <p>Create your student account to understand online behavior and learn how to respond to cyberbullying.</p>
+
+            <div className="pr-register-visual" aria-hidden="true">
+              <div className="pr-register-glow" />
+              <div className="pr-register-visual-card">
+                <div className="pr-register-visual-top">
+                  <span className="pr-register-mini-avatar"><UserRound size={23} /></span>
+                  <span className="pr-register-mini-lines"><i /><i /></span>
+                  <CheckCircle2 size={22} />
+                </div>
+                <div className="pr-register-visual-line" />
+                <div className="pr-register-visual-line short" />
+                <div className="pr-register-visual-button"><UserPlus size={16} /> Create account</div>
               </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              padding: '0.35rem 0.85rem',
-              borderRadius: '9999px',
-              background: 'rgba(45, 212, 191, 0.15)',
-              border: '1px solid rgba(45, 212, 191, 0.35)',
-              color: '#a7f3d0',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              marginBottom: '1.5rem',
-              letterSpacing: '0.02em',
-            }}
-          >
-            <Sparkles size={13} color="#34d399" /> Free & Private for University Students
-          </div>
-
-          <h2
-            style={{
-              fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
-              fontWeight: 800,
-              lineHeight: 1.18,
-              marginBottom: '1.25rem',
-              color: '#ffffff',
-              letterSpacing: '-0.03em',
-            }}
-          >
-            Join the program and make a difference.
-          </h2>
-
-          <p
-            style={{
-              color: '#e2e8f0',
-              lineHeight: 1.75,
-              fontSize: '1.02rem',
-              maxWidth: '480px',
-              marginBottom: '2.5rem',
-              fontWeight: 400,
-            }}
-          >
-            Create your account to start learning about cyberbullying awareness, get personalised lessons, and track your progress from start to finish.
-          </p>
-
-          {/* Modern Glass Feature Cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '480px' }}>
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(45, 212, 191, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#2dd4bf',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Diagnostic Pre-Assessment</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Maps your baseline attitude, peer norms & intervention confidence</div>
-              </div>
+              <span className="pr-register-float pr-register-float-one"><ShieldCheck size={27} /></span>
+              <span className="pr-register-float pr-register-float-two"><GraduationCap size={25} /></span>
             </div>
 
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(56, 189, 248, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#38bdf8',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Personalized Interactive Lessons</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Scenario simulations, de-escalation drills & bite-sized guides</div>
-              </div>
-            </div>
-
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(167, 139, 250, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#c4b5fd',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Measurable Skill Growth</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Compare your growth with verified post-intervention analytics</div>
-              </div>
+            <div className="pr-register-steps">
+              <div><ClipboardCheck size={19} /><span>Understand your online behavior</span></div>
+              <div><BookOpen size={19} /><span>Learn with activities selected for you</span></div>
+              <div><ChartNoAxesCombined size={19} /><span>See your progress over time</span></div>
             </div>
           </div>
-        </div>
+          <div className="pr-register-story-note"><ShieldCheck size={15} /> Based on the Theory of Planned Behavior (TPB)</div>
+        </section>
 
-        {/* Footer info */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            paddingTop: '1.25rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.82rem',
-            color: '#94a3b8',
-          }}
-        >
-          <span>Theory of Planned Behavior (TPB)</span>
-          <span>End-to-End Encrypted</span>
-        </div>
-      </div>
-
-      {/* Right Form Side */}
-      <div className="auth-form-side">
-        <div className="auth-card-modern">
-          <div style={{ marginBottom: '1.75rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
-              Create Account
-            </h1>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Enter your details to create your free student account.
-            </p>
-          </div>
-
-          {error && <div className="alert alert-danger">{error}</div>}
-
-          <form onSubmit={handleSubmit} id="register-form">
-            {/* Full Name */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="full_name">Full Legal Name</label>
-              <input
-                id="full_name"
-                type="text"
-                name="full_name"
-                className="form-input"
-                placeholder="e.g. Rakshanda"
-                value={form.full_name}
-                onChange={handleChange}
-                required
-              />
+        <section className="pr-register-form-side">
+          <div className="pr-register-form-content">
+            <div className="pr-register-form-heading">
+              <span className="pr-register-kicker">STUDENT REGISTRATION</span>
+              <h2>Create your account</h2>
+              <p>Enter your details to get started with PRISMA.</p>
             </div>
 
-            {/* Email */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">University Email Address</label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                className="form-input"
-                placeholder="student@riphah.edu.pk"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
+            {error && <div className="pr-register-error" role="alert">{error}</div>}
 
-            {/* CMS Number */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="cms_number">CMS / Student Roll Number</label>
-              <input
-                id="cms_number"
-                type="text"
-                name="cms_number"
-                className="form-input"
-                placeholder="e.g. 2021-CS-042"
-                value={form.cms_number}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            {/* Department & Living Situation — side by side on wider screens */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label" htmlFor="department" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <Building2 size={13} color="var(--color-primary-light)" />
-                  Department <span style={{ color: 'var(--color-text-subtle)', fontWeight: 400 }}>&nbsp;(optional)</span>
-                </label>
-                <select
-                  id="department"
-                  name="department"
-                  className="form-input"
-                  value={form.department}
-                  onChange={handleChange}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <option value="">Select…</option>
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label" htmlFor="living_situation" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <Home size={13} color="var(--color-accent)" />
-                  Living Situation <span style={{ color: 'var(--color-text-subtle)', fontWeight: 400 }}>&nbsp;(optional)</span>
-                </label>
-                <select
-                  id="living_situation"
-                  name="living_situation"
-                  className="form-input"
-                  value={form.living_situation}
-                  onChange={handleChange}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <option value="">Select…</option>
-                  {LIVING_SITUATIONS.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Helper text for optional fields */}
-            <p style={{ fontSize: '0.76rem', color: 'var(--color-text-subtle)', marginTop: '0.4rem', marginBottom: '0.85rem' }}>
-              These fields help personalize your AI-generated assessment scenarios. You can also set them later in Profile settings.
-            </p>
-
-            {/* Password */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id="password"
-                  type={showPass ? 'text' : 'password'}
-                  name="password"
-                  className="form-input"
-                  placeholder="Minimum 6 characters"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                  style={{ paddingRight: '2.75rem' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  style={{
-                    position: 'absolute',
-                    right: '0.85rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-text-subtle)',
-                    padding: 0,
-                  }}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
-                >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-
-              {/* Strength Meter */}
-              {form.password && (
-                <div style={{ marginTop: '0.6rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem' }}>
-                    <span style={{ color: 'var(--color-text-subtle)' }}>Security Strength:</span>
-                    <span style={{ fontWeight: 700, color: strengthColor }}>{strengthLabel}</span>
-                  </div>
-                  <div className="progress-bar" style={{ height: 4 }}>
-                    <div
-                      style={{
-                        width: `${passwordStrength}%`,
-                        height: '100%',
-                        background: strengthColor,
-                        borderRadius: 'var(--radius-full)',
-                        transition: 'width 0.3s ease, background 0.3s ease',
-                      }}
-                    />
+            <form onSubmit={handleSubmit} id="register-form">
+              <div className="pr-register-row">
+                <div className="pr-register-field">
+                  <label htmlFor="full_name">Full name</label>
+                  <div className="pr-register-input">
+                    <UserRound size={17} />
+                    <input id="full_name" name="full_name" type="text"
+                      placeholder="Enter your full name" value={form.full_name}
+                      onChange={change} autoComplete="name" required disabled={loading} />
                   </div>
                 </div>
-              )}
-            </div>
+                <div className="pr-register-field">
+                  <label htmlFor="cms_number">CMS / Student roll number</label>
+                  <div className="pr-register-input">
+                    <GraduationCap size={17} />
+                    <input id="cms_number" name="cms_number" type="text"
+                      placeholder="Enter your student ID" value={form.cms_number}
+                      onChange={change} required disabled={loading} />
+                  </div>
+                </div>
+              </div>
 
-            <Button
-              type="submit"
-              id="register-submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              style={{ width: '100%', marginTop: '0.5rem' }}
-              iconRight={<UserPlus size={16} />}
-            >
-              Enroll &amp; Create Account
-            </Button>
-          </form>
+              <div className="pr-register-field">
+                <label htmlFor="email">University email address</label>
+                <div className="pr-register-input">
+                  <Mail size={17} />
+                  <input id="email" name="email" type="email"
+                    placeholder="student@university.edu.pk" value={form.email}
+                    onChange={change} autoComplete="email" required disabled={loading} />
+                </div>
+              </div>
 
-          <div className="auth-footer">
-            Already have an account?{' '}
-            <Link to="/login" className="auth-link">
-              Sign in
-            </Link>
+              <div className="pr-register-row">
+                <div className="pr-register-field">
+                  <label htmlFor="department">Department <em>(optional)</em></label>
+                  <div className="pr-register-input pr-register-select">
+                    <GraduationCap size={17} />
+                    <select id="department" name="department" value={form.department}
+                      onChange={change} disabled={loading}>
+                      <option value="">Select department</option>
+                      {DEPARTMENTS.map((item) => <option key={item} value={item}>{item}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="pr-register-field">
+                  <label htmlFor="living_situation">Living situation <em>(optional)</em></label>
+                  <div className="pr-register-input pr-register-select">
+                    <House size={17} />
+                    <select id="living_situation" name="living_situation"
+                      value={form.living_situation} onChange={change} disabled={loading}>
+                      <option value="">Select situation</option>
+                      {LIVING_SITUATIONS.map((item) => <option key={item} value={item}>{item}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <p className="pr-register-hint">Optional details help make your assessment scenarios more relevant. You can add them later.</p>
+
+              <div className="pr-register-field">
+                <label htmlFor="password">Create password</label>
+                <div className="pr-register-input">
+                  <LockKeyhole size={17} />
+                  <input id="password" name="password" type={showPass ? 'text' : 'password'}
+                    placeholder="At least 6 characters" value={form.password}
+                    onChange={change} autoComplete="new-password" required
+                    minLength={6} disabled={loading} />
+                  <button type="button" className="pr-register-eye"
+                    aria-label={showPass ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPass} onClick={() => setShowPass((s) => !s)}>
+                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {form.password && (
+                  <div className="pr-register-strength">
+                    <div className="pr-register-strength-label">
+                      <span>Password strength</span><strong>{strengthLabel}</strong>
+                    </div>
+                    <div className="pr-register-meter">
+                      <span style={{ width: `${strength}%` }} data-strength={strengthLabel.toLowerCase()} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="pr-register-field">
+                <label htmlFor="confirm_password">Confirm password</label>
+                <div className="pr-register-input">
+                  <LockKeyhole size={17} />
+                  <input id="confirm_password" name="confirm_password"
+                    type={showConfirm ? 'text' : 'password'}
+                    placeholder="Re-enter your password" value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); if (error) setError(''); }}
+                    autoComplete="new-password" required disabled={loading} />
+                  <button type="button" className="pr-register-eye"
+                    aria-label={showConfirm ? 'Hide confirmed password' : 'Show confirmed password'}
+                    onClick={() => setShowConfirm((s) => !s)}>
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {confirmPassword && form.password !== confirmPassword && (
+                  <p className="pr-register-password-mismatch">Passwords do not match.</p>
+                )}
+              </div>
+
+              <button type="submit" id="register-submit"
+                className="pr-register-submit" disabled={loading}>
+                {loading ? 'Creating account...' : 'Create account'}
+                {!loading && <ArrowRight size={18} />}
+              </button>
+            </form>
+
+            <p className="pr-register-signin">
+              Already have an account? <Link to="/login">Sign in</Link>
+            </p>
           </div>
-        </div>
+        </section>
+        <nav className="pr-register-auth-footer" aria-label="Account information links">
+          <Link to="/terms">Terms of Service</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/support">Support</Link>
+        </nav>
       </div>
-    </div>
+    </main>
   );
 }
