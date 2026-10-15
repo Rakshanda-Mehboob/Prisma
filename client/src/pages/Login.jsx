@@ -100,13 +100,18 @@ export default function Login() {
             {error && <div className="ps-message ps-error" role="alert">{error}</div>}
             <form onSubmit={handleSubmit} id="login-form">
               <div className="ps-field"><label htmlFor="email">Email address</label><div className="ps-input-wrap"><Mail size={19} /><input id="email" name="email" type="email" autoComplete="email" placeholder="Enter your university email" value={form.email} onChange={handleChange} required disabled={loading} /></div></div>
-              <div className="ps-field"><div className="ps-label-row"><label htmlFor="password">Password</label><button className="ps-forgot" type="button" onClick={() => window.alert('Please contact the campus system administrator or supervisor to reset your password.')}>Forgot password?</button></div><div className="ps-input-wrap"><LockKeyhole size={19} /><input id="password" name="password" type={showPass ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" value={form.password} onChange={handleChange} required disabled={loading} /><button className="ps-eye" type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? 'Hide password' : 'Show password'}>{showPass ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></div>
+              <div className="ps-field"><div className="ps-label-row"><label htmlFor="password">Password</label><Link className="ps-forgot" to="/support" state={{ topic: "password-reset" }}>Forgot Password?</Link></div><div className="ps-input-wrap"><LockKeyhole size={19} /><input id="password" name="password" type={showPass ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" value={form.password} onChange={handleChange} required disabled={loading} /><button className="ps-eye" type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? 'Hide password' : 'Show password'}>{showPass ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></div>
               <button className="ps-submit" id="login-submit" type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign In'} {!loading && <ArrowRight size={19} />}</button>
             </form>
             <div className="ps-register">Don't have an account? <Link to="/register">Create an account</Link></div>
             <div className="ps-security"><ShieldCheck size={17} /> Your account is protected by secure sign-in.</div>
           </div>
         </section>
+        <nav className="ps-auth-footer" aria-label="Account information links">
+          <Link to="/terms">Terms of Service</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/support">Support</Link>
+        </nav>
       </div>
     </main>
   );

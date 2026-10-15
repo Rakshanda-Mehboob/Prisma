@@ -192,3 +192,27 @@
 @media(max-height: 650px) and (min-width: 761px) {
   .prisma-signin {align-items: flex-start;}
 }
+
+/* Login header: logo on the left, return link on the right */
+.prisma-signin .ps-topbar { justify-content: space-between; }
+.prisma-signin .ps-back-home {
+  display: inline-flex; align-items: center; gap: 7px;
+  color: #6c63ff; font-size: 12px; font-weight: 700; text-decoration: none;
+}
+.prisma-signin .ps-back-home:hover { color: #5142b6; text-decoration: underline; }
+@media (max-width: 760px) {
+  .prisma-signin .ps-back-home { font-size: 11px; }
+}
+
+/* Compact authentication-only footer, below the portal content */
+.prisma-signin .ps-layout { position: relative; padding-bottom: 46px; }
+.prisma-signin .ps-auth-footer {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 46px;
+  display: flex; justify-content: center; align-items: center; gap: 24px;
+  background: #fff; border-top: 1px solid #eeeaf7;
+}
+.prisma-signin .ps-auth-footer a { font-size: 11px; font-weight: 600; color: #817b98; text-decoration: none; }
+.prisma-signin .ps-auth-footer a:hover { color: #6c63ff; text-decoration: underline; }
+.prisma-signin .ps-forgot { text-decoration: none; }
+.prisma-signin .ps-forgot:hover { text-decoration: underline; }
+@media(max-width: 760px) { .prisma-signin .ps-layout { padding-bottom: 46px; } }
