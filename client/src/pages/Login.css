@@ -1,0 +1,194 @@
+/* PRISMA Sign In — scoped styles; does not modify landing page */
+.prisma-signin{--ps-ink:#242047;--ps-purple:#6c63ff;min-height:100vh;width:100%;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ps-ink);background:#fff}
+.prisma-signin *,.prisma-signin *::before,.prisma-signin *::after{box-sizing:border-box}
+.prisma-signin .ps-layout{display:grid;grid-template-columns:56% 44%;min-height:100vh;width:100%}
+.prisma-signin .ps-story{position:relative;overflow:hidden;background:radial-gradient(circle at 88% 48%,#dedaff 0%,transparent 42%),linear-gradient(140deg,#f9f7ff 0%,#eae7ff 68%,#e6f6fb 100%)}
+.prisma-signin .ps-story::before{content:"";position:absolute;right:-90px;top:-170px;width:520px;height:380px;border-radius:50%;background:rgba(139,125,248,.08);transform:rotate(-26deg)}
+.prisma-signin .ps-story-inner{position:relative;z-index:1;min-height:100vh;padding:36px clamp(28px,4.3vw,78px) 36px;display:flex;flex-direction:column}
+.prisma-signin .ps-brand,.prisma-signin .ps-mobile-brand{display:inline-flex;align-items:center;gap:3px;width:fit-content;text-decoration:none}
+.prisma-signin .ps-brand img,.prisma-signin .ps-mobile-brand img{display:block;width:60px!important;height:60px!important;object-fit:contain;flex-shrink:0}
+.prisma-signin .ps-wordmark{font-family:Arial,"Segoe UI",sans-serif;font-size:30px;font-weight:800;letter-spacing:-1.1px;line-height:1;white-space:nowrap;background:linear-gradient(110deg,#5142b6,#3c418e 65%,#6158d8);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.prisma-signin .ps-wordmark span{background:linear-gradient(135deg,#8b6aff,#6558f3 50%,#28bed4);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.prisma-signin .ps-story-body{margin:auto 0;padding:48px 0 36px}
+.prisma-signin .ps-eyebrow{font-size:12px;font-weight:800;letter-spacing:3px;color:#6c63ff}
+.prisma-signin .ps-story h1{font-size:clamp(38px,4.2vw,65px);line-height:1.09;letter-spacing:-2px;margin:20px 0 12px;font-weight:800;color:#29204e}
+.prisma-signin .ps-lead{font-size:clamp(15px,1.45vw,20px);line-height:1.6;color:#656087;max-width:560px;margin:0 0 24px}
+.prisma-signin .ps-story-grid{display:grid;grid-template-columns:minmax(210px,.85fr) minmax(260px,1.15fr);align-items:center;gap:8px;min-height:335px}
+.prisma-signin .ps-benefits{display:flex;flex-direction:column;gap:14px;position:relative;z-index:3}
+.prisma-signin .ps-benefit{display:flex;align-items:center;gap:12px;padding:14px 12px;border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.67);border-radius:19px;box-shadow:0 12px 30px rgba(97,86,174,.07);backdrop-filter:blur(8px)}
+.prisma-signin .ps-benefit-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:46px;height:46px;border-radius:50%;background:#ece8ff;color:#6c63ff}
+.prisma-signin .ps-benefit strong{display:block;font-size:13px;color:#29264a;margin-bottom:5px}
+.prisma-signin .ps-benefit small{display:block;font-size:11.5px;line-height:1.45;color:#746f92}
+.prisma-signin .ps-story-footer{display:flex;align-items:center;gap:8px;color:#655bc6;font-size:13px;font-weight:600;letter-spacing:.1px}
+/* Pure CSS illustration: no screenshot and no incorrect logo baked in */
+.prisma-signin .ps-art{position:relative;width:100%;height:350px;min-width:0;perspective:800px}
+.prisma-signin .ps-art-halo{position:absolute;display:block;border:2px solid rgba(255,255,255,.85);border-radius:50%;transform:rotate(-25deg)}
+.prisma-signin .ps-halo-one{width:92%;height:72%;top:8%;left:4%;box-shadow:0 0 18px rgba(133,121,255,.17)}
+.prisma-signin .ps-halo-two{width:83%;height:64%;top:19%;left:12%;border-color:rgba(153,233,240,.7);transform:rotate(30deg)}
+.prisma-signin .ps-art-platform{position:absolute;bottom:14px;left:9%;width:83%;height:38px;background:linear-gradient(180deg,#fff,#c7c1ff);border-radius:50%;box-shadow:0 16px 26px rgba(94,75,187,.16)}
+.prisma-signin .ps-laptop{position:absolute;width:76%;height:250px;top:38px;left:10%;transform:rotate(-5deg);filter:drop-shadow(0 18px 20px rgba(84,67,181,.2))}
+.prisma-signin .ps-laptop-screen{height:218px;border:9px solid #9287f3;border-bottom-width:13px;border-radius:19px;background:linear-gradient(155deg,#fdfcff,#eeeaff);box-shadow:inset 0 0 0 2px #c7c0ff;overflow:hidden}
+.prisma-signin .ps-screen-bar{height:24px;background:#dcd6ff;display:flex;gap:5px;align-items:center;padding-left:10px}
+.prisma-signin .ps-screen-bar i{width:7px;height:7px;border-radius:50%;background:#b2a8ff}
+.prisma-signin .ps-screen-bar i:nth-child(2){background:#8bdedb}.prisma-signin .ps-screen-bar i:nth-child(3){background:#f7c889}
+.prisma-signin .ps-screen-card{width:72%;height:160px;margin:9px auto 0;padding:9px 12px;border-radius:15px;background:rgba(255,255,255,.9);box-shadow:0 6px 22px rgba(97,81,196,.13);display:flex;flex-direction:column;align-items:center;gap:8px}
+.prisma-signin .ps-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(140deg,#d5ccff,#8b7afa);color:#fff}
+.prisma-signin .ps-art-field{display:flex;align-items:center;gap:9px;width:100%;height:23px;padding:4px 10px;border-radius:7px;background:#f0edff;color:#7566d7;font-size:11px}
+.prisma-signin .ps-art-field span{width:70%;height:5px;background:#c6befa;border-radius:9px}
+.prisma-signin .ps-art-field b{font-size:12px;letter-spacing:3px}
+.prisma-signin .ps-art-button{display:flex;align-items:center;justify-content:center;gap:6px;width:83%;padding:5px;background:#7467ef;color:#fff;border-radius:7px;font-size:10px;font-weight:700}
+.prisma-signin .ps-laptop-base{position:absolute;bottom:5px;left:-7%;width:114%;height:24px;border-radius:6px 6px 50% 50%;background:linear-gradient(180deg,#fdfdff,#b8b0f5);transform:skewX(-20deg);box-shadow:0 7px 10px rgba(103,89,200,.15)}
+.prisma-signin .ps-floating-shield{position:absolute;right:0;bottom:46px;width:90px;height:105px;display:flex;align-items:center;justify-content:center;color:#6b5be8;background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(206,199,255,.85));border:2px solid #fff;border-radius:25px;transform:rotate(11deg);box-shadow:0 12px 30px rgba(105,90,198,.22)}
+.prisma-signin .ps-floating-check{position:absolute;right:9%;top:53px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#76cfda;color:white;border:4px solid #fff;border-radius:50%;box-shadow:0 7px 18px rgba(73,170,184,.25)}
+.prisma-signin .ps-art-spark{position:absolute;width:17px;height:17px;border-radius:50%;background:linear-gradient(145deg,#a68dff,#e5a7ff);box-shadow:0 5px 14px rgba(153,117,228,.25)}
+.prisma-signin .ps-spark-one{top:38px;left:4%}.prisma-signin .ps-spark-two{right:1%;top:195px;width:12px;height:12px;background:#77d6dd}
+/* Sign-in form */
+.prisma-signin .ps-form-side{display:flex;flex-direction:column;justify-content:space-between;min-width:0;background:radial-gradient(circle at 100% 100%,rgba(221,215,255,.34),transparent 40%),#fff;padding:38px clamp(24px,4.5vw,75px) 24px}
+.prisma-signin .ps-form-container{width:100%;max-width:490px;margin:auto;padding:36px 0}
+.prisma-signin .ps-back{display:inline-flex;align-items:center;gap:10px;color:#5d587e;text-decoration:none;font-size:13px;margin-bottom:70px}
+.prisma-signin .ps-back:hover{color:#6c63ff}
+.prisma-signin .ps-mobile-brand{display:none}
+.prisma-signin .ps-form-heading{margin-bottom:40px}
+.prisma-signin .ps-form-heading h2{font-size:clamp(29px,2.9vw,42px);letter-spacing:-1.2px;color:#1e1a40;margin:17px 0 12px;line-height:1.2}
+.prisma-signin .ps-form-heading p{font-size:15px;color:#787397;line-height:1.65;margin:0}
+.prisma-signin .ps-field{margin-bottom:28px}
+.prisma-signin .ps-field label{display:block;color:#252143;font-size:14px;font-weight:700;margin-bottom:12px}
+.prisma-signin .ps-label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.prisma-signin .ps-label-row label{margin:0}
+.prisma-signin .ps-forgot{border:0;background:none;color:#6656ef;cursor:pointer;font-size:13px;font-weight:600;padding:0}
+.prisma-signin .ps-forgot:hover{text-decoration:underline}
+.prisma-signin .ps-input-wrap{position:relative;display:flex;align-items:center}
+.prisma-signin .ps-input-wrap>svg{position:absolute;left:18px;color:#77719e;pointer-events:none}
+.prisma-signin .ps-input-wrap input{width:100%;height:58px;border:1px solid #e0dded;border-radius:12px;background:#fdfcff;color:#292547;padding:0 50px;font:inherit;font-size:14px;outline:0;transition:border-color .2s,box-shadow .2s}
+.prisma-signin .ps-input-wrap input::placeholder{color:#918ba9}
+.prisma-signin .ps-input-wrap input:focus{border-color:#8679fa;box-shadow:0 0 0 4px rgba(108,99,255,.1)}
+.prisma-signin .ps-input-wrap input:disabled{opacity:.65}
+.prisma-signin .ps-eye{position:absolute;right:14px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:#7c75a3;cursor:pointer;padding:5px}
+.prisma-signin .ps-submit{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:59px;margin-top:38px;padding:12px;border:0;border-radius:13px;background:linear-gradient(110deg,#665af0,#9274fa);color:#fff;font:inherit;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 12px 25px rgba(108,99,255,.18);transition:transform .2s,box-shadow .2s}
+.prisma-signin .ps-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 15px 28px rgba(108,99,255,.26)}
+.prisma-signin .ps-submit:disabled{opacity:.7;cursor:wait}
+.prisma-signin .ps-register{margin-top:43px;text-align:center;color:#77718e;font-size:13px}
+.prisma-signin .ps-register a{color:#6557e7;font-weight:700;text-decoration:none}
+.prisma-signin .ps-register a:hover{text-decoration:underline}
+.prisma-signin .ps-security{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:50px;color:#746f90;font-size:12px;text-align:center}
+.prisma-signin .ps-security svg{color:#6c63ff;flex-shrink:0}
+.prisma-signin .ps-copyright{text-align:center;color:#8b86a4;font-size:11px;line-height:1.6}
+.prisma-signin .ps-message{border-radius:10px;padding:13px 15px;font-size:13px;margin-bottom:22px;line-height:1.5}
+.prisma-signin .ps-success{background:#edf9f3;border:1px solid #bce4ce;color:#26704a}
+.prisma-signin .ps-error{background:#fff0f2;border:1px solid #ffd0d8;color:#b43c4c}
+@media(max-width:1200px){.prisma-signin .ps-layout{grid-template-columns:53% 47%}.prisma-signin .ps-story-inner{padding-left:30px;padding-right:25px}.prisma-signin .ps-story-grid{grid-template-columns:minmax(190px,.9fr) minmax(220px,1.1fr)}.prisma-signin .ps-benefit{padding:12px 9px}.prisma-signin .ps-benefit-icon{width:39px;height:39px}}
+@media(max-width:950px){.prisma-signin .ps-layout{grid-template-columns:45% 55%}.prisma-signin .ps-story-grid{display:block}.prisma-signin .ps-art{height:260px;margin-top:18px}.prisma-signin .ps-laptop{height:205px}.prisma-signin .ps-laptop-screen{height:190px}.prisma-signin .ps-screen-card{height:139px;gap:5px}.prisma-signin .ps-floating-shield{bottom:15px}.prisma-signin .ps-benefits{gap:8px}.prisma-signin .ps-benefit:nth-child(3){display:none}.prisma-signin .ps-story h1{font-size:38px}.prisma-signin .ps-lead{font-size:15px}}
+@media(max-width:760px){.prisma-signin .ps-layout{display:block}.prisma-signin .ps-story{display:none}.prisma-signin .ps-form-side{min-height:100vh;padding:24px 22px 20px}.prisma-signin .ps-form-container{max-width:440px;padding:20px 0}.prisma-signin .ps-back{margin-bottom:25px}.prisma-signin .ps-mobile-brand{display:inline-flex;margin-bottom:36px}.prisma-signin .ps-mobile-brand img{width:50px!important;height:50px!important}.prisma-signin .ps-wordmark{font-size:26px}.prisma-signin .ps-form-heading{margin-bottom:30px}.prisma-signin .ps-form-heading h2{font-size:31px}.prisma-signin .ps-security{margin-top:35px}}
+@media(max-width:380px){.prisma-signin .ps-form-side{padding-left:16px;padding-right:16px}.prisma-signin .ps-label-row{flex-wrap:wrap}.prisma-signin .ps-form-heading h2{font-size:27px}}
+@media(prefers-reduced-motion:reduce){.prisma-signin *{transition:none!important;animation:none!important}}
+
+/* Compact sign-in layout and unified PRISMA navigation */
+.prisma-signin{min-height:100dvh}
+.prisma-signin .ps-layout{position:relative;min-height:100dvh;padding-top:68px;grid-template-columns:54% 46%}
+.prisma-signin .ps-topbar{position:absolute;top:0;left:0;right:0;height:68px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(22px,4vw,64px);background:rgba(255,255,255,.94);border-bottom:1px solid #eeeaf9}
+.prisma-signin .ps-header-brand{display:inline-flex;align-items:center;gap:3px;text-decoration:none}
+.prisma-signin .ps-header-brand img{width:46px!important;height:46px!important;object-fit:contain}
+.prisma-signin .ps-header-brand .ps-wordmark{font-size:26px}
+.prisma-signin .ps-topnav{display:flex;align-items:center;gap:clamp(18px,3vw,38px)}
+.prisma-signin .ps-topnav a{color:#585477;text-decoration:none;font-size:13px;font-weight:650}
+.prisma-signin .ps-topnav a:hover{color:#6c63ff}
+.prisma-signin .ps-story-inner{min-height:calc(100dvh - 68px);padding:22px clamp(24px,3.5vw,60px) 18px}
+.prisma-signin .ps-story-body{padding:12px 0 8px}
+.prisma-signin .ps-story h1{font-size:clamp(29px,3.1vw,44px);line-height:1.1;letter-spacing:-1.3px;margin:4px 0 10px}
+.prisma-signin .ps-lead{font-size:clamp(13px,1.05vw,15px);line-height:1.5;margin:0 0 12px;max-width:470px}
+.prisma-signin .ps-story-grid{min-height:250px;grid-template-columns:minmax(190px,.9fr) minmax(210px,1.1fr);gap:4px}
+.prisma-signin .ps-benefits{gap:9px}
+.prisma-signin .ps-benefit{padding:9px;border-radius:14px;gap:8px}
+.prisma-signin .ps-benefit-icon{width:35px;height:35px}
+.prisma-signin .ps-benefit-icon svg{width:19px;height:19px}
+.prisma-signin .ps-benefit strong{font-size:12px;margin-bottom:2px}
+.prisma-signin .ps-benefit small{font-size:10.5px}
+.prisma-signin .ps-art{height:270px;transform:scale(.88);transform-origin:center}
+.prisma-signin .ps-story-footer{font-size:11px}
+.prisma-signin .ps-form-side{min-height:calc(100dvh - 68px);padding:18px clamp(24px,4vw,65px) 14px}
+.prisma-signin .ps-form-container{padding:10px 0;max-width:455px}
+.prisma-signin .ps-form-heading{margin-bottom:22px}
+.prisma-signin .ps-form-heading h2{font-size:clamp(27px,2.5vw,35px);margin:9px 0 6px}
+.prisma-signin .ps-form-heading p{font-size:13px}
+.prisma-signin .ps-field{margin-bottom:17px}
+.prisma-signin .ps-field label{font-size:13px;margin-bottom:8px}
+.prisma-signin .ps-label-row{margin-bottom:8px}
+.prisma-signin .ps-input-wrap input{height:48px}
+.prisma-signin .ps-submit{min-height:49px;margin-top:19px;font-size:15px}
+.prisma-signin .ps-register{margin-top:20px}
+.prisma-signin .ps-security{margin-top:22px}
+.prisma-signin .ps-copyright{font-size:10px}
+@media(max-width:950px){.prisma-signin .ps-layout{grid-template-columns:44% 56%}.prisma-signin .ps-story-grid{display:block}.prisma-signin .ps-benefit:nth-child(3){display:flex}.prisma-signin .ps-art{height:190px;transform:scale(.72);transform-origin:top center;margin-top:12px}.prisma-signin .ps-story h1{font-size:30px}}
+@media(max-width:760px){.prisma-signin .ps-layout{display:block;padding-top:62px}.prisma-signin .ps-topbar{height:62px;padding:0 16px}.prisma-signin .ps-header-brand img{width:38px!important;height:38px!important}.prisma-signin .ps-header-brand .ps-wordmark{font-size:21px}.prisma-signin .ps-topnav{gap:12px}.prisma-signin .ps-topnav a{font-size:12px}.prisma-signin .ps-form-side{min-height:calc(100dvh - 62px);padding:20px 22px}.prisma-signin .ps-mobile-brand{display:none}.prisma-signin .ps-form-container{padding:25px 0}.prisma-signin .ps-form-heading{margin-bottom:26px}}
+@media(max-height:700px) and (min-width:761px){.prisma-signin .ps-story-inner{padding-top:12px;padding-bottom:10px}.prisma-signin .ps-story-grid{min-height:205px}.prisma-signin .ps-art{height:220px;transform:scale(.73)}.prisma-signin .ps-benefit{padding:7px}.prisma-signin .ps-form-heading{margin-bottom:15px}.prisma-signin .ps-field{margin-bottom:12px}.prisma-signin .ps-security{margin-top:13px}.prisma-signin .ps-register{margin-top:14px}}
+
+/* Centered, narrower sign-in portal; no footer or menu */
+.prisma-signin {
+  min-height: 100dvh;
+  padding: 28px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f9f8ff, #f1efff 60%, #f8fbff);
+}
+.prisma-signin .ps-layout {
+  width: min(1100px, 100%);
+  min-height: 0;
+  grid-template-columns: 52% 48%;
+  padding-top: 58px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 65px rgba(58, 47, 127, .12);
+}
+.prisma-signin .ps-topbar {
+  height: 58px;
+  padding: 0 30px;
+  background: #fff;
+}
+.prisma-signin .ps-header-brand img {width: 42px !important; height: 42px !important;}
+.prisma-signin .ps-header-brand .ps-wordmark {font-size: 24px;}
+.prisma-signin .ps-story-inner {
+  min-height: 0;
+  padding: 20px 30px 26px;
+}
+.prisma-signin .ps-story-body {padding: 5px 0 12px;}
+.prisma-signin .ps-story h1 {font-size: clamp(26px, 2.5vw, 35px); margin: 8px 0;}
+.prisma-signin .ps-lead {font-size: 13px; line-height: 1.5; margin-bottom: 10px;}
+.prisma-signin .ps-story-grid {grid-template-columns: 44% 56%; min-height: 240px;}
+.prisma-signin .ps-benefits {gap: 8px;}
+.prisma-signin .ps-benefit {padding: 8px; gap: 7px; border-radius: 12px;}
+.prisma-signin .ps-benefit-icon {width: 32px; height: 32px;}
+.prisma-signin .ps-benefit strong {font-size: 11px;}
+.prisma-signin .ps-benefit small {font-size: 10px;}
+.prisma-signin .ps-art {height: 245px; transform: scale(.78); transform-origin: center;}
+.prisma-signin .ps-story-footer {font-size: 11px; margin-top: 6px;}
+.prisma-signin .ps-form-side {min-height: 0; padding: 22px 36px 28px;}
+.prisma-signin .ps-form-container {margin: auto; padding: 12px 0; max-width: 370px;}
+.prisma-signin .ps-form-heading {margin-bottom: 20px;}
+.prisma-signin .ps-form-heading h2 {font-size: 29px; margin: 8px 0 6px;}
+.prisma-signin .ps-field {margin-bottom: 16px;}
+.prisma-signin .ps-input-wrap input {height: 47px;}
+.prisma-signin .ps-submit {min-height: 48px; margin-top: 18px;}
+.prisma-signin .ps-register {margin-top: 20px;}
+.prisma-signin .ps-security {margin-top: 19px;}
+@media(max-width: 950px) and (min-width: 761px) {
+  .prisma-signin .ps-layout {grid-template-columns: 43% 57%;}
+  .prisma-signin .ps-story-grid {display: block;}
+  .prisma-signin .ps-art {height: 150px; transform: scale(.55); transform-origin: top center;}
+  .prisma-signin .ps-benefit:nth-child(3) {display: none;}
+  .prisma-signin .ps-story-inner {padding: 18px;}
+  .prisma-signin .ps-form-side {padding: 20px 25px;}
+}
+@media(max-width: 760px) {
+  .prisma-signin {padding: 12px; align-items: flex-start;}
+  .prisma-signin .ps-layout {display: block; padding-top: 58px; border-radius: 16px;}
+  .prisma-signin .ps-topbar {height: 58px; padding: 0 18px;}
+  .prisma-signin .ps-story {display: none;}
+  .prisma-signin .ps-form-side {min-height: 0; padding: 25px 22px 30px;}
+  .prisma-signin .ps-form-container {max-width: 440px; padding: 10px 0;}
+  .prisma-signin .ps-mobile-brand {display: none;}
+}
+@media(max-height: 650px) and (min-width: 761px) {
+  .prisma-signin {align-items: flex-start;}
+}

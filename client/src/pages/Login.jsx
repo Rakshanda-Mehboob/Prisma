@@ -1,45 +1,43 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import {
-  LogIn, Eye, EyeOff,
-  Sparkles, CheckCircle2
-} from 'lucide-react';
-import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
+import { ArrowRight, Eye, EyeOff, Mail, LockKeyhole, UserRound, BookOpen, ShieldCheck, Check, Sparkles } from 'lucide-react';
 import PrismaLogo from '../components/PrismaLogo';
+import './Login.css';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [infoMessage] = useState(location.state?.message || '');
+  const infoMessage = location.state?.message || '';
 
-  const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (error) setError('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError('');
     setLoading(true);
     try {
       await login(form.email.trim(), form.password);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       const detail = err.response?.data?.detail;
       if (Array.isArray(detail)) {
-        const messages = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`).join(', ');
-        setError(messages || 'Validation error. Please check your inputs.');
+        setError(detail.map((item) => item.msg || 'Invalid input').join(', ') || 'Please check your details.');
       } else if (typeof detail === 'string') {
         setError(detail);
       } else if (!err.response) {
-        setError('Cannot connect to backend server. Please verify the backend is running on http://localhost:8000.');
+        setError('Cannot connect to the server. Please check that the backend is running.');
       } else {
-        setError('Login failed. Please check your credentials.');
+        setError('Sign in failed. Please check your email and password.');
       }
     } finally {
       setLoading(false);
@@ -47,274 +45,69 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-split-layout">
-      {/* Left Brand / Cyber Education Hero Side */}
-      <div className="auth-brand-side">
-        {/* Ambient decorative glow orbs */}
-        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '320px', height: '320px', background: 'radial-gradient(circle, rgba(45, 212, 191, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-15%', right: '-10%', width: '380px', height: '380px', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+    <main className="prisma-signin">
+      <div className="ps-layout">
+        <header className="ps-topbar">
+          <Link to="/" className="ps-header-brand" aria-label="PRISMA home">
+            <PrismaLogo size={46} />
+            <span className="ps-wordmark">PRISM<span>A</span></span>
+          </Link>
+        </header>
 
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          {/* Logo & Platform Tag */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '2.5rem' }}>
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: '14px',
-                background: 'rgba(255, 255, 255, 0.12)',
-                backdropFilter: 'blur(10px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-              }}
-            >
-              <PrismaLogo size={36} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.3rem', color: '#ffffff', letterSpacing: '-0.02em' }}>Prisma</div>
-              <div style={{ fontSize: '0.72rem', color: '#2dd4bf', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.08em' }}>
-                AI CYBER INTERVENTION PLATFORM
+        <section className="ps-story" aria-label="About signing in to PRISMA">
+          <div className="ps-story-inner">
+            <div className="ps-story-body">
+              <h1>Your safer online space.</h1>
+              <p className="ps-lead">Sign in to learn about online behavior and help make your campus kinder.</p>
+              <div className="ps-story-grid">
+                <div className="ps-benefits">
+                  <div className="ps-benefit"><span className="ps-benefit-icon"><UserRound size={23} /></span><div><strong>Access your account</strong><small>Continue where you left off.</small></div></div>
+                  <div className="ps-benefit"><span className="ps-benefit-icon"><BookOpen size={23} /></span><div><strong>Learn and grow</strong><small>Explore activities made for you.</small></div></div>
+                  <div className="ps-benefit"><span className="ps-benefit-icon"><ShieldCheck size={23} /></span><div><strong>Keep your data safe</strong><small>Sign in to your private account.</small></div></div>
+                </div>
+                <div className="ps-art" aria-hidden="true">
+                  <span className="ps-art-halo ps-halo-one" />
+                  <span className="ps-art-halo ps-halo-two" />
+                  <span className="ps-art-spark ps-spark-one" />
+                  <span className="ps-art-spark ps-spark-two" />
+                  <div className="ps-art-platform" />
+                  <div className="ps-laptop">
+                    <div className="ps-laptop-screen">
+                      <div className="ps-screen-bar"><i /><i /><i /></div>
+                      <div className="ps-screen-card">
+                        <div className="ps-avatar"><UserRound size={34} strokeWidth={2.5} /></div>
+                        <div className="ps-art-field"><Mail size={14} /><span /></div>
+                        <div className="ps-art-field"><LockKeyhole size={14} /><b>••••••</b></div>
+                        <div className="ps-art-button">Sign In <ArrowRight size={12} /></div>
+                      </div>
+                    </div>
+                    <div className="ps-laptop-base" />
+                  </div>
+                  <div className="ps-floating-shield"><ShieldCheck size={64} strokeWidth={1.6} /></div>
+                  <div className="ps-floating-check"><Check size={20} strokeWidth={3} /></div>
+                </div>
               </div>
             </div>
+            <div className="ps-story-footer"><Sparkles size={15} /> Your space. Your voice. A safer campus.</div>
           </div>
+        </section>
 
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              padding: '0.35rem 0.85rem',
-              borderRadius: '9999px',
-              background: 'rgba(45, 212, 191, 0.15)',
-              border: '1px solid rgba(45, 212, 191, 0.35)',
-              color: '#a7f3d0',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              marginBottom: '1.5rem',
-              letterSpacing: '0.02em',
-            }}
-          >
-            <Sparkles size={13} color="#34d399" /> Free & Private for University Students
+        <section className="ps-form-side">
+          <div className="ps-form-container">
+            <div className="ps-mobile-brand"><PrismaLogo size={50} /><span className="ps-wordmark">PRISM<span>A</span></span></div>
+            <div className="ps-form-heading"><div className="ps-eyebrow">WELCOME BACK</div><h2>Sign in to PRISMA</h2><p>Enter your account details to continue.</p></div>
+            {infoMessage && <div className="ps-message ps-success" role="status">{infoMessage}</div>}
+            {error && <div className="ps-message ps-error" role="alert">{error}</div>}
+            <form onSubmit={handleSubmit} id="login-form">
+              <div className="ps-field"><label htmlFor="email">Email address</label><div className="ps-input-wrap"><Mail size={19} /><input id="email" name="email" type="email" autoComplete="email" placeholder="Enter your university email" value={form.email} onChange={handleChange} required disabled={loading} /></div></div>
+              <div className="ps-field"><div className="ps-label-row"><label htmlFor="password">Password</label><button className="ps-forgot" type="button" onClick={() => window.alert('Please contact the campus system administrator or supervisor to reset your password.')}>Forgot password?</button></div><div className="ps-input-wrap"><LockKeyhole size={19} /><input id="password" name="password" type={showPass ? 'text' : 'password'} autoComplete="current-password" placeholder="Enter your password" value={form.password} onChange={handleChange} required disabled={loading} /><button className="ps-eye" type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? 'Hide password' : 'Show password'}>{showPass ? <EyeOff size={19} /> : <Eye size={19} />}</button></div></div>
+              <button className="ps-submit" id="login-submit" type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign In'} {!loading && <ArrowRight size={19} />}</button>
+            </form>
+            <div className="ps-register">Don't have an account? <Link to="/register">Create an account</Link></div>
+            <div className="ps-security"><ShieldCheck size={17} /> Your account is protected by secure sign-in.</div>
           </div>
-
-          <h2
-            style={{
-              fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
-              fontWeight: 800,
-              lineHeight: 1.18,
-              marginBottom: '1.25rem',
-              color: '#ffffff',
-              letterSpacing: '-0.03em',
-            }}
-          >
-            Stand strong against online harassment.
-          </h2>
-
-          <p
-            style={{
-              color: '#e2e8f0',
-              lineHeight: 1.75,
-              fontSize: '1.02rem',
-              maxWidth: '480px',
-              marginBottom: '2.5rem',
-              fontWeight: 400,
-            }}
-          >
-            Prisma equips university students with behavioral strategies, empowering scenarios, and personalized AI-guided modules to foster safe digital spaces.
-          </p>
-
-          {/* Modern Glass Feature Cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '480px' }}>
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(45, 212, 191, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#2dd4bf',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Diagnostic Pre-Assessment</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Maps your baseline attitude, peer norms & intervention confidence</div>
-              </div>
-            </div>
-
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(56, 189, 248, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#38bdf8',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Personalized Interactive Lessons</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Scenario simulations, de-escalation drills & bite-sized guides</div>
-              </div>
-            </div>
-
-            <div className="auth-feature-pill">
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '10px',
-                  background: 'rgba(167, 139, 250, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#c4b5fd',
-                  flexShrink: 0,
-                }}
-              >
-                <CheckCircle2 size={18} />
-              </div>
-              <div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.92rem' }}>Measurable Skill Growth</div>
-                <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: 2 }}>Compare your growth with verified post-intervention analytics</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            paddingTop: '1.25rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.82rem',
-            color: '#94a3b8',
-          }}
-        >
-          <span>Theory of Planned Behavior (TPB)</span>
-          <span>End-to-End Encrypted</span>
-        </div>
+        </section>
       </div>
-
-      {/* Right Form Side */}
-      <div className="auth-form-side">
-        <div className="auth-card-modern">
-          <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
-              Welcome back
-            </h1>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Sign in to continue your learning journey.
-            </p>
-          </div>
-
-          {infoMessage && <div className="alert alert-success">{infoMessage}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
-
-          <form onSubmit={handleSubmit} id="login-form">
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">
-                University Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                className="form-input"
-                placeholder="student@riphah.edu.pk"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
-
-            <div className="form-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label className="form-label" htmlFor="password" style={{ marginBottom: 0 }}>
-                  Password
-                </label>
-                <span
-                  onClick={() => alert('Please contact the campus system administrator or supervisor to reset your account password.')}
-                  style={{ fontSize: '0.78rem', color: 'var(--color-accent)', cursor: 'pointer' }}
-                >
-                  Forgot password?
-                </span>
-              </div>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id="password"
-                  type={showPass ? 'text' : 'password'}
-                  name="password"
-                  className="form-input"
-                  placeholder="••••••••••••"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="current-password"
-                  style={{ paddingRight: '2.75rem' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  style={{
-                    position: 'absolute',
-                    right: '0.85rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-text-subtle)',
-                    padding: 0,
-                  }}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
-                >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              id="login-submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              style={{ width: '100%', marginTop: '0.75rem' }}
-              iconRight={<LogIn size={16} />}
-            >
-              Sign In
-            </Button>
-          </form>
-
-          <div className="auth-footer">
-            Don't have an enrolled account?{' '}
-            <Link to="/register" className="auth-link">
-              Register now
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }

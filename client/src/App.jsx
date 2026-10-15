@@ -1,15 +1,9 @@
-/**
- * App.jsx — Root Application Component with React Router and Auth Provider.
- * Connects all TPB modules, landing page, and student profile.
- */
-
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -18,79 +12,32 @@ import Assessment from './pages/Assessment';
 import Interventions from './pages/Interventions';
 import Feedback from './pages/Feedback';
 import Profile from './pages/Profile';
-import Onboarding from './pages/Onboarding';
 import NotFound from './pages/NotFound';
 
-export default function App() {
+function AppContent() {
+  const { pathname } = useLocation();
+  const isLoginPage = pathname === '/login';
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <div className="app-layout">
-          <Navbar />
-          <main className="page-content">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-
-              {/* Protected Routes — Modules 1 to 4 & Operations */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/assessment"
-                element={
-                  <ProtectedRoute>
-                    <Assessment />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/interventions"
-                element={
-                  <ProtectedRoute>
-                    <Interventions />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/feedback"
-                element={
-                  <ProtectedRoute>
-                    <Feedback />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/onboarding"
-                element={
-                  <ProtectedRoute>
-                    <Onboarding />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* 404 Catch-All */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </AuthProvider>
-    </BrowserRouter>
+    <div className="app-layout">
+      {!isLoginPage && <Navbar />}
+      <main className={isLoginPage ? 'page-content login-page-content' : 'page-content'}
+        style={isLoginPage ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', flex: 1 } : undefined}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/assessment" element={<ProtectedRoute><Assessment /></ProtectedRoute>} />
+          <Route path="/interventions" element={<ProtectedRoute><Interventions /></ProtectedRoute>} />
+          <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+      {!isLoginPage && <Footer />}
+    </div>
   );
+}
+export default function App() {
+  return <BrowserRouter><AuthProvider><AppContent /></AuthProvider></BrowserRouter>;
 }

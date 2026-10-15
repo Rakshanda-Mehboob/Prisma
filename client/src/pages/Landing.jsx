@@ -204,16 +204,15 @@ export default function Landing() {
               </div>
 
               <h1>
-                Proactive Cyberbullying Intervention
-                <span> Powered by Behavioral AI</span>
+               Prevent Cyberbullying Through 
+                <span> Understanding and Learning</span>
               </h1>
 
               <p>
-                An enterprise-grade cognitive security platform utilizing
-                the <strong>Theory of Planned Behavior (TPB)</strong> and{" "}
-                <strong>Generative AI</strong> to diagnose, predict, and
-                mitigate hostile online behaviors across academic digital
-                ecosystems.
+                PRISMA is a TPB-based support system for university students. It helps students 
+                understand their online behavior through assessments, provides personalized 
+                learning activities, and tracks their progress toward safer and more respectful 
+                online interactions.
               </p>
 
               <div className="pl-hero-buttons">
