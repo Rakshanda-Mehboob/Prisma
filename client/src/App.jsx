@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthInfo from './pages/AuthInfo';
 import Dashboard from './pages/Dashboard';
 import Assessment from './pages/Assessment';
 import Interventions from './pages/Interventions';
@@ -16,16 +17,19 @@ import NotFound from './pages/NotFound';
 
 function AppContent() {
   const { pathname } = useLocation();
-  const isLoginPage = pathname === '/login';
+  const isAuthLayout = ['/login', '/register', '/terms', '/privacy', '/support'].includes(pathname);
   return (
     <div className="app-layout">
-      {!isLoginPage && <Navbar />}
-      <main className={isLoginPage ? 'page-content login-page-content' : 'page-content'}
-        style={isLoginPage ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', flex: 1 } : undefined}>
+      {!isAuthLayout && <Navbar />}
+      <main className={isAuthLayout ? 'page-content auth-page-content' : 'page-content'}
+        style={isAuthLayout ? { padding: 0, margin: 0, maxWidth: 'none', width: '100%', flex: 1 } : undefined}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/terms" element={<AuthInfo kind="terms" />} />
+          <Route path="/privacy" element={<AuthInfo kind="privacy" />} />
+          <Route path="/support" element={<AuthInfo kind="support" />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/assessment" element={<ProtectedRoute><Assessment /></ProtectedRoute>} />
           <Route path="/interventions" element={<ProtectedRoute><Interventions /></ProtectedRoute>} />
@@ -34,7 +38,7 @@ function AppContent() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      {!isLoginPage && <Footer />}
+      {!isAuthLayout && <Footer />}
     </div>
   );
 }
