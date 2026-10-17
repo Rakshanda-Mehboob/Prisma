@@ -1,14 +1,10 @@
 """
-auth/utils.py — JWT token creation/verification + bcrypt password hashing.
-Used as FastAPI dependencies across all protected routes.
+auth/utils.py — JWT token creation, verification, and bcrypt password hashing.
 
-Config:
-  SECRET_KEY — change this to a random string in production.
-  ALGORITHM  — HS256 (HMAC-SHA256), standard for JWTs.
-  ACCESS_TOKEN_EXPIRE_MINUTES — token lifetime (1 hour default).
+Provides authentication utilities and the `get_current_user` FastAPI dependency
+used to protect endpoints and identify student sessions across the platform.
 """
 
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -20,35 +16,43 @@ import bcrypt
 
 from database import get_db
 from models import User
+from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-# ── Configuration ──────────────────────────────────────────────────────────────
-SECRET_KEY = os.getenv("SECRET_KEY", "tpb-fyp-super-secret-key-change-in-prod-2024")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-# ── OAuth2 scheme (reads "Authorization: Bearer <token>" from request headers)
+# ── OAuth2 Scheme ──────────────────────────────────────────────────────────────
+# Reads "Authorization: Bearer <token>" from incoming HTTP request headers
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-# ── Password hashing ───────────────────────────────────────────────────────────
+
+# ── Password Hashing & Verification ────────────────────────────────────────────
 def hash_password(plain_password: str) -> str:
-    """Return bcrypt hash of plain text password."""
+    """
+    Hashes a plain-text password using bcrypt with a randomly generated salt.
+    Returns the decoded UTF-8 hash string suitable for database storage.
+    """
     pwd_bytes = plain_password.encode("utf-8")
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Return True if plain_password matches the stored bcrypt hash."""
+    """
+    Verifies that a plain-text candidate password matches a stored bcrypt hash.
+    Safely handles malformed hashes without throwing uncaught exceptions.
+    """
     try:
-        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
     except Exception:
         return False
 
 
+# ── JWT Token Lifecycle ────────────────────────────────────────────────────────
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
-    Create a signed JWT access token.
-    data should include {"sub": str(user_id)}.
+    Creates a cryptographically signed HMAC-SHA256 (HS256) JWT access token.
+    Payload dictionary must include user identifier `sub`.
     """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (
@@ -63,8 +67,9 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     """
-    FastAPI dependency — decodes JWT and returns the authenticated User object.
-    Raises HTTP 401 if the token is missing, expired, or invalid.
+    FastAPI dependency that extracts, decodes, and validates the bearer JWT.
+    Retrieves the corresponding `User` record from the database.
+    Raises HTTP 401 Unauthorized if the token is missing, expired, or invalid.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

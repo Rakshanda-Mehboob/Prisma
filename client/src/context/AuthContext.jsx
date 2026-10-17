@@ -12,7 +12,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem('tpb_user');
-      return stored ? JSON.parse(stored) : null;
+      const parsed = stored ? JSON.parse(stored) : null;
+      if (parsed) {
+        const savedAvatar = localStorage.getItem(`tpb_avatar_${parsed.id}`);
+        if (savedAvatar) parsed.avatar_url = savedAvatar;
+        const savedUni = localStorage.getItem(`tpb_university_${parsed.id}`);
+        if (savedUni) parsed.university = savedUni;
+      }
+      return parsed;
     } catch { return null; }
   });
   const [loading, setLoading] = useState(true);
@@ -22,7 +29,17 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('tpb_token');
     if (token) {
       authApi.me()
-        .then((res) => { setUser(res.data); localStorage.setItem('tpb_user', JSON.stringify(res.data)); })
+        .then((res) => {
+          const savedAvatar = localStorage.getItem(`tpb_avatar_${res.data.id}`);
+          const savedUni = localStorage.getItem(`tpb_university_${res.data.id}`);
+          const merged = {
+            ...res.data,
+            avatar_url: savedAvatar || null,
+            university: savedUni || 'Riphah International University',
+          };
+          setUser(merged);
+          localStorage.setItem('tpb_user', JSON.stringify(merged));
+        })
         .catch(() => { localStorage.removeItem('tpb_token'); localStorage.removeItem('tpb_user'); setUser(null); })
         .finally(() => setLoading(false));
     } else {
@@ -34,9 +51,16 @@ export function AuthProvider({ children }) {
     const { data } = await authApi.login({ email, password });
     localStorage.setItem('tpb_token', data.access_token);
     const me = await authApi.me();
-    setUser(me.data);
-    localStorage.setItem('tpb_user', JSON.stringify(me.data));
-    return me.data;
+    const savedAvatar = localStorage.getItem(`tpb_avatar_${me.data.id}`);
+    const savedUni = localStorage.getItem(`tpb_university_${me.data.id}`);
+    const fullUser = {
+      ...me.data,
+      avatar_url: savedAvatar || null,
+      university: savedUni || 'Riphah International University',
+    };
+    setUser(fullUser);
+    localStorage.setItem('tpb_user', JSON.stringify(fullUser));
+    return fullUser;
   };
 
   const logout = () => {
@@ -47,6 +71,16 @@ export function AuthProvider({ children }) {
 
   const updateUser = (updatedData) => {
     const merged = { ...user, ...updatedData };
+    if (updatedData.avatar_url !== undefined && merged.id) {
+      if (updatedData.avatar_url) {
+        localStorage.setItem(`tpb_avatar_${merged.id}`, updatedData.avatar_url);
+      } else {
+        localStorage.removeItem(`tpb_avatar_${merged.id}`);
+      }
+    }
+    if (updatedData.university !== undefined && merged.id) {
+      localStorage.setItem(`tpb_university_${merged.id}`, updatedData.university);
+    }
     setUser(merged);
     localStorage.setItem('tpb_user', JSON.stringify(merged));
   };

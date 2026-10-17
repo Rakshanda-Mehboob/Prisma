@@ -1,18 +1,20 @@
 """
-assessment/scoring.py — Core TPB scoring engine.
+assessment/scoring.py — Core TPB scoring engine (v1.1).
 
 Theory of Planned Behavior constructs measured:
-  - Attitude (AT)          : student's evaluation of cyberbullying as harmful/acceptable
-  - Subjective Norm (SN)   : perceived social pressure from peers/family to avoid it
-  - PBC                    : perceived behavioral control to intervene or avoid it
+  - Attitude (AT)                  : student's evaluation of cyberbullying as harmful/acceptable
+  - Subjective Norm (SN)           : perceived social pressure from peers/family to avoid it
+  - Perceived Behavioral Control   : perceived ability to intervene, avoid, or support
+  - Behavioral Intention (BI)      : stated intention to act responsibly in future situations
 
-Scoring logic:
-  1. Collect selected_score (1–5 Likert) for all questions of each construct.
+Scoring logic (7-point Likert):
+  1. Collect selected_score (1–7) for all questions of each construct.
   2. Average the raw scores per construct.
-  3. Normalize to 0–100 scale: normalized = ((avg - 1) / 4) * 100
+  3. Normalize to 0–100 scale: normalized = ((avg - 1) / 6) * 100
      → score of 1 (most negative) → 0
-     → score of 5 (most positive) → 100
+     → score of 7 (most positive) → 100
   4. Constructs with normalized score < WEAK_THRESHOLD (60) are flagged for intervention.
+  5. If all are strong, at least the weakest is assigned an intervention.
 
 References:
   Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and
@@ -22,17 +24,19 @@ References:
 from typing import NamedTuple
 
 WEAK_THRESHOLD = 60.0  # Scores below this trigger intervention assignment
+LIKERT_MAX = 7         # 7-point scale per full TPB psychometric standard
 
 
 class TPBScores(NamedTuple):
     attitude: float
     subjective_norm: float
     pbc: float
+    behavioral_intention: float
 
 
-def normalize_score(raw_avg: float) -> float:
-    """Convert a 1–5 Likert average to a 0–100 normalized score."""
-    return round(((raw_avg - 1) / 4) * 100, 2)
+def normalize_score(raw_avg: float, max_points: int = LIKERT_MAX) -> float:
+    """Convert a 1–N Likert average to a 0–100 normalized score."""
+    return round(((raw_avg - 1) / (max_points - 1)) * 100, 2)
 
 
 def calculate_scores(
@@ -45,12 +49,13 @@ def calculate_scores(
         responses: list of dicts with keys "construct" and "selected_score"
 
     Returns:
-        TPBScores namedtuple with attitude, subjective_norm, pbc fields.
+        TPBScores namedtuple with attitude, subjective_norm, pbc, behavioral_intention fields.
     """
     buckets: dict[str, list[int]] = {
         "Attitude": [],
         "SubjectiveNorm": [],
         "PBC": [],
+        "BehavioralIntention": [],
     }
 
     for r in responses:
@@ -68,7 +73,24 @@ def calculate_scores(
         attitude=safe_avg(buckets["Attitude"]),
         subjective_norm=safe_avg(buckets["SubjectiveNorm"]),
         pbc=safe_avg(buckets["PBC"]),
+        behavioral_intention=safe_avg(buckets["BehavioralIntention"]),
     )
+
+
+def calculate_overall(scores: TPBScores) -> float:
+    """
+    Compute the overall composite TPB score using a weighted average.
+    Weights follow Ajzen's model where BI is the proximate predictor
+    (Attitude + SN + PBC → BI → Behavior).
+    """
+    # Weighted: BI carries highest weight as the direct intention measure
+    weighted = (
+        scores.attitude * 0.22
+        + scores.subjective_norm * 0.22
+        + scores.pbc * 0.28
+        + scores.behavioral_intention * 0.28
+    )
+    return round(weighted, 2)
 
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:
@@ -77,14 +99,15 @@ def identify_weak_constructs(scores: TPBScores) -> list[str]:
     These constructs will have interventions assigned to the student.
 
     Example:
-        scores = TPBScores(attitude=45, subjective_norm=72, pbc=38)
-        → ["Attitude", "PBC"]
+        scores = TPBScores(attitude=45, subjective_norm=72, pbc=38, behavioral_intention=55)
+        → ["Attitude", "PBC", "BehavioralIntention"]
     """
     weak = []
     construct_map = {
         "Attitude": scores.attitude,
         "SubjectiveNorm": scores.subjective_norm,
         "PBC": scores.pbc,
+        "BehavioralIntention": scores.behavioral_intention,
     }
     for name, score in construct_map.items():
         if score < WEAK_THRESHOLD:
@@ -96,6 +119,44 @@ def identify_weak_constructs(scores: TPBScores) -> list[str]:
         weak.append(weakest)
 
     return weak
+
+
+def get_intervention_type(construct: str) -> dict:
+    """
+    Return the intervention type metadata for a given weak construct.
+    Used by the result screen to provide context-aware guidance messaging.
+    """
+    types = {
+        "Attitude": {
+            "label": "Empathy & Awareness",
+            "description": "Deepen your understanding of how harmful online behaviors impact others.",
+            "activities": ["Empathy scenarios", "Consequence awareness", "Perspective-taking activities"],
+            "color": "#4f46e5",
+            "emoji": "💭",
+        },
+        "SubjectiveNorm": {
+            "label": "Social Responsibility",
+            "description": "Explore how peers and communities can positively influence digital behavior.",
+            "activities": ["Positive peer influence examples", "Social responsibility activities", "Community norms analysis"],
+            "color": "#0891b2",
+            "emoji": "👥",
+        },
+        "PBC": {
+            "label": "Confidence & Skills",
+            "description": "Build practical skills for handling and reporting online conflicts.",
+            "activities": ["Reporting guidance", "Conflict management strategies", "Response technique practice"],
+            "color": "#7c3aed",
+            "emoji": "💪",
+        },
+        "BehavioralIntention": {
+            "label": "Commitment & Action",
+            "description": "Strengthen your commitment to responsible online behavior through practice.",
+            "activities": ["Commitment activities", "Decision-making scenarios", "Future planning exercises"],
+            "color": "#059669",
+            "emoji": "🎯",
+        },
+    }
+    return types.get(construct, types["Attitude"])
 
 
 def generate_feedback_text(
@@ -113,7 +174,11 @@ def generate_feedback_text(
 
     def delta_message(construct_name: str, pre: float, post: float) -> str:
         diff = round(post - pre, 1)
-        label = construct_name.replace("SubjectiveNorm", "Subjective Norm")
+        label = (
+            construct_name
+            .replace("SubjectiveNorm", "Subjective Norm")
+            .replace("BehavioralIntention", "Behavioral Intention")
+        )
         if diff >= 15:
             return (
                 f"🎉 Outstanding! Your {label} score improved by {diff} points. "
@@ -145,10 +210,13 @@ def generate_feedback_text(
         delta_message("Subjective Norm", pre_scores.subjective_norm, post_scores.subjective_norm)
     )
     messages.append(delta_message("PBC", pre_scores.pbc, post_scores.pbc))
+    messages.append(
+        delta_message("Behavioral Intention", pre_scores.behavioral_intention, post_scores.behavioral_intention)
+    )
 
     # Overall message
-    avg_pre = (pre_scores.attitude + pre_scores.subjective_norm + pre_scores.pbc) / 3
-    avg_post = (post_scores.attitude + post_scores.subjective_norm + post_scores.pbc) / 3
+    avg_pre = (pre_scores.attitude + pre_scores.subjective_norm + pre_scores.pbc + pre_scores.behavioral_intention) / 4
+    avg_post = (post_scores.attitude + post_scores.subjective_norm + post_scores.pbc + post_scores.behavioral_intention) / 4
     if avg_post > avg_pre:
         messages.append(
             "🌟 Overall, your awareness of cyberbullying and your confidence to act against it "

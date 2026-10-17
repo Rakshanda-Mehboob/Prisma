@@ -169,8 +169,64 @@ PBC_QUIZ = {
     ]
 }
 
+BEHAVIORAL_INTENTION_QUIZ = {
+    "title": "Future Action Planning & Commitment Quiz",
+    "instructions": "Assess your commitment to proactive online decision-making and your readiness to intervene responsibly in future digital interactions.",
+    "questions": [
+        {
+            "id": 1,
+            "question": "What is the key link between behavioral intention and actual intervention in Ajzen's TPB model?",
+            "options": [
+                "Intention has no correlation with future behavior.",
+                "Stated commitment and pre-planned response strategies directly increase the likelihood of constructive action when real situations occur.",
+                "Only emotional impulse dictates how students act in crisis moments.",
+                "Students only act when instructed to do so by campus security."
+            ],
+            "correct_index": 1,
+            "explanation": "In TPB research, behavioral intention is the most immediate cognitive predictor of behavior. When students formulate explicit 'if-then' plans, they are dramatically more likely to follow through."
+        },
+        {
+            "id": 2,
+            "question": "Which of the following represents a concrete implementation intention ('If-Then plan') for online safety?",
+            "options": [
+                "'I hope that people are nicer on social media in the future.'",
+                "'If I see harmful comments about a classmate in our course group chat, then I will privately check in on them and report the post within 10 minutes.'",
+                "'I will probably not read chat messages when people are fighting.'",
+                "'I will wait to see if anyone else says something before I react.'"
+            ],
+            "correct_index": 1,
+            "explanation": "Implementation intentions link situational cues ('If I see harmful comments...') to concrete coping actions ('...then I will check in and report'). This bridges the intention-action gap."
+        },
+        {
+            "id": 3,
+            "question": "When a peer forwards you a humiliating photo or rumor about another student, what is your most responsible decision?",
+            "options": [
+                "Forward it to a close circle with a disclaimer that you don't approve.",
+                "Immediately break the chain: do not forward, ask the sender to stop circulating it, and support the affected student.",
+                "Save it for future evidence without saying anything.",
+                "Laugh with a reaction emoji so the sender doesn't feel offended."
+            ],
+            "correct_index": 1,
+            "explanation": "Stopping the chain of transmission is one of the most powerful digital commitments. Forwarding material, even with reservations, amplifies harm."
+        },
+        {
+            "id": 4,
+            "question": "What personal pledge best reflects high behavioral intention for digital citizenship over the next month?",
+            "options": [
+                "Only interacting online when strictly mandatory for graded coursework.",
+                "Actively contributing to respectful campus communication, refusing to participate in mockery, and advocating for peers when mistreated.",
+                "Engaging in flame wars to defend your friends using whatever language is necessary.",
+                "Deleting all personal social accounts to avoid conflict entirely."
+            ],
+            "correct_index": 1,
+            "explanation": "High behavioral intention involves active, positive engagement in digital communities, upholding respect, and taking constructive action when witnessing bullying."
+        }
+    ]
+}
+
 QUIZ_MAP = {
     "Attitude": json.dumps(ATTITUDE_QUIZ),
     "SubjectiveNorm": json.dumps(SUBJECTIVE_NORM_QUIZ),
     "PBC": json.dumps(PBC_QUIZ),
+    "BehavioralIntention": json.dumps(BEHAVIORAL_INTENTION_QUIZ),
 }

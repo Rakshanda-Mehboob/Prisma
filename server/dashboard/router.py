@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import User, Assessment, UserInterventionProgress, Feedback
+from models import User, Assessment, UserInterventionProgress, Feedback, StudentProfile
 from schemas import (
     DashboardOut, ConstructScores, ConstructDelta,
     FeedbackSubmitRequest, FeedbackOut, UserOut
@@ -22,6 +22,22 @@ from assessment.scoring import generate_feedback_text, TPBScores
 router = APIRouter(tags=["Dashboard & Feedback"])
 
 
+def _make_user_out(user: User) -> UserOut:
+    """Build UserOut with has_profile computed."""
+    return UserOut(
+        id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        cms_number=user.cms_number,
+        role=user.role,
+        department=user.department,
+        living_situation=user.living_situation,
+        created_at=user.created_at,
+        login_count=user.login_count,
+        has_profile=user.student_profile is not None,
+    )
+
+
 @router.get("/dashboard", response_model=DashboardOut)
 def get_dashboard(
     current_user: User = Depends(get_current_user),
@@ -29,7 +45,7 @@ def get_dashboard(
 ):
     """
     Aggregate all data needed by the frontend dashboard:
-    - Pre and post TPB construct scores
+    - Pre and post TPB construct scores (all 4)
     - Per-construct deltas (post − pre)
     - Intervention completion statistics
     - Personalized rule-based feedback messages
@@ -43,13 +59,14 @@ def get_dashboard(
         Assessment.user_id == current_user.id, Assessment.stage == "post"
     ).first()
 
-    # Build score objects
+    # Build score objects (all 4 constructs)
     pre_scores = None
     if pre:
         pre_scores = ConstructScores(
             attitude=pre.attitude_score,
             subjective_norm=pre.subjective_norm_score,
             pbc=pre.pbc_score,
+            behavioral_intention=pre.behavioral_intention_score,
         )
 
     post_scores = None
@@ -58,6 +75,7 @@ def get_dashboard(
             attitude=post.attitude_score,
             subjective_norm=post.subjective_norm_score,
             pbc=post.pbc_score,
+            behavioral_intention=post.behavioral_intention_score,
         )
 
     # Compute deltas
@@ -69,6 +87,9 @@ def get_dashboard(
                 (post.subjective_norm_score or 0) - (pre.subjective_norm_score or 0), 2
             ),
             pbc=round((post.pbc_score or 0) - (pre.pbc_score or 0), 2),
+            behavioral_intention=round(
+                (post.behavioral_intention_score or 0) - (pre.behavioral_intention_score or 0), 2
+            ),
         )
 
     # Intervention progress
@@ -89,16 +110,18 @@ def get_dashboard(
             attitude=pre.attitude_score or 0,
             subjective_norm=pre.subjective_norm_score or 0,
             pbc=pre.pbc_score or 0,
+            behavioral_intention=pre.behavioral_intention_score or 0,
         )
         post_t = TPBScores(
             attitude=post.attitude_score or 0,
             subjective_norm=post.subjective_norm_score or 0,
             pbc=post.pbc_score or 0,
+            behavioral_intention=post.behavioral_intention_score or 0,
         )
         feedback_messages = generate_feedback_text(pre_t, post_t)
 
     return DashboardOut(
-        user=UserOut.model_validate(current_user),
+        user=_make_user_out(current_user),
         pre_scores=pre_scores,
         post_scores=post_scores,
         deltas=deltas,

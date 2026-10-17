@@ -18,6 +18,7 @@ import Assessment from './pages/Assessment';
 import Interventions from './pages/Interventions';
 import Feedback from './pages/Feedback';
 import Profile from './pages/Profile';
+import Onboarding from './pages/Onboarding';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -71,6 +72,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding"
+                element={
+                  <ProtectedRoute>
+                    <Onboarding />
                   </ProtectedRoute>
                 }
               />

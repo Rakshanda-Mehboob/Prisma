@@ -72,7 +72,17 @@ export default function Navbar() {
         {user ? (
           <>
             <Link to="/profile" className="user-chip" title="View Profile">
-              <div className="user-avatar">{initials}</div>
+              <div className="user-avatar" style={{ overflow: 'hidden', padding: 0 }}>
+                {user.avatar_url ? (
+                  <img
+                    src={user.avatar_url}
+                    alt={user.full_name || 'User'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  initials
+                )}
+              </div>
               <span>{user.full_name?.split(' ')[0]}</span>
             </Link>
             <button
@@ -102,7 +112,7 @@ export default function Navbar() {
             display: 'none',
             background: 'none',
             border: 'none',
-            color: '#fff',
+            color: 'var(--color-text-primary)',
             cursor: 'pointer',
             padding: 4,
           }}

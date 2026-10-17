@@ -1,3 +1,10 @@
+/**
+ * DataTable.jsx — Generic sortable, searchable, and paginated table component.
+ * 
+ * TODO: Currently unreferenced in student-facing views; reserved for future
+ * Faculty/Admin cohort analytics, adherence audit reports, and research dataset management.
+ */
+
 import React, { useState, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import Button from './Button';
