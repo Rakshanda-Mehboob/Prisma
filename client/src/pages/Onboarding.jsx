@@ -18,8 +18,7 @@ import Button from '../components/ui/Button';
 import {
   GraduationCap, Home, Smartphone, Users,
   ChevronRight, ChevronLeft, CheckCircle2,
-  Sparkles, ShieldCheck, ArrowRight, BookOpen,
-  Building2, School, Radio, Check
+  Sparkles, ArrowRight
 } from 'lucide-react';
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
@@ -114,6 +113,7 @@ const INTERACTION_PARTNERS = [
   { id: 'Professional groups', label: 'Professional groups', sub: 'Career networks & internship colleagues', icon: '💼' },
   { id: 'Online communities', label: 'Online communities', sub: 'Special-interest forums & discussion groups', icon: '🌍' },
   { id: 'Gaming communities', label: 'Gaming communities', sub: 'Multiplayer teams & gaming channels', icon: '🎮' },
+  { id: 'None', label: 'None', sub: 'I do not actively interact in groups or communities', icon: '🚫' },
 ];
 
 export default function Onboarding() {
@@ -124,18 +124,18 @@ export default function Onboarding() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Profile state
+  // Profile state — all start completely empty so nothing is pre-selected
   const [profile, setProfile] = useState({
-    university: user?.university || 'Riphah International University',
-    degree_program: user?.department || 'Computer Science',
+    university: user?.university || '',
+    degree_program: user?.department || '',
     custom_department: '',
-    academic_level: 'Undergraduate',
-    academic_year: '1st Year',
-    living_situation: user?.living_situation || 'University hostel',
-    platforms_used: ['WhatsApp', 'Instagram', 'Discord'],
-    online_activity_level: 'Frequently',
-    main_interaction_with: 'Classmates',
-    university_groups_participation: 'Yes',
+    academic_level: '',
+    academic_year: '',
+    living_situation: user?.living_situation || '',
+    platforms_used: [],
+    online_activity_level: '',
+    main_interaction_with: '',
+    university_groups_participation: '',
   });
 
   // Pre-load existing profile if present
@@ -165,12 +165,21 @@ export default function Onboarding() {
 
   const togglePlatform = (platformId) => {
     setProfile((prev) => {
-      const exists = prev.platforms_used.includes(platformId);
+      // If user selected None previously and now selects a platform, remove 'None'
+      const withoutNone = prev.platforms_used.filter((p) => p !== 'None');
+      const exists = withoutNone.includes(platformId);
       const updated = exists
-        ? prev.platforms_used.filter((p) => p !== platformId)
-        : [...prev.platforms_used, platformId];
+        ? withoutNone.filter((p) => p !== platformId)
+        : [...withoutNone, platformId];
       return { ...prev, platforms_used: updated };
     });
+  };
+
+  const selectNonePlatforms = () => {
+    setProfile((prev) => ({
+      ...prev,
+      platforms_used: prev.platforms_used.includes('None') ? [] : ['None']
+    }));
   };
 
   const totalSteps = STEPS.length;
@@ -205,7 +214,7 @@ export default function Onboarding() {
           academic_level: profile.academic_level,
           academic_year: profile.academic_year,
           living_situation: profile.living_situation,
-          platforms_used: profile.platforms_used.length ? profile.platforms_used : ['WhatsApp'],
+          platforms_used: profile.platforms_used.length ? profile.platforms_used : ['None'],
           online_activity_level: profile.online_activity_level,
           main_interaction_with: profile.main_interaction_with,
           university_groups_participation: profile.university_groups_participation,
@@ -243,7 +252,7 @@ export default function Onboarding() {
         academic_level: profile.academic_level,
         academic_year: profile.academic_year,
         living_situation: profile.living_situation,
-        platforms_used: profile.platforms_used,
+        platforms_used: profile.platforms_used.length ? profile.platforms_used : ['None'],
         online_activity_level: profile.online_activity_level,
         main_interaction_with: profile.main_interaction_with,
         university_groups_participation: profile.university_groups_participation,
@@ -332,36 +341,34 @@ export default function Onboarding() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              {/* Step 0: Welcome */}
+              {/* Step 0: Welcome (Simple clean message, no clutter) */}
               {step === 0 && (
                 <div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.35rem 0.75rem', borderRadius: 999, background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)', fontSize: '0.82rem', fontWeight: 600, marginBottom: '1.25rem' }}>
                     <Sparkles size={14} />
-                    Student Profile Setup
+                    Welcome
                   </div>
 
-                  <h1 style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1rem', color: 'var(--color-text-primary)' }}>
-                    Welcome to Prisma. Let's personalize your experience.
+                  <h1 style={{ fontSize: '2.1rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1rem', color: 'var(--color-text-primary)' }}>
+                    Welcome to Prisma! 👋
                   </h1>
 
-                  <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7, fontSize: '0.94rem', marginBottom: '2rem' }}>
-                    Take a moment to complete your student profile. This helps us ensure your learning experience and platform modules are relevant to you.
+                  <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.8, fontSize: '1.05rem', marginBottom: '1.5rem' }}>
+                    Thank you for creating your account. Before starting your assessment, we'd like to know a little about you.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem' }}>
-                    {[
-                      { icon: '🔒', title: 'Safe & Confidential', desc: 'Your details and responses are completely private and never shared with instructors or peers.' },
-                      { icon: '🧠', title: 'Evidence-Based Framework', desc: 'Designed with behavioral science principles to support awareness and respectful digital communication.' },
-                      { icon: '⚡', title: 'Quick & Interactive', desc: 'Takes under two minutes to complete with simple multiple-choice questions.' },
-                    ].map((f) => (
-                      <div key={f.title} style={{ display: 'flex', gap: '0.85rem', padding: '1rem', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)' }}>
-                        <span style={{ fontSize: '1.5rem' }}>{f.icon}</span>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-text-primary)', marginBottom: '0.15rem' }}>{f.title}</div>
-                          <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>{f.desc}</div>
-                        </div>
+                  <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.8, fontSize: '1.05rem', marginBottom: '2.5rem' }}>
+                    These brief questions help personalize your assessment and recommendations. It takes about a minute, and you choose all your answers manually.
+                  </p>
+
+                  <div style={{ display: 'flex', gap: '0.85rem', padding: '1.25rem', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)' }}>
+                    <span style={{ fontSize: '1.6rem' }}>🔒</span>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--color-text-primary)', marginBottom: '0.2rem' }}>Safe & Confidential</div>
+                      <div style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                        Your details and responses are completely private and never shared with instructors or peers.
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -381,6 +388,7 @@ export default function Onboarding() {
                     <input
                       type="text"
                       className="form-input"
+                      placeholder="e.g. Riphah International University"
                       value={profile.university}
                       onChange={(e) => set('university', e.target.value)}
                     />
@@ -518,12 +526,24 @@ export default function Onboarding() {
                     Digital Environment
                   </h2>
                   <p style={{ color: 'var(--color-text-muted)', fontSize: '0.88rem', marginBottom: '1.5rem' }}>
-                    Which platforms and online services do you use regularly?
+                    Which platforms and online services do you use regularly? (Select all that apply or None)
                   </p>
 
                   <div className="form-group">
                     <label className="form-label">Frequently Used Platforms</label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
+                      {/* None option */}
+                      <button
+                        type="button"
+                        className={`onb-pill-btn ${profile.platforms_used.includes('None') ? 'active' : ''}`}
+                        onClick={selectNonePlatforms}
+                        style={{ padding: '0.55rem 0.95rem' }}
+                      >
+                        <span>🚫</span>
+                        <span>None</span>
+                        {profile.platforms_used.includes('None') && <CheckCircle2 size={13} style={{ marginLeft: 2 }} />}
+                      </button>
+
                       {PLATFORMS.map((p) => {
                         const sel = profile.platforms_used.includes(p.id);
                         return (

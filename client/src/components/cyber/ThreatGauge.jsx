@@ -1,26 +1,26 @@
 import React from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle, ShieldX } from 'lucide-react';
 
-export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', size = 180 }) {
+export default function ThreatGauge({ score = 75, label = 'Composite TPB Readiness Score', size = 180 }) {
   // score is 0 to 100
   // In TPB: Higher score = more positive anti-cyberbullying posture
   // Lower score = higher risk!
   const normalizedScore = Math.max(0, Math.min(100, Math.round(score)));
 
-  let riskCategory = 'Low Risk / Vigilant';
+  let readinessCategory = 'Strong Readiness';
   let color = 'var(--color-success)';
   let icon = <ShieldCheck size={24} color={color} />;
 
   if (normalizedScore < 50) {
-    riskCategory = 'High Risk / Vulnerable';
+    readinessCategory = 'Building Readiness';
     color = 'var(--color-danger)';
     icon = <ShieldX size={24} color={color} />;
   } else if (normalizedScore < 70) {
-    riskCategory = 'Moderate Risk / Review';
+    readinessCategory = 'Developing Readiness';
     color = 'var(--color-warning)';
     icon = <AlertTriangle size={24} color={color} />;
   } else if (normalizedScore < 85) {
-    riskCategory = 'Good Posture / Guarded';
+    readinessCategory = 'Solid Readiness';
     color = 'var(--color-secondary)';
     icon = <ShieldAlert size={24} color={color} />;
   }
@@ -91,7 +91,7 @@ export default function ThreatGauge({ score = 75, label = 'Cyber Risk Index', si
       </div>
 
       <div style={{ marginTop: '0.75rem' }}>
-        <div style={{ fontSize: '0.88rem', fontWeight: 700, color }}>{riskCategory}</div>
+        <div style={{ fontSize: '0.88rem', fontWeight: 700, color }}>{readinessCategory}</div>
         <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{label}</div>
       </div>
     </div>

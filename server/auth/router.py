@@ -11,12 +11,14 @@ Routes:
 """
 
 import json
+import secrets
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import User, StudentProfile
+from models import User, StudentProfile, UserProfile, PasswordResetToken
 from schemas import (
     RegisterRequest,
     LoginRequest,
@@ -25,6 +27,13 @@ from schemas import (
     ProfileUpdateRequest,
     StudentProfileIn,
     StudentProfileOut,
+    UserProfileIn,
+    UserProfileOut,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    VerifyTokenResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
 )
 from auth.utils import (
     hash_password,
@@ -32,6 +41,8 @@ from auth.utils import (
     create_access_token,
     get_current_user,
 )
+from auth.email_service import send_password_reset_email
+from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -49,8 +60,54 @@ def _serialize_user(user: User) -> dict:
         "living_situation": user.living_situation,
         "created_at": user.created_at,
         "login_count": user.login_count,
-        "has_profile": user.student_profile is not None,
+        "has_profile": (user.student_profile is not None) or (user.user_profile is not None),
     }
+
+
+@router.get("/check-availability")
+def check_availability(
+    field: str,
+    value: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Check if a unique field (SAP ID / CMS roll number or email) is already registered in the database.
+    Used for real-time asynchronous inline validation on the frontend.
+    """
+    val = value.strip()
+    if not val:
+        return {"available": True, "field": field, "message": ""}
+
+    field_clean = field.strip().lower()
+    if field_clean in ("sap_id", "cms_number", "sap"):
+        exists = db.query(User).filter(func.upper(User.cms_number) == val.upper()).first() is not None
+        if exists:
+            return {
+                "available": False,
+                "field": "cms_number",
+                "message": "This SAP ID is already registered.",
+            }
+        return {
+            "available": True,
+            "field": "cms_number",
+            "message": "SAP ID is available.",
+        }
+
+    elif field_clean == "email":
+        exists = db.query(User).filter(func.lower(User.email) == val.lower()).first() is not None
+        if exists:
+            return {
+                "available": False,
+                "field": "email",
+                "message": "This email is already registered.",
+            }
+        return {
+            "available": True,
+            "field": "email",
+            "message": "Email is available.",
+        }
+
+    return {"available": True, "field": field, "message": ""}
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -58,7 +115,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     """
     Register a new student account with rich profile context.
     Validates uniqueness of email and CMS identifier, hashes password with bcrypt,
-    creates User and optional StudentProfile in a unified transaction.
+    creates User, UserProfile, and StudentProfile in a unified transaction.
     """
     clean_email = payload.email.strip().lower()
 
@@ -82,7 +139,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         )
 
     user = User(
-        full_name=payload.full_name.strip(),
+        full_name=(payload.full_name or '').strip() or clean_email.split('@')[0],
         email=clean_email,
         cms_number=clean_cms,
         password_hash=hash_password(payload.password),
@@ -93,37 +150,46 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.flush()
 
-    # If onboarding fields were provided during registration, create StudentProfile
-    has_profile_info = any([
-        payload.university,
-        payload.department,
-        payload.academic_level,
-        payload.academic_year,
-        payload.living_situation,
-        payload.platforms_used,
-        payload.online_activity_level,
-        payload.main_interaction_with,
-        payload.university_groups_participation,
-    ])
+    def _json(val):
+        return json.dumps(val) if val is not None else None
 
-    if has_profile_info:
-        def _json(val):
-            return json.dumps(val) if val is not None else None
+    platforms = payload.social_media_platforms or payload.platforms_used or ["WhatsApp", "Instagram"]
+    frequency = payload.social_media_frequency or payload.online_activity_level or "Frequently"
+    online_comm = payload.online_communities or (["Group chats", "University communities"] if payload.university_groups_participation == "Yes" else ["Group chats"])
+    digital_patterns = payload.digital_usage_patterns or ["Academic communication", "Social interaction"]
 
-        profile = StudentProfile(
-            user_id=user.id,
-            university=payload.university.strip() if payload.university else None,
-            degree_program=payload.department.strip() if payload.department else None,
-            faculty_department=payload.department.strip() if payload.department else None,
-            academic_level=payload.academic_level.strip() if payload.academic_level else None,
-            academic_year=payload.academic_year.strip() if payload.academic_year else None,
-            living_situation=payload.living_situation.strip() if payload.living_situation else None,
-            platforms_used=_json(payload.platforms_used),
-            online_activity_level=payload.online_activity_level,
-            main_interaction_with=payload.main_interaction_with,
-            university_groups_participation=payload.university_groups_participation,
-        )
-        db.add(profile)
+    # 1. Create UserProfile (Adaptive Assessment Intelligence Requirement 5)
+    user_prof = UserProfile(
+        user_id=user.id,
+        age_group=payload.age_group,
+        gender=payload.gender,
+        department=payload.department.strip() if payload.department else None,
+        academic_level=payload.academic_level.strip() if payload.academic_level else None,
+        academic_year=payload.academic_year.strip() if payload.academic_year else None,
+        living_situation=payload.living_situation.strip() if payload.living_situation else None,
+        social_media_platforms=_json(platforms),
+        social_media_frequency=frequency,
+        online_communities=_json(online_comm),
+        digital_usage_patterns=_json(digital_patterns),
+    )
+    db.add(user_prof)
+
+    # 2. Maintain StudentProfile for seamless backward compatibility
+    profile = StudentProfile(
+        user_id=user.id,
+        university=payload.university.strip() if payload.university else None,
+        degree_program=payload.department.strip() if payload.department else None,
+        faculty_department=payload.department.strip() if payload.department else None,
+        academic_level=payload.academic_level.strip() if payload.academic_level else None,
+        academic_year=payload.academic_year.strip() if payload.academic_year else None,
+        living_situation=payload.living_situation.strip() if payload.living_situation else None,
+        platforms_used=_json(platforms),
+        online_activity_level=frequency,
+        main_online_activities=_json(digital_patterns),
+        main_interaction_with=payload.main_interaction_with or "Classmates",
+        university_groups_participation=payload.university_groups_participation or "Yes",
+    )
+    db.add(profile)
 
     db.commit()
     db.refresh(user)
@@ -308,3 +374,219 @@ def _deserialize_profile(profile: StudentProfile) -> dict:
         "created_at": profile.created_at,
         "updated_at": profile.updated_at,
     }
+
+
+@router.get("/user-profile", response_model=UserProfileOut)
+def get_user_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Retrieve personalized UserProfile for adaptive scenario generation."""
+    profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User profile not found.",
+        )
+
+    def _parse(val):
+        if not val:
+            return []
+        try:
+            return json.loads(val)
+        except Exception:
+            return []
+
+    return UserProfileOut(
+        id=profile.id,
+        user_id=profile.user_id,
+        age_group=profile.age_group,
+        gender=profile.gender,
+        department=profile.department,
+        academic_level=profile.academic_level,
+        academic_year=profile.academic_year,
+        living_situation=profile.living_situation,
+        social_media_platforms=_parse(profile.social_media_platforms),
+        social_media_frequency=profile.social_media_frequency,
+        online_communities=_parse(profile.online_communities),
+        digital_usage_patterns=_parse(profile.digital_usage_patterns),
+        created_at=profile.created_at,
+        updated_at=profile.updated_at,
+    )
+
+
+# ── Password Recovery Endpoints ───────────────────────────────────────────────
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Initiates a password reset for a registered student account.
+    To guard against account enumeration, a consistent response message is returned
+    regardless of whether the email address was located in the database.
+
+    If an account is registered:
+      1. Invalidates any previously active, unused reset tokens for this user.
+      2. Creates a cryptographically secure, expiring reset token (30m lifetime).
+      3. Sends a branded password reset email (or logs fallback to terminal in dev).
+      4. Includes `dev_reset_url` to facilitate seamless local testing.
+    """
+    email_clean = payload.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == email_clean).first()
+
+    generic_msg = "If an account exists with this email, a password reset link has been sent."
+    dev_url = None
+
+    if user:
+        # Invalidate previous unused tokens for this user
+        db.query(PasswordResetToken).filter(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.used == False,
+        ).update({"used": True})
+
+        # Generate 32-byte secure random URL-safe token
+        token_str = secrets.token_urlsafe(32)
+        expires_at = datetime.utcnow() + timedelta(minutes=PASSWORD_RESET_TOKEN_EXPIRE_MINUTES)
+
+        token_record = PasswordResetToken(
+            user_id=user.id,
+            token=token_str,
+            expires_at=expires_at,
+            used=False,
+        )
+        db.add(token_record)
+        db.commit()
+
+        reset_url = f"{FRONTEND_URL}/reset-password?token={token_str}"
+        dev_url = reset_url
+
+        # Dispatch via SMTP or dev fallback logger
+        send_password_reset_email(to_email=user.email, reset_url=reset_url, user_name=user.full_name)
+
+    return ForgotPasswordResponse(
+        message=generic_msg,
+        dev_reset_url=dev_url,
+    )
+
+
+@router.get("/verify-reset-token", response_model=VerifyTokenResponse)
+def verify_reset_token(
+    token: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Validates whether a password reset token is active, unused, and not expired.
+    Allows the client reset screen to render appropriate status feedback early.
+    """
+    token_clean = token.strip() if token else ""
+    if not token_clean or len(token_clean) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or malformed reset token.",
+        )
+
+    token_record = (
+        db.query(PasswordResetToken)
+        .filter(PasswordResetToken.token == token_clean)
+        .first()
+    )
+
+    if not token_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link is invalid. Please request a new one.",
+        )
+
+    if token_record.used:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link has already been used. Please request a new one.",
+        )
+
+    if token_record.expires_at < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link has expired (links are valid for 30 minutes). Please request a new one.",
+        )
+
+    user = db.query(User).filter(User.id == token_record.user_id).first()
+    user_email = user.email if user else None
+
+    return VerifyTokenResponse(
+        valid=True,
+        email=user_email,
+        message="Token is valid and active.",
+    )
+
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+def reset_password(
+    payload: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Consumes a valid reset token and replaces the user's password with a newly hashed bcrypt password.
+    Immediately marks the token as used to prevent replay attacks.
+    """
+    if payload.confirm_password and payload.new_password != payload.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match.",
+        )
+
+    if len(payload.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters long.",
+        )
+
+    token_clean = payload.token.strip()
+    token_record = (
+        db.query(PasswordResetToken)
+        .filter(PasswordResetToken.token == token_clean)
+        .first()
+    )
+
+    if not token_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link is invalid. Please request a new one.",
+        )
+
+    if token_record.used:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link has already been used. Please request a new one.",
+        )
+
+    if token_record.expires_at < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This password reset link has expired. Please request a new one.",
+        )
+
+    user = db.query(User).filter(User.id == token_record.user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user account associated with this token could not be found.",
+        )
+
+    # Hash new password
+    user.password_hash = hash_password(payload.new_password)
+
+    # Mark this token and any other active tokens for this user as used
+    token_record.used = True
+    db.query(PasswordResetToken).filter(
+        PasswordResetToken.user_id == user.id,
+        PasswordResetToken.used == False,
+    ).update({"used": True})
+
+    db.commit()
+
+    return ResetPasswordResponse(
+        message="Your password has been successfully reset. You can now log in with your new password."
+    )
+

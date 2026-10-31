@@ -791,9 +791,19 @@ def _build_tpb_block_prompt(stage: str, profile_data: Optional[dict]) -> str:
         else "Post-intervention assessment evaluating learned intervention skills, ethical responsibility, and confidence."
     )
 
-    return f"""You are an educational psychometrics expert designing a Theory of Planned Behavior (TPB) assessment for a university cyberbullying intervention system called Prisma.
+    return f"""You are creating an assessment scenario for a university student.
 
-STUDENT PROFILE (CRITICAL: Contextualize the scenario directly within this student's environment):
+CRITICAL WRITING RULE — EASY & SIMPLE WORDS:
+- Use clear, simple, everyday English (grade 6-8 reading level).
+- DO NOT use difficult academic words or research jargon (avoid words like: "prosocial", "weaponize", "objectify", "normative", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive").
+- Questions and options must be short, clear, and easy to understand for any student on the first read.
+
+CULTURAL CONTEXT — PAKISTANI / SOUTH ASIAN UNIVERSITY CAMPUS:
+- Setting: Pakistani / South Asian university campus.
+- Names: Use relatable South Asian student names (e.g., Zainab, Hamza, Fatima, Bilal, Usman, Mahnoor, Ayesha, Saad, Hira, Arham, Maryam, Daniyal).
+- Campus Realities: WhatsApp batch/section chats, Class Representative (CR / GCR) notices, anonymous campus confession or meme pages on Instagram, canteen/cafeteria candid clips, project partner disputes, marks/GPA discussions, university point bus commute, hostel rooms and dining mess.
+
+STUDENT PROFILE (Contextualize realistically to this exact student):
 {profile_ctx}
 
 TASK:
@@ -803,43 +813,35 @@ ASSESSMENT STAGE: {stage} — {stage_desc}
 
 PERSONALIZATION & REALISM REQUIREMENTS:
 1. Deeply align the situation with the student's department and living environment:
-   - For Computer Science/Engineering: Focus on coding projects, GitHub PR flame wars, tech elitism, Discord study channels, or hackathon team conflicts.
-   - For Psychology/Social Sciences: Focus on mental health discussions, sensitive personal disclosures leaked, peer gaslighting, or counseling confidentiality violations.
-   - For Medical/Health Sciences: Focus on clinical training ward rotations, diagnostic errors shared online, night shift disputes, or patient case study leaks.
-   - For Business: Focus on startup pitch competition disputes, LinkedIn professional slander, marketing project credit theft, or team presentation sabotage.
-   - Combine with their Living Environment (e.g. University hostel conflicts, commuter student schedule exclusions, or shared flatmate disputes).
+   - For Computer Science/Engineering: Focus on coding projects, GitHub PR disputes, batch WhatsApp group leaks, or project partner disputes before the lab deadline.
+   - For Psychology/Social Sciences: Focus on study circles, sensitive personal disclosures shared in group chats, or peer gaslighting.
+   - For Medical/Health Sciences: Focus on hospital ward rotations, diagnostic case discussion chats, practical errors shared online, or study group disputes.
+   - For Business: Focus on presentation slides, case study group credit theft, LinkedIn comments, or group competition drama.
+   - Combine naturally with their Living Environment (e.g. University hostel rooms/mess hall, or commuter point bus schedule rush).
    - Use their frequently used platforms (WhatsApp, Discord, Instagram, LinkedIn, etc.).
-2. AVOID naive, cartoonish, or overly obvious scenarios (e.g. NEVER do: "Someone insults you online. Is this cyberbullying?").
-3. Create authentic, ambiguous dilemmas where peer pressure, group silence, academic consequences, or personal vulnerability make the right action challenging.
+2. The scenario MUST make complete narrative sense and feel like an authentic, everyday campus story, NOT an awkward mash-up of keywords.
+3. AVOID cartoonish or overly obvious situations. Create authentic, relatable dilemmas where peer pressure or group silence makes speaking up challenging.
 
 TPB CONSTRUCT DEFINITIONS:
-1. Attitude: Student's personal evaluation of whether the behavior is harmful or acceptable.
-   → Questions should ask HOW THEY EVALUATE the behavior (harmful/helpful, wrong/right, acceptable/unacceptable).
-
-2. SubjectiveNorm: Perceived expectations from significant others (friends, peers, teachers).
-   → Questions should ask WHAT OTHERS WOULD EXPECT them to do.
-
-3. PBC (Perceived Behavioral Control): Confidence and ability to act appropriately.
-   → Questions should ask HOW CAPABLE/CONFIDENT they feel in responding, helping, or reporting.
-
-4. BehavioralIntention: Future willingness to act responsibly.
-   → Questions should ask HOW LIKELY/INTENDED their future responsible behavior is.
+1. Attitude: How the student views the behavior — is it harmful/wrong, or just harmless fun/jokes?
+2. SubjectiveNorm: What close friends, batch mates, or respected peers would expect them to do.
+3. PBC (Perceived Behavioral Control): How confident and capable they feel about speaking up, helping, or reporting.
+4. BehavioralIntention: What they would realistically do in this situation in the future.
 
 SCORING (7-point Likert scale per question):
-- Score 7: Highest ethical stance — active upstander, maximum confidence, fully committed.
+- Score 7: Highest ethical stance — active upstander, speaks up, fully committed.
 - Score 6: Constructive and supportive response with slight hesitation.
-- Score 5: Positive but cautious — some action, moderate confidence.
-- Score 4: Neutral, uncertain, ambivalent.
-- Score 3: Passive, minimal action, rationalizing.
-- Score 2: Conforming to harmful norms, low confidence, weak intention.
-- Score 1: Endorsing harm, full passivity, or total helplessness.
+- Score 5: Positive but cautious — helpful private support or quiet reporting.
+- Score 4: Neutral, uncertain, minds own business.
+- Score 3: Passive, minimizes the harm, rationalizing the teasing.
+- Score 2: Conforming to mean peers, low confidence to act.
+- Score 1: Endorsing harm, laughing along, full passivity.
 
 REQUIREMENTS:
-- Scenario: 2-3 sentences, realistic, fictional, university context, neutral tone (no obvious right answer).
-- Questions: One idea per question, simple language, no jargon, non-judgmental.
-- Options: Exactly 7 options per question with unique scores 7, 6, 5, 4, 3, 2, 1 (one each).
-- Do NOT use real people's names. Use fictional South Asian university names (e.g., Zainab, Hamza, Arooj, Bilal).
-- Do NOT generate graphic or traumatizing content. Keep it educational and safe.
+- Scenario: 3-4 sentences, realistic, fictional, Pakistani university context, easy words, makes complete sense.
+- Questions: Clear, simple language, no jargon, non-judgmental.
+- Options: Exactly 7 options per question with unique scores 7, 6, 5, 4, 3, 2, 1 (one each), written in plain everyday English.
+- Use fictional South Asian university names (e.g., Zainab, Hamza, Fatima, Bilal, Usman, Mahnoor).
 
 Return exactly 8 questions in the array: 2 Attitude, 2 SubjectiveNorm, 2 PBC, 2 BehavioralIntention.
 """
@@ -1028,8 +1030,8 @@ def _call_openai_api(prompt: str, schema: dict) -> Optional[dict]:
                 {
                     "role": "system",
                     "content": (
-                        "You are an educational psychometrics expert designing assessment scenarios "
-                        "for a university cyberbullying intervention system based on the Theory of Planned Behavior."
+                        "You are a friendly educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
+                        "Write in very simple, plain everyday English (grade 6-8 reading level). Avoid all academic and psychometric jargon."
                     ),
                 },
                 {"role": "user", "content": prompt},

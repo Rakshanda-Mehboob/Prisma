@@ -27,17 +27,23 @@ warnings.filterwarnings(
 # ──────────────────────────────────────────────
 
 class RegisterRequest(BaseModel):
-    full_name: str = Field(..., min_length=2, max_length=120)
+    full_name: Optional[str] = Field(None, max_length=120)
     email: EmailStr
     cms_number: Optional[str] = Field(None, max_length=50)
     password: str = Field(..., min_length=6)
+    age_group: Optional[str] = None
+    gender: Optional[str] = None
     university: Optional[str] = None
     department: Optional[str] = None
     academic_level: Optional[str] = None
     academic_year: Optional[str] = None
     living_situation: Optional[str] = None
     platforms_used: Optional[list[str]] = None
+    social_media_platforms: Optional[list[str]] = None
     online_activity_level: Optional[str] = None
+    social_media_frequency: Optional[str] = None
+    online_communities: Optional[list[str]] = None
+    digital_usage_patterns: Optional[list[str]] = None
     main_interaction_with: Optional[str] = None
     university_groups_participation: Optional[str] = None
 
@@ -50,6 +56,31 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    dev_reset_url: Optional[str] = None
+
+
+class VerifyTokenResponse(BaseModel):
+    valid: bool
+    email: Optional[str] = None
+    message: Optional[str] = None
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., min_length=10)
+    new_password: str = Field(..., min_length=6)
+    confirm_password: Optional[str] = None
+
+
+class ResetPasswordResponse(BaseModel):
+    message: str
 
 
 class UserOut(BaseModel):
@@ -138,6 +169,39 @@ class StudentProfileOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class UserProfileIn(BaseModel):
+    """Personalized profile information collected during registration."""
+    age_group: Optional[str] = None
+    gender: Optional[str] = None
+    department: Optional[str] = None
+    academic_level: Optional[str] = None
+    academic_year: Optional[str] = None
+    living_situation: Optional[str] = None
+    social_media_platforms: Optional[list[str]] = None
+    social_media_frequency: Optional[str] = None
+    online_communities: Optional[list[str]] = None
+    digital_usage_patterns: Optional[list[str]] = None
+
+
+class UserProfileOut(BaseModel):
+    id: int
+    user_id: int
+    age_group: Optional[str] = None
+    gender: Optional[str] = None
+    department: Optional[str] = None
+    academic_level: Optional[str] = None
+    academic_year: Optional[str] = None
+    living_situation: Optional[str] = None
+    social_media_platforms: Optional[list[str]] = None
+    social_media_frequency: Optional[str] = None
+    online_communities: Optional[list[str]] = None
+    digital_usage_patterns: Optional[list[str]] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # ──────────────────────────────────────────────
 # ASSESSMENT
 # ──────────────────────────────────────────────
@@ -156,7 +220,32 @@ class ScenarioOut(BaseModel):
     stage: str
     scenario_text: str
     question_text: str
+    category: Optional[str] = None
+    platform_context: Optional[str] = None
+    living_context: Optional[str] = None
+    department_context: Optional[str] = None
+    difficulty_level: Optional[int] = 1
     options: list[ScenarioOptionOut]
+
+    model_config = {"from_attributes": True}
+
+
+class ScenarioTemplateOut(BaseModel):
+    id: int
+    scenario_id: str
+    category: str
+    platform_context: Optional[str] = None
+    living_context: Optional[str] = None
+    department_context: Optional[str] = None
+    difficulty_level: int = 1
+    tpb_dimension: str
+    scenario_text: str
+    question_text: Optional[str] = None
+    answer_options: str
+    context_tags: Optional[str] = None
+    personalization_tags: Optional[str] = None
+    narrative_variations: Optional[str] = None
+    questions_data: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -198,6 +287,57 @@ class AssessmentStatusOut(BaseModel):
     post_unlocked: bool   # True when all assigned interventions are done
     pre_assessment: Optional[AssessmentOut]
     post_assessment: Optional[AssessmentOut]
+
+
+# ──────────────────────────────────────────────
+# SCENARIO-BASED ASSESSMENT (3-scenario model)
+# ──────────────────────────────────────────────
+
+class QuestionOptionOut(BaseModel):
+    """A single answer option shown to the student."""
+    text: str
+    score: int
+
+
+class AssessmentQuestionOut(BaseModel):
+    """A question within a scenario. No internal labels exposed."""
+    id: int
+    question_text: str
+    options: list[QuestionOptionOut]
+
+    model_config = {"from_attributes": True}
+
+
+class AssessmentScenarioOut(BaseModel):
+    """A narrative scenario with its grouped questions. No internal metadata exposed."""
+    id: int
+    order_index: int
+    scenario_text: str
+    questions: list[AssessmentQuestionOut]
+
+    model_config = {"from_attributes": True}
+
+
+class AssessmentInstanceOut(BaseModel):
+    """Full assessment data returned to the frontend: 3 scenarios with grouped questions."""
+    id: int
+    stage: str
+    status: str
+    scenarios: list[AssessmentScenarioOut]
+
+    model_config = {"from_attributes": True}
+
+
+class QuestionAnswerIn(BaseModel):
+    """A single question answer submitted by the student."""
+    question_id: int
+    selected_score: int = Field(..., ge=1, le=7)
+
+
+class ScenarioAssessmentSubmitRequest(BaseModel):
+    """Submission payload: list of question answers."""
+    answers: list[QuestionAnswerIn]
+
 
 
 # ──────────────────────────────────────────────

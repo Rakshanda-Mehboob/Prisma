@@ -209,7 +209,7 @@ def generate_feedback_text(
     messages.append(
         delta_message("Subjective Norm", pre_scores.subjective_norm, post_scores.subjective_norm)
     )
-    messages.append(delta_message("PBC", pre_scores.pbc, post_scores.pbc))
+    messages.append(delta_message("Perceived Behavioral Control", pre_scores.pbc, post_scores.pbc))
     messages.append(
         delta_message("Behavioral Intention", pre_scores.behavioral_intention, post_scores.behavioral_intention)
     )

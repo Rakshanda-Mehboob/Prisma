@@ -59,7 +59,7 @@ export default function Feedback() {
         }
       }
     } catch {
-      setError('Failed to load feedback telemetry.');
+      setError('Failed to load your feedback. Please refresh and try again.');
     } finally {
       setLoading(false);
     }
@@ -124,15 +124,15 @@ export default function Feedback() {
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
           <Badge variant="primary" icon={<Sparkles size={12} />}>
-            Quality & Efficacy Telemetry
+            Module Feedback
           </Badge>
           <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
-            FEEDBACK_LOG: {feedbacks.length}
+            Submitted: {feedbacks.length}
           </span>
         </div>
-        <h1 className="dashboard-greeting">Module Evaluation & Feedback</h1>
+        <h1 className="dashboard-greeting">Rate Your Learning Modules</h1>
         <p className="dashboard-subtitle">
-          Help us evaluate the behavioral impact of each micro-intervention module to refine future curriculum calibration.
+          Let us know how helpful each module was. Your feedback helps improve the learning experience.
         </p>
       </div>
 
@@ -153,7 +153,7 @@ export default function Feedback() {
           <Card glow="primary">
             <h2 className="card-title" style={{ marginBottom: '1.25rem' }}>
               <MessageSquare size={18} color="var(--color-primary)" />
-              Submit Module Evaluation
+              Rate a Learning Module
             </h2>
 
             <form onSubmit={handleSubmit}>
@@ -195,7 +195,7 @@ export default function Feedback() {
                   <div className="form-group" style={{ marginTop: '1.25rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <label className="form-label" style={{ marginBottom: 0 }}>
-                        Efficacy Rating
+                        Your Rating
                       </label>
                       <span style={{ fontSize: '0.8rem', color: 'var(--color-accent)', fontWeight: 700 }}>
                         {RATING_LABELS[hoverRating || rating]}
@@ -233,13 +233,13 @@ export default function Feedback() {
                   {/* Comments */}
                   <div className="form-group" style={{ marginTop: '1.25rem' }}>
                     <label className="form-label" htmlFor="feedback-comments">
-                      Learning Impact & Reflection (Optional)
+                      Comments (Optional)
                     </label>
                     <textarea
                       id="feedback-comments"
                       className="form-input"
                       rows={4}
-                      placeholder="What was the most impactful concept? How did this module change your perspective on peer bystanders or reporting cyber harassment?"
+                      placeholder="What did you find most helpful? How did this module affect how you think or act online?"
                       value={comments}
                       onChange={(e) => setComments(e.target.value)}
                       style={{ resize: 'vertical', minHeight: '95px' }}
@@ -255,7 +255,7 @@ export default function Feedback() {
                     disabled={!selectedInterventionId}
                     iconRight={<Send size={15} />}
                   >
-                    Submit Evaluation Telemetry
+                    Submit Feedback
                   </Button>
                 </>
               )}

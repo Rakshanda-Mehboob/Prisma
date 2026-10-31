@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  LogIn, Eye, EyeOff,
-  Sparkles, CheckCircle2
+  GraduationCap,
+  Lock,
+  Eye,
+  EyeOff,
+  LogIn,
+  AlertCircle,
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
-import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
-import PrismaLogo from '../components/PrismaLogo';
+import AuthLayout from '../components/auth/AuthLayout';
 
 export default function Login() {
   const { login } = useAuth();
@@ -15,6 +19,7 @@ export default function Login() {
   const location = useLocation();
 
   const [form, setForm] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,12 +32,19 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(form.email.trim(), form.password);
-      navigate('/dashboard');
+      const userData = await login(form.email.trim(), form.password);
+      // Redirect to onboarding if profile not yet completed
+      if (!userData?.has_profile) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       const detail = err.response?.data?.detail;
       if (Array.isArray(detail)) {
-        const messages = detail.map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`).join(', ');
+        const messages = detail
+          .map((d) => d.msg || `${d.loc?.slice(-1)[0]}: invalid input`)
+          .join(', ');
         setError(messages || 'Validation error. Please check your inputs.');
       } else if (typeof detail === 'string') {
         setError(detail);
@@ -47,172 +59,124 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-split-layout">
-      {/* Left Brand / Cyber Illustration Side */}
-      <div className="auth-brand-side">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                filter: 'drop-shadow(0 0 16px var(--color-primary-glow))',
-              }}
+    <AuthLayout activeTab="login">
+      {/* Alert Banners */}
+      {infoMessage && (
+        <div className="auth-alert auth-alert-success" role="status">
+          <CheckCircle2 size={16} className="auth-alert-icon" />
+          <span>{infoMessage}</span>
+        </div>
+      )}
+
+      {error && (
+        <div className="auth-alert auth-alert-danger" role="alert">
+          <AlertCircle size={16} className="auth-alert-icon" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} id="login-form" className="auth-form" noValidate>
+        {/*
+          TODO: Switch label to "Enter SAP ID", placeholder to "e.g. 1234567",
+          and enable 7-digit counter (0/7) when backend supports SAP ID login.
+        */}
+        <div className="auth-form-group">
+          <div className="auth-input-label-row">
+            <label className="auth-input-label-left" htmlFor="email">
+              <GraduationCap size={15} aria-hidden="true" />
+              <span>University Email</span>
+            </label>
+            <span className="auth-input-counter" title="Email format">
+              {form.email ? `${form.email.length} chars` : 'e.g. @riphah.edu.pk'}
+            </span>
+          </div>
+
+          <div className="auth-input-wrapper">
+            <input
+              id="email"
+              type="email"
+              name="email"
+              className="auth-text-input"
+              placeholder="e.g. student@riphah.edu.pk"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              autoFocus
+            />
+          </div>
+        </div>
+
+        {/* Password Field */}
+        <div className="auth-form-group">
+          <div className="auth-input-label-row">
+            <label className="auth-input-label-left" htmlFor="password">
+              <Lock size={15} aria-hidden="true" />
+              <span>Password</span>
+            </label>
+          </div>
+
+          <div className="auth-input-wrapper">
+            <input
+              id="password"
+              type={showPass ? 'text' : 'password'}
+              name="password"
+              className="auth-text-input auth-password-input"
+              placeholder="••••••••••••"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="auth-password-toggle"
+              onClick={() => setShowPass(!showPass)}
+              aria-label={showPass ? 'Hide password' : 'Show password'}
             >
-              <PrismaLogo size={42} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text-primary)' }}>Prisma</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
-                COGNITIVE CYBER DEFENSE
-              </div>
-            </div>
-          </div>
-
-          <Badge variant="primary" icon={<Sparkles size={12} />} style={{ marginBottom: '1.25rem' }}>
-            Free for Students
-          </Badge>
-
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.25rem', color: 'var(--color-text-primary)' }}>
-            Learn how to stand up against online bullying.
-          </h2>
-
-          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7, fontSize: '0.95rem', maxWidth: '440px' }}>
-            Prisma helps university students understand cyberbullying, recognise warning signs, and feel confident about what to do when they see it happening.
-          </p>
-
-          {/* Feature highlights */}
-          <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(79, 70, 229, 0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                <CheckCircle2 size={14} />
-              </div>
-              <span>Short Assessment to understand where you stand</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(79, 70, 229, 0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                <CheckCircle2 size={14} />
-              </div>
-              <span>Personalised lessons on cyberbullying topics</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
-              <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(79, 70, 229, 0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-                <CheckCircle2 size={14} />
-              </div>
-              <span>Track how much you've improved over time</span>
-            </div>
+              {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-          <span></span>
-          <span></span>
+        {/* Remember me & Forgot password row */}
+        <div className="auth-remember-row">
+          <label className="auth-remember-label" htmlFor="remember-me">
+            <input
+              type="checkbox"
+              id="remember-me"
+              className="auth-checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <span>Remember me</span>
+          </label>
+
+          <Link to="/forgot-password" className="auth-forgot-link">
+            Forgot password?
+          </Link>
         </div>
-      </div>
 
-      {/* Right Form Side */}
-      <div className="auth-form-side">
-        <div className="auth-card-modern">
-          <div style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>
-              Welcome back
-            </h1>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              Sign in to continue your learning journey.
-            </p>
-          </div>
-
-          {infoMessage && <div className="alert alert-success">{infoMessage}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
-
-          <form onSubmit={handleSubmit} id="login-form">
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">
-                University Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                className="form-input"
-                placeholder="student@riphah.edu.pk"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
-
-            <div className="form-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                <label className="form-label" htmlFor="password" style={{ marginBottom: 0 }}>
-                  Password
-                </label>
-                <span
-                  onClick={() => alert('Please contact the campus system administrator or supervisor to reset your account password.')}
-                  style={{ fontSize: '0.78rem', color: 'var(--color-accent)', cursor: 'pointer' }}
-                >
-                  Forgot password?
-                </span>
-              </div>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id="password"
-                  type={showPass ? 'text' : 'password'}
-                  name="password"
-                  className="form-input"
-                  placeholder="••••••••••••"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="current-password"
-                  style={{ paddingRight: '2.75rem' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  style={{
-                    position: 'absolute',
-                    right: '0.85rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-text-subtle)',
-                    padding: 0,
-                  }}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
-                >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              id="login-submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              style={{ width: '100%', marginTop: '0.75rem' }}
-              iconRight={<LogIn size={16} />}
-            >
-              Sign In
-            </Button>
-          </form>
-
-          <div className="auth-footer">
-            Don't have an enrolled account?{' '}
-            <Link to="/register" className="auth-link">
-              Register now
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* Primary Submit Button */}
+        <button
+          type="submit"
+          id="login-submit"
+          className="auth-primary-btn"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Loader2 size={18} className="auth-btn-spinner" />
+              <span>Signing in...</span>
+            </>
+          ) : (
+            <>
+              <LogIn size={18} aria-hidden="true" />
+              <span>Log In to Session</span>
+            </>
+          )}
+        </button>
+      </form>
+    </AuthLayout>
   );
 }

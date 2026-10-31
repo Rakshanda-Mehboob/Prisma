@@ -58,3 +58,14 @@ CORS_ORIGIN_REGEX: str = r"https?://(localhost|127\.0\.0\.1)(:[0-9]+)?"
 
 # ── External AI Services ───────────────────────────────────────────────────────
 OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
+
+# ── Password Recovery & Email Settings ─────────────────────────────────────────
+PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("PASSWORD_RESET_TOKEN_EXPIRE_MINUTES", "30"))
+FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+
+SMTP_HOST: str | None = os.getenv("SMTP_HOST")
+SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER: str | None = os.getenv("SMTP_USER")
+SMTP_PASSWORD: str | None = os.getenv("SMTP_PASSWORD")
+SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@prisma-defense.edu.pk")
+SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("true", "1", "yes")

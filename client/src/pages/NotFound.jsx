@@ -31,11 +31,11 @@ export default function NotFound() {
         </Badge>
 
         <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
-          Cognitive Node Not Located
+          Page Not Found
         </h1>
 
         <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem' }}>
-          The requested endpoint or behavioral telemetry path does not exist on the Prisma network.
+          The page you are looking for does not exist. It may have been moved or the link may be incorrect.
         </p>
 
         {/* Terminal Diagnostic Box */}

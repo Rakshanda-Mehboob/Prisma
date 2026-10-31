@@ -81,3 +81,14 @@ CREATE TABLE feedback (
     comments        TEXT,
     submitted_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Password reset tokens for email-based password recovery
+CREATE TABLE password_reset_tokens (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES users(id),
+    token       TEXT UNIQUE NOT NULL,
+    expires_at  TIMESTAMP NOT NULL,
+    used        BOOLEAN NOT NULL DEFAULT 0,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

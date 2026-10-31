@@ -43,9 +43,14 @@ export const authApi = {
   login: (data) => api.post('/auth/login', data),
   me: () => api.get('/auth/me'),
   updateProfile: (data) => api.patch('/auth/profile', data),
+  checkAvailability: (field, value) => api.get('/auth/check-availability', { params: { field, value } }),
   // Student behavioral profile (onboarding)
   submitStudentProfile: (data) => api.post('/auth/student-profile', data),
   getStudentProfile: () => api.get('/auth/student-profile'),
+  // Password Recovery
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  verifyResetToken: (token) => api.get('/auth/verify-reset-token', { params: { token } }),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 // ── Assessment API ────────────────────────────────────────────────────────────
@@ -53,9 +58,9 @@ export const authApi = {
 export const assessmentApi = {
   getStatus: () => api.get('/assessment/status'),
   getPreScenarios: () => api.get('/assessment/pre'),
-  submitPre: (responses) => api.post('/assessment/pre', { responses }),
+  submitPre: (answers) => api.post('/assessment/pre', { answers }),
   getPostScenarios: () => api.get('/assessment/post'),
-  submitPost: (responses) => api.post('/assessment/post', { responses }),
+  submitPost: (answers) => api.post('/assessment/post', { answers }),
   reset: (stage = 'all') => api.post(`/assessment/reset?stage=${stage}`),
 };
 

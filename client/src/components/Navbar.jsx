@@ -1,20 +1,65 @@
-import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, ClipboardList, BookOpen, MessageSquare,
-  LogOut, User as UserIcon, Menu, X
+  LogOut, User as UserIcon, Menu, X, ArrowRight
 } from 'lucide-react';
 import PrismaLogo from './PrismaLogo';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Monitor scroll position to apply elevated styling and shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 16);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname);
+    setMobileMenuOpen(false);
+  }
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleSectionScroll = (sectionId) => {
+    setMobileMenuOpen(false);
+    if (location.pathname === '/') {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = el.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+    }
   };
 
   const initials = user?.full_name
@@ -22,19 +67,18 @@ export default function Navbar() {
     : 'U';
 
   return (
-    <header className="navbar">
+    <header className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       {/* Brand */}
       <Link to="/" className="navbar-brand">
         <div className="brand-icon">
           <PrismaLogo size={32} />
         </div>
         <span>Prisma</span>
-        <span className="brand-badge">Cyber AI</span>
       </Link>
 
-      {/* Desktop Nav Links */}
+      {/* Desktop Navigation Links */}
       {user ? (
-        <nav className="navbar-nav">
+        <nav className="navbar-nav" aria-label="Main User Navigation">
           <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={15} />
             Dashboard
@@ -57,13 +101,29 @@ export default function Navbar() {
           </NavLink>
         </nav>
       ) : (
-        <nav className="navbar-nav">
-          <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+        <nav className="navbar-nav landing-nav" aria-label="Landing Page Navigation">
+          <button
+            type="button"
+            className="nav-link landing-nav-btn"
+            onClick={() => handleSectionScroll('platform')}
+          >
             Platform
-          </NavLink>
-          <NavLink to="/login" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Sign In
-          </NavLink>
+          </button>
+          <button
+            type="button"
+            className="nav-link landing-nav-btn"
+            onClick={() => handleSectionScroll('how-it-works')}
+          >
+            How it works
+          </button>
+
+          <button
+            type="button"
+            className="nav-link landing-nav-btn"
+            onClick={() => handleSectionScroll('about')}
+          >
+            About
+          </button>
         </nav>
       )}
 
@@ -95,12 +155,13 @@ export default function Navbar() {
             </button>
           </>
         ) : (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link to="/login" className="btn btn-secondary btn-sm">
+          <div className="navbar-auth-actions">
+            <Link to="/login" className="btn btn-secondary btn-sm navbar-signin-btn">
               Sign In
             </Link>
-            <Link to="/register" className="btn btn-primary btn-sm">
-              Get Started
+            <Link to="/register" className="btn btn-primary btn-sm navbar-getstarted-btn">
+              <span>Get Started</span>
+              <ArrowRight size={14} className="hero-btn-arrow" />
             </Link>
           </div>
         )}
@@ -108,16 +169,9 @@ export default function Navbar() {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          style={{
-            display: 'none',
-            background: 'none',
-            border: 'none',
-            color: 'var(--color-text-primary)',
-            cursor: 'pointer',
-            padding: 4,
-          }}
           className="navbar-mobile-toggle"
-          aria-label="Toggle navigation menu"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -125,53 +179,65 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 70,
-            left: 0,
-            right: 0,
-            background: 'var(--color-surface)',
-            borderBottom: '1px solid var(--color-border)',
-            padding: '1.25rem 1.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.65rem',
-            zIndex: 99,
-          }}
-        >
+        <div className="navbar-mobile-drawer">
           {user ? (
             <>
-              <Link to="/dashboard" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/dashboard" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 <LayoutDashboard size={16} /> Dashboard
               </Link>
-              <Link to="/assessment" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/assessment" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 <ClipboardList size={16} /> Assessment
               </Link>
-              <Link to="/interventions" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/interventions" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 <BookOpen size={16} /> Learning Modules
               </Link>
-              <Link to="/feedback" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/feedback" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 <MessageSquare size={16} /> Module Feedback
               </Link>
-              <Link to="/profile" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/profile" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 <UserIcon size={16} /> User Profile
               </Link>
-              <div style={{ height: 1, background: 'var(--color-border)', margin: '0.5rem 0' }} />
+              <div className="mobile-divider" />
               <button className="btn btn-danger btn-sm" onClick={handleLogout}>
                 <LogOut size={15} /> Sign Out
               </button>
             </>
           ) : (
             <>
-              <Link to="/" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <button
+                type="button"
+                className="nav-link mobile-nav-link"
+                onClick={() => handleSectionScroll('platform')}
+              >
                 Platform Overview
-              </Link>
-              <Link to="/login" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              </button>
+              <button
+                type="button"
+                className="nav-link mobile-nav-link"
+                onClick={() => handleSectionScroll('how-it-works')}
+              >
+                How it works
+              </button>
+              <button
+                type="button"
+                className="nav-link mobile-nav-link"
+                onClick={() => handleSectionScroll('features')}
+              >
+                Features
+              </button>
+              <button
+                type="button"
+                className="nav-link mobile-nav-link"
+                onClick={() => handleSectionScroll('about')}
+              >
+                About & Values
+              </button>
+              <div className="mobile-divider" />
+              <Link to="/login" className="btn btn-secondary mobile-auth-btn" onClick={() => setMobileMenuOpen(false)}>
                 Sign In
               </Link>
-              <Link to="/register" className="btn btn-primary" onClick={() => setMobileMenuOpen(false)}>
-                Create Account
+              <Link to="/register" className="btn btn-primary mobile-auth-btn" onClick={() => setMobileMenuOpen(false)}>
+                Get Started — it's free
               </Link>
             </>
           )}
