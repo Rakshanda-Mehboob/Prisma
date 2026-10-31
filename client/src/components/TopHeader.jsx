@@ -22,27 +22,22 @@ const PAGE_META = {
   '/dashboard': {
     title: 'Dashboard',
     icon: LayoutDashboard,
-    badge: 'Overview',
   },
   '/assessment': {
     title: 'Assessment',
     icon: ClipboardList,
-    badge: 'TPB Evaluation',
   },
   '/interventions': {
     title: 'Learning Modules',
     icon: BookOpen,
-    badge: 'Curriculum',
   },
   '/feedback': {
     title: 'Feedback',
     icon: MessageSquare,
-    badge: 'Reflections',
   },
   '/profile': {
     title: 'Student Profile',
     icon: UserIcon,
-    badge: 'Account',
   },
 };
 
@@ -92,19 +87,17 @@ export default function TopHeader() {
   const meta = PAGE_META[currentPath] || {
     title: 'Prisma Campus',
     icon: Shield,
-    badge: 'Active',
   };
   const PageIcon = meta.icon;
 
   return (
     <header className="app-top-header">
-      {/* Left: Breadcrumbs & Current Page Info */}
+      {/* Left: Current Page Title */}
       <div className="top-header-left">
         <div className="top-header-page-badge">
           <PageIcon size={16} className="top-header-page-icon" />
           <span className="top-header-page-title">{meta.title}</span>
         </div>
-        <span className="top-header-badge-tag">{meta.badge}</span>
       </div>
 
       {/* Right: Campus Indicator & Profile Trigger */}
@@ -190,7 +183,7 @@ export default function TopHeader() {
 
               <div className="clickup-dropdown-divider" />
 
-              {/* Sign Out Action — Sole action in dropdown */}
+              {/* Sign Out Action */}
               <div className="clickup-dropdown-footer">
                 <button
                   type="button"
