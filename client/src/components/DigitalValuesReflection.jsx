@@ -81,7 +81,7 @@ const REFLECTION_SLIDES = [
 /**
  * GeometricIslamicPattern
  * Subtle mathematical 8-pointed star & rosette motif inspired by Islamic architectural geometry.
- * Clean, minimal, low-opacity watermark suitable for an academic university platform.
+ * Clean, minimal, very low-opacity watermark suitable for a premium academic university platform.
  */
 function GeometricIslamicPattern({ className = '', style = {} }) {
   return (
@@ -97,7 +97,7 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
       }}
       aria-hidden="true"
     >
-      <g stroke="currentColor" strokeWidth="1.2" opacity="0.85">
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.6">
         {/* Outer square 1 */}
         <rect x="35" y="35" width="130" height="130" rx="4" />
         {/* Outer square 2 (rotated 45deg) */}
@@ -135,25 +135,25 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
 
 const slideVariants = {
   enter: (direction) => ({
-    x: direction > 0 ? 40 : -40,
+    x: direction > 0 ? 32 : -32,
     opacity: 0,
-    scale: 0.985,
+    scale: 0.99,
   }),
   center: {
     x: 0,
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.38,
-      ease: [0.25, 1, 0.5, 1],
+      duration: 0.4,
+      ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: (direction) => ({
-    x: direction > 0 ? -40 : 40,
+    x: direction > 0 ? -32 : 32,
     opacity: 0,
-    scale: 0.985,
+    scale: 0.99,
     transition: {
-      duration: 0.28,
+      duration: 0.25,
       ease: [0.4, 0, 0.2, 1],
     },
   }),
@@ -207,529 +207,277 @@ export default function DigitalValuesReflection() {
     <section
       aria-label="Digital Values Reflection"
       className="digital-values-section"
-      style={{
-        padding: '0 0 clamp(3.5rem, 6vw, 5rem)',
-        position: 'relative',
-      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Ambient Background Light Reflections & Dynamic Mesh Blobs */}
+      {/* ── Soft Gradient Mesh & Blurred Blobs (Apple/Linear style) ── */}
       <div className="digital-values-ambient-container" aria-hidden="true">
-        <div className="values-glow-orb values-glow-primary" />
-        <div className="values-glow-orb values-glow-secondary" />
-        <div className="values-glow-orb values-glow-accent" />
+        <div className="values-mesh-layer" />
+        <div className="values-glow-orb values-glow-indigo" />
+        <div className="values-glow-orb values-glow-teal" />
+        <div className="values-glow-orb values-glow-violet" />
         <div className="values-ambient-grid" />
       </div>
 
-      {/* ── Section Header ── */}
-      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'linear-gradient(135deg, rgba(8, 145, 178, 0.08), rgba(79, 70, 229, 0.08))',
-            border: '1px solid rgba(8, 145, 178, 0.22)',
-            borderRadius: 'var(--radius-full)',
-            padding: '0.35rem 0.95rem',
-            marginBottom: '1rem',
-            fontSize: '0.78rem',
-            fontWeight: 600,
-            color: 'var(--color-secondary)',
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <Sparkles size={13} />
-          Ethical Foundations for Digital Citizenship
+      <div className="digital-values-content-wrap">
+        {/* ── Section Header ── */}
+        <div className="digital-values-header">
+          <div className="digital-values-badge">
+            <Sparkles size={13} className="digital-values-sparkle" />
+            <span>Ethical Foundations for Digital Citizenship</span>
+          </div>
+
+          <h2 className="digital-values-title">
+            Digital Values Reflection
+          </h2>
+
+          <p className="digital-values-subtitle">
+            Timeless reflections on kindness, dignity, and justice — connecting ethical
+            traditions with research-driven cyberbullying prevention for campus communities.
+          </p>
+
+          {/* Quick Pillar selector tabs for desktop/tablet */}
+          <div
+            role="tablist"
+            aria-label="Reflection Topics"
+            className="digital-values-tablist"
+          >
+            {REFLECTION_SLIDES.map((slide, idx) => {
+              const isCurrent = idx === currentIndex;
+              return (
+                <button
+                  key={slide.id}
+                  role="tab"
+                  aria-selected={isCurrent}
+                  aria-controls={`reflection-panel-${slide.id}`}
+                  id={`reflection-tab-${slide.id}`}
+                  onClick={() => goToSlide(idx)}
+                  className={`digital-values-tab-btn ${isCurrent ? 'active' : ''}`}
+                  style={{
+                    borderColor: isCurrent ? slide.accentBorder : 'rgba(99, 102, 241, 0.12)',
+                    background: isCurrent ? slide.accentBg : 'rgba(255, 255, 255, 0.7)',
+                    color: isCurrent ? slide.accentColor : 'var(--color-text-secondary)',
+                  }}
+                >
+                  <span className="digital-values-tab-num">
+                    {slide.num}
+                  </span>
+                  <span>{slide.pillar}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <h2
-          style={{
-            fontSize: 'clamp(1.6rem, 3vw, 2.3rem)',
-            fontWeight: 800,
-            letterSpacing: '-0.025em',
-            color: 'var(--color-text-primary)',
-            marginBottom: '0.75rem',
-          }}
-        >
-          Digital Values Reflection
-        </h2>
-
-        <p
-          style={{
-            color: 'var(--color-text-muted)',
-            fontSize: 'clamp(0.92rem, 1.8vw, 1.05rem)',
-            maxWidth: '640px',
-            margin: '0 auto',
-            lineHeight: 1.65,
-          }}
-        >
-          Timeless reflections on kindness, dignity, and justice — connecting ethical
-          traditions with research-driven cyberbullying prevention for campus communities.
-        </p>
-
-        {/* Quick Pillar selector tabs for desktop/tablet */}
+        {/* ── Main Reflection Carousel Glassmorphism Card (1150px max width) ── */}
         <div
-          role="tablist"
-          aria-label="Reflection Topics"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-            marginTop: '1.75rem',
-          }}
+          ref={containerRef}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          className="digital-values-card"
+          aria-roledescription="carousel"
+          aria-label="Digital ethics quotes and behavioral explanations"
         >
-          {REFLECTION_SLIDES.map((slide, idx) => {
-            const isCurrent = idx === currentIndex;
-            return (
-              <button
-                key={slide.id}
-                role="tab"
-                aria-selected={isCurrent}
-                aria-controls={`reflection-panel-${slide.id}`}
-                id={`reflection-tab-${slide.id}`}
-                onClick={() => goToSlide(idx)}
-                className="digital-values-tab-btn"
+          {/* Animated Light Sweep Reflection across the glass surface */}
+          <div className="card-light-sweep" aria-hidden="true" />
+
+          {/* Very low-opacity Islamic Geometric Motifs in background corners */}
+          <div
+            className="card-pattern-watermark top-right"
+            style={{ color: activeSlide.accentColor }}
+            aria-hidden="true"
+          >
+            <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
+          </div>
+
+          <div
+            className="card-pattern-watermark bottom-left"
+            style={{ color: 'var(--color-primary)' }}
+            aria-hidden="true"
+          >
+            <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
+          </div>
+
+          {/* Top Progress bar for auto-play */}
+          <div className="card-progress-track">
+            {isPlaying && !isHovered && (
+              <motion.div
+                key={currentIndex}
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 7, ease: 'linear' }}
+                className="card-progress-fill"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.42rem 0.85rem',
-                  fontSize: '0.8rem',
-                  fontWeight: isCurrent ? 600 : 500,
-                  borderRadius: 'var(--radius-full)',
-                  border: isCurrent
-                    ? `1px solid ${slide.accentBorder}`
-                    : '1px solid var(--color-border)',
-                  background: isCurrent ? slide.accentBg : 'var(--color-surface)',
-                  color: isCurrent ? slide.accentColor : 'var(--color-text-secondary)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: isCurrent ? 'var(--shadow-xs)' : 'none',
+                  background: `linear-gradient(90deg, ${activeSlide.accentColor}, var(--color-primary))`,
                 }}
+              />
+            )}
+          </div>
+
+          {/* Card Body with Animated Presence */}
+          <div className="card-body-content">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={activeSlide.id}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                role="tabpanel"
+                id={`reflection-panel-${activeSlide.id}`}
+                aria-labelledby={`reflection-tab-${activeSlide.id}`}
+                className="card-slide-motion"
               >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.72rem',
-                    opacity: isCurrent ? 1 : 0.6,
-                  }}
-                >
-                  {slide.num}
-                </span>
-                <span>{slide.pillar}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── Main Reflection Carousel Card ── */}
-      <div
-        ref={containerRef}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        style={{
-          position: 'relative',
-          maxWidth: '920px',
-          margin: '0 auto',
-          background: 'var(--color-surface)',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--color-border)',
-          boxShadow: 'var(--shadow-md)',
-          overflow: 'hidden',
-          outline: 'none',
-        }}
-        className="card-hover digital-values-card"
-        aria-roledescription="carousel"
-        aria-label="Digital ethics quotes and behavioral explanations"
-      >
-        {/* Subtle Watermark Motifs (Top Right & Bottom Left) */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '-20px',
-            right: '-20px',
-            width: '180px',
-            height: '180px',
-            opacity: 0.05,
-            color: activeSlide.accentColor,
-            pointerEvents: 'none',
-            transition: 'color 0.4s ease',
-          }}
-        >
-          <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
-        </div>
-
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-40px',
-            left: '-40px',
-            width: '160px',
-            height: '160px',
-            opacity: 0.035,
-            color: 'var(--color-primary)',
-            pointerEvents: 'none',
-          }}
-        >
-          <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
-        </div>
-
-        {/* Top Progress bar for auto-play */}
-        <div
-          style={{
-            height: '3px',
-            width: '100%',
-            background: 'rgba(99, 102, 241, 0.08)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {isPlaying && !isHovered && (
-            <motion.div
-              key={currentIndex}
-              initial={{ width: '0%' }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 7, ease: 'linear' }}
-              style={{
-                height: '100%',
-                background: `linear-gradient(90deg, ${activeSlide.accentColor}, var(--color-primary))`,
-              }}
-            />
-          )}
-        </div>
-
-        {/* Card Body with Animated Presence */}
-        <div
-          style={{
-            padding: 'clamp(1.75rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.25rem)',
-            minHeight: '360px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative',
-          }}
-        >
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={activeSlide.id}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              role="tabpanel"
-              id={`reflection-panel-${activeSlide.id}`}
-              aria-labelledby={`reflection-tab-${activeSlide.id}`}
-              style={{ width: '100%' }}
-            >
-              {/* Top metadata row: badge & scripture reference */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '1rem',
-                  flexWrap: 'wrap',
-                  marginBottom: '1.75rem',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                    background: activeSlide.accentBg,
-                    border: `1px solid ${activeSlide.accentBorder}`,
-                    color: activeSlide.accentColor,
-                    borderRadius: 'var(--radius-full)',
-                    padding: '0.28rem 0.75rem',
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  <IconComponent size={14} />
-                  <span>{activeSlide.pillar}</span>
-                </div>
-
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.45rem',
-                    fontSize: '0.82rem',
-                    color: 'var(--color-text-secondary)',
-                    fontWeight: 600,
-                    fontFamily: 'var(--font-mono)',
-                    background: 'var(--color-surface-2)',
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <BookOpen size={13} color={activeSlide.accentColor} />
-                  <span>{activeSlide.reference}</span>
-                </div>
-              </div>
-
-              {/* Arabic Calligraphy Snippet (Subtle, restrained, beautiful) */}
-              <div
-                lang="ar"
-                dir="rtl"
-                style={{
-                  fontFamily: "'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, serif",
-                  fontSize: 'clamp(1.15rem, 2.4vw, 1.45rem)',
-                  lineHeight: 1.8,
-                  color: 'var(--color-text-primary)',
-                  opacity: 0.78,
-                  marginBottom: '0.75rem',
-                  letterSpacing: '0.02em',
-                }}
-              >
-                {activeSlide.arabic}
-              </div>
-
-              {/* Main Verse Quote */}
-              <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                <Quote
-                  size={32}
-                  style={{
-                    position: 'absolute',
-                    top: '-6px',
-                    left: '-4px',
-                    opacity: 0.12,
-                    color: activeSlide.accentColor,
-                    pointerEvents: 'none',
-                  }}
-                />
-                <blockquote
-                  style={{
-                    margin: 0,
-                    paddingLeft: '0',
-                    fontSize: 'clamp(1.3rem, 2.5vw, 1.75rem)',
-                    fontWeight: 700,
-                    lineHeight: 1.35,
-                    color: 'var(--color-text-primary)',
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  "{activeSlide.verse.replace(/^["']|["']$/g, '')}"
-                </blockquote>
-              </div>
-
-              {/* Explanatory Connection Box — Linking to Cyberbullying & Behavioral Science */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.8))',
-                  border: '1px solid var(--color-border)',
-                  borderLeft: `4px solid ${activeSlide.accentColor}`,
-                  borderRadius: 'var(--radius-md)',
-                  padding: '1.15rem 1.35rem',
-                  marginTop: '1.25rem',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '0.5rem',
-                    marginBottom: '0.4rem',
-                  }}
-                >
-                  <span
+                {/* Top metadata row: badge & scripture reference */}
+                <div className="card-meta-row">
+                  <div
+                    className="card-pillar-pill"
                     style={{
-                      fontSize: '0.74rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      background: activeSlide.accentBg,
+                      border: `1px solid ${activeSlide.accentBorder}`,
                       color: activeSlide.accentColor,
                     }}
                   >
-                    Positive Online Behaviour
-                  </span>
+                    <IconComponent size={15} />
+                    <span>{activeSlide.pillar}</span>
+                  </div>
+
+                  <div className="card-reference-pill">
+                    <BookOpen size={13} color={activeSlide.accentColor} />
+                    <span>{activeSlide.reference}</span>
+                  </div>
                 </div>
 
-                <p
-                  style={{
-                    fontSize: 'clamp(0.92rem, 1.6vw, 1rem)',
-                    color: 'var(--color-text-primary)',
-                    fontWeight: 500,
-                    lineHeight: 1.6,
-                    margin: '0 0 0.5rem',
-                  }}
-                >
-                  {activeSlide.explanation}
-                </p>
+                {/* Main Quote & Arabic Script Grid Layout */}
+                <div className="card-quote-section">
+                  {/* Arabic Calligraphy Snippet (clean, academic, elegant) */}
+                  <div
+                    lang="ar"
+                    dir="rtl"
+                    className="card-arabic-text"
+                  >
+                    {activeSlide.arabic}
+                  </div>
 
-                <p
+                  {/* Main Verse Quote */}
+                  <div className="card-verse-box">
+                    <Quote
+                      size={44}
+                      className="card-quote-icon"
+                      style={{ color: activeSlide.accentColor }}
+                    />
+                    <blockquote className="card-quote-text">
+                      "{activeSlide.verse.replace(/^["']|["']$/g, '')}"
+                    </blockquote>
+                  </div>
+                </div>
+
+                {/* Explanatory Connection Box — Linking to Cyberbullying & Behavioral Science */}
+                <div
+                  className="card-explanation-box"
                   style={{
-                    fontSize: '0.84rem',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.55,
-                    margin: 0,
+                    borderLeftColor: activeSlide.accentColor,
                   }}
                 >
-                  <strong style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>Campus Action: </strong>
-                  {activeSlide.takeaway}
-                </p>
+                  <div className="card-explanation-header">
+                    <span
+                      className="card-explanation-tag"
+                      style={{ color: activeSlide.accentColor }}
+                    >
+                      Positive Online Behaviour & Science
+                    </span>
+                  </div>
+
+                  <p className="card-explanation-desc">
+                    {activeSlide.explanation}
+                  </p>
+
+                  <p className="card-explanation-action">
+                    <strong className="card-action-label">Campus Action: </strong>
+                    {activeSlide.takeaway}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* ── Footer Controls: Prev/Next, Dots, Play/Pause & Counter ── */}
+            <div className="card-footer-controls">
+              {/* Left: Auto-play toggle & Slide Counter */}
+              <div className="card-autoplay-group">
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying((p) => !p)}
+                  aria-label={isPlaying ? 'Pause slider auto-play' : 'Resume slider auto-play'}
+                  title={isPlaying ? 'Pause auto-rotation' : 'Play auto-rotation'}
+                  className="card-control-btn play-pause-btn"
+                  style={{
+                    color: isPlaying ? 'var(--color-text-muted)' : activeSlide.accentColor,
+                  }}
+                >
+                  {isPlaying ? <Pause size={13} /> : <Play size={13} />}
+                </button>
+
+                <span className="card-counter">
+                  <span className="card-counter-current">{activeSlide.num}</span>
+                  {' / '}
+                  {String(REFLECTION_SLIDES.length).padStart(2, '0')}
+                </span>
               </div>
-            </motion.div>
-          </AnimatePresence>
 
-          {/* ── Footer Controls: Prev/Next, Dots, Play/Pause & Counter ── */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1rem',
-              flexWrap: 'wrap',
-              marginTop: '2rem',
-              paddingTop: '1.25rem',
-              borderTop: '1px solid var(--color-border)',
-            }}
-          >
-            {/* Left: Auto-play toggle & Slide Counter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <button
-                type="button"
-                onClick={() => setIsPlaying((p) => !p)}
-                aria-label={isPlaying ? 'Pause slider auto-play' : 'Resume slider auto-play'}
-                title={isPlaying ? 'Pause auto-rotation' : 'Play auto-rotation'}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                  color: isPlaying ? 'var(--color-text-muted)' : activeSlide.accentColor,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
+              {/* Center: Navigation Indicator Dots */}
+              <div
+                className="card-dots-group"
+                role="group"
+                aria-label="Slide indicators"
               >
-                {isPlaying ? <Pause size={13} /> : <Play size={13} />}
-              </button>
+                {REFLECTION_SLIDES.map((slide, idx) => {
+                  const isActive = idx === currentIndex;
+                  return (
+                    <button
+                      key={slide.id}
+                      type="button"
+                      onClick={() => goToSlide(idx)}
+                      aria-label={`Go to slide ${idx + 1}: ${slide.pillar}`}
+                      className={`card-dot ${isActive ? 'active' : ''}`}
+                      style={{
+                        background: isActive
+                          ? slide.accentColor
+                          : 'rgba(99, 102, 241, 0.16)',
+                      }}
+                    />
+                  );
+                })}
+              </div>
 
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.82rem',
-                  color: 'var(--color-text-subtle)',
-                  fontWeight: 600,
-                  letterSpacing: '0.05em',
-                }}
-              >
-                <span style={{ color: 'var(--color-text-primary)' }}>{activeSlide.num}</span>
-                {' / '}
-                {String(REFLECTION_SLIDES.length).padStart(2, '0')}
-              </span>
-            </div>
+              {/* Right: Prev & Next Arrow Buttons */}
+              <div className="card-arrows-group">
+                <button
+                  type="button"
+                  onClick={() => paginate(-1)}
+                  aria-label="Previous reflection slide"
+                  className="digital-values-nav-btn card-arrow-btn"
+                >
+                  <ChevronLeft size={18} />
+                </button>
 
-            {/* Center: Navigation Indicator Dots */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-              }}
-              role="group"
-              aria-label="Slide indicators"
-            >
-              {REFLECTION_SLIDES.map((slide, idx) => {
-                const isActive = idx === currentIndex;
-                return (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => goToSlide(idx)}
-                    aria-label={`Go to slide ${idx + 1}: ${slide.pillar}`}
-                    style={{
-                      height: '8px',
-                      width: isActive ? '28px' : '8px',
-                      borderRadius: 'var(--radius-full)',
-                      background: isActive
-                        ? slide.accentColor
-                        : 'var(--color-surface-3)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                    }}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Right: Prev & Next Arrow Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <button
-                type="button"
-                onClick={() => paginate(-1)}
-                aria-label="Previous reflection slide"
-                className="digital-values-nav-btn"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 38,
-                  height: 38,
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                  color: 'var(--color-text-primary)',
-                  cursor: 'pointer',
-                  transition: 'all 0.18s ease',
-                  boxShadow: 'var(--shadow-xs)',
-                }}
-              >
-                <ChevronLeft size={18} />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => paginate(1)}
-                aria-label="Next reflection slide"
-                className="digital-values-nav-btn"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 38,
-                  height: 38,
-                  borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                  color: 'var(--color-text-primary)',
-                  cursor: 'pointer',
-                  transition: 'all 0.18s ease',
-                  boxShadow: 'var(--shadow-xs)',
-                }}
-              >
-                <ChevronRight size={18} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => paginate(1)}
+                  aria-label="Next reflection slide"
+                  className="digital-values-nav-btn card-arrow-btn"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Subtle Academic Footer Attribution Note */}
-      <div
-        style={{
-          textAlign: 'center',
-          marginTop: '1.25rem',
-          fontSize: '0.78rem',
-          color: 'var(--color-text-subtle)',
-          letterSpacing: '0.01em',
-        }}
-      >
-        <span>Prisma University Behavioral Research • Integrating ethical frameworks with evidence-based anti-cyberbullying modules</span>
+        {/* Subtle Academic Attribution Note */}
+        <div className="digital-values-footer-note">
+          <span>Prisma University Behavioral Research • Integrating ethical frameworks with evidence-based anti-cyberbullying modules</span>
+        </div>
       </div>
     </section>
   );
