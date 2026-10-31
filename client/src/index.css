@@ -397,16 +397,18 @@ h6 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  color: #fff;
-  border-color: rgba(22, 19, 83, 0.2);
-  box-shadow: 0 1px 3px rgba(33, 30, 97, 0.25), 0 2px 8px rgba(13, 11, 46, 0.15);
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #2e1065 70%, #431407 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(167, 139, 250, 0.32);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28), 0 1px 3px rgba(124, 58, 237, 0.22);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
-  box-shadow: 0 2px 6px rgba(36, 33, 100, 0.3), 0 4px 16px rgba(79, 70, 229, 0.2);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 45%, #4c1d95 85%, #581c87 100%);
+  border-color: rgba(192, 132, 252, 0.5);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.38), 0 2px 6px rgba(124, 58, 237, 0.3);
+  transform: translateY(-2px);
+  color: #ffffff;
 }
 
 .btn-secondary {
@@ -3245,6 +3247,17 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 40%, #2e1065 85%, #3b1368 100%) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(167, 139, 250, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25), 0 1px 3px rgba(124, 58, 237, 0.2) !important;
+}
+
+.navbar-getstarted-btn:hover {
+  background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 50%, #4c1d95 100%) !important;
+  border-color: rgba(192, 132, 252, 0.55) !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+  transform: translateY(-1px);
 }
 
 .navbar-mobile-toggle {
@@ -3469,12 +3482,17 @@ select.form-input option {
 }
 
 .hero-primary-btn {
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.32), 0 1px 3px rgba(79, 70, 229, 0.2);
+  background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 35%, #2e1065 75%, #3b1368 100%) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(167, 139, 250, 0.35) !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.35), 0 2px 6px rgba(124, 58, 237, 0.25) !important;
 }
 
 .hero-primary-btn:hover {
+  background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 40%, #4c1d95 85%, #581c87 100%) !important;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  border-color: rgba(192, 132, 252, 0.6) !important;
+  box-shadow: 0 8px 26px rgba(79, 70, 229, 0.45), 0 0 12px rgba(167, 139, 250, 0.3) !important;
 }
 
 .hero-secondary-btn:hover {
