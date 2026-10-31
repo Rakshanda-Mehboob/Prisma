@@ -93,7 +93,7 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
         <rect
           x="35"
           y="35"
-          width="130"
+          width="500"
           height="130"
           rx="4"
           transform="rotate(45 100 100)"
@@ -246,7 +246,7 @@ export default function DigitalValuesReflection() {
           </div>
         </div>
 
-        {/* ── Main Verse Card (CyberMirror Style: Deep Navy-Blue #0f172a to Royal Purple/Indigo #3b1368) ── */}
+        {/* ── Main Verse Card (CyberMirror Style: Deep Navy-Blue #26282cff to Royal Purple/Indigo #793bc0ff) ── */}
         <div
           ref={containerRef}
           tabIndex={0}
@@ -257,7 +257,7 @@ export default function DigitalValuesReflection() {
         >
           {/* Large Faded Decorative Quote Watermark at Top-Left */}
           <Quote
-            size={120}
+            size={10}
             className="cybermirror-watermark-quote"
             aria-hidden="true"
           />

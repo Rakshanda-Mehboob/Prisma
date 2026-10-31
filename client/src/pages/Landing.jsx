@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import Hero from '../components/landing/Hero';
 import HowItWorks from '../components/landing/HowItWorks';
-import CTA from '../components/landing/CTA';
 import DigitalValuesReflection from '../components/DigitalValuesReflection';
 
 export default function Landing() {
@@ -20,9 +19,6 @@ export default function Landing() {
       <section className="landing-section values-section" id="about">
         <DigitalValuesReflection />
       </section>
-
-      {/* 4. Final CTA Banner */}
-      <CTA user={user} />
     </div>
   );
 }
