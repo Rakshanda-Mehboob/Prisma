@@ -5,8 +5,9 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -23,15 +24,28 @@ import Profile from './pages/Profile';
 import Onboarding from './pages/Onboarding';
 import NotFound from './pages/NotFound';
 
+// Pages that hide global chrome entirely (auth/onboarding flow)
+const AUTH_PAGES = ['/login', '/register', '/onboarding', '/forgot-password', '/reset-password'];
+
 function AppShell() {
   const location = useLocation();
-  // Hide global Navbar and Footer on /login, /register, and /onboarding as per CyberMirror auth layout specs
-  const isAuthPage = ['/login', '/register', '/onboarding'].includes(location.pathname);
+  const { user } = useAuth();
+
+  const isAuthPage = AUTH_PAGES.some((p) => location.pathname.startsWith(p));
+  // Show sidebar when: user is logged in AND not on an auth page AND not on landing
+  const isLanding = location.pathname === '/';
+  const showSidebar = !!user && !isAuthPage && !isLanding;
 
   return (
-    <div className={`app-layout ${isAuthPage ? 'auth-mode' : ''}`}>
-      {!isAuthPage && <Navbar />}
-      <main className={`page-content ${isAuthPage ? 'auth-main' : ''}`}>
+    <div className={`app-layout ${isAuthPage ? 'auth-mode' : ''} ${showSidebar ? 'with-sidebar' : ''}`}>
+      {/* Top Navbar — only for landing page and auth pages */}
+      {!showSidebar && !isAuthPage && <Navbar />}
+
+      {/* Left Sidebar — authenticated app pages */}
+      {showSidebar && <Sidebar />}
+
+      {/* Main content */}
+      <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''}`}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
@@ -94,7 +108,9 @@ function AppShell() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      {!isAuthPage && <Footer />}
+
+      {/* Footer — only on landing */}
+      {isLanding && <Footer />}
     </div>
   );
 }

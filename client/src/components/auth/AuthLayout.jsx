@@ -41,13 +41,8 @@ export default function AuthLayout({ activeTab = 'login', children }) {
         <div className="auth-main-grid">
           {/* Left Column: Prisma Mission & Feature Highlights */}
           <section className="auth-hero-col" aria-label="Prisma System Overview">
-            <div className="auth-hero-badge">
-              <Shield size={14} />
-              <span>AI-Guided Cyberbullying Intervention Platform</span>
-            </div>
-
             <h1 className="auth-hero-title">
-              Empowering university students to stand against online harassment.
+              Empowering students to stand against online harassment.
             </h1>
 
             <p className="auth-hero-subtitle">
