@@ -4,13 +4,10 @@ import { motion } from 'framer-motion';
 import {
   Shield,
   ArrowRight,
-  CheckCircle2,
-  Sparkles,
-  Check,
-  TrendingUp,
-  MessageSquare
+  CheckCircle2
 } from 'lucide-react';
 import Button from '../ui/Button';
+import StudentHeroIllustration from './StudentHeroIllustration';
 
 const TRUST_POINTS = [
   'Based on proven research',
@@ -31,7 +28,7 @@ export default function Hero({ user }) {
       </div>
 
       <div className="hero-container">
-        {/* Left Column: Headline, Copy, CTAs, Trust Grid */}
+        {/* Left Column: Headline, Copy, CTAs, Trust Grid (Untouched original texts) */}
         <motion.div
           className="hero-content"
           initial={{ opacity: 0, y: 20 }}
@@ -91,110 +88,14 @@ export default function Hero({ user }) {
           </div>
         </motion.div>
 
-        {/* Right Column: Interactive Product Preview Visual */}
+        {/* Right Column: University Student-Centric Visual Illustration */}
         <motion.div
           className="hero-visual"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
         >
-          <div className="hero-preview-wrapper">
-            {/* Layer A: Sample Scenario Card */}
-            <div className="preview-card scenario-card">
-              <div className="scenario-card-header">
-                <div className="scenario-header-left">
-                  <span className="scenario-live-dot" />
-                  <span className="scenario-badge">Scenario Simulation</span>
-                </div>
-                <span className="scenario-module-tag">Module 1 · Bystander Action</span>
-              </div>
-
-              <div className="scenario-question-box">
-                <div className="scenario-prompt-icon">
-                  <MessageSquare size={16} />
-                </div>
-                <p className="scenario-question">
-                  Someone comments on your post: <br />
-                  <span className="scenario-quote">
-                    "You have no right to speak on this. Delete your account."
-                  </span>
-                  <br />
-                  How would you respond?
-                </p>
-              </div>
-
-              <div className="scenario-options-list">
-                {/* Option 1 */}
-                <div className="scenario-option">
-                  <span className="option-radio" />
-                  <span className="option-text">Fire back with an angry response to defend myself</span>
-                </div>
-
-                {/* Option 2 (Selected / Healthy Choice) */}
-                <div className="scenario-option active">
-                  <span className="option-radio active">
-                    <Check size={12} strokeWidth={3} />
-                  </span>
-                  <span className="option-text">
-                    Pause, preserve screenshot evidence, and report safely
-                  </span>
-                  <span className="option-badge">Constructive</span>
-                </div>
-
-                {/* Option 3 */}
-                <div className="scenario-option">
-                  <span className="option-radio" />
-                  <span className="option-text">Ignore it and leave the community entirely</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Layer B: Resilience Score Ring Card */}
-            <div className="preview-card floating-score-card">
-              <div className="score-ring-container">
-                <svg className="score-ring-svg" viewBox="0 0 80 80">
-                  <circle
-                    className="score-ring-bg"
-                    cx="40"
-                    cy="40"
-                    r="34"
-                  />
-                  <circle
-                    className="score-ring-progress"
-                    cx="40"
-                    cy="40"
-                    r="34"
-                    strokeDasharray="213.6"
-                    strokeDashoffset="47"
-                  />
-                </svg>
-                <div className="score-ring-content">
-                  <span className="score-number">78%</span>
-                </div>
-              </div>
-
-              <div className="score-details">
-                <span className="score-label">Resilience Score</span>
-                <span className="score-status">
-                  <TrendingUp size={12} />
-                  +14% from baseline
-                </span>
-              </div>
-            </div>
-
-            {/* Layer C: AI Tip Bubble */}
-            <div className="preview-card floating-tip-card">
-              <div className="tip-icon-box">
-                <Sparkles size={16} />
-              </div>
-              <div className="tip-text-box">
-                <span className="tip-tag">AI Guidance</span>
-                <p className="tip-content">
-                  De-escalate and preserve documentation without engaging in public retaliation.
-                </p>
-              </div>
-            </div>
-          </div>
+          <StudentHeroIllustration />
         </motion.div>
       </div>
     </section>

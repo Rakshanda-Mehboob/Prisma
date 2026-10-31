@@ -214,6 +214,14 @@ export default function DigitalValuesReflection() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Ambient Background Light Reflections & Dynamic Mesh Blobs */}
+      <div className="digital-values-ambient-container" aria-hidden="true">
+        <div className="values-glow-orb values-glow-primary" />
+        <div className="values-glow-orb values-glow-secondary" />
+        <div className="values-glow-orb values-glow-accent" />
+        <div className="values-ambient-grid" />
+      </div>
+
       {/* ── Section Header ── */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <div
