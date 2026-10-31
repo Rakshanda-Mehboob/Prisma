@@ -6206,3 +6206,306 @@ select.form-input option {
     padding: 1.4rem 1.2rem;
   }
 }
+
+
+/* =========================================================
+   TOP HEADER (ClickUp-Style App Navigation)
+   ========================================================= */
+
+.app-main-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.app-main-direct {
+  display: contents;
+}
+
+.app-top-header {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.top-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.top-header-page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #0f172a);
+}
+
+.top-header-page-icon {
+  color: var(--color-primary, #4f46e5);
+}
+
+.top-header-badge-tag {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-primary, #4f46e5);
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.16);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+.top-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.top-header-campus-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: rgba(241, 245, 249, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.top-header-campus-icon {
+  color: var(--color-primary);
+}
+
+/* Profile Trigger */
+.top-header-profile-wrapper {
+  position: relative;
+}
+
+.top-header-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  padding: 0.3rem 0.65rem 0.3rem 0.35rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.top-header-profile-btn:hover,
+.top-header-profile-btn.active {
+  background: #ffffff;
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+}
+
+.top-header-avatar {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 40%, #2e1065 85%, #3b1368 100%);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid rgba(167, 139, 250, 0.4);
+}
+
+.top-header-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.top-header-status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+}
+
+.top-header-user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.top-header-user-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.top-header-chevron {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.top-header-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+/* ClickUp-style Dropdown */
+.clickup-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 275px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(99, 102, 241, 0.06);
+  padding: 0.75rem 0.5rem;
+  z-index: 100;
+  animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.clickup-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.5rem 0.65rem 0.75rem;
+}
+
+.clickup-dropdown-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 40%, #2e1065 85%, #3b1368 100%);
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 2px solid rgba(167, 139, 250, 0.35);
+  flex-shrink: 0;
+}
+
+.clickup-dropdown-user-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.clickup-dropdown-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clickup-dropdown-email {
+  font-size: 0.74rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.clickup-dropdown-cms-badge {
+  display: inline-block;
+  font-size: 0.67rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #4f46e5;
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.16);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+}
+
+.clickup-dropdown-divider {
+  height: 1px;
+  background: rgba(226, 232, 240, 0.8);
+  margin: 0.4rem 0.5rem;
+}
+
+.clickup-dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.clickup-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #334155;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.clickup-menu-item:hover {
+  background: rgba(79, 70, 229, 0.06);
+  color: #4f46e5;
+}
+
+.clickup-dropdown-footer {
+  padding-top: 0.15rem;
+}
+
+.clickup-logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.clickup-logout-btn:hover {
+  background: rgba(220, 38, 38, 0.08);
+}

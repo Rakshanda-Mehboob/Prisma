@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import TopHeader from './components/TopHeader';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -44,70 +45,75 @@ function AppShell() {
       {/* Left Sidebar — authenticated app pages */}
       {showSidebar && <Sidebar />}
 
-      {/* Main content */}
-      <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''} ${isLanding ? 'landing-main' : ''}`}>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+      {/* Content wrapper with ClickUp-style TopHeader for authenticated app pages */}
+      <div className={showSidebar ? 'app-main-wrapper' : 'app-main-direct'}>
+        {showSidebar && <TopHeader />}
 
-          {/* Protected Routes — Modules 1 to 4 & Operations */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/assessment"
-            element={
-              <ProtectedRoute>
-                <Assessment />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/interventions"
-            element={
-              <ProtectedRoute>
-                <Interventions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/feedback"
-            element={
-              <ProtectedRoute>
-                <Feedback />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute>
-                <Onboarding />
-              </ProtectedRoute>
-            }
-          />
+        {/* Main content */}
+        <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''} ${isLanding ? 'landing-main' : ''}`}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* 404 Catch-All */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
+            {/* Protected Routes — Modules 1 to 4 & Operations */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assessment"
+              element={
+                <ProtectedRoute>
+                  <Assessment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/interventions"
+              element={
+                <ProtectedRoute>
+                  <Interventions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <Feedback />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 404 Catch-All */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
 
       {/* Footer — only on landing */}
       {isLanding && <Footer />}
