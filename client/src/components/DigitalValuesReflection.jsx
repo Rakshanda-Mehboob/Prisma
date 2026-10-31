@@ -11,8 +11,7 @@ import {
   Compass,
   Pause,
   Play,
-  Sparkles,
-  ArrowRight
+  Sparkles
 } from 'lucide-react';
 
 const REFLECTION_SLIDES = [
@@ -26,9 +25,7 @@ const REFLECTION_SLIDES = [
     explanation: 'Kind and respectful communication helps create healthier digital communities.',
     takeaway: 'Before commenting or messaging in student forums, frame your speech constructively. Words left on a screen carry lasting emotional weight.',
     icon: HeartHandshake,
-    accentColor: 'var(--color-secondary)', // Teal
-    accentBg: 'rgba(8, 145, 178, 0.08)',
-    accentBorder: 'rgba(8, 145, 178, 0.22)',
+    accentColor: '#10b981', // Emerald/Teal
     badgeLabel: 'Civility & Tone',
   },
   {
@@ -41,9 +38,7 @@ const REFLECTION_SLIDES = [
     explanation: 'Everyone deserves dignity and respect in online interactions.',
     takeaway: 'Refuse to participate in mocking memes, derogatory labeling, or public cyber-shaming. Anonymity behind a keyboard never strips someone of their human dignity.',
     icon: ShieldCheck,
-    accentColor: 'var(--color-primary)', // Indigo
-    accentBg: 'rgba(79, 70, 229, 0.08)',
-    accentBorder: 'rgba(79, 70, 229, 0.22)',
+    accentColor: '#6366f1', // Indigo
     badgeLabel: 'Anti-Harassment',
   },
   {
@@ -56,9 +51,7 @@ const REFLECTION_SLIDES = [
     explanation: 'Fairness and empathy are essential for responsible digital behaviour.',
     takeaway: 'Practice active, positive bystander behavior. When you witness unfair digital targeting, stand with the individual through fair intervention and empathetic support.',
     icon: Scale,
-    accentColor: 'var(--color-success)', // Emerald
-    accentBg: 'rgba(5, 150, 105, 0.08)',
-    accentBorder: 'rgba(5, 150, 105, 0.22)',
+    accentColor: '#06b6d4', // Cyan
     badgeLabel: 'Ethical Bystander',
   },
   {
@@ -71,9 +64,7 @@ const REFLECTION_SLIDES = [
     explanation: 'Verifying information before sharing stops the spread of defamatory rumors and misinformation.',
     takeaway: 'Pause and fact-check before forwarding screenshots, unverified rumors, or harmful allegations across campus communication channels.',
     icon: Compass,
-    accentColor: 'var(--color-warning)', // Warm Amber
-    accentBg: 'rgba(217, 119, 6, 0.08)',
-    accentBorder: 'rgba(217, 119, 6, 0.22)',
+    accentColor: '#f59e0b', // Amber/Gold
     badgeLabel: 'Digital Integrity',
   },
 ];
@@ -81,7 +72,7 @@ const REFLECTION_SLIDES = [
 /**
  * GeometricIslamicPattern
  * Subtle mathematical 8-pointed star & rosette motif inspired by Islamic architectural geometry.
- * Clean, minimal, very low-opacity watermark suitable for a premium academic university platform.
+ * Clean, minimal, low-opacity watermark.
  */
 function GeometricIslamicPattern({ className = '', style = {} }) {
   return (
@@ -97,10 +88,8 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
       }}
       aria-hidden="true"
     >
-      <g stroke="currentColor" strokeWidth="1.2" opacity="0.6">
-        {/* Outer square 1 */}
+      <g stroke="currentColor" strokeWidth="1" opacity="0.45">
         <rect x="35" y="35" width="130" height="130" rx="4" />
-        {/* Outer square 2 (rotated 45deg) */}
         <rect
           x="35"
           y="35"
@@ -109,7 +98,6 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
           rx="4"
           transform="rotate(45 100 100)"
         />
-        {/* Inner concentric octagram */}
         <rect x="55" y="55" width="90" height="90" rx="2" />
         <rect
           x="55"
@@ -119,11 +107,9 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
           rx="2"
           transform="rotate(45 100 100)"
         />
-        {/* Central rosette circle & diamond */}
         <circle cx="100" cy="100" r="26" strokeDasharray="3 3" />
         <circle cx="100" cy="100" r="12" />
         <circle cx="100" cy="100" r="3" fill="currentColor" />
-        {/* Radiating corner accents */}
         <line x1="100" y1="10" x2="100" y2="35" />
         <line x1="100" y1="165" x2="100" y2="190" />
         <line x1="10" y1="100" x2="35" y2="100" />
@@ -135,25 +121,25 @@ function GeometricIslamicPattern({ className = '', style = {} }) {
 
 const slideVariants = {
   enter: (direction) => ({
-    x: direction > 0 ? 32 : -32,
+    x: direction > 0 ? 30 : -30,
     opacity: 0,
-    scale: 0.99,
+    scale: 0.985,
   }),
   center: {
     x: 0,
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.4,
+      duration: 0.38,
       ease: [0.16, 1, 0.3, 1],
     },
   },
   exit: (direction) => ({
-    x: direction > 0 ? -32 : 32,
+    x: direction > 0 ? -30 : 30,
     opacity: 0,
-    scale: 0.99,
+    scale: 0.985,
     transition: {
-      duration: 0.25,
+      duration: 0.24,
       ease: [0.4, 0, 0.2, 1],
     },
   }),
@@ -183,7 +169,6 @@ export default function DigitalValuesReflection() {
     setSlide([targetIndex, newDir]);
   };
 
-  // Keyboard navigation
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowLeft') {
       paginate(-1);
@@ -192,7 +177,6 @@ export default function DigitalValuesReflection() {
     }
   };
 
-  // Auto-play timer
   useEffect(() => {
     if (!isPlaying || isHovered) return;
 
@@ -210,7 +194,7 @@ export default function DigitalValuesReflection() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* ── Soft Gradient Mesh & Blurred Blobs (Apple/Linear style) ── */}
+      {/* Soft Ambient Mesh Background */}
       <div className="digital-values-ambient-container" aria-hidden="true">
         <div className="values-mesh-layer" />
         <div className="values-glow-orb values-glow-indigo" />
@@ -220,7 +204,7 @@ export default function DigitalValuesReflection() {
       </div>
 
       <div className="digital-values-content-wrap">
-        {/* ── Section Header ── */}
+        {/* Section Header */}
         <div className="digital-values-header">
           <div className="digital-values-badge">
             <Sparkles size={13} className="digital-values-sparkle" />
@@ -236,7 +220,7 @@ export default function DigitalValuesReflection() {
             traditions with research-driven cyberbullying prevention for campus communities.
           </p>
 
-          {/* Quick Pillar selector tabs for desktop/tablet */}
+          {/* Top Quick Pillar Selector Pills */}
           <div
             role="tablist"
             aria-label="Reflection Topics"
@@ -253,15 +237,8 @@ export default function DigitalValuesReflection() {
                   id={`reflection-tab-${slide.id}`}
                   onClick={() => goToSlide(idx)}
                   className={`digital-values-tab-btn ${isCurrent ? 'active' : ''}`}
-                  style={{
-                    borderColor: isCurrent ? slide.accentBorder : 'rgba(99, 102, 241, 0.12)',
-                    background: isCurrent ? slide.accentBg : 'rgba(255, 255, 255, 0.7)',
-                    color: isCurrent ? slide.accentColor : 'var(--color-text-secondary)',
-                  }}
                 >
-                  <span className="digital-values-tab-num">
-                    {slide.num}
-                  </span>
+                  <span className="digital-values-tab-num">{slide.num}</span>
                   <span>{slide.pillar}</span>
                 </button>
               );
@@ -269,53 +246,96 @@ export default function DigitalValuesReflection() {
           </div>
         </div>
 
-        {/* ── Main Reflection Carousel Glassmorphism Card (1150px max width) ── */}
+        {/* ── Main Verse Card (CyberMirror Style: Wide max-w-6xl, Dark Deep-Green to Dark-Brown Gradient) ── */}
         <div
           ref={containerRef}
           tabIndex={0}
           onKeyDown={handleKeyDown}
-          className="digital-values-card"
+          className="cybermirror-quote-card"
           aria-roledescription="carousel"
           aria-label="Digital ethics quotes and behavioral explanations"
         >
-          {/* Animated Light Sweep Reflection across the glass surface */}
-          <div className="card-light-sweep" aria-hidden="true" />
-
-          {/* Very low-opacity Islamic Geometric Motifs in background corners */}
-          <div
-            className="card-pattern-watermark top-right"
-            style={{ color: activeSlide.accentColor }}
+          {/* Large Faded Decorative Quote Watermark at Top-Left */}
+          <Quote
+            size={120}
+            className="cybermirror-watermark-quote"
             aria-hidden="true"
-          >
+          />
+
+          {/* Low-opacity Islamic Geometric Motifs in background corners */}
+          <div className="cybermirror-corner-pattern top-right" aria-hidden="true">
+            <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
+          </div>
+          <div className="cybermirror-corner-pattern bottom-left" aria-hidden="true">
             <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
           </div>
 
-          <div
-            className="card-pattern-watermark bottom-left"
-            style={{ color: 'var(--color-primary)' }}
-            aria-hidden="true"
+          {/* Top Center Controls: Category/Surah Chips + Indicator Dots + Play/Pause Toggle */}
+          <div className="cybermirror-top-bar">
+            {/* Category / Pillar Chip */}
+            <div className="cybermirror-badge-pill">
+              <IconComponent size={14} style={{ color: '#f5b82e' }} />
+              <span>{activeSlide.pillar}</span>
+            </div>
+
+            {/* Navigation Dots with Gold Active Pill */}
+            <div className="cybermirror-dots-track" role="group" aria-label="Slide indicators">
+              {REFLECTION_SLIDES.map((slide, idx) => {
+                const isActive = idx === currentIndex;
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => goToSlide(idx)}
+                    aria-label={`Go to slide ${idx + 1}: ${slide.pillar}`}
+                    className={`cybermirror-dot ${isActive ? 'active' : ''}`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Reference Badge & Pause/Play Control */}
+            <div className="cybermirror-top-right-group">
+              <div className="cybermirror-surah-pill">
+                <BookOpen size={13} style={{ color: '#f5b82e' }} />
+                <span>{activeSlide.reference}</span>
+              </div>
+
+              {/* Working Pause/Play Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsPlaying((p) => !p)}
+                aria-label={isPlaying ? 'Pause slider auto-play' : 'Resume slider auto-play'}
+                title={isPlaying ? 'Pause auto-rotation' : 'Play auto-rotation'}
+                className="cybermirror-pause-btn"
+              >
+                {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Left Arrow Button (Round Glass Button on the Left Side) */}
+          <button
+            type="button"
+            onClick={() => paginate(-1)}
+            aria-label="Previous reflection slide"
+            className="cybermirror-side-nav-btn prev-btn"
           >
-            <GeometricIslamicPattern style={{ width: '100%', height: '100%' }} />
-          </div>
+            <ChevronLeft size={22} />
+          </button>
 
-          {/* Top Progress bar for auto-play */}
-          <div className="card-progress-track">
-            {isPlaying && !isHovered && (
-              <motion.div
-                key={currentIndex}
-                initial={{ width: '0%' }}
-                animate={{ width: '100%' }}
-                transition={{ duration: 7, ease: 'linear' }}
-                className="card-progress-fill"
-                style={{
-                  background: `linear-gradient(90deg, ${activeSlide.accentColor}, var(--color-primary))`,
-                }}
-              />
-            )}
-          </div>
+          {/* Right Arrow Button (Round Glass Button on the Right Side) */}
+          <button
+            type="button"
+            onClick={() => paginate(1)}
+            aria-label="Next reflection slide"
+            className="cybermirror-side-nav-btn next-btn"
+          >
+            <ChevronRight size={22} />
+          </button>
 
-          {/* Card Body with Animated Presence */}
-          <div className="card-body-content">
+          {/* Central Verse Body Content */}
+          <div className="cybermirror-center-body">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={activeSlide.id}
@@ -327,150 +347,59 @@ export default function DigitalValuesReflection() {
                 role="tabpanel"
                 id={`reflection-panel-${activeSlide.id}`}
                 aria-labelledby={`reflection-tab-${activeSlide.id}`}
-                className="card-slide-motion"
+                className="cybermirror-slide-container"
               >
-                {/* Top metadata row: badge & scripture reference */}
-                <div className="card-meta-row">
-                  <div
-                    className="card-pillar-pill"
-                    style={{
-                      background: activeSlide.accentBg,
-                      border: `1px solid ${activeSlide.accentBorder}`,
-                      color: activeSlide.accentColor,
-                    }}
-                  >
-                    <IconComponent size={15} />
-                    <span>{activeSlide.pillar}</span>
-                  </div>
-
-                  <div className="card-reference-pill">
-                    <BookOpen size={13} color={activeSlide.accentColor} />
-                    <span>{activeSlide.reference}</span>
-                  </div>
+                {/* Large Arabic Verse (Cream/Gold Color, Generous Line-Height) */}
+                <div lang="ar" dir="rtl" className="cybermirror-arabic-text">
+                  {activeSlide.arabic}
                 </div>
 
-                {/* Main Quote & Arabic Script Grid Layout */}
-                <div className="card-quote-section">
-                  {/* Arabic Calligraphy Snippet (clean, academic, elegant) */}
-                  <div
-                    lang="ar"
-                    dir="rtl"
-                    className="card-arabic-text"
-                  >
-                    {activeSlide.arabic}
+                {/* English Translation (Large Bold Cream Text, ~2rem) */}
+                <blockquote className="cybermirror-english-quote">
+                  "{activeSlide.verse.replace(/^["']|["']$/g, '')}"
+                </blockquote>
+
+                {/* Short Gold Accent Line above Campus Action */}
+                <div className="cybermirror-gold-accent-line" aria-hidden="true" />
+
+                {/* Translucent Glass Panel (bg-white/10, backdrop-blur, border-white/20, light text) */}
+                <div className="cybermirror-action-panel">
+                  <div className="cybermirror-action-icon-box">
+                    <IconComponent size={20} style={{ color: '#f5b82e' }} />
                   </div>
-
-                  {/* Main Verse Quote */}
-                  <div className="card-verse-box">
-                    <Quote
-                      size={44}
-                      className="card-quote-icon"
-                      style={{ color: activeSlide.accentColor }}
-                    />
-                    <blockquote className="card-quote-text">
-                      "{activeSlide.verse.replace(/^["']|["']$/g, '')}"
-                    </blockquote>
+                  <div className="cybermirror-action-content">
+                    <div className="cybermirror-action-header">
+                      <span className="cybermirror-action-title">
+                        Positive Online Behaviour · Campus Action
+                      </span>
+                      <span className="cybermirror-action-num">
+                        {activeSlide.num} / {String(REFLECTION_SLIDES.length).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <p className="cybermirror-action-explanation">
+                      {activeSlide.explanation}
+                    </p>
+                    <p className="cybermirror-action-takeaway">
+                      <strong className="cybermirror-action-highlight">Campus Guideline: </strong>
+                      {activeSlide.takeaway}
+                    </p>
                   </div>
-                </div>
-
-                {/* Explanatory Connection Box — Linking to Cyberbullying & Behavioral Science */}
-                <div
-                  className="card-explanation-box"
-                  style={{
-                    borderLeftColor: activeSlide.accentColor,
-                  }}
-                >
-                  <div className="card-explanation-header">
-                    <span
-                      className="card-explanation-tag"
-                      style={{ color: activeSlide.accentColor }}
-                    >
-                      Positive Online Behaviour & Science
-                    </span>
-                  </div>
-
-                  <p className="card-explanation-desc">
-                    {activeSlide.explanation}
-                  </p>
-
-                  <p className="card-explanation-action">
-                    <strong className="card-action-label">Campus Action: </strong>
-                    {activeSlide.takeaway}
-                  </p>
                 </div>
               </motion.div>
             </AnimatePresence>
+          </div>
 
-            {/* ── Footer Controls: Prev/Next, Dots, Play/Pause & Counter ── */}
-            <div className="card-footer-controls">
-              {/* Left: Auto-play toggle & Slide Counter */}
-              <div className="card-autoplay-group">
-                <button
-                  type="button"
-                  onClick={() => setIsPlaying((p) => !p)}
-                  aria-label={isPlaying ? 'Pause slider auto-play' : 'Resume slider auto-play'}
-                  title={isPlaying ? 'Pause auto-rotation' : 'Play auto-rotation'}
-                  className="card-control-btn play-pause-btn"
-                  style={{
-                    color: isPlaying ? 'var(--color-text-muted)' : activeSlide.accentColor,
-                  }}
-                >
-                  {isPlaying ? <Pause size={13} /> : <Play size={13} />}
-                </button>
-
-                <span className="card-counter">
-                  <span className="card-counter-current">{activeSlide.num}</span>
-                  {' / '}
-                  {String(REFLECTION_SLIDES.length).padStart(2, '0')}
-                </span>
-              </div>
-
-              {/* Center: Navigation Indicator Dots */}
-              <div
-                className="card-dots-group"
-                role="group"
-                aria-label="Slide indicators"
-              >
-                {REFLECTION_SLIDES.map((slide, idx) => {
-                  const isActive = idx === currentIndex;
-                  return (
-                    <button
-                      key={slide.id}
-                      type="button"
-                      onClick={() => goToSlide(idx)}
-                      aria-label={`Go to slide ${idx + 1}: ${slide.pillar}`}
-                      className={`card-dot ${isActive ? 'active' : ''}`}
-                      style={{
-                        background: isActive
-                          ? slide.accentColor
-                          : 'rgba(99, 102, 241, 0.16)',
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Right: Prev & Next Arrow Buttons */}
-              <div className="card-arrows-group">
-                <button
-                  type="button"
-                  onClick={() => paginate(-1)}
-                  aria-label="Previous reflection slide"
-                  className="digital-values-nav-btn card-arrow-btn"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => paginate(1)}
-                  aria-label="Next reflection slide"
-                  className="digital-values-nav-btn card-arrow-btn"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
+          {/* Subtle Auto-Play Bottom Progress Bar */}
+          <div className="cybermirror-bottom-progress-track">
+            {isPlaying && !isHovered && (
+              <motion.div
+                key={currentIndex}
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 7, ease: 'linear' }}
+                className="cybermirror-bottom-progress-fill"
+              />
+            )}
           </div>
         </div>
 
