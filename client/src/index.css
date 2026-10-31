@@ -5144,8 +5144,9 @@ select.form-input option {
 
 
 
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   CYBERMIRROR-STYLE DIGITAL VALUES REFLECTION QUOTE CARD
+   CYBERMIRROR-STYLE DIGITAL VALUES REFLECTION: PRISMA BLUE & PURPLE THEME
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .digital-values-section {
@@ -5167,9 +5168,9 @@ select.form-input option {
   position: absolute;
   inset: 0;
   background: 
-    radial-gradient(at 15% 20%, rgba(31, 77, 58, 0.08) 0px, transparent 55%),
-    radial-gradient(at 85% 80%, rgba(90, 51, 25, 0.08) 0px, transparent 55%),
-    radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.06) 0px, transparent 50%);
+    radial-gradient(at 15% 20%, rgba(79, 70, 229, 0.12) 0px, transparent 55%),
+    radial-gradient(at 85% 80%, rgba(124, 58, 237, 0.12) 0px, transparent 55%),
+    radial-gradient(at 50% 50%, rgba(8, 145, 178, 0.08) 0px, transparent 50%);
   filter: blur(50px);
 }
 
@@ -5177,39 +5178,39 @@ select.form-input option {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.45;
+  opacity: 0.55;
   pointer-events: none;
 }
 
 .values-glow-indigo {
-  width: 500px;
-  height: 500px;
+  width: 520px;
+  height: 520px;
   top: -5%;
   left: 20%;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.22) 0%, transparent 70%);
 }
 
-.values-glow-teal {
-  width: 550px;
-  height: 550px;
+.values-glow-purple {
+  width: 560px;
+  height: 560px;
   bottom: -5%;
   right: 10%;
-  background: radial-gradient(circle, rgba(31, 77, 58, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.20) 0%, transparent 70%);
 }
 
-.values-glow-violet {
-  width: 450px;
-  height: 450px;
+.values-glow-blue {
+  width: 460px;
+  height: 460px;
   top: 35%;
   left: -5%;
-  background: radial-gradient(circle, rgba(90, 51, 25, 0.14) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.16) 0%, transparent 70%);
 }
 
 .values-ambient-grid {
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(rgba(31, 77, 58, 0.06) 1px, transparent 1px);
+    radial-gradient(rgba(79, 70, 229, 0.08) 1px, transparent 1px);
   background-size: 36px 36px;
   opacity: 0.6;
 }
@@ -5233,20 +5234,20 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(31, 77, 58, 0.08);
-  border: 1px solid rgba(31, 77, 58, 0.22);
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.22);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.95rem;
   margin-bottom: 1rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #1f4d3a;
+  color: var(--color-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .digital-values-sparkle {
-  color: #f5b82e;
+  color: var(--color-accent);
 }
 
 .digital-values-title {
@@ -5293,25 +5294,25 @@ select.form-input option {
 .digital-values-tab-btn:hover {
   transform: translateY(-1px);
   background: #ffffff;
-  border-color: rgba(31, 77, 58, 0.3);
-  color: #1f4d3a;
+  border-color: rgba(79, 70, 229, 0.3);
+  color: var(--color-primary);
 }
 
 .digital-values-tab-btn.active {
-  background: #1f4d3a !important;
-  color: #fefae0 !important;
-  border-color: #1f4d3a !important;
-  box-shadow: 0 4px 14px rgba(31, 77, 58, 0.25);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
 }
 
 .digital-values-tab-num {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CYBERMIRROR QUOTE CARD (Dark Green to Dark Brown Gradient, max-w-6xl)
+   CYBERMIRROR QUOTE CARD: DEEP BLUE & ROYAL PURPLE GRADIENT (max-w-6xl)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .cybermirror-quote-card {
@@ -5320,15 +5321,15 @@ select.form-input option {
   margin: 0 auto;
   width: 100%;
   min-height: 520px;
-  /* Deep green #1f4d3a to dark brown #5a3319 diagonal gradient */
-  background: linear-gradient(135deg, #1f4d3a 0%, #2a3c2c 45%, #5a3319 100%) !important;
+  /* Deep Navy-Blue #0b1120 / #111827 to Royal Indigo #2e1065 / #3b1368 diagonal gradient */
+  background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 45%, #2e1065 85%, #3b1368 100%) !important;
   border-radius: 2rem !important; /* rounded-3xl */
   box-shadow: 
-    0 25px 60px -15px rgba(25, 45, 35, 0.45),
-    0 12px 30px -8px rgba(90, 51, 25, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
+    0 25px 65px -15px rgba(15, 23, 42, 0.65),
+    0 14px 35px -8px rgba(79, 70, 229, 0.35),
+    0 0 0 1px rgba(129, 140, 248, 0.18) inset !important;
   padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3.25rem);
-  color: #fefae0; /* Cream text */
+  color: #f8fafc;
   overflow: hidden;
   outline: none;
   display: flex;
@@ -5339,18 +5340,18 @@ select.form-input option {
 
 .cybermirror-quote-card:hover {
   box-shadow: 
-    0 32px 75px -15px rgba(25, 45, 35, 0.55),
-    0 16px 36px -8px rgba(90, 51, 25, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.18) inset !important;
+    0 32px 80px -15px rgba(15, 23, 42, 0.75),
+    0 18px 42px -8px rgba(124, 58, 237, 0.45),
+    0 0 0 1px rgba(167, 139, 250, 0.28) inset !important;
 }
 
-/* Large Faded Watermark Quote at Top-Left (Opacity 10%, non-overlapping) */
+/* Large Faded Watermark Quote at Top-Left (Opacity 8%, non-overlapping) */
 .cybermirror-watermark-quote {
   position: absolute;
   top: 1.5rem;
   left: 2rem;
   color: #ffffff;
-  opacity: 0.08;
+  opacity: 0.07;
   pointer-events: none;
   z-index: 0;
 }
@@ -5359,7 +5360,7 @@ select.form-input option {
 .cybermirror-corner-pattern {
   position: absolute;
   pointer-events: none;
-  color: #ffffff;
+  color: #818cf8;
   z-index: 0;
 }
 
@@ -5368,7 +5369,7 @@ select.form-input option {
   right: -25px;
   width: 190px;
   height: 190px;
-  opacity: 0.045;
+  opacity: 0.06;
 }
 
 .cybermirror-corner-pattern.bottom-left {
@@ -5376,7 +5377,7 @@ select.form-input option {
   left: -30px;
   width: 170px;
   height: 170px;
-  opacity: 0.035;
+  opacity: 0.05;
 }
 
 /* Top Bar: Badges & Center Dots */
@@ -5395,15 +5396,15 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.10);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.85rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #fefae0;
+  color: #e0e7ff;
   letter-spacing: 0.02em;
 }
 
@@ -5412,19 +5413,19 @@ select.form-input option {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .cybermirror-dot {
   width: 8px;
   height: 8px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   border: none;
   cursor: pointer;
   padding: 0;
@@ -5433,8 +5434,8 @@ select.form-input option {
 
 .cybermirror-dot.active {
   width: 24px;
-  background: #f5b82e !important; /* Gold */
-  box-shadow: 0 0 10px rgba(245, 184, 46, 0.5);
+  background: linear-gradient(90deg, #818cf8, #a78bfa) !important;
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.6);
 }
 
 /* Right Group: Reference Badge & Play/Pause Button */
@@ -5448,16 +5449,16 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.10);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.85rem;
   font-size: 0.78rem;
   font-family: var(--font-mono);
   font-weight: 600;
-  color: #fefae0;
+  color: #e0e7ff;
 }
 
 .cybermirror-pause-btn {
@@ -5467,18 +5468,18 @@ select.form-input option {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.10);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fefae0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e0e7ff;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .cybermirror-pause-btn:hover {
   background: rgba(255, 255, 255, 0.22);
-  color: #f5b82e;
+  color: #a78bfa;
   transform: scale(1.08);
 }
 
@@ -5490,10 +5491,10 @@ select.form-input option {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -5501,7 +5502,7 @@ select.form-input option {
   cursor: pointer;
   z-index: 5;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .cybermirror-side-nav-btn.prev-btn {
@@ -5513,11 +5514,11 @@ select.form-input option {
 }
 
 .cybermirror-side-nav-btn:hover {
-  background: rgba(255, 255, 255, 0.26);
-  border-color: #f5b82e;
-  color: #f5b82e;
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #818cf8;
+  color: #a78bfa;
   transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.4);
 }
 
 .cybermirror-side-nav-btn:active {
@@ -5542,37 +5543,37 @@ select.form-input option {
   align-items: center;
 }
 
-/* Arabic Verse (Large, Cream/Gold, Generous Line-Height) */
+/* Arabic Verse (Lavender/Cyan Blue glow, Generous Line-Height) */
 .cybermirror-arabic-text {
   font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Noto Naskh Arabic', serif;
   font-size: clamp(1.8rem, 3.8vw, 2.6rem);
   line-height: 1.95;
-  color: #f5b82e; /* Warm Gold */
+  color: #e0e7ff;
   margin-bottom: 1.25rem;
   letter-spacing: 0.02em;
-  text-shadow: 0 2px 14px rgba(245, 184, 46, 0.22);
+  text-shadow: 0 2px 18px rgba(129, 140, 248, 0.4);
 }
 
-/* English Translation (Large Bold Cream Text ~2rem) */
+/* English Translation (Large Bold Text, Ice White / Light Indigo, ~2rem) */
 .cybermirror-english-quote {
   font-size: clamp(1.35rem, 2.7vw, 2.1rem);
   font-weight: 700;
   line-height: 1.42;
-  color: #fefae0; /* Cream */
+  color: #ffffff;
   letter-spacing: -0.02em;
   margin: 0 0 1.75rem;
   max-width: 840px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Short Gold Accent Line above Campus Action */
+/* Short Blue/Purple Accent Line above Campus Action */
 .cybermirror-gold-accent-line {
   width: 50px;
   height: 3.5px;
   border-radius: 999px;
-  background: #f5b82e; /* Gold */
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #a78bfa);
   margin: 0 auto 1.5rem;
-  box-shadow: 0 0 10px rgba(245, 184, 46, 0.5);
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.6);
 }
 
 /* Translucent Glass Panel (Campus Action: bg-white/10, backdrop-blur, border-white/20) */
@@ -5580,30 +5581,31 @@ select.form-input option {
   width: 100%;
   max-width: 780px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-lg);
   padding: 1.25rem 1.65rem;
   display: flex;
   align-items: flex-start;
   gap: 1.15rem;
   text-align: left;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-  transition: background 0.25s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .cybermirror-action-panel:hover {
-  background: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(167, 139, 250, 0.35);
 }
 
 .cybermirror-action-icon-box {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-md);
-  background: rgba(245, 184, 46, 0.15);
-  border: 1px solid rgba(245, 184, 46, 0.3);
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5629,19 +5631,19 @@ select.form-input option {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #f5b82e; /* Gold */
+  color: #a78bfa; /* Light Violet */
 }
 
 .cybermirror-action-num {
   font-size: 0.74rem;
   font-family: var(--font-mono);
-  color: rgba(254, 250, 224, 0.6);
+  color: rgba(224, 231, 255, 0.65);
   font-weight: 600;
 }
 
 .cybermirror-action-explanation {
   font-size: 0.94rem;
-  color: #fefae0;
+  color: #f1f5f9;
   font-weight: 500;
   line-height: 1.55;
   margin: 0 0 0.45rem;
@@ -5649,13 +5651,13 @@ select.form-input option {
 
 .cybermirror-action-takeaway {
   font-size: 0.84rem;
-  color: rgba(254, 250, 224, 0.82);
+  color: rgba(224, 231, 255, 0.85);
   line-height: 1.55;
   margin: 0;
 }
 
 .cybermirror-action-highlight {
-  color: #f5b82e;
+  color: #38bdf8; /* Cyan Blue */
   font-weight: 700;
 }
 
@@ -5673,7 +5675,7 @@ select.form-input option {
 
 .cybermirror-bottom-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f5b82e, #10b981);
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #a78bfa);
 }
 
 /* Subtle Academic Footer Attribution Note */
@@ -5716,7 +5718,7 @@ select.form-input option {
     gap: 0.75rem;
   }
   .cybermirror-side-nav-btn {
-    display: none; /* Hide floating side buttons on small screens, rely on dots & swipe */
+    display: none;
   }
   .cybermirror-action-panel {
     flex-direction: column;
