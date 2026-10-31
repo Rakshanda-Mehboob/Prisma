@@ -1,14 +1,14 @@
 /**
  * Sidebar.jsx — Persistent left navigation panel for authenticated pages.
- * Houses remaining workspace navigation items (Dashboard, Assessment, Learning, Feedback).
- * Profile is in the top navigation bar (ClickUp style).
+ * Houses workspace navigation items (Dashboard, Assessment, Learning, Feedback, Profile).
+ * User profile chip with Sign Out dropdown is in the top navigation bar.
  */
 
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ClipboardList, BookOpen,
-  MessageSquare, Shield, ChevronRight
+  MessageSquare, User as UserIcon, Shield, ChevronRight
 } from 'lucide-react';
 import PrismaLogo from './PrismaLogo';
 
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { to: '/assessment', icon: ClipboardList, label: 'Assessment' },
   { to: '/interventions', icon: BookOpen, label: 'Learning' },
   { to: '/feedback', icon: MessageSquare, label: 'Feedback' },
+  { to: '/profile', icon: UserIcon, label: 'Profile' },
 ];
 
 export default function Sidebar() {
@@ -76,7 +77,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* Remaining Nav Items in Sidebar */}
+        {/* Nav Items in Sidebar */}
         <nav className="sidebar-nav">
           {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
             <NavLink

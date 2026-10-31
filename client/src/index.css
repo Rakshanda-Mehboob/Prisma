@@ -6509,3 +6509,14 @@ select.form-input option {
 .clickup-logout-btn:hover {
   background: rgba(220, 38, 38, 0.08);
 }
+
+.clickup-dropdown-header-link {
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.clickup-dropdown-header-link:hover {
+  background: rgba(79, 70, 229, 0.05);
+}

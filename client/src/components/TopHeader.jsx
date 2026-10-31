@@ -1,6 +1,6 @@
 /**
  * TopHeader.jsx — ClickUp-style top navigation bar for authenticated pages.
- * Displays page title/breadcrumbs on the left, and rich User Profile menu on the right.
+ * Displays page title/breadcrumbs on the left, and User Profile with Sign Out on the right.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -107,7 +107,7 @@ export default function TopHeader() {
         <span className="top-header-badge-tag">{meta.badge}</span>
       </div>
 
-      {/* Right: Campus Indicator & ClickUp-style Profile Menu */}
+      {/* Right: Campus Indicator & Profile Trigger */}
       <div className="top-header-right">
         {/* Campus affiliation pill */}
         <div className="top-header-campus-pill">
@@ -149,11 +149,16 @@ export default function TopHeader() {
             />
           </button>
 
-          {/* ClickUp-style Profile Dropdown Menu */}
+          {/* Profile Dropdown Menu — Only User Info & Sign Out */}
           {dropdownOpen && (
             <div className="clickup-profile-dropdown" role="menu">
               {/* User Header Details */}
-              <div className="clickup-dropdown-header">
+              <Link
+                to="/profile"
+                className="clickup-dropdown-header clickup-dropdown-header-link"
+                onClick={() => setDropdownOpen(false)}
+                title="View Profile"
+              >
                 <div className="clickup-dropdown-avatar">
                   {user?.avatar_url ? (
                     <img
@@ -181,43 +186,11 @@ export default function TopHeader() {
                     CMS: {user?.cms_number || 'ENROLLED'}
                   </span>
                 </div>
-              </div>
+              </Link>
 
               <div className="clickup-dropdown-divider" />
 
-              {/* Navigation Items in Dropdown */}
-              <div className="clickup-dropdown-menu">
-                <Link
-                  to="/profile"
-                  className="clickup-menu-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <UserIcon size={16} />
-                  <span>My Profile & Settings</span>
-                </Link>
-
-                <Link
-                  to="/assessment"
-                  className="clickup-menu-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <ClipboardList size={16} />
-                  <span>Assessment & Scoring</span>
-                </Link>
-
-                <Link
-                  to="/interventions"
-                  className="clickup-menu-item"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <BookOpen size={16} />
-                  <span>Learning Modules</span>
-                </Link>
-              </div>
-
-              <div className="clickup-dropdown-divider" />
-
-              {/* Sign Out Action */}
+              {/* Sign Out Action — Sole action in dropdown */}
               <div className="clickup-dropdown-footer">
                 <button
                   type="button"
