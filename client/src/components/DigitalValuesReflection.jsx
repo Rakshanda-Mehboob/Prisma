@@ -206,11 +206,6 @@ export default function DigitalValuesReflection() {
       <div className="digital-values-content-wrap">
         {/* Section Header */}
         <div className="digital-values-header">
-          <div className="digital-values-badge">
-            <Sparkles size={13} className="digital-values-sparkle" />
-            <span>Ethical Foundations for Digital Citizenship</span>
-          </div>
-
           <h2 className="digital-values-title">
             Digital Values Reflection
           </h2>

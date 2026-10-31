@@ -45,7 +45,7 @@ function AppShell() {
       {showSidebar && <Sidebar />}
 
       {/* Main content */}
-      <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''}`}>
+      <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''} ${isLanding ? 'landing-main' : ''}`}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
