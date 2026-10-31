@@ -123,6 +123,13 @@ export default function Navbar() {
           >
             Values
           </button>
+          <button
+            type="button"
+            className="nav-link landing-nav-btn"
+            onClick={() => handleSectionScroll('about-prisma')}
+          >
+            About
+          </button>
         </nav>
       )}
 
@@ -223,6 +230,13 @@ export default function Navbar() {
                 onClick={() => handleSectionScroll('values')}
               >
                 Values
+              </button>
+              <button
+                type="button"
+                className="nav-link mobile-nav-link"
+                onClick={() => handleSectionScroll('about-prisma')}
+              >
+                About
               </button>
               <div className="mobile-divider" />
               <Link to="/login" className="btn btn-secondary mobile-auth-btn" onClick={() => setMobileMenuOpen(false)}>
