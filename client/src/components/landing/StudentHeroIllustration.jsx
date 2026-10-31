@@ -202,18 +202,23 @@ export default function StudentHeroIllustration() {
             </g>
 
             {/* Floating Chat Reactions */}
-            <g transform="translate(26, 26)">
-              <rect x="0" y="0" width="88" height="28" rx="14" fill="#ffffff" stroke="rgba(99, 102, 241, 0.22)" strokeWidth="1" filter="drop-shadow(0 3px 8px rgba(0,0,0,0.06))" />
-              <circle cx="15" cy="14" r="7" fill="#10b981" />
+            <g transform="translate(26, 24)">
+              <rect x="0" y="0" width="100" height="28" rx="14" fill="#ffffff" stroke="rgba(99, 102, 241, 0.22)" strokeWidth="1" filter="drop-shadow(0 3px 8px rgba(0,0,0,0.06))" />
+              <circle cx="15" cy="14" r="7.5" fill="#10b981" />
               <path d="M 12.5 14 L 14.5 16 L 17.5 12" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" />
               <text x="29" y="18" fill="#1e293b" fontSize="10.5" fontWeight="700" fontFamily="sans-serif">Respectful</text>
             </g>
 
-            <g transform="translate(422, 24)">
-              <rect x="0" y="0" width="102" height="28" rx="14" fill="#ffffff" stroke="rgba(8, 145, 178, 0.22)" strokeWidth="1" filter="drop-shadow(0 3px 8px rgba(0,0,0,0.06))" />
-              <circle cx="15" cy="14" r="7" fill="#0891b2" />
-              <text x="12" y="18" fill="white" fontSize="10.5" fontWeight="bold">🎓</text>
-              <text x="29" y="18" fill="#1e293b" fontSize="10.5" fontWeight="700" fontFamily="sans-serif">Empathetic Peer</text>
+            {/* Empathetic Peer Pill with widened background block and crisp graduation cap */}
+            <g transform="translate(390, 24)">
+              <rect x="0" y="0" width="146" height="28" rx="14" fill="#ffffff" stroke="rgba(8, 145, 178, 0.24)" strokeWidth="1" filter="drop-shadow(0 3px 8px rgba(0,0,0,0.06))" />
+              <circle cx="16" cy="14" r="8" fill="#0891b2" />
+              {/* Graduation Cap Vector Icon */}
+              <path d="M 16 9.8 L 22 12.5 L 16 15.2 L 10 12.5 Z" fill="#ffffff" />
+              <path d="M 12 14.2 L 12 17.2 Q 16 18.8, 20 17.2 L 20 14.2" stroke="#ffffff" strokeWidth="1.1" fill="none" />
+              <path d="M 21.2 13.8 L 21.2 17.8" stroke="#ffffff" strokeWidth="0.9" strokeLinecap="round" />
+              <circle cx="21.2" cy="18.2" r="0.6" fill="#ffffff" />
+              <text x="31" y="18" fill="#1e293b" fontSize="10.5" fontWeight="700" fontFamily="sans-serif">Empathetic Peer</text>
             </g>
           </svg>
         </div>
