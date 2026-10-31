@@ -1,6 +1,6 @@
 /**
- * TopHeader.jsx — ClickUp-style top navigation bar for authenticated pages.
- * Displays page title/breadcrumbs on the left, and User Profile with Sign Out on the right.
+ * TopHeader.jsx — Minimal top navigation bar for authenticated pages.
+ * Displays page icon and title on the left, and User Profile with Sign Out on the right.
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -14,8 +14,7 @@ import {
   User as UserIcon,
   LogOut,
   ChevronDown,
-  Shield,
-  GraduationCap
+  Shield
 } from 'lucide-react';
 
 const PAGE_META = {
@@ -85,14 +84,14 @@ export default function TopHeader() {
   // Get current page meta
   const currentPath = '/' + (location.pathname.split('/')[1] || 'dashboard');
   const meta = PAGE_META[currentPath] || {
-    title: 'Prisma Campus',
+    title: 'Prisma',
     icon: Shield,
   };
   const PageIcon = meta.icon;
 
   return (
     <header className="app-top-header">
-      {/* Left: Current Page Title */}
+      {/* Left: Current Page Title (no badges) */}
       <div className="top-header-left">
         <div className="top-header-page-badge">
           <PageIcon size={16} className="top-header-page-icon" />
@@ -100,15 +99,8 @@ export default function TopHeader() {
         </div>
       </div>
 
-      {/* Right: Campus Indicator & Profile Trigger */}
+      {/* Right: User Profile Trigger & Dropdown */}
       <div className="top-header-right">
-        {/* Campus affiliation pill */}
-        <div className="top-header-campus-pill">
-          <GraduationCap size={14} className="top-header-campus-icon" />
-          <span>Riphah Campus</span>
-        </div>
-
-        {/* User Profile Trigger & Dropdown */}
         <div className="top-header-profile-wrapper" ref={dropdownRef}>
           <button
             type="button"
@@ -175,9 +167,6 @@ export default function TopHeader() {
                   <div className="clickup-dropdown-email">
                     {user?.email || 'student@riphah.edu.pk'}
                   </div>
-                  <span className="clickup-dropdown-cms-badge">
-                    CMS: {user?.cms_number || 'ENROLLED'}
-                  </span>
                 </div>
               </Link>
 
