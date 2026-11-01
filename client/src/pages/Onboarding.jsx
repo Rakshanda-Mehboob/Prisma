@@ -2,9 +2,9 @@
  * pages/Onboarding.jsx — Multi-step Student Profile Setup
  *
  * Collects student background information:
- * - Academic environment (University, Department, Academic Level, Year of Study)
+ * - Academic environment (University, Department)
  * - Living situation (Hostel, Home with family, Private accommodation, Shared apartment, Other)
- * - Digital platform usage & frequency
+ * - Digital platform usage
  * - Student community context
  */
 
@@ -43,14 +43,6 @@ const DEPARTMENTS = [
   { id: 'Law', label: 'Law', icon: '⚖️' },
   { id: 'Other', label: 'Other', icon: '✏️' },
 ];
-
-const ACADEMIC_LEVELS = [
-  { id: 'Undergraduate', label: 'Undergraduate', sub: "Bachelor's / BS / MBBS / LLB", icon: '🎓' },
-  { id: 'Graduate', label: 'Graduate', sub: "Master's / MS / MPhil", icon: '📘' },
-  { id: 'Postgraduate', label: 'Postgraduate', sub: 'PhD / Doctoral Research', icon: '🔬' },
-];
-
-const STUDY_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Other'];
 
 const LIVING_SITUATIONS = [
   {
@@ -97,13 +89,6 @@ const PLATFORMS = [
   { id: 'Other', label: 'Other', icon: '🌐' },
 ];
 
-const INTERACTION_FREQUENCIES = [
-  { id: 'Rarely', label: 'Rarely', desc: 'Essential updates only', icon: '🍃' },
-  { id: 'Sometimes', label: 'Sometimes', desc: 'A few hours daily', icon: '🌤️' },
-  { id: 'Frequently', label: 'Frequently', desc: 'Active throughout the day', icon: '⚡' },
-  { id: 'Almost daily', label: 'Almost daily', desc: 'Constantly connected', icon: '🔥' },
-];
-
 const INTERACTION_PARTNERS = [
   { id: 'Classmates', label: 'Classmates', icon: '👥' },
   { id: 'Friends', label: 'Friends', icon: '🤝' },
@@ -127,11 +112,11 @@ export default function Onboarding() {
     university: user?.university || '',
     degree_program: user?.department || '',
     custom_department: '',
-    academic_level: '',
-    academic_year: '',
+    academic_level: 'Undergraduate',
+    academic_year: '1st Year',
     living_situation: user?.living_situation || '',
     platforms_used: [],
-    online_activity_level: '',
+    online_activity_level: 'Frequently',
     main_interaction_with: '',
     university_groups_participation: '',
   });
@@ -158,11 +143,11 @@ export default function Onboarding() {
             ...prev,
             university: d.university || prev.university,
             degree_program: d.degree_program || prev.degree_program,
-            academic_level: d.academic_level || prev.academic_level,
-            academic_year: d.academic_year || prev.academic_year,
+            academic_level: d.academic_level || prev.academic_level || 'Undergraduate',
+            academic_year: d.academic_year || prev.academic_year || '1st Year',
             living_situation: d.living_situation || prev.living_situation,
             platforms_used: d.platforms_used || prev.platforms_used,
-            online_activity_level: d.online_activity_level || prev.online_activity_level,
+            online_activity_level: d.online_activity_level || prev.online_activity_level || 'Frequently',
             main_interaction_with: d.main_interaction_with || prev.main_interaction_with,
             university_groups_participation: d.university_groups_participation || prev.university_groups_participation,
           }));
@@ -198,10 +183,10 @@ export default function Onboarding() {
     if (step === 1) {
       if (!profile.degree_program) return false;
       if (profile.degree_program === 'Other' && !profile.custom_department.trim()) return false;
-      return Boolean(profile.university && profile.academic_level && profile.academic_year);
+      return Boolean(profile.university && profile.university.trim());
     }
     if (step === 2) return Boolean(profile.living_situation);
-    if (step === 3) return profile.platforms_used.length > 0 && Boolean(profile.online_activity_level);
+    if (step === 3) return profile.platforms_used.length > 0;
     if (step === 4) return Boolean(profile.main_interaction_with && profile.university_groups_participation);
     return true;
   };
@@ -220,11 +205,11 @@ export default function Onboarding() {
           university: profile.university.trim() || 'Riphah International University',
           degree_program: finalDepartment,
           faculty_department: finalDepartment,
-          academic_level: profile.academic_level,
-          academic_year: profile.academic_year,
+          academic_level: profile.academic_level || 'Undergraduate',
+          academic_year: profile.academic_year || '1st Year',
           living_situation: profile.living_situation,
           platforms_used: profile.platforms_used.length ? profile.platforms_used : ['None'],
-          online_activity_level: profile.online_activity_level,
+          online_activity_level: profile.online_activity_level || 'Frequently',
           main_interaction_with: profile.main_interaction_with,
           university_groups_participation: profile.university_groups_participation,
         };
@@ -258,11 +243,11 @@ export default function Onboarding() {
         university: profile.university.trim() || 'Riphah International University',
         degree_program: finalDepartment,
         faculty_department: finalDepartment,
-        academic_level: profile.academic_level,
-        academic_year: profile.academic_year,
+        academic_level: profile.academic_level || 'Undergraduate',
+        academic_year: profile.academic_year || '1st Year',
         living_situation: profile.living_situation,
         platforms_used: profile.platforms_used.length ? profile.platforms_used : ['None'],
-        online_activity_level: profile.online_activity_level,
+        online_activity_level: profile.online_activity_level || 'Frequently',
         main_interaction_with: profile.main_interaction_with,
         university_groups_participation: profile.university_groups_participation,
       });
@@ -292,383 +277,306 @@ export default function Onboarding() {
         <motion.div
           key={step}
           initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-            >
-              {/* Step 0: Welcome */}
-              {step === 0 && (
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+        >
+          {/* Step 0: Welcome */}
+          {step === 0 && (
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.4rem 0.95rem', borderRadius: 999, background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)', fontSize: '0.875rem', fontWeight: 700, marginBottom: '1.25rem' }}>
+                <Sparkles size={16} />
+                Welcome to Prisma
+              </div>
+
+              <h1 className="onb-heading">
+                Welcome to Prisma! 👋
+              </h1>
+
+              <p className="onb-body-text w-full" style={{ marginBottom: '1.25rem' }}>
+                Thank you for creating your account. Before starting your diagnostic assessment, we would like to understand a little about your university background and everyday digital environment.
+              </p>
+
+              <p className="onb-body-text w-full" style={{ color: 'var(--color-text-muted)', marginBottom: '2.25rem' }}>
+                These brief questions help personalize diagnostic scenarios and tailored interventions to your faculty. It takes about a minute, and you select all your answers manually.
+              </p>
+
+              {/* Full-width Safe, Confidential & Academic Box */}
+              <div className="onb-privacy-box w-full">
+                <div className="onb-privacy-icon">
+                  <ShieldCheck size={26} />
+                </div>
                 <div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.4rem 0.95rem', borderRadius: 999, background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)', fontSize: '0.875rem', fontWeight: 700, marginBottom: '1.25rem' }}>
-                    <Sparkles size={16} />
-                    Welcome to Prisma
+                  <div className="onb-privacy-title">
+                    Safe, Confidential & Academic
                   </div>
-
-                  <h1 className="onb-heading">
-                    Welcome to Prisma! 👋
-                  </h1>
-
-                  <p className="onb-body-text w-full" style={{ marginBottom: '1.25rem' }}>
-                    Thank you for creating your account. Before starting your diagnostic assessment, we would like to understand a little about your university background and everyday digital environment.
-                  </p>
-
-                  <p className="onb-body-text w-full" style={{ color: 'var(--color-text-muted)', marginBottom: '2.25rem' }}>
-                    These brief questions help personalize diagnostic scenarios and tailored interventions to your faculty. It takes about a minute, and you select all your answers manually.
-                  </p>
-
-                  {/* Full-width Safe, Confidential & Academic Box */}
-                  <div className="onb-privacy-box w-full">
-                    <div className="onb-privacy-icon">
-                      <ShieldCheck size={26} />
-                    </div>
-                    <div>
-                      <div className="onb-privacy-title">
-                        Safe, Confidential & Academic
-                      </div>
-                      <div className="onb-privacy-desc">
-                        Your responses and details are kept strictly private. They are never shared with instructors, classmates, or university administration, and are exclusively utilized for your personalized learning path.
-                      </div>
-                    </div>
+                  <div className="onb-privacy-desc">
+                    Your responses and details are kept strictly private. They are never shared with instructors, classmates, or university administration, and are exclusively utilized for your personalized learning path.
                   </div>
                 </div>
-              )}
+              </div>
+            </div>
+          )}
 
-              {/* Step 1: Academic */}
-              {step === 1 && (
-                <div>
-                  <h2 className="onb-heading">
-                    Academic Details
-                  </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
-                    Tell us about your university, field of study, and academic year.
-                  </p>
+          {/* Step 1: Academic — University & Department Only */}
+          {step === 1 && (
+            <div>
+              <h2 className="onb-heading">
+                Academic Details
+              </h2>
+              <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                Tell us about your university and field of study.
+              </p>
 
-                  {/* University / Institution */}
-                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                      University / Institution
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. Riphah International University"
-                      value={profile.university}
-                      onChange={(e) => set('university', e.target.value)}
-                      style={{ fontSize: '1rem', padding: '0.8rem 1.15rem', width: '100%' }}
-                    />
-                  </div>
+              {/* University / Institution */}
+              <div className="form-group" style={{ marginBottom: '2rem' }}>
+                <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                  University / Institution
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Riphah International University"
+                  value={profile.university}
+                  onChange={(e) => set('university', e.target.value)}
+                  style={{ fontSize: '1rem', padding: '0.85rem 1.15rem', width: '100%' }}
+                />
+              </div>
 
-                  {/* Year of Study */}
-                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                      Year of Study
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
-                      {STUDY_YEARS.map((yr) => {
-                        const sel = profile.academic_year === yr;
-                        return (
-                          <button
-                            key={yr}
-                            type="button"
-                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
-                            onClick={() => set('academic_year', yr)}
-                            style={{ padding: '0.65rem 1.1rem' }}
-                          >
-                            {sel && <CheckCircle2 size={16} />}
-                            <span>{yr}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Row 2: Academic Level — Horizontal Single-Row Cards */}
-                  <div className="form-group mb-6" style={{ marginBottom: '1.75rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                      Academic Level
-                    </label>
-                    <div className="onb-grid-3col">
-                      {ACADEMIC_LEVELS.map((lvl) => {
-                        const sel = profile.academic_level === lvl.id;
-                        return (
-                          <button
-                            key={lvl.id}
-                            type="button"
-                            className={`onb-card-horizontal ${sel ? 'active' : ''}`}
-                            onClick={() => set('academic_level', lvl.id)}
-                            style={{ padding: '0.85rem 1.1rem' }}
-                          >
-                            <span style={{ fontSize: '1.65rem', flexShrink: 0 }}>{lvl.icon}</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-                              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{lvl.label}</span>
-                              <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lvl.sub}</span>
-                            </div>
-                            {sel && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Row 3: Department / Field of Study — Horizontal Chip Pills */}
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                      Department / Field of Study
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
-                      {DEPARTMENTS.map((d) => {
-                        const sel = profile.degree_program === d.id;
-                        return (
-                          <button
-                            key={d.id}
-                            type="button"
-                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
-                            onClick={() => set('degree_program', d.id)}
-                          >
-                            <span style={{ fontSize: '1.2rem' }}>{d.icon}</span>
-                            <span>{d.label}</span>
-                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {profile.degree_program === 'Other' && (
-                      <input
-                        type="text"
-                        className="form-input"
-                        placeholder="Type your department or major name…"
-                        value={profile.custom_department}
-                        onChange={(e) => set('custom_department', e.target.value)}
-                        style={{ marginTop: '0.85rem', fontSize: '0.98rem', padding: '0.8rem 1.15rem' }}
-                        autoFocus
-                      />
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Living — 5 Compact Horizontal Cards in 1 Row */}
-              {step === 2 && (
-                <div>
-                  <h2 className="onb-heading">
-                    Living Situation
-                  </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
-                    Where do you currently reside during your university studies?
-                  </p>
-
-                  <div className="onb-living-grid">
-                    {LIVING_SITUATIONS.map((sit) => {
-                      const sel = profile.living_situation === sit.id;
-                      return (
-                        <button
-                          key={sit.id}
-                          type="button"
-                          className={`onb-living-card ${sel ? 'active' : ''}`}
-                          onClick={() => set('living_situation', sit.id)}
-                        >
-                          <div className="onb-living-icon-wrap">
-                            {sit.icon}
-                          </div>
-                          <div className="onb-living-title">
-                            {sit.title}
-                          </div>
-                          <div className="onb-living-sub">
-                            {sit.sub}
-                          </div>
-                          {sel && (
-                            <div className="onb-living-check">
-                              <CheckCircle2 size={14} />
-                              <span>Selected</span>
-                            </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Digital Life — Horizontal Platforms & 4-Column Frequencies */}
-              {step === 3 && (
-                <div>
-                  <h2 className="onb-heading">
-                    Digital Environment
-                  </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
-                    Which platforms and online channels do you use regularly? (Select all that apply)
-                  </p>
-
-                  <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
-                      Frequently Used Platforms
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
-                      {/* None option */}
+              {/* Department / Field of Study */}
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                  Department / Field of Study
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                  {DEPARTMENTS.map((d) => {
+                    const sel = profile.degree_program === d.id;
+                    return (
                       <button
+                        key={d.id}
                         type="button"
-                        className={`onb-chip-btn ${profile.platforms_used.includes('None') ? 'active' : ''}`}
-                        onClick={selectNonePlatforms}
+                        className={`onb-chip-btn ${sel ? 'active' : ''}`}
+                        onClick={() => set('degree_program', d.id)}
+                        style={{ padding: '0.7rem 1.25rem', fontSize: '0.94rem' }}
                       >
-                        <span style={{ fontSize: '1.2rem' }}>🚫</span>
-                        <span>None</span>
-                        {profile.platforms_used.includes('None') && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
+                        <span style={{ fontSize: '1.25rem' }}>{d.icon}</span>
+                        <span>{d.label}</span>
+                        {sel && <CheckCircle2 size={16} style={{ color: 'var(--color-primary)' }} />}
                       </button>
-
-                      {PLATFORMS.map((p) => {
-                        const sel = profile.platforms_used.includes(p.id);
-                        return (
-                          <button
-                            key={p.id}
-                            type="button"
-                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
-                            onClick={() => togglePlatform(p.id)}
-                          >
-                            <span style={{ fontSize: '1.2rem' }}>{p.icon}</span>
-                            <span>{p.label}</span>
-                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
-                      How often do you interact online?
-                    </label>
-                    <div className="onb-grid-4col">
-                      {INTERACTION_FREQUENCIES.map((freq) => {
-                        const sel = profile.online_activity_level === freq.id;
-                        return (
-                          <button
-                            key={freq.id}
-                            type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
-                            onClick={() => set('online_activity_level', freq.id)}
-                            style={{ padding: '1.15rem 1.1rem', textAlign: 'left', minHeight: '105px' }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{freq.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{freq.label}</span>
-                            </div>
-                            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
-                              {freq.desc}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
-              )}
 
-              {/* Step 4: Community — Horizontal Partners Chips & Side-by-Side Groups */}
-              {step === 4 && (
-                <div>
-                  <h2 className="onb-heading">
-                    Student Community
-                  </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
-                    Tell us about your peer interactions and university group participation.
-                  </p>
+                {profile.degree_program === 'Other' && (
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Type your department or major name…"
+                    value={profile.custom_department}
+                    onChange={(e) => set('custom_department', e.target.value)}
+                    style={{ marginTop: '1rem', fontSize: '0.98rem', padding: '0.85rem 1.15rem', width: '100%' }}
+                    autoFocus
+                  />
+                )}
+              </div>
+            </div>
+          )}
 
-                  <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
-                      Who do you mainly interact with online?
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
-                      {INTERACTION_PARTNERS.map((partner) => {
-                        const sel = profile.main_interaction_with === partner.id;
-                        return (
-                          <button
-                            key={partner.id}
-                            type="button"
-                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
-                            onClick={() => set('main_interaction_with', partner.id)}
-                            style={{ padding: '0.75rem 1.25rem' }}
-                          >
-                            <span style={{ fontSize: '1.25rem' }}>{partner.icon}</span>
-                            <span>{partner.label}</span>
-                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+          {/* Step 2: Living — 5 Compact Horizontal Cards in 1 Row */}
+          {step === 2 && (
+            <div>
+              <h2 className="onb-heading">
+                Living Situation
+              </h2>
+              <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
+                Where do you currently reside during your university studies?
+              </p>
 
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
-                      Do you participate in online university groups?
-                    </label>
-                    <div className="onb-grid-2col">
-                      {[
-                        { val: 'Yes', label: 'Yes, I participate', desc: 'Batch WhatsApp chats, LMS forums, Discord servers, or student societies', icon: '✅' },
-                        { val: 'No', label: 'No, rarely or never', desc: 'Prefer direct 1-on-1 messages or independent study without large groups', icon: '❌' },
-                      ].map((item) => {
-                        const sel = profile.university_groups_participation === item.val;
-                        return (
-                          <button
-                            key={item.val}
-                            type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
-                            onClick={() => set('university_groups_participation', item.val)}
-                            style={{ padding: '1.15rem 1.25rem', textAlign: 'left' }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{item.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
-                            </div>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
-                              {item.desc}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 5: Complete */}
-              {step === 5 && (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                  <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'rgba(5, 150, 105, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#059669', marginBottom: '1.75rem', boxShadow: '0 8px 24px -4px rgba(5, 150, 105, 0.25)' }}>
-                    <CheckCircle2 size={48} strokeWidth={2.5} />
-                  </div>
-
-                  <h2 className="onb-heading">
-                    Profile Setup Complete
-                  </h2>
-
-                  <p className="onb-body-text w-full" style={{ marginBottom: '2.5rem' }}>
-                    Your academic profile has been calibrated. You are now prepared to begin your baseline diagnostic assessment.
-                  </p>
-
-                  <div className="onb-grid-2col" style={{ maxWidth: '440px', margin: '0 auto' }}>
+              <div className="onb-living-grid">
+                {LIVING_SITUATIONS.map((sit) => {
+                  const sel = profile.living_situation === sit.id;
+                  return (
                     <button
+                      key={sit.id}
                       type="button"
-                      onClick={() => navigate('/assessment?stage=pre')}
-                      className="onb-btn-continue"
-                      style={{ width: '100%', justifyContent: 'center' }}
+                      className={`onb-living-card ${sel ? 'active' : ''}`}
+                      onClick={() => set('living_situation', sit.id)}
                     >
-                      <span>Start Baseline Assessment</span>
-                      <ArrowRight size={18} />
+                      <div className="onb-living-icon-wrap">
+                        {sit.icon}
+                      </div>
+                      <div className="onb-living-title">
+                        {sit.title}
+                      </div>
+                      <div className="onb-living-sub">
+                        {sit.sub}
+                      </div>
+                      {sel && (
+                        <div className="onb-living-check">
+                          <CheckCircle2 size={14} />
+                          <span>Selected</span>
+                        </div>
+                      )}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/dashboard')}
-                      className="onb-btn-ghost"
-                      style={{ width: '100%', justifyContent: 'center' }}
-                    >
-                      Continue to Dashboard
-                    </button>
-                  </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Digital Life — Frequently Used Platforms Only */}
+          {step === 3 && (
+            <div>
+              <h2 className="onb-heading">
+                Digital Environment
+              </h2>
+              <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                Which platforms and online channels do you use regularly? (Select all that apply)
+              </p>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                  Frequently Used Platforms
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem' }}>
+                  {/* None option */}
+                  <button
+                    type="button"
+                    className={`onb-chip-btn ${profile.platforms_used.includes('None') ? 'active' : ''}`}
+                    onClick={selectNonePlatforms}
+                    style={{ padding: '0.75rem 1.35rem', fontSize: '0.94rem' }}
+                  >
+                    <span style={{ fontSize: '1.25rem' }}>🚫</span>
+                    <span>None</span>
+                    {profile.platforms_used.includes('None') && <CheckCircle2 size={16} style={{ color: 'var(--color-primary)' }} />}
+                  </button>
+
+                  {PLATFORMS.map((p) => {
+                    const sel = profile.platforms_used.includes(p.id);
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className={`onb-chip-btn ${sel ? 'active' : ''}`}
+                        onClick={() => togglePlatform(p.id)}
+                        style={{ padding: '0.75rem 1.35rem', fontSize: '0.94rem' }}
+                      >
+                        <span style={{ fontSize: '1.25rem' }}>{p.icon}</span>
+                        <span>{p.label}</span>
+                        {sel && <CheckCircle2 size={16} style={{ color: 'var(--color-primary)' }} />}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Community — Interaction Partners & Groups */}
+          {step === 4 && (
+            <div>
+              <h2 className="onb-heading">
+                Student Community
+              </h2>
+              <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
+                Tell us about your peer interactions and university group participation.
+              </p>
+
+              <div className="form-group" style={{ marginBottom: '2rem' }}>
+                <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                  Who do you mainly interact with online?
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
+                  {INTERACTION_PARTNERS.map((partner) => {
+                    const sel = profile.main_interaction_with === partner.id;
+                    return (
+                      <button
+                        key={partner.id}
+                        type="button"
+                        className={`onb-chip-btn ${sel ? 'active' : ''}`}
+                        onClick={() => set('main_interaction_with', partner.id)}
+                        style={{ padding: '0.75rem 1.25rem' }}
+                      >
+                        <span style={{ fontSize: '1.25rem' }}>{partner.icon}</span>
+                        <span>{partner.label}</span>
+                        {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                  Do you participate in online university groups?
+                </label>
+                <div className="onb-grid-2col">
+                  {[
+                    { val: 'Yes', label: 'Yes, I participate', desc: 'Batch WhatsApp chats, LMS forums, Discord servers, or student societies', icon: '✅' },
+                    { val: 'No', label: 'No, rarely or never', desc: 'Prefer direct 1-on-1 messages or independent study without large groups', icon: '❌' },
+                  ].map((item) => {
+                    const sel = profile.university_groups_participation === item.val;
+                    return (
+                      <button
+                        key={item.val}
+                        type="button"
+                        className={`onb-card-option ${sel ? 'active' : ''}`}
+                        onClick={() => set('university_groups_participation', item.val)}
+                        style={{ padding: '1.15rem 1.25rem', textAlign: 'left' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
+                          <span style={{ fontSize: '1.35rem' }}>{item.icon}</span>
+                          <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
+                        </div>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
+                          {item.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Complete */}
+          {step === 5 && (
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'rgba(5, 150, 105, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#059669', marginBottom: '1.75rem', boxShadow: '0 8px 24px -4px rgba(5, 150, 105, 0.25)' }}>
+                <CheckCircle2 size={48} strokeWidth={2.5} />
+              </div>
+
+              <h2 className="onb-heading">
+                Profile Setup Complete
+              </h2>
+
+              <p className="onb-body-text w-full" style={{ marginBottom: '2.5rem' }}>
+                Your academic profile has been calibrated. You are now prepared to begin your baseline diagnostic assessment.
+              </p>
+
+              <div className="onb-grid-2col" style={{ maxWidth: '440px', margin: '0 auto' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/assessment?stage=pre')}
+                  className="onb-btn-continue"
+                  style={{ width: '100%', justifyContent: 'center' }}
+                >
+                  <span>Start Baseline Assessment</span>
+                  <ArrowRight size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard')}
+                  className="onb-btn-ghost"
+                  style={{ width: '100%', justifyContent: 'center' }}
+                >
+                  Continue to Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </OnboardingLayout>
   );
 }
