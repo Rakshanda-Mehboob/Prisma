@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import OnboardingLayout from '../components/OnboardingLayout';
 import {
   GraduationCap, Home, Smartphone, Users,
-  CheckCircle2, Sparkles, ArrowRight, ShieldCheck
+  CheckCircle2, Sparkles, ArrowRight, ShieldCheck, LayoutDashboard
 } from 'lucide-react';
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
@@ -554,23 +554,26 @@ export default function Onboarding() {
                 Your academic profile has been calibrated. You are now prepared to begin your baseline diagnostic assessment.
               </p>
 
-              <div className="onb-grid-2col" style={{ maxWidth: '440px', margin: '0 auto' }}>
+              {/* Action Buttons: Both styled as genuine high-contrast buttons */}
+              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', alignItems: 'center', maxWidth: '560px', margin: '0 auto' }}>
                 <button
                   type="button"
                   onClick={() => navigate('/assessment?stage=pre')}
                   className="onb-btn-continue"
-                  style={{ width: '100%', justifyContent: 'center' }}
+                  style={{ minWidth: '240px', flex: '1 1 auto' }}
                 >
                   <span>Start Baseline Assessment</span>
                   <ArrowRight size={18} />
                 </button>
+
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  className="onb-btn-ghost"
-                  style={{ width: '100%', justifyContent: 'center' }}
+                  className="onb-btn-secondary"
+                  style={{ minWidth: '200px', flex: '1 1 auto' }}
                 >
-                  Continue to Dashboard
+                  <LayoutDashboard size={18} style={{ color: '#4f46e5' }} />
+                  <span>Go to Dashboard</span>
                 </button>
               </div>
             </div>
