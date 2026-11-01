@@ -343,43 +343,42 @@ export default function Onboarding() {
                     Tell us about your university, field of study, and academic year.
                   </p>
 
-                  {/* Row 1: University & Year of Study in 2-column grid */}
-                  <div className="onb-grid-2col" style={{ marginBottom: '1.5rem' }}>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                        University / Institution
-                      </label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        placeholder="e.g. Riphah International University"
-                        value={profile.university}
-                        onChange={(e) => set('university', e.target.value)}
-                        style={{ fontSize: '1rem', padding: '0.8rem 1.15rem' }}
-                      />
-                    </div>
+                  {/* University / Institution */}
+                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
+                      University / Institution
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Riphah International University"
+                      value={profile.university}
+                      onChange={(e) => set('university', e.target.value)}
+                      style={{ fontSize: '1rem', padding: '0.8rem 1.15rem', width: '100%' }}
+                    />
+                  </div>
 
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
-                        Year of Study
-                      </label>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
-                        {STUDY_YEARS.map((yr) => {
-                          const sel = profile.academic_year === yr;
-                          return (
-                            <button
-                              key={yr}
-                              type="button"
-                              className={`onb-chip-btn ${sel ? 'active' : ''}`}
-                              onClick={() => set('academic_year', yr)}
-                              style={{ padding: '0.65rem 1.1rem' }}
-                            >
-                              {sel && <CheckCircle2 size={16} />}
-                              <span>{yr}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                  {/* Year of Study */}
+                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
+                      Year of Study
+                    </label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
+                      {STUDY_YEARS.map((yr) => {
+                        const sel = profile.academic_year === yr;
+                        return (
+                          <button
+                            key={yr}
+                            type="button"
+                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
+                            onClick={() => set('academic_year', yr)}
+                            style={{ padding: '0.65rem 1.1rem' }}
+                          >
+                            {sel && <CheckCircle2 size={16} />}
+                            <span>{yr}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
