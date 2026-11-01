@@ -57,31 +57,31 @@ const LIVING_SITUATIONS = [
   {
     id: 'University hostel',
     title: 'University hostel',
-    sub: 'On-campus dormitories or university halls of residence',
+    sub: 'On-campus dorms or university halls',
     icon: '🏢',
   },
   {
     id: 'Home with family',
     title: 'Home with family',
-    sub: 'Living at home with family and commuting to campus',
+    sub: 'Living with family, commuting to campus',
     icon: '🏡',
   },
   {
     id: 'Private accommodation',
-    title: 'Private accommodation',
-    sub: 'Independent private residence or private student housing',
+    title: 'Private housing',
+    sub: 'Independent private student flat',
     icon: '🛋️',
   },
   {
     id: 'Shared apartment',
     title: 'Shared apartment',
-    sub: 'Off-campus rented apartment or house with peers',
+    sub: 'Off-campus rented flat with peers',
     icon: '🏘️',
   },
   {
     id: 'Other',
     title: 'Other',
-    sub: 'Other living arrangement during studies',
+    sub: 'Other living arrangement',
     icon: '📍',
   },
 ];
@@ -102,17 +102,17 @@ const INTERACTION_FREQUENCIES = [
   { id: 'Rarely', label: 'Rarely', desc: 'Essential academic updates only', icon: '🍃' },
   { id: 'Sometimes', label: 'Sometimes', desc: 'A few hours daily for study & friends', icon: '🌤️' },
   { id: 'Frequently', label: 'Frequently', desc: 'Active throughout the day across apps', icon: '⚡' },
-  { id: 'Almost daily', label: 'Almost daily', desc: 'Constantly connected to study groups & chats', icon: '🔥' },
+  { id: 'Almost daily', label: 'Almost daily', desc: 'Constantly connected to study groups', icon: '🔥' },
 ];
 
 const INTERACTION_PARTNERS = [
-  { id: 'Classmates', label: 'Classmates', sub: 'Academic peers, batch groups & project partners', icon: '👥' },
-  { id: 'Friends', label: 'Friends', sub: 'Close personal social circles', icon: '🤝' },
-  { id: 'Teachers', label: 'Teachers', sub: 'Academic instructors & research advisors', icon: '👨‍🏫' },
-  { id: 'Professional groups', label: 'Professional groups', sub: 'Career networks & internship colleagues', icon: '💼' },
-  { id: 'Online communities', label: 'Online communities', sub: 'Special-interest forums & discussion groups', icon: '🌍' },
-  { id: 'Gaming communities', label: 'Gaming communities', sub: 'Multiplayer teams & gaming channels', icon: '🎮' },
-  { id: 'None', label: 'None', sub: 'I do not actively interact in groups or communities', icon: '🚫' },
+  { id: 'Classmates', label: 'Classmates', icon: '👥' },
+  { id: 'Friends', label: 'Friends', icon: '🤝' },
+  { id: 'Teachers', label: 'Teachers', icon: '👨‍🏫' },
+  { id: 'Professional groups', label: 'Professional groups', icon: '💼' },
+  { id: 'Online communities', label: 'Online communities', icon: '🌍' },
+  { id: 'Gaming communities', label: 'Gaming communities', icon: '🎮' },
+  { id: 'None', label: 'None', icon: '🚫' },
 ];
 
 export default function Onboarding() {
@@ -405,14 +405,14 @@ export default function Onboarding() {
                   <h2 className="onb-heading">
                     Academic Details
                   </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
                     Tell us about your university, field of study, and academic year.
                   </p>
 
-                  {/* University & Year of Study in 2-column grid */}
+                  {/* Row 1: University & Year of Study in 2-column grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                         University / Institution
                       </label>
                       <input
@@ -421,24 +421,24 @@ export default function Onboarding() {
                         placeholder="e.g. Riphah International University"
                         value={profile.university}
                         onChange={(e) => set('university', e.target.value)}
-                        style={{ fontSize: '1rem', padding: '0.85rem 1.15rem' }}
+                        style={{ fontSize: '1rem', padding: '0.8rem 1.15rem' }}
                       />
                     </div>
 
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                         Year of Study
                       </label>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
                         {STUDY_YEARS.map((yr) => {
                           const sel = profile.academic_year === yr;
                           return (
                             <button
                               key={yr}
                               type="button"
-                              className={`onb-pill-btn ${sel ? 'active' : ''}`}
+                              className={`onb-chip-btn ${sel ? 'active' : ''}`}
                               onClick={() => set('academic_year', yr)}
-                              style={{ padding: '0.75rem 1.25rem', fontSize: '0.92rem' }}
+                              style={{ padding: '0.65rem 1.1rem' }}
                             >
                               {sel && <CheckCircle2 size={16} />}
                               <span>{yr}</span>
@@ -449,49 +449,52 @@ export default function Onboarding() {
                     </div>
                   </div>
 
-                  {/* Academic Level */}
+                  {/* Row 2: Academic Level — Horizontal Single-Row Cards */}
                   <div className="form-group mb-6" style={{ marginBottom: '1.75rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                       Academic Level
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                       {ACADEMIC_LEVELS.map((lvl) => {
                         const sel = profile.academic_level === lvl.id;
                         return (
                           <button
                             key={lvl.id}
                             type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            className={`onb-card-horizontal ${sel ? 'active' : ''}`}
                             onClick={() => set('academic_level', lvl.id)}
-                            style={{ padding: '1rem 1.25rem' }}
+                            style={{ padding: '0.85rem 1.1rem' }}
                           >
-                            <span style={{ fontSize: '1.45rem', marginBottom: '0.35rem' }}>{lvl.icon}</span>
-                            <span style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{lvl.label}</span>
-                            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem', lineHeight: 1.4 }}>{lvl.sub}</span>
+                            <span style={{ fontSize: '1.65rem', flexShrink: 0 }}>{lvl.icon}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{lvl.label}</span>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lvl.sub}</span>
+                            </div>
+                            {sel && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
                           </button>
                         );
                       })}
                     </div>
                   </div>
 
-                  {/* Department in 2-column grid */}
+                  {/* Row 3: Department / Field of Study — Horizontal Chip Pills */}
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                       Department / Field of Study
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
                       {DEPARTMENTS.map((d) => {
                         const sel = profile.degree_program === d.id;
                         return (
                           <button
                             key={d.id}
                             type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
                             onClick={() => set('degree_program', d.id)}
-                            style={{ padding: '1rem 1.25rem' }}
                           >
-                            <span style={{ fontSize: '1.45rem', marginBottom: '0.35rem' }}>{d.icon}</span>
-                            <span style={{ fontSize: '0.96rem', fontWeight: sel ? 700 : 600, color: 'var(--color-text-primary)' }}>{d.label}</span>
+                            <span style={{ fontSize: '1.2rem' }}>{d.icon}</span>
+                            <span>{d.label}</span>
+                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
                           </button>
                         );
                       })}
@@ -504,7 +507,7 @@ export default function Onboarding() {
                         placeholder="Type your department or major name…"
                         value={profile.custom_department}
                         onChange={(e) => set('custom_department', e.target.value)}
-                        style={{ marginTop: '0.85rem', fontSize: '0.98rem', padding: '0.85rem 1.15rem' }}
+                        style={{ marginTop: '0.85rem', fontSize: '0.98rem', padding: '0.8rem 1.15rem' }}
                         autoFocus
                       />
                     )}
@@ -512,17 +515,17 @@ export default function Onboarding() {
                 </div>
               )}
 
-              {/* Step 2: Living */}
+              {/* Step 2: Living — 5 Horizontal Cards Across 1 Row on Desktop */}
               {step === 2 && (
                 <div>
                   <h2 className="onb-heading">
                     Living Situation
                   </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
                     Where do you currently reside during your university studies?
                   </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
                     {LIVING_SITUATIONS.map((sit) => {
                       const sel = profile.living_situation === sit.id;
                       return (
@@ -531,27 +534,34 @@ export default function Onboarding() {
                           type="button"
                           className={`onb-card-option ${sel ? 'active' : ''}`}
                           onClick={() => set('living_situation', sit.id)}
-                          style={{ padding: '1.35rem 1.5rem' }}
+                          style={{
+                            padding: '1.35rem 1rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            justifyContent: 'center',
+                            gap: '0.55rem',
+                            borderRadius: '16px',
+                            minHeight: '155px',
+                          }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '0.5rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <span style={{ fontSize: '1.5rem' }}>{sit.icon}</span>
-                              <span style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{sit.title}</span>
-                            </div>
-                            <div
-                              style={{
-                                width: 22,
-                                height: 22,
-                                borderRadius: '50%',
-                                border: sel ? '6px solid var(--color-primary)' : '2px solid var(--color-border)',
-                                background: 'var(--color-surface)',
-                                transition: 'all 0.2s ease',
-                              }}
-                            />
+                          <span style={{ fontSize: '2.2rem' }}>{sit.icon}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
+                              {sit.title}
+                            </span>
+                            <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', marginTop: '0.25rem', lineHeight: 1.35 }}>
+                              {sit.sub}
+                            </span>
                           </div>
-                          <div style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                            {sit.sub}
-                          </div>
+                          {sel ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-primary)', marginTop: '0.25rem' }}>
+                              <CheckCircle2 size={15} /> Selected
+                            </span>
+                          ) : (
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid var(--color-border)', marginTop: '0.25rem' }} />
+                          )}
                         </button>
                       );
                     })}
@@ -559,33 +569,30 @@ export default function Onboarding() {
                 </div>
               )}
 
-              {/* Step 3: Digital Life */}
+              {/* Step 3: Digital Life — Horizontal Platforms & 4-Column Frequencies */}
               {step === 3 && (
                 <div>
                   <h2 className="onb-heading">
                     Digital Environment
                   </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
                     Which platforms and online channels do you use regularly? (Select all that apply)
                   </p>
 
                   <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       Frequently Used Platforms
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
                       {/* None option */}
                       <button
                         type="button"
-                        className={`onb-card-option ${profile.platforms_used.includes('None') ? 'active' : ''}`}
+                        className={`onb-chip-btn ${profile.platforms_used.includes('None') ? 'active' : ''}`}
                         onClick={selectNonePlatforms}
-                        style={{ padding: '0.95rem 1.25rem', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <span style={{ fontSize: '1.35rem' }}>🚫</span>
-                          <span style={{ fontWeight: 600, fontSize: '0.98rem', color: 'var(--color-text-primary)' }}>None</span>
-                        </div>
-                        {profile.platforms_used.includes('None') && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)' }} />}
+                        <span style={{ fontSize: '1.2rem' }}>🚫</span>
+                        <span>None</span>
+                        {profile.platforms_used.includes('None') && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
                       </button>
 
                       {PLATFORMS.map((p) => {
@@ -594,15 +601,12 @@ export default function Onboarding() {
                           <button
                             key={p.id}
                             type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
                             onClick={() => togglePlatform(p.id)}
-                            style={{ padding: '0.95rem 1.25rem', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{p.icon}</span>
-                              <span style={{ fontWeight: sel ? 700 : 600, fontSize: '0.98rem', color: 'var(--color-text-primary)' }}>{p.label}</span>
-                            </div>
-                            {sel && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)' }} />}
+                            <span style={{ fontSize: '1.2rem' }}>{p.icon}</span>
+                            <span>{p.label}</span>
+                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
                           </button>
                         );
                       })}
@@ -610,10 +614,10 @@ export default function Onboarding() {
                   </div>
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       How often do you interact online?
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                       {INTERACTION_FREQUENCIES.map((freq) => {
                         const sel = profile.online_activity_level === freq.id;
                         return (
@@ -622,13 +626,13 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('online_activity_level', freq.id)}
-                            style={{ padding: '1.25rem 1.35rem' }}
+                            style={{ padding: '1.15rem 1.1rem', textAlign: 'left', minHeight: '110px' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.45rem' }}>
-                              <span style={{ fontSize: '1.4rem' }}>{freq.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{freq.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
+                              <span style={{ fontSize: '1.35rem' }}>{freq.icon}</span>
+                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{freq.label}</span>
                             </div>
-                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
                               {freq.desc}
                             </span>
                           </button>
@@ -639,38 +643,34 @@ export default function Onboarding() {
                 </div>
               )}
 
-              {/* Step 4: Community */}
+              {/* Step 4: Community — Horizontal Partners Chips & Side-by-Side Groups */}
               {step === 4 && (
                 <div>
                   <h2 className="onb-heading">
                     Student Community
                   </h2>
-                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
                     Tell us about your peer interactions and university group participation.
                   </p>
 
                   <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       Who do you mainly interact with online?
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
                       {INTERACTION_PARTNERS.map((partner) => {
                         const sel = profile.main_interaction_with === partner.id;
                         return (
                           <button
                             key={partner.id}
                             type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            className={`onb-chip-btn ${sel ? 'active' : ''}`}
                             onClick={() => set('main_interaction_with', partner.id)}
-                            style={{ padding: '1.25rem 1.35rem' }}
+                            style={{ padding: '0.75rem 1.25rem' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
-                              <span style={{ fontSize: '1.4rem' }}>{partner.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{partner.label}</span>
-                            </div>
-                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
-                              {partner.sub}
-                            </span>
+                            <span style={{ fontSize: '1.25rem' }}>{partner.icon}</span>
+                            <span>{partner.label}</span>
+                            {sel && <CheckCircle2 size={15} style={{ color: 'var(--color-primary)' }} />}
                           </button>
                         );
                       })}
@@ -678,10 +678,10 @@ export default function Onboarding() {
                   </div>
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       Do you participate in online university groups?
                     </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {[
                         { val: 'Yes', label: 'Yes, I participate', desc: 'Batch WhatsApp chats, LMS forums, Discord servers, or student societies', icon: '✅' },
                         { val: 'No', label: 'No, rarely or never', desc: 'Prefer direct 1-on-1 messages or independent study without large groups', icon: '❌' },
@@ -693,13 +693,13 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('university_groups_participation', item.val)}
-                            style={{ padding: '1.25rem 1.35rem' }}
+                            style={{ padding: '1.15rem 1.25rem', textAlign: 'left' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.45rem' }}>
-                              <span style={{ fontSize: '1.4rem' }}>{item.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
+                              <span style={{ fontSize: '1.35rem' }}>{item.icon}</span>
+                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
                             </div>
-                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
                               {item.desc}
                             </span>
                           </button>
