@@ -13,11 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
-import PrismaLogo from '../components/PrismaLogo';
-import OnboardingStepWrapper from '../components/OnboardingStepWrapper';
+import OnboardingLayout from '../components/OnboardingLayout';
 import {
   GraduationCap, Home, Smartphone, Users,
-  CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Lock
+  CheckCircle2, Sparkles, ArrowRight, ShieldCheck
 } from 'lucide-react';
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
@@ -276,88 +275,23 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="onb-layout">
-      {/* ─── 1. Left Step Sidebar (kept as-is) ─── */}
-      <aside className="onb-sidebar">
-        <div>
-          {/* Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.5rem' }}>
-            <PrismaLogo size={38} />
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-                Prisma
-              </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.04em' }}>
-                STUDENT ONBOARDING
-              </div>
-            </div>
-          </div>
-
-          {/* Stepper with continuous vertical connector line */}
-          <div className="onb-steps-list">
-            {STEPS.map((s, i) => {
-              const done = i < step || step === totalSteps - 1;
-              const active = i === step;
-              const isLast = i === totalSteps - 1;
-
-              return (
-                <div key={s.id} className="onb-step-row">
-                  {/* Connector Line */}
-                  {!isLast && (
-                    <div className={`onb-step-connector ${i < step ? 'completed' : ''}`} />
-                  )}
-
-                  {/* Step Circle */}
-                  <div className={`onb-step-circle ${active ? 'active' : done ? 'completed' : 'upcoming'}`}>
-                    {done ? <CheckCircle2 size={16} strokeWidth={2.5} /> : i + 1}
-                  </div>
-
-                  {/* Step Label */}
-                  <div className="onb-step-text-wrap">
-                    <span className={`onb-step-label ${active ? 'active' : done ? 'completed' : ''}`}>
-                      {s.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Bottom Security Note & Progress Bar */}
-        <div style={{ marginTop: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.82rem', fontWeight: 600 }}>
-            <Lock size={14} style={{ color: 'var(--color-primary)' }} />
-            <span>Encrypted & Confidential</span>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', lineHeight: 1.5, marginBottom: '0.85rem' }}>
-            Your student profile data is used strictly for personalized cyberbullying intervention scenarios.
-          </div>
-          <div className="onb-progress-track">
-            <div className="onb-progress-bar" style={{ width: `${((step + 1) / totalSteps) * 100}%` }} />
-          </div>
-        </div>
-      </aside>
-
-      {/* ─── 2. Main Content Area (Centered & Top-Aligned with Soft Gradient) ─── */}
-      <main className="flex-1 flex justify-center items-start min-w-0 px-6 lg:px-12 py-8 lg:py-12 onb-main-area">
-        {/* Shared StepWrapper (Identical Card Width, Progress Bar & Spacing) */}
-        <OnboardingStepWrapper
-          step={step}
-          totalSteps={totalSteps}
-          stepLabel={STEPS[step]?.label}
-          error={error}
-          onBack={() => setStep((s) => Math.max(0, s - 1))}
-          onNext={handleNext}
-          onSkip={handleSkipAndSave}
-          canProceed={canProceed()}
-          saving={saving}
-          showNav={step < totalSteps - 1}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 12 }}
+    <OnboardingLayout
+      step={step}
+      totalSteps={totalSteps}
+      steps={STEPS}
+      stepLabel={STEPS[step]?.label}
+      error={error}
+      onBack={() => setStep((s) => Math.max(0, s - 1))}
+      onNext={handleNext}
+      onSkip={handleSkipAndSave}
+      canProceed={canProceed()}
+      saving={saving}
+      showNav={step < totalSteps - 1}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
@@ -736,8 +670,6 @@ export default function Onboarding() {
               )}
             </motion.div>
           </AnimatePresence>
-        </OnboardingStepWrapper>
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }

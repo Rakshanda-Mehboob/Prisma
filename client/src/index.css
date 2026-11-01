@@ -2565,7 +2565,7 @@ select.form-input option {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: #ffffff;
+  background: #f8fafc;
   position: relative;
 }
 
@@ -2575,13 +2575,13 @@ select.form-input option {
   }
 }
 
-/* 1. Left Step Sidebar */
+/* 1. Left Step Sidebar: Solid White, Thin Slate-200 Border */
 .onb-sidebar {
-  width: 310px;
+  width: 280px;
   flex-shrink: 0;
-  background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(124, 58, 237, 0.04) 50%, #ffffff 100%);
-  border-right: 1px solid rgba(99, 102, 241, 0.12);
-  padding: 2.75rem 2rem;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 2.25rem 1.75rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -2600,7 +2600,7 @@ select.form-input option {
     height: auto;
     position: relative;
     border-right: none;
-    border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+    border-bottom: 1px solid #e2e8f0;
     padding: 1.5rem 1.25rem;
   }
 }
@@ -2615,28 +2615,29 @@ select.form-input option {
 .onb-step-row {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.9rem;
   position: relative;
-  padding-bottom: 2rem;
+  padding-bottom: 1.85rem;
 }
 
 .onb-step-row:last-child {
   padding-bottom: 0;
 }
 
+/* Connecting Line: Slate-200 for upcoming, Indigo-500 for completed, no glow/blur */
 .onb-step-connector {
   position: absolute;
   left: 15px;
   top: 32px;
   bottom: 0;
   width: 2px;
-  background: rgba(99, 102, 241, 0.14);
-  transition: background 0.3s ease;
+  background: #e2e8f0;
+  transition: background 0.25s ease;
   z-index: 0;
 }
 
 .onb-step-connector.completed {
-  background: var(--color-primary);
+  background: #6366f1;
 }
 
 .onb-step-circle {
@@ -2646,56 +2647,59 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 700;
   flex-shrink: 0;
   z-index: 1;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .onb-step-circle.active {
-  background: var(--color-primary);
+  background: #4f46e5;
   color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2), 0 4px 12px rgba(79, 70, 229, 0.3);
+  border: 1px solid #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 .onb-step-circle.completed {
-  background: var(--color-success);
+  background: #10b981;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+  border: 1px solid #10b981;
+  box-shadow: none;
 }
 
 .onb-step-circle.upcoming {
   background: #ffffff;
-  border: 1.5px solid var(--color-border);
-  color: var(--color-text-muted);
+  border: 1.5px solid #cbd5e1;
+  color: #94a3b8;
+  box-shadow: none;
 }
 
 .onb-step-text-wrap {
   display: flex;
   flex-direction: column;
-  padding-top: 4px;
+  padding-top: 5px;
 }
 
 .onb-step-label {
-  font-size: 0.94rem; /* 15px */
+  font-size: 0.92rem; /* 14.5px */
   font-weight: 500;
-  color: var(--color-text-muted);
+  color: #64748b;
   transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
 .onb-step-label.active {
-  color: var(--color-primary);
+  color: #4f46e5;
   font-weight: 700;
 }
 
 .onb-step-label.completed {
-  color: var(--color-text-primary);
+  color: #334155;
   font-weight: 600;
 }
 
-/* 2. Main Content Area with Soft Gradient Background */
+/* 2. Main Content Area with Flat Neutral Background (bg-slate-50) */
 .onb-main-area {
   flex: 1;
   display: flex;
@@ -2704,28 +2708,28 @@ select.form-input option {
   min-width: 0;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(238, 242, 255, 0.5) 100%);
-  padding: 2rem 1.5rem 3rem 1.5rem; /* py-8 px-6 */
+  background: #f8fafc;
+  padding: 2rem 1.5rem 3rem 1.5rem;
   box-sizing: border-box;
 }
 
 @media (min-width: 1024px) {
   .onb-main-area {
-    padding: 3rem 3rem; /* py-12 px-12 */
+    padding: 2.75rem 2.5rem 4rem 2.5rem;
   }
 }
 
-/* 3. Large Form Card: w-full max-w-5xl rounded-2xl border soft shadow */
+/* 3. Large Form Card: solid white, subtle slate-200 border, soft shadow */
 .onb-card {
   width: 100%;
   max-width: 64rem; /* max-w-5xl (1024px) */
   margin-left: auto;
   margin-right: auto;
   background: #ffffff;
-  border: 1px solid rgba(99, 102, 241, 0.14);
-  border-radius: 20px; /* rounded-2xl */
-  box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
-  padding: 2rem; /* p-8 */
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.03);
+  padding: 2.25rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -2734,14 +2738,14 @@ select.form-input option {
 
 @media (min-width: 1024px) {
   .onb-card {
-    padding: 3rem; /* lg:p-12 */
+    padding: 3rem;
   }
 }
 
 @media (max-width: 768px) {
   .onb-card {
-    max-width: 100%; /* max-w-full on mobile/tablet */
-    padding: 1.5rem; /* mobile p-6 */
+    max-width: 100%;
+    padding: 1.5rem;
     border-radius: 16px;
   }
 }
@@ -2760,21 +2764,21 @@ select.form-input option {
   align-items: center;
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #4f46e5;
   letter-spacing: 0.02em;
 }
 
 .onb-card-progress-track {
   width: 100%;
   height: 4px;
-  background: rgba(99, 102, 241, 0.1);
+  background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
 
 .onb-card-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), #6366f1);
+  background: #4f46e5;
   border-radius: 999px;
   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
