@@ -175,6 +175,7 @@ body {
 
 .page-content.landing-main {
   max-width: 1560px;
+  margin: 0 auto;
   padding: 1.5rem 2.5rem 4.5rem;
   width: 100%;
 }
@@ -182,6 +183,7 @@ body {
 @media (min-width: 1536px) {
   .page-content.landing-main {
     max-width: 1640px;
+    margin: 0 auto;
     padding: 2rem 3.5rem 5rem;
   }
 }
