@@ -671,7 +671,7 @@ SCENARIO_BLOCK_JSON_SCHEMA = {
         "properties": {
             "scenario_text": {
                 "type": "string",
-                "description": "A realistic, detailed 2-3 sentence cyberbullying incident in a university student context."
+                "description": "A realistic cyberbullying incident in a university student context, 90-130 words, 5-7 sentences, each sentence under 20 words. Must include: setting, trigger, harmful act, spread and reactions, impact on the target (shown through behavior), and an open bystander moment."
             },
             "questions": {
                 "type": "array",
@@ -837,11 +837,24 @@ SCORING (7-point Likert scale per question):
 - Score 2: Conforming to mean peers, low confidence to act.
 - Score 1: Endorsing harm, laughing along, full passivity.
 
+SCENARIO WRITING RULES:
+Write 90 to 130 words. Keep each sentence under 20 words. Include setting, trigger, harmful act, spread and reactions, impact on the target, and an open moment for a bystander. Include only information that matters. Do not state the correct action or add a moral.
+
+The scenario MUST include these six elements in order:
+1. SETTING: where and when it happens, and who the people are (e.g., classmates in the same section or program).
+2. TRIGGER: what started the situation (what was posted, shared, or said).
+3. THE HARMFUL ACT: what exactly was done, stated plainly - one clear action, not multiple.
+4. SPREAD AND REACTIONS: how it spread and how other students reacted (some laughed, some stayed silent, some felt uncomfortable).
+5. IMPACT ON THE TARGET: shown through behavior only (e.g., went quiet, skipped class, left the group) - not stated as dramatic emotion.
+6. OPEN MOMENT: end at a moment where a bystander could act or stay silent. Do NOT say what the right action is. Vary this ending across scenarios - do not always end with the target withdrawing and one person watching.
+
 REQUIREMENTS:
-- Scenario: 3-4 sentences, realistic, fictional, Pakistani university context, easy words, makes complete sense.
+- Scenario: 90-130 words (target ~110), 5-7 sentences. Realistic, fictional, Pakistani/South Asian university context.
+- Each sentence must be under 20 words. Use simple everyday English (grade 6-8 reading level).
+- One main harm per scenario. No filler or backstory that does not affect a decision.
 - Questions: Clear, simple language, no jargon, non-judgmental.
 - Options: Exactly 7 options per question with unique scores 7, 6, 5, 4, 3, 2, 1 (one each), written in plain everyday English.
-- Use fictional South Asian university names (e.g., Zainab, Hamza, Fatima, Bilal, Usman, Mahnoor).
+- Use fictional South Asian names (e.g., Zainab, Hamza, Fatima, Bilal, Usman, Mahnoor).
 
 Return exactly 8 questions in the array: 2 Attitude, 2 SubjectiveNorm, 2 PBC, 2 BehavioralIntention.
 """
@@ -1031,7 +1044,9 @@ def _call_openai_api(prompt: str, schema: dict) -> Optional[dict]:
                     "role": "system",
                     "content": (
                         "You are a friendly educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
-                        "Write in very simple, plain everyday English (grade 6-8 reading level). Avoid all academic and psychometric jargon."
+                        "Write in very simple, plain everyday English (grade 6-8 reading level). Avoid all academic and psychometric jargon. "
+                        "Every scenario must be 90 to 130 words long (target about 110 words). Keep each sentence under 20 words. "
+                        "Include all six elements in order: setting, trigger, harmful act, spread and reactions, behavioral impact on the target, and an open bystander moment."
                     ),
                 },
                 {"role": "user", "content": prompt},
@@ -1208,6 +1223,29 @@ def synthesize_dynamic_scenario(construct: str, stage: str) -> dict:
     }
 
 
+
+def _check_scenario_word_count(scenario_text: str) -> tuple:
+    """
+    Returns (is_within_range, word_count).
+    Acceptable range: 90-130 words inclusive.
+    """
+    words = len(scenario_text.split())
+    return (90 <= words <= 130), words
+
+
+def _regenerate_with_length_fix(prompt: str, schema: dict) -> Optional[dict]:
+    """
+    Single retry with an added length-correction instruction appended to the prompt.
+    Used when the first generation produces a scenario outside the 90-130 word target.
+    """
+    length_fix = (
+        "\n\nIMPORTANT: Rewrite the scenario_text to be between 100 and 125 words, "
+        "keeping all six elements (setting, trigger, harmful act, spread and reactions, "
+        "impact on the target, open bystander moment). Do not change the questions or options."
+    )
+    return _call_openai_api(prompt + length_fix, schema)
+
+
 def generate_personalized_scenario_blocks(
     db: Session,
     stage: str,
@@ -1258,6 +1296,27 @@ def generate_personalized_scenario_blocks(
 
         scenario_text = block_data["scenario_text"].strip()
         questions = block_data["questions"]
+
+        # Word-count check: 90-130 words required
+        in_range, wc = _check_scenario_word_count(scenario_text)
+        if not in_range and OPENAI_API_KEY and OPENAI_API_KEY.strip() and OPENAI_API_KEY not in ("your_openai_api_key_here", "YOUR_KEY_HERE"):
+            print(f"[AI Generator] Block {block_num + 1}: scenario_text is {wc} words (expected 90-130). Retrying once with length fix.")
+            prompt = _build_tpb_block_prompt(stage, profile_data)
+            retry_raw = _regenerate_with_length_fix(prompt, SCENARIO_BLOCK_JSON_SCHEMA)
+            if retry_raw and _validate_openai_block(retry_raw):
+                retry_text = retry_raw["scenario_text"].strip()
+                retry_in_range, retry_wc = _check_scenario_word_count(retry_text)
+                if retry_in_range:
+                    block_data = retry_raw
+                    scenario_text = retry_text
+                    questions = block_data["questions"]
+                    print(f"[AI Generator] Block {block_num + 1}: Retry successful -- {retry_wc} words.")
+                else:
+                    print(f"[AI Generator] WARNING: Block {block_num + 1}: Retry still out of range ({retry_wc} words). Accepting result.")
+            else:
+                print(f"[AI Generator] WARNING: Block {block_num + 1}: Retry failed validation. Accepting original ({wc} words).")
+        elif not in_range:
+            print(f"[AI Generator] WARNING: Block {block_num + 1}: Local synthesizer scenario is {wc} words (expected 90-130). Accepting result.")
 
         # Persist each question as a Scenario row
         for q in questions:
