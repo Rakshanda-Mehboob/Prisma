@@ -25,6 +25,7 @@ import {
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton from '../components/ui/Skeleton';
+import PageContainer from '../components/PageContainer';
 
 // ── The Four TPB Constructs ──────────────────────────────────────────────────
 const TPB_CONSTRUCTS = [
@@ -727,45 +728,28 @@ export default function Assessment() {
   // ── Loading Skeleton ────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div
-        className="assessment-page-root"
-        style={{
-          width: '100%',
-          minHeight: 'calc(100vh - 60px)',
-          background: '#ffffff',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem',
-          flex: 1,
-          boxSizing: 'border-box',
-        }}
-      >
-        <Skeleton height="50px" width="40%" />
-        <Skeleton height="14px" width="100%" borderRadius="var(--radius-full)" />
-        <Skeleton height="240px" width="100%" borderRadius="var(--radius-xl)" />
-        <Skeleton height="320px" width="100%" borderRadius="var(--radius-xl)" />
-      </div>
+      <PageContainer>
+        <div
+          className="assessment-page-root"
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+        >
+          <Skeleton height="50px" width="40%" />
+          <Skeleton height="14px" width="100%" borderRadius="var(--radius-full)" />
+          <Skeleton height="240px" width="100%" borderRadius="var(--radius-xl)" />
+          <Skeleton height="320px" width="100%" borderRadius="var(--radius-xl)" />
+        </div>
+      </PageContainer>
     );
   }
 
   // ── Error / Locked State ───────────────────────────────────────────────────
   if (error && !scenarios.length) {
     return (
-      <div
-        className="assessment-page-root"
-        style={{
-          width: '100%',
-          minHeight: 'calc(100vh - 60px)',
-          background: '#ffffff',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          flex: 1,
-          boxSizing: 'border-box',
-        }}
-      >
+      <PageContainer style={{ minHeight: 'calc(100vh - 60px)', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          className="assessment-page-root"
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}
+        >
         <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
           <Lock size={32} />
         </div>
@@ -785,7 +769,8 @@ export default function Assessment() {
             Back to Dashboard
           </Button>
         </div>
-      </div>
+        </div>
+      </PageContainer>
     );
   }
 
@@ -820,21 +805,11 @@ export default function Assessment() {
 
     // Fallback if neither assessment is completed yet
     return (
-      <div
-        className="assessment-page-root"
-        style={{
-          width: '100%',
-          minHeight: 'calc(100vh - 60px)',
-          background: '#ffffff',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          flex: 1,
-          boxSizing: 'border-box',
-        }}
-      >
+      <PageContainer style={{ minHeight: 'calc(100vh - 60px)', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          className="assessment-page-root"
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}
+        >
         <div style={{ maxWidth: '640px', width: '100%' }}>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
             No Assessment Results Found
@@ -853,7 +828,8 @@ export default function Assessment() {
             Start Baseline Assessment
           </Button>
         </div>
-      </div>
+        </div>
+      </PageContainer>
     );
   }
 
@@ -1132,7 +1108,8 @@ export default function Assessment() {
 
   // ── Active Assessment Flow: 3 Situations with Grouped Questions ─────────────
   return (
-    <div className="assessment-page-root" style={{ width: '100%', minHeight: 'calc(100vh - 60px)', background: '#ffffff', display: 'flex', flexDirection: 'column', gap: '2rem', boxSizing: 'border-box', flex: 1 }}>
+    <PageContainer>
+    <div className="assessment-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
       {/* Top Header & Global Progress */}
       <div style={{ marginBottom: '1.75rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
@@ -1638,5 +1615,6 @@ export default function Assessment() {
         </div>
       )}
     </div>
+    </PageContainer>
   );
 }

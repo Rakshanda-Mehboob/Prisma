@@ -11,6 +11,7 @@ import {
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
+import PageContainer from '../components/PageContainer';
 
 const DEPARTMENTS = [
   'Computer Science',
@@ -291,11 +292,12 @@ export default function Profile() {
   const pwStrength = getPasswordStrength(securityForm.newPassword);
 
   return (
+    <PageContainer>
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ width: '100%', maxWidth: '80rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
+      style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
     >
       {/* ── Global Alerts ── */}
       {saveSuccess && (
@@ -1232,5 +1234,6 @@ export default function Profile() {
         )}
       </AnimatePresence>
     </motion.div>
+    </PageContainer>
   );
 }

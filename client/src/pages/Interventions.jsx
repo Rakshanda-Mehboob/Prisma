@@ -12,6 +12,7 @@ import {
 import Button from '../components/ui/Button';
 import Skeleton, { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
+import PageContainer from '../components/PageContainer';
 
 // ─── Construct Definitions & Metadata (TPB) ──────────────────────────────────
 const CONSTRUCT_CONFIG = {
@@ -623,21 +624,23 @@ export default function Interventions() {
 
   if (loading) {
     return (
-      <div className="coursera-container">
+      <PageContainer>
+        <div className="coursera-container" style={{ padding: 0 }}>
         <Skeleton height="80px" width="60%" borderRadius="var(--radius-lg)" />
         <Skeleton height="100px" width="100%" borderRadius="var(--radius-lg)" style={{ margin: '1rem 0' }} />
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.5rem' }}>
           <SkeletonCard />
           <SkeletonCard />
         </div>
-      </div>
+        </div>
+      </PageContainer>
     );
   }
 
   const hasAssessment = dashboardData?.has_assessment || dashboardData?.pre_scores != null;
   if (!hasAssessment && records.length === 0) {
     return (
-      <div className="coursera-container">
+      <PageContainer>
         <EmptyState
           icon={<Compass size={44} color="var(--color-primary)" />}
           title="Diagnostic Assessment Required"
@@ -645,7 +648,7 @@ export default function Interventions() {
           actionLabel="Take Baseline Assessment"
           onAction={() => navigate('/assessment?stage=pre')}
         />
-      </div>
+      </PageContainer>
     );
   }
 
@@ -661,11 +664,13 @@ export default function Interventions() {
   const videoUrl = isVideo ? currentLesson?.contentBody?.split('\n')[0]?.trim() : null;
 
   return (
+    <PageContainer>
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
       className="coursera-container"
+      style={{ padding: 0 }}
     >
       <div className="coursera-header-card">
         <div className="coursera-header-top">
@@ -1249,5 +1254,6 @@ export default function Interventions() {
       </div>
       )}
     </motion.div>
+    </PageContainer>
   );
 }

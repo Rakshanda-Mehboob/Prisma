@@ -13,6 +13,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton, { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
+import PageContainer from '../components/PageContainer';
 
 const CONSTRUCTS = [
   { key: 'attitude',             label: 'Attitude',                     color: '#4f46e5' },
@@ -104,11 +105,13 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <Skeleton height="80px" width="55%" />
-        <div className="stats-grid"><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
-        <Skeleton height="260px" />
-      </div>
+      <PageContainer>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <Skeleton height="80px" width="55%" />
+          <div className="stats-grid"><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
+          <Skeleton height="260px" />
+        </div>
+      </PageContainer>
     );
   }
 
@@ -148,6 +151,9 @@ export default function Dashboard() {
   const displayScores = post || pre;
 
   return (
+    <PageContainer
+      as="div"
+    >
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
@@ -324,5 +330,6 @@ export default function Dashboard() {
       )}
 
     </motion.div>
+    </PageContainer>
   );
 }

@@ -1242,7 +1242,25 @@ select.form-input option {
   border-top: 1px solid var(--color-border);
 }
 
-/* ── Coursera-Style Learning Module Experience ────────────────────────────── */
+/* Shared Page Container: w-full max-w-7xl mx-auto px-6 lg:px-10 py-6 */
+.page-container {
+  width: 100%;
+  max-width: 80rem;   /* 1280px */
+  margin: 0 auto;
+  padding: 1.5rem;    /* px-6 py-6 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding: 1.5rem 2.5rem; /* lg:px-10 */
+  }
+}
+
+/* Coursera-Style Learning Module Experience */
 .coursera-container {
   display: flex;
   flex-direction: column;

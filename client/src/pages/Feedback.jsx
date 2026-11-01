@@ -11,6 +11,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Skeleton from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
+import PageContainer from '../components/PageContainer';
 
 const RATING_LABELS = {
   1: 'Needs Improvement / Limited Utility',
@@ -103,17 +104,20 @@ export default function Feedback() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <Skeleton height="70px" width="50%" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          <Skeleton height="360px" borderRadius="var(--radius-xl)" />
-          <Skeleton height="360px" borderRadius="var(--radius-xl)" />
+      <PageContainer>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <Skeleton height="70px" width="50%" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            <Skeleton height="360px" borderRadius="var(--radius-xl)" />
+            <Skeleton height="360px" borderRadius="var(--radius-xl)" />
+          </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
+    <PageContainer>
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
@@ -329,5 +333,6 @@ export default function Feedback() {
         </div>
       )}
     </motion.div>
+    </PageContainer>
   );
 }
