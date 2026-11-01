@@ -144,20 +144,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "An anonymous university confession page on {platform} posts a photo of {target_name} "
-                "studying alone in the campus library, with a caption making fun of how stressed they look. "
-                "Within an hour, the post gets dozens of laughing reactions and mean comments. Several classmates "
-                "tag each other in the comments to join in the joke."
+                "{target_name} is an undergraduate student who frequently visits the campus central library between classes. During a quiet evening study session before midterms, someone snapped a candid photograph without permission. An anonymous campus confession page on {platform} posted the picture with a mocking caption insulting their appearance. Within an hour, dozens of students reacted with laughing emojis and began tagging classmates in the comment section. Some peers scrolled past quietly, while a few close friends felt genuinely uncomfortable with the attention. {target_name} stopped visiting the library, turned off their phone notifications, and skipped the next morning lecture. A student sitting in the library saw the original photo being taken and opened the active thread."
             ),
             (
-                "A popular campus student page on {platform} posts a candid picture of {target_name} waiting for the university bus, "
-                "with a sarcastic poll asking followers to rate their outfit. The comments quickly fill with rude jokes. "
-                "Multiple students from your batch are liking and sharing the post to their friends."
+                "{target_name} is a university student who commutes daily on the campus shuttle bus. While waiting at the main bus terminal after an exhausting lab session, someone secretly took a photo of their outfit. A popular campus student page on {platform} uploaded the picture alongside a sarcastic poll rating their appearance. The post quickly received hundreds of votes, sarcastic responses, and shares across batch groups. Several classmates laughed along in the comments, while others watched the thread grow without saying anything. {target_name} began catching private buses, avoided waiting at the terminal, and stopped replying in class chats. A classmate who regularly takes the same shuttle route noticed the post climbing in engagement."
             ),
             (
-                "During a lunch break, someone secretly takes a picture of {target_name} eating in the cafeteria and submits it to a student "
-                "meme page on {platform} with an insulting caption. The post starts getting shared in batch chats, with students leaving "
-                "sarcastic comments and tagging {target_name}'s friends."
+                "{target_name} is an enrolled student who regularly eats lunch in the busy campus student cafeteria. During a crowded break, someone secretly took a picture of them eating alone at a corner table. A student meme page on {platform} published the photograph with an insulting caption mocking their social habits. The post circulated rapidly through departmental groups, earning laughing reactions and hurtful remarks from peers. A few students felt the post crossed a boundary, but nobody called it out publicly. {target_name} stopped eating at the cafeteria, packed lunch to eat outside, and walked alone between buildings. Another student sitting two tables away had watched the photograph being taken and saw the meme go live."
             ),
         ],
         "questions": [
@@ -238,19 +231,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "Right after a class presentation in {academic_task}, {initiator_name} posts a story poll on {platform} "
-                "asking: 'Who had the most embarrassing presentation today?' Although they do not mention a name, "
-                "the options clearly point to {target_name}. Dozens of classmates vote and share laughing reactions."
+                "{target_name} and {initiator_name} are classmates completing a graded group presentation for {academic_task}. During the session, {target_name} momentarily lost their train of thought and stuttered through two presentation slides. Right after class, {initiator_name} posted a story poll on {platform} asking followers to vote on the most embarrassing speaker. Classmates quickly voted in the poll, leaving laughing stickers and resharing the story into smaller private chats. Some group members felt the poll was unfair but chose not to intervene publicly. {target_name} left the lecture hall immediately, muted the course group chat, and skipped the afternoon tutorial session. A classmate who sat in the front row watched {initiator_name} create the poll right after class ended."
             ),
             (
-                "Following grades being announced for {academic_task}, {initiator_name} uploads an interactive story poll on {platform} "
-                "mocking someone who struggled during the viva questions. Everyone in the batch knows it refers to {target_name}. "
-                "Classmates are screenshotting the poll and laughing about it in group chats."
+                "{target_name} was delivering an individual seminar presentation for {academic_task} in front of the entire section. Due to a technical issue with the projector remote, they fumbled the slides and paused awkwardly for several seconds. A student in the third row recorded the flustered moment and posted it on {platform} with sarcastic background music. By evening, the clip was viewed by over eighty students, collecting mocking remarks and laughing reactions. Several classmates watched in silence, feeling uneasy about the public ridicule. {target_name} stopped contributing to the course forum, avoided eye contact with peers, and left campus straight after class. A student who partnered with {target_name} on earlier assignments saw the video appear on their feed."
             ),
             (
-                "During a class seminar for {academic_task}, {initiator_name} records a short clip of {target_name} stumbling on their words "
-                "and posts it on {platform} with a poll: 'Should they drop this course? Yes or Definitely.' "
-                "The poll gets shared among students from other sections as well."
+                "{target_name} presented their preliminary findings for {academic_task} during a departmental seminar. While answering a challenging question from the professor, their voice cracked and they gave an incomplete answer. {initiator_name} immediately uploaded a sarcastic quiz on {platform} asking who gave the worst academic answer of the week. Multiple students from the section selected {target_name}'s name, leaving jokes and laughing reactions in the comments. Some peers noticed the cruelty of the poll but kept their thoughts to themselves. {target_name} packed their bag before the seminar concluded, avoided the common area, and did not attend the next session. A peer who prepared alongside {target_name} saw the notification pop up on their smartphone."
             ),
         ],
         "questions": [
@@ -331,19 +318,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "In the campus cafeteria during lunch, {initiator_name} secretly films {target_name} tripping and spilling their tray. "
-                "They add funny sound effects and text on {platform}: 'How not to walk in uni.' "
-                "The video gets hundreds of views within a few hours, with strangers in the comments making fun of {target_name}."
+                "{target_name} is a student in your academic batch who regularly walks across the central university courtyard. While carrying a heavy stack of assignment files, they tripped on the concrete stairs and dropped everything. A bystander filmed the entire fall on a smartphone and uploaded the video to {platform} with dramatic sound effects. Within hours, the clip gathered dozens of shares, laughing comments, and sarcastic tags from mutual classmates. A few students who witnessed the accident in person felt uncomfortable with the humiliation online. {target_name} quickly gathered their scattered papers, left campus for the day, and deleted their profile picture. A student who helped pick up two fallen folders later saw the viral clip recommended on their feed."
             ),
             (
-                "While sitting in the university lawn, {target_name} is recorded on video by {initiator_name} without knowing it. "
-                "The clip is edited into a funny reel on {platform} mocking how {target_name} reads while pacing back and forth. "
-                "The video is shared in batch WhatsApp groups with laughing emojis."
+                "{target_name} was rushing across the campus rain-soaked corridor to submit a late coursework assignment for {academic_task}. They slipped on the slick tiles, dropping their backpack and scattering their personal belongings across the floor. {initiator_name} recorded the slip from the cafeteria balcony and shared the footage across {platform} as a meme reel. The video gained traction across multiple student batches, attracting teasing emojis and mocking remarks. Several classmates watched without commenting, unsure whether speaking up would make things worse. {target_name} hurriedly retrieved their belongings, did not attend their remaining lab, and turned off incoming direct messages. A classmate standing near the noticeboard watched the recording happen in real time."
             ),
             (
-                "During a campus event, {target_name} makes an awkward stumble that {initiator_name} catches on camera. "
-                "Instead of keeping it private, {initiator_name} posts it on {platform} with slow-motion replays and laughing tags. "
-                "Students across different departments re-share the video, leaving {target_name} deeply embarrassed."
+                "{target_name} was practicing a speech for an upcoming student council debate near the open campus amphitheater. They stumbled over their opening lines and repeated the same sentence three times while checking their notes. A student nearby secretly recorded the rehearsal and posted the clip to {platform} with a humiliating caption. Students from competing departments reshared the video, leaving dismissive comments and mocking their public speaking capability. Some peers recognized the effort involved and felt the video was unfair, but stayed quiet. {target_name} withdrew their council nomination the following morning and sat at the back of the lecture room. A peer who supported the campaign saw the video circulating in several student group chats."
             ),
         ],
         "questions": [
@@ -424,19 +405,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "When {target_name} shares an excited post on {platform} about getting an internship related to {academic_task}, "
-                "{initiator_name} and several classmates leave sarcastic comments claiming they only got it through favoritism. "
-                "Their rude comments get laughing likes, overshadowing the post and humiliating {target_name}."
+                "{target_name} is a final-year student who recently published a thoughtful post on {platform} celebrating an internship milestone. They shared key lessons learned from their recent project work in {academic_task}. {initiator_name} left a harsh, sarcastic comment calling the achievement exaggerated and labeling the student incompetent. Within hours, several peers from the same academic circle joined the thread, piling on with mocking replies and patronizing remarks. A few senior students saw the dispute unfold and chose not to intervene. {target_name} deleted the celebratory post, restricted their account visibility, and stopped sharing academic milestones online. A fellow classmate who worked on the same internship team saw the hostile thread expanding."
             ),
             (
-                "After {target_name} posts a project update on {platform} about their hard work in {academic_task}, "
-                "a group of classmates coordinate in a private chat to leave sarcastic critiques under the post. "
-                "Their comments make {target_name}'s work look bad in front of alumni and potential employers."
+                "{target_name} shared an original research summary on {platform} regarding contemporary developments in {academic_task}. They expressed personal interest in pursuing graduate studies in the field. {initiator_name} publicly commented that the summary contained basic errors and questioned whether {target_name} understood the core concepts. Other students from competitive sections liked the critical remark and added dismissive comments beneath it. Some peers recognized the unnecessary cruelty but chose not to get involved publicly. {target_name} stopped contributing to student academic forums, avoided faculty office hours, and took down their project portfolio. A classmate who reviewed the original draft with {target_name} noticed the hostile comments accumulating."
             ),
             (
-                "On a public student showcase post on {platform}, {target_name} shares their semester achievement. "
-                "{initiator_name} quotes the post with sarcastic remarks, calling the work basic and questioning {target_name}'s ability. "
-                "Mutual classmates join in by reposting the quote with laughing remarks."
+                "{target_name} posted an update on {platform} announcing that they had been selected as a student delegate for an academic conference. They thanked their mentors and peers for encouraging their work in {academic_task}. {initiator_name} posted a public reply insinuating that {target_name} secured the spot through favoritism rather than merit. Several classmates reshared the comment, adding sarcastic remarks and fueling an uncomfortable public debate. A handful of batchmates felt the attack was unwarranted but remained on the sidelines. {target_name} turned off public comments, did not attend the delegate orientation meeting, and kept silent in class. A fellow student delegate read through the thread while preparing their conference materials."
             ),
         ],
         "questions": [
@@ -517,18 +492,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "During a tough lecture on {academic_task}, someone snaps a photo of {target_name} looking stressed and confused. "
-                "By evening, the photo is turned into a meme sticker captioned: 'When you have zero brain cells.' "
-                "The meme is sent into batch WhatsApp groups, where students share it with laughing stickers."
+                "{target_name} is an undergraduate student who frequently studies in the quiet corners of the campus library. During a long revision marathon for {academic_task}, they rested their head on their desk and fell asleep. {initiator_name} snapped a close-up photo and turned it into a viral meme circulated widely on {platform}. By evening, the meme was reshared across multiple section groups with laughing emojis and sarcastic captions. A few students thought the meme went too far, but nobody suggested deleting it. {target_name} stopped studying in the library, deactivated their social media profiles, and avoided group study tables. A student who shared a desk with {target_name} that afternoon opened the forwarded meme in a group."
             ),
             (
-                "A candid picture of {target_name} yawning during an early morning class is edited into a meme on {platform}. "
-                "The meme labels {target_name} as the 'class sleeper' and spreads among seniors and juniors who don't even know {target_name}. "
-                "People start calling {target_name} by that nickname in the hallways."
+                "{target_name} was reviewing lecture notes on a cafeteria bench while having lunch between consecutive classes. They accidentally spilled water on their assignment folder and scrambled to save the handwritten pages. A student sitting across recorded the clumsy moment and posted a sticker pack on {platform} ridiculing their reaction. The sticker pack was adopted across departmental chats, with peers using it to respond to unrelated messages. Some students found the joke repetitive and mean-spirited, yet continued using the app normally. {target_name} stopped bringing physical notes to campus, isolated themselves during breaks, and walked away from conversations. A classmate who witnessed the original spill saw the sticker being used in their batch group."
             ),
             (
-                "A picture of {target_name} dropping their notes in the campus corridor is turned into a meme strip on {platform}. "
-                "The post makes fun of their clumsiness and gets dozens of shares in student group chats."
+                "{target_name} was carrying experimental equipment across the engineering corridor for an afternoon lab in {academic_task}. An awkwardly shaped cardboard box slipped from their hands, tumbling loudly across the polished corridor floor. {initiator_name} took a photo of the scattered mess and posted it on {platform} with a derogatory caption questioning their capability. The picture received dozens of sarcastic comments, and students began referencing it in hallway conversations. A few classmates helped gather the items but did not challenge the post online. {target_name} stopped volunteering for lab demonstrations, walked with their head down, and left immediately after practicals. A lab assistant who witnessed the incident saw the photo trending in the campus chat."
             ),
         ],
         "questions": [
@@ -609,18 +579,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "Someone creates a fake account on {platform} using {target_name}'s name and photo. "
-                "The account posts rude opinions, fake confessions, and messages pretending to be {target_name}, "
-                "confusing classmates and teachers who think the account is real."
+                "{target_name} is an active student enrolled in your university academic department. An anonymous individual created a parody account on {platform} using {target_name}'s name, photo, and biographical details. The fake account began sharing fabricated quotes, absurd opinions, and disrespectful statements aimed at university professors. Within two days, dozens of classmates followed the account, leaving laughing comments and encouraging the impersonation. A few students recognized the potential disciplinary consequences but said nothing. {target_name} spent hours trying to report the account, stopped speaking in class, and avoided faculty offices entirely. A classmate who was followed by the parody account recognized {target_name}'s real profile photo."
             ),
             (
-                "A fake profile pretending to be {target_name} appears on {platform}, sending strange and annoying DMs to other students. "
-                "Classmates start screenshotting the messages and talking behind {target_name}'s back, "
-                "while {target_name} has no idea someone is impersonating them."
+                "{target_name} is known in their batch as an enthusiastic participant in class discussions for {academic_task}. Someone created a spoof account on {platform} that exaggerated their speaking style and mocked their classroom questions. The creator posted satirical status updates pretending to represent {target_name}'s daily thoughts and academic opinions. Dozens of students from the section liked and commented on the posts, treating the account as regular entertainment. Some peers felt uncomfortable with the targeted harassment but remained silent. {target_name} stopped raising their hand in lectures, sat in the rear row, and deleted their own accounts. A student who was tagged by the spoof account saw the latest post notification."
             ),
             (
-                "Someone sets up a spoof account on {platform} targeting {target_name}, regularly posting fabricated quotes criticizing professors "
-                "and making fun of group project teammates in {academic_task}. Classmates start following the account and sharing its stories."
+                "{target_name} recently ran as a candidate for Class Representative in their departmental section. An anonymous user set up a fake profile on {platform} that caricatured their campaign promises with humiliating memes. The account posted daily caricatures that attracted sarcastic comments and ridiculing remarks from batchmates. Several students shared the memes into unofficial section chats where discussions escalated unchecked. A small number of classmates found the personal attacks distasteful, yet none spoke up publicly. {target_name} formally withdrew their nomination, stopped attending batch meetings, and kept to themselves during breaks. A classmate who voted for {target_name} received a link to the spoof account from a mutual friend."
             ),
         ],
         "questions": [
@@ -705,21 +670,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "In your departmental batch {platform} group of over 100 students, {target_name} asks a polite question "
-                "about the assignment deadline for {academic_task}. Right away, {initiator_name} and two friends "
-                "reply with sarcastic voice notes and mocking stickers calling {target_name} clueless and lazy. "
-                "Most students remain silent, while a few react with laughing emojis. {target_name} leaves the group in embarrassment."
+                "{target_name} and {initiator_name} are both enrolled in a major lecture course for {academic_task}. {target_name} posted a polite clarification question about tomorrow's assignment submission deadline in the 120-member {platform}. {initiator_name} responded publicly with a harsh, sarcastic insult calling the question foolish and questioning their intelligence. Several classmates chimed in with laughing emojis and mocking memes, while over eighty other members read the messages in silence. No one typed a message to defend {target_name} or answer the original deadline question. {target_name} stopped asking questions in group chats, did not attend office hours, and submitted their assignment unassisted. A classmate who also needed clarification on the same deadline read the entire exchange in the group."
             ),
             (
-                "During exam preparation in the course {platform} group, {target_name} asks about a lecture topic from {academic_task}. "
-                "{initiator_name} replies publicly with rude remarks: 'Did you sleep through the entire semester?' "
-                "They spam the chat with laughing stickers, turning {target_name}'s honest question into a joke. "
-                "No one in the chat answers the actual question."
+                "{target_name} is an undergraduate student who shared a helpful revision guide for {academic_task} in {platform}. Due to a minor typo on page three, one formula was mislabeled in the shared PDF document. {initiator_name} screenshotted the mistake and posted it with a ridiculing comment calling the entire guide useless garbage. A flurry of sarcastic remarks and laughing reactions followed from active members of the group. Many students who had downloaded the notes stayed quiet and did not offer any appreciation. {target_name} deleted the shared study guide, muted the batch chat, and stopped sharing academic materials with peers. A student who had found the first two pages very useful saw the ridicule unfold in real time."
             ),
             (
-                "In the class section {platform} group, {target_name} shares their study notes for {academic_task} to help others. "
-                "{initiator_name} spots a small typo in a screenshot and ridicules {target_name}'s intelligence in front of the whole class. "
-                "A few vocal students join in with sarcastic comments, while eighty other members read without saying anything."
+                "{target_name} inquired about the location of an upcoming laboratory session for {academic_task} in the official {platform}. Having missed an earlier announcement due to illness, they hoped a peer would provide the room number. {initiator_name} posted a sarcastic reply telling {target_name} to wake up and learn how to read announcements properly. Multiple students reacted with laughing stickers, turning the simple inquiry into a shared departmental joke. Several group administrators saw the rude remarks but took no moderating action. {target_name} arrived late to the laboratory session, sat at an empty bench, and avoided speaking to group members. A student who knew the correct room number had their phone open on the chat screen."
             ),
         ],
         "questions": [
@@ -800,20 +757,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "A screenshot of a private conversation between {target_name} and a friend — where {target_name} "
-                "confided feeling overwhelmed by {academic_task} and thinking of dropping the course — is leaked into an unofficial {platform} group. "
-                "{initiator_name} captions it: 'Look at this emotional drama.' The screenshot gets forwarded into multiple chats, "
-                "while {target_name} has no idea their private confession is being laughed at."
+                "{target_name} and {initiator_name} have been classmates and occasional study partners since their first academic year. During a difficult week, {target_name} sent a confidential direct message admitting they were struggling emotionally with {academic_task}. {initiator_name} took a screenshot of the vulnerable conversation and forwarded it into the active section {platform} without permission. Several students shared laughing emojis and joked about {target_name} being unable to cope with university pressure. A few group members felt the breach of trust was wrong, but said nothing in the thread. {target_name} left the section group immediately, blocked {initiator_name}, and stopped attending lectures for two days. A mutual friend who was present in the group received the forwarded screenshot."
             ),
             (
-                "During exam week, a private voice note from {target_name} talking about severe exam stress and exhaustion is forwarded "
-                "into an open campus {platform} channel by {initiator_name}. Students begin making jokes about it. "
-                "The audio spreads while {target_name} is quietly studying in the library."
+                "{target_name} reached out privately to a peer to discuss personal anxieties about failing their upcoming exam in {academic_task}. They admitted feeling overwhelmed by the coursework and asked for advice on speaking with a counselor. The recipient took screenshots of the candid chat and shared them into a large departmental {platform} with an unkind caption. Students in the chat began dissecting the private admission, leaving judgmental remarks and sarcastic reactions. Some readers were shocked by the leak but avoided confronting the person who posted it. {target_name} deactivated their messaging accounts, avoided common student lounges, and sat alone in the library. A classmate who also struggled with exam anxiety saw the private screenshot in the chat."
             ),
             (
-                "In a small project group, {target_name} privately explains that a family emergency caused a short delay in {academic_task}. "
-                "One teammate screenshots the private message and forwards it to a 60-member batch {platform} group, "
-                "claiming {target_name} is just making excuses to avoid work."
+                "{target_name} shared a personal voice note with a friend expressing frustration about an unfair group grading policy in {academic_task}. The voice note was recorded in confidence late at night from their hostel dorm room. The recipient forwarded the private recording into a general {platform} where forty classmates could listen to it. Group members quickly began quoting the voice note sarcastically, sharing laughing stickers and mocking the emotional tone. Several members realized the recording was confidential but remained completely silent. {target_name} stopped contributing to project discussions, kept their camera off during online calls, and missed the next briefing. A student who was listening to the voice note in the campus cafeteria saw {target_name} walk past."
             ),
         ],
         "questions": [
@@ -894,20 +844,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "In a departmental {platform} study server for {academic_task}, {target_name} joins a voice channel "
-                "to collaborate on an upcoming assignment. {initiator_name} and two moderators repeatedly server-mute {target_name}, "
-                "mock their voice in the text chat, and kick them from the call. "
-                "Other students in the channel stay quiet so they don't get kicked out themselves."
+                "{target_name} and {initiator_name} are classmates who use a departmental {platform} server for coursework collaboration. During an active study voice channel session for {academic_task}, an argument broke out over code structure. {initiator_name} and two moderators repeatedly muted {target_name}, stripped their server roles, and posted mocking memes in general text. Other students in the channel watched the targeted exclusion happen without challenging the moderators' behavior. A few members sent laughing emojis whenever {target_name} attempted to rejoin the channel. {target_name} eventually left the server permanently, stopped collaborating with classmates, and worked entirely alone on the project. A student who had the same permissions as the moderators remained connected in the voice call."
             ),
             (
-                "During an online study session for {academic_task} on {platform}, {target_name} suggests an answer to a problem. "
-                "{initiator_name} immediately mutes {target_name}, moves them to an empty AFK channel, and starts posting "
-                "sarcastic jokes about them in the general chat. When {target_name} asks why, moderators ignore them."
+                "{target_name} joined a student-run {platform} server dedicated to exam preparation and peer tutoring for {academic_task}. When they asked for assistance understanding an advanced topic, {initiator_name} publicly stated that the server was only for competent students. The server admins placed {target_name} on a permanent timeout, preventing them from accessing shared past papers and notes. Multiple members observed the restriction in the logs, but nobody objected to the unfair treatment. Some students privately downloaded the materials for themselves while ignoring the ban. {target_name} stopped seeking peer help, struggled through the syllabus alone, and appeared visibly isolated in classes. A classmate who had access to the restricted study files was actively browsing the channel."
             ),
             (
-                "In a student study community on {platform}, {initiator_name} and friends decide to target {target_name}. "
-                "Every time {target_name} posts a question or study notes for {academic_task}, members react with negative stickers and "
-                "post sarcastic remarks until {target_name} stops logging on completely."
+                "{target_name} was an active participant in a university gaming and academic community hosted on {platform}. Following a minor disagreement regarding scheduling a study session for {academic_task}, {initiator_name} launched an exclusion campaign. They created private channels excluding {target_name} and encouraged other members to ignore {target_name}'s messages in the public lounge. Peers gradually stopped responding to {target_name}'s posts, following the social pressure created by the core group. A few individual members felt uncomfortable with the cold shoulder but complied quietly. {target_name} sent fewer messages each day until stopping completely, abandoning both the games and the study group. A server member who was invited to the secret private channel had not replied yet."
             ),
         ],
         "questions": [
@@ -988,18 +931,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "A secret side group on {platform} is created by {initiator_name} excluding only {target_name} from the project team. "
-                "In this side chat, members mock {target_name}'s contributions for {academic_task} and make up rumors about them. "
-                "In the official group, members give {target_name} cold, one-word replies and ignore their ideas."
+                "{target_name} is a dedicated student working alongside {initiator_name} and others on a semester assignment for {academic_task}. When {target_name} took a day off due to a documented family emergency, {initiator_name} created a secret backchannel group on {platform}. They spread false rumors claiming {target_name} was intentionally skipping work and faking personal problems to avoid contributing. The gossip spread across multiple project teams, and classmates began treating {target_name} with noticeable suspicion. Several peers knew {target_name}'s family situation was genuine, yet kept quiet to avoid group friction. {target_name} noticed the sudden coldness, stopped attending informal group lunches, and completed their project deliverables in isolation. A group partner who received the secret backchannel link had not added any comments."
             ),
             (
-                "Following a disagreement in class, {initiator_name} forms an exclusive {platform} group inviting fifteen classmates from the batch. "
-                "The chat is used to criticize and laugh at everything {target_name} says or submits in {academic_task}. "
-                "Members screenshot {target_name}'s social posts to mock them daily in this private chat."
+                "{target_name} achieved the top score in a difficult midterm examination for {academic_task}. Shortly after the grades were posted, {initiator_name} initiated a private rumor thread on {platform} alleging academic dishonesty. They claimed without evidence that {target_name} had obtained the answer key from an instructor beforehand. The rumor gained momentum as students forwarded the claims to friends across different sections. Some classmates knew {target_name} had studied for weeks in the library, but chose not to defend them. {target_name} stopped celebrating their achievement, avoided faculty mentors, and sat away from classmates in subsequent lectures. A student who had studied alongside {target_name} for the exam saw the rumor message forwarded into their chat."
             ),
             (
-                "During preparation for {academic_task}, a study circle creates a clone {platform} chat that deliberately leaves out {target_name}. "
-                "Members agree not to share important exam hints or lecture notes with {target_name}, while talking behind their back."
+                "{target_name} was nominated by their department to represent the university in an intercollegiate competition for {academic_task}. Unsatisfied with the decision, {initiator_name} set up a side chat on {platform} to circulate derogatory gossip about {target_name}'s character. They claimed {target_name} had badmouthed other team members during the selection interviews. Peers in the department began giving {target_name} cold stares and excluding them from collaborative study tables. A handful of students recognized the malicious intent of the gossip, but stayed passive. {target_name} felt deeply alienated, withdrew from the competition team, and attended classes with minimal interaction. A student who was present during the selection interviews was added to the gossip group."
             ),
         ],
         "questions": [
@@ -1080,20 +1018,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "In a student discussion group for {academic_task}, {target_name} sends a voice note explaining their idea. "
-                "Because of their regional accent, they pronounce a technical term slightly differently. "
-                "{initiator_name} immediately cuts a snippet of the audio and sends it into other batch chats, "
-                "imitating {target_name}'s accent with laughing voice notes and jokes."
+                "{target_name} sent an earnest voice note in {platform} trying to clarify the submission requirements for {academic_task}. Because they were speaking in a hurry between classes, their accent sounded different and their phrasing was somewhat rushed. {initiator_name} clipped the recording, adjusted the pitch to make it sound ridiculous, and posted it back into the group. Dozens of students reacted with laughing emojis and began repeating the distorted phrases as inside jokes. Several members realized the mockery was disrespectful, but no one asked {initiator_name} to delete the clip. {target_name} stopped sending voice notes, kept their typed messages to a bare minimum, and left class early. A classmate who had been confused by the same requirements listened to the audio clip on their phone."
             ),
             (
-                "While discussing a difficult assignment in {academic_task}, {target_name} sends an audio note sounding nervous and stressed. "
-                "{initiator_name} forwards the voice note across campus groups with the caption: 'Listen to this drama lol.' "
-                "Students who have never met {target_name} start forwarding the voice note and making fun of their voice."
+                "{target_name} was practicing pronunciation and presentation pacing for an oral assessment in {academic_task}. They shared a short voice recording in a peer review {platform} asking for constructive feedback on their tone. {initiator_name} forwarded the recording to an unofficial batch channel, adding mocking captions that ridiculed their voice. Classmates started creating audio remixes and sharing them across peer networks with laughing reactions. A few students thought the parody was unnecessarily cruel, but joined the collective laughter to fit in. {target_name} did not submit the optional practice recording and spoke quietly during the actual assessment. A student who originally promised to give constructive feedback saw the remix circulating in another chat."
             ),
             (
-                "During preparation for a group presentation in {academic_task}, {target_name} sends a practice voice clip. "
-                "{initiator_name} turns the clip into a meme audio and shares it to a 100-member batch group with mocking commentary "
-                "about their communication skills. After this, {target_name} stops speaking in group calls."
+                "{target_name} left a concerned voice note in the project {platform} explaining that they were stuck in heavy traffic during a storm. They worried about missing the group submission deadline for {academic_task} and apologized profusely to their teammates. {initiator_name} shared the audio clip into a larger social group, mocking {target_name}'s panicked tone and anxious breathing. Multiple students laughed at the emotional reaction, turning someone's stressful ordeal into casual entertainment. Some group partners knew how hard {target_name} had worked on the report, but said nothing in their defense. {target_name} arrived soaked at the department, submitted their section silently, and avoided speaking to teammates afterward. A teammate who was standing near the project submission desk saw the forwarded audio notification."
             ),
         ],
         "questions": [
@@ -1174,21 +1105,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "When a small group task for {academic_task} is delayed by a couple of hours, {initiator_name} repeatedly tags @{target_name} "
-                "in a 70-member batch group, sending dozens of rapid messages: '@{target_name} where is your work? @{target_name} useless as always.' "
-                "Other students join in by tagging {target_name} with sarcastic countdown timers and laughing stickers, "
-                "flooding {target_name}'s phone with notifications late into the night."
+                "{target_name} posted a personal opinion about an ethical case study for {academic_task} in {platform}. Their perspective differed from the mainstream consensus in the student section. {initiator_name} disagreed aggressively and began repeatedly tagging {target_name} in dozens of hostile messages over several hours. Other students joined the pile-on, tagging {target_name} with dismissive memes and demanding they admit they were wrong. Many silent group members saw their notifications flood with the argument, but chose not to step in. {target_name} muted the group chat, stopped participating in class debates, and looked noticeably anxious during subsequent seminars. A classmate who agreed with {target_name}'s original perspective was watching the notifications accumulate."
             ),
             (
-                "In a departmental project channel, {initiator_name} publicly tags {target_name} again and again in the general chat, "
-                "posting rude demands and insults about their commitment to {academic_task}. "
-                "When {target_name} explains they had a family emergency, {initiator_name} replies: '@{target_name} always has excuses.' "
-                "The entire class watches this public callout unfold."
+                "{target_name} made a simple scheduling suggestion for a makeup class in {academic_task} on the section {platform}. {initiator_name} felt the suggestion was inconvenient and started a continuous barrage of sarcastic messages tagging {target_name}. They encouraged ten other students to tag {target_name} simultaneously with spam reactions until the screen was filled. The targeted student's phone was overloaded with notifications during an ongoing lecture. Several classmates watched the spamming unfold on their screens and smiled, while others ignored the disruption. {target_name} switched their phone off, left the lecture room during the break, and did not return that afternoon. A student sitting next to {target_name} saw their screen vibrating constantly from the repeated tags."
             ),
             (
-                "Following grades being posted in {academic_task}, {initiator_name} spam-tags {target_name} in the batch {platform} group, "
-                "asking why their marks were low and posting laughing emojis with repeated @-mentions. "
-                "The spam continues for over an hour while {target_name} turns their phone off in distress."
+                "{target_name} reminded the class group on {platform} that assignments for {academic_task} had to follow strict anti-plagiarism guidelines. {initiator_name} accused {target_name} of acting like a strict teacher and began tagging them with sarcastic nicknames. Throughout the evening, multiple classmates tagged {target_name} in hostile memes, telling them to mind their own business. The constant pinging made it impossible for {target_name} to use the group for academic purposes. Some students felt the response was disproportionate, but kept their opinions to themselves. {target_name} left the group, stopped sharing assignment reminders, and studied entirely on their own. A class representative who had administrative privileges in the group read through the harassment thread."
             ),
         ],
         "questions": [
@@ -1273,20 +1196,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "Two days before the final submission for {academic_task}, group leader {initiator_name} secretly removes {target_name} "
-                "from the shared project document, erasing their assigned sections without telling them. "
-                "{initiator_name} tells the rest of the group that they will submit the project without {target_name}'s name, "
-                "which will cause {target_name} to fail the semester project. Teammates know {target_name} contributed, but stay silent to protect their own marks."
+                "{target_name} and {initiator_name} were assigned to the same four-person group project for {academic_task}. A few days before the final deadline, {initiator_name} edited the shared document and removed {target_name}'s name from the report. They posted in {platform} claiming {target_name} had contributed zero effort, despite {target_name} completing their assigned research sections. The other two group members watched the credit being stripped away but remained silent to protect their own grades. Peers from other teams heard about the dispute and assumed {target_name} was an unreliable partner. {target_name} discovered the erasure on the morning of submission, broke down quietly in the hallway, and did not enter the classroom. One group member who had reviewed {target_name}'s original drafts was standing by the submission counter."
             ),
             (
-                "During the final days of {academic_task}, {initiator_name} locks {target_name} out of the shared slides and report. "
-                "When {target_name} asks for access, {initiator_name} lies in the group chat, saying {target_name} never did any work. "
-                "Teammates know {target_name} finished their part, but nobody speaks up when {initiator_name} submits the project without {target_name}."
+                "{target_name} was assigned as a partner alongside {initiator_name} for a critical semester project in {academic_task}. {initiator_name} deliberately changed the access permissions on the shared repository and cloud folder, locking {target_name} out. They announced in the class forum that {target_name} was unresponsive and asked the professor to reassign the work. Classmates who had seen {target_name} working diligently on campus did not step forward to set the record straight. Several peers sided with {initiator_name} simply because they were more popular in the batch. {target_name} attended the project presentation in silence, unable to present, and received a failing provisional mark. A classmate who shared a computer lab table with {target_name} while they coded the project was present in the room."
             ),
             (
-                "A few days before the final presentation of {academic_task}, {initiator_name} edits the group report to remove all of {target_name}'s work. "
-                "{initiator_name} warns the other group members that if anyone tells the teacher, the whole team might lose marks. "
-                "{target_name} finds out on presentation day that their name has been completely deleted."
+                "{target_name} worked for three weeks compiling data for a complex collaborative study in {academic_task}. During a late-night editing session, {initiator_name} replaced {target_name}'s comprehensive analysis with their own summary. When {target_name} protested in {platform}, {initiator_name} told the entire group that {target_name}'s work was substandard and useless. Other teammates agreed with {initiator_name} to avoid conflict and finish the project quickly. Nobody validated the hours of effort {target_name} had invested into the data collection. {target_name} left the team workspace, did not attend the final debrief, and requested an individual meeting with the department head. A teammate who knew the analysis was accurate had not sent any message to the group."
             ),
         ],
         "questions": [
@@ -1367,20 +1283,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "Late at night in a university hostel floor {platform} group, {initiator_name} and several residents secretly photograph {target_name} "
-                "asleep in their room. They post the photos with mocking comments about their appearance and sleeping habits, "
-                "saying {target_name} should be forced to change rooms. "
-                "{target_name} is fast asleep and has no idea their private room is being posted online."
+                "{target_name} is a university resident living in the on-campus hostel while completing their degree in {academic_task}. During midterms, {initiator_name} secretly took photos of {target_name}'s side of the dorm room and posted them to {platform}. They added mocking captions criticizing {target_name}'s personal belongings, laundry, and modest background. Other hostel residents jumped into the comment thread, posting laughing emojis and creating hurtful inside jokes. Several students on the same floor felt the post violated basic privacy, but avoided getting involved. {target_name} stopped using the hostel common room, took meals in their room alone, and asked the warden for a room transfer. A resident living across the hall heard the laughter echoing down the corridor while viewing the post."
             ),
             (
-                "In a shared student flat {platform} group, {initiator_name} posts photos of {target_name}'s personal belongings and food, "
-                "making fun of their hometown and habits. The messages turn into an agreement "
-                "to ignore {target_name} and make living there so uncomfortable that they leave the apartment on their own."
+                "{target_name} had a private phone conversation with their family late in the evening from their hostel room balcony. {initiator_name} secretly recorded part of the emotional conversation and shared the audio file in the hostel {platform}. The clip was circulated among wing residents with mocking captions about {target_name} being homesick and immature. Dozens of residents listened and shared sarcastic comments, turning a private moment into hostel gossip. A few residents felt deeply uneasy about the recording, but stayed silent to maintain group harmony. {target_name} stopped spending time on the balcony, avoided speaking to hallmates, and stayed in the library until closing hours. A student whose room shared the same balcony wall had heard the recording being made."
             ),
             (
-                "Across a hostel wing {platform} chat, residents circulate voice notes mocking {target_name}'s routine and habits. "
-                "Several residents reply with laughing emojis, while others read silently without intervening. "
-                "The next morning, {target_name} notices hostile whispers and stares in the hallway."
+                "{target_name} was studying late at night in the hostel common study hall for an upcoming exam in {academic_task}. Exhausted from revision, they fell asleep at the desk with their study notes scattered around them. {initiator_name} took pictures from multiple angles, drew insulting doodles over the photos, and posted them in the hostel chat on {platform}. Residents responded with laughing stickers and shared the photos into departmental channels by morning. Several students saw {target_name} sleeping peacefully and knew how hard they worked, yet did not intervene. {target_name} woke up to find classmates whispering, packed their books hurriedly, and left the study hall without breakfast. A resident who had been studying at the neighboring table saw the photos appear in their notifications."
             ),
         ],
         "questions": [
@@ -1461,19 +1370,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "During elections for the departmental student society, {initiator_name} starts a digital rumor campaign "
-                "against rival candidate {target_name}. They share fake screenshots and anonymous voice notes on {platform} claiming "
-                "{target_name} misused society funds. The false posts spread quickly across all batch WhatsApp groups."
+                "{target_name} was elected as an executive member of a university student society related to {academic_task}. Unhappy with the election outcome, {initiator_name} launched an anonymous smear campaign on {platform}. They posted fabricated claims that {target_name} had mishandled society funds and engaged in favoritism during recruitment. The posts circulated quickly among society members, attracting suspicious comments and demands for an investigation. Senior society members knew the budget was thoroughly audited, but refrained from making a public statement. {target_name} resigned from their executive role, stopped attending society events, and became noticeably withdrawn on campus. A society treasurer who had verified all the financial receipts read the allegations online."
             ),
             (
-                "When {target_name} is shortlisted to lead a university student club, {initiator_name} creates fake accounts "
-                "on {platform} to comment on club posts, falsely accusing {target_name} of cheating on assignments in {academic_task}. "
-                "Classmates start questioning {target_name}'s honesty, and the teacher in charge considers dropping their name."
+                "{target_name} organized an annual academic workshop for {academic_task} that received praise from faculty members. {initiator_name} posted on {platform} claiming {target_name} took all the credit while forcing junior volunteers to do all the work. They tagged several faculty advisors and student leaders, inviting public criticism of {target_name}'s leadership. Classmates began debating the allegations publicly, with several people assuming the worst without verifying the facts. Junior volunteers who had enjoyed working with {target_name} hesitated to speak out against senior students. {target_name} cancelled their plans to organize the next symposium and declined further student leadership opportunities. A volunteer who worked directly alongside {target_name} throughout the event saw the post."
             ),
             (
-                "In an election for class representative (CR), {initiator_name} launches aggressive online attacks against {target_name}. "
-                "They flood campus {platform} groups with edited photos and sarcastic memes attacking {target_name}'s family and background, "
-                "turning a simple student election into a personal attack."
+                "{target_name} was chosen to lead the university debate delegation for an intercollegiate championship in {academic_task}. {initiator_name} created an anonymous poll on {platform} asking whether {target_name} was the least qualified leader in university history. The poll attracted hundreds of votes from students who enjoyed campus drama, generating a stream of ridiculing comments. Debate team members saw the damage being done to team morale, but feared becoming the next target. A few faculty advisors heard about the poll but dismissed it as harmless student politics. {target_name} stepped down as delegation head, stopped attending debate practices, and kept a low profile. A team member who had prepared their opening arguments with {target_name} had the poll on their screen."
             ),
         ],
         "questions": [
@@ -1554,19 +1457,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "On the official university LMS discussion board for {academic_task}, {target_name} asks a thoughtful question about lecture topics. "
-                "{initiator_name} coordinates with friends in a private chat to reply with rude comments telling {target_name} "
-                "to 'stop trying to impress the professor.' They spam sarcastic replies on the thread before the teacher logs in."
+                "{target_name} posted a detailed, thoughtful answer to an online discussion prompt on the university LMS for {academic_task}. They offered a unique interpretation of the assigned reading that challenged conventional assumptions. {initiator_name} posted a condescending reply, then rallied several friends in {platform} to flood the LMS thread with hostile critiques. Within an hour, ten students posted coordinated replies belittling {target_name}'s academic reasoning and writing style. Other students enrolled in the course noticed the aggressive brigading, but avoided contributing to the discussion. {target_name} deleted their original response, never posted on the LMS forum again, and refrained from answering questions in lectures. A classmate who found {target_name}'s perspective insightful was reading through the hostile replies."
             ),
             (
-                "During online peer reviews on the university LMS for {academic_task}, {initiator_name} and several friends "
-                "leave identical harsh, mocking reviews on {target_name}'s submission, giving zero marks across the board. "
-                "In their private WhatsApp group, they laugh about how they lowered {target_name}'s score."
+                "{target_name} submitted a code review question on the official university learning portal for {academic_task}. They highlighted a bug they encountered in the sample code provided for an upcoming lab assignment. {initiator_name} took screenshots of the question and posted them on {platform}, calling {target_name} incompetent. They encouraged classmates to downvote the question on the portal and leave sarcastic comments under the post. The professor had not yet reviewed the thread, and peers watched the downvotes multiply in real time. {target_name} withdrew the question, struggled with the lab assignment alone, and submitted an incomplete project. A student who had encountered the exact same bug in their code saw the question being mocked."
             ),
             (
-                "On the LMS course discussion forum, {target_name} shares a helpful article related to {academic_task}. "
-                "{initiator_name} replies publicly with condescending remarks making fun of {target_name}'s intelligence, "
-                "telling other students not to reply to {target_name}'s posts."
+                "{target_name} shared a link to an open-source tutorial on the course discussion board for {academic_task} to help struggling peers. {initiator_name} commented that only lazy students need external tutorials and accused {target_name} of promoting shortcuts. They mobilized their friend circle on {platform} to spam the discussion board with sarcastic memes and dismissive remarks. The helpful tutorial thread was buried under negative comments, discouraging other students from using the resource. Several classmates who had bookmarked the link remained silent throughout the public mockery. {target_name} stopped participating in course forums, kept their study materials private, and worked in isolation. A student who was currently reading the tutorial to prepare for an exam saw the spam comments arrive."
             ),
         ],
         "questions": [
@@ -1647,20 +1544,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "In a laboratory session for {academic_task}, partner {initiator_name} fails to show up on time, "
-                "leaving {target_name} to do the entire practical alone under time pressure. "
-                "When a small error happens, {initiator_name} takes to the departmental {platform} group, "
-                "publicly blaming {target_name} and claiming they ruined the lab marks through incompetence."
+                "{target_name} and {initiator_name} were paired as lab partners for an intensive practical component of {academic_task}. During a complex procedure, {target_name} accidentally dropped a test tube, causing a minor delay for the team. {initiator_name} took a photo of the shattered glass and posted it in the departmental {platform} with an insulting caption. They labeled {target_name} a clumsy liability and urged classmates never to partner with them in future semesters. Classmates reacted with laughing emojis, while others shared the photo into cross-departmental groups. {target_name} cleaned up the broken glass in tears, left the laboratory before the debrief, and skipped the following lab. A student working at the adjacent lab bench had watched the accident happen and saw the photo posted."
             ),
             (
-                "During a collaborative lab practical in {academic_task}, {initiator_name} refuses to do their share of the work, "
-                "spending the lab session on their phone. When grades are announced and marks are lost for missing data, "
-                "{initiator_name} posts in the class {platform} chat claiming {target_name} 'ruined our GPA.'"
+                "{target_name} made an arithmetic error in the initial calculations for a group lab report in {academic_task}. The instructor caught the mistake during rounds and gently explained the correct formula to both partners. Instead of fixing it, {initiator_name} took a picture of the graded sheet, circled {target_name}'s handwriting, and posted it on {platform}. They added sarcastic commentary questioning how {target_name} managed to pass prerequisite courses. Peers chimed in with jokes about the error, ignoring that the final report still earned a decent mark. {target_name} refused to work with {initiator_name} again, requested an isolated lab station, and stopped speaking during practicals. A classmate who made a similar calculation error on their own sheet was looking at the post."
             ),
             (
-                "Assigned as lab partners in {academic_task}, {initiator_name} demands that {target_name} write all weekly reports alone. "
-                "When {target_name} politely asks to divide the writing fairly, {initiator_name} retaliates by posting rude messages "
-                "in the batch group calling {target_name} 'selfish and impossible to work with.'"
+                "{target_name} struggled with operating a piece of unfamiliar machinery during a mandatory workshop in {academic_task}. They asked the lab technician for help three times to ensure they were using the equipment safely. {initiator_name} recorded a covert video of {target_name} asking for instructions and uploaded it to {platform}. The video was titled 'How not to do practicals' and gathered dozens of ridiculing comments from senior students. Several classmates recognized that asking for safety advice was responsible, yet said nothing to counter the video. {target_name} avoided attending open lab hours, fell behind on practical milestones, and appeared nervous around machinery. A technician who assisted {target_name} earlier in the day saw a group of students laughing at the video outside."
             ),
         ],
         "questions": [
@@ -1741,20 +1631,13 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         },
         "narrative_variations": [
             (
-                "Because {target_name} commutes two hours daily on the university point bus, they cannot stay late on campus. "
-                "A clique of hostel residents led by {initiator_name} plans late-night study sessions for {academic_task}, "
-                "while making fun of day-scholar commuter students in the main {platform} group as 'day-scholars who contribute nothing.' "
-                "{target_name} is left disconnected from important study notes and group work."
+                "{target_name} is a commuter student who travels two hours daily by public point bus to attend university classes. Because of strict bus departure schedules, they had to leave a group project meeting for {academic_task} at five in the afternoon. {initiator_name} and hostel residents posted in {platform} stating that commuter students are lazy and should drop out. They scheduled all remaining meetings at midnight in the campus cafeteria, deliberately making it impossible for {target_name} to participate. Other commuter students in the section felt the unfairness keenly, but remained silent to avoid conflict. {target_name} was removed from the team credit list, had to plead with the course coordinator, and felt deeply alienated. A fellow commuter student who was on the same bus read the group messages while traveling home."
             ),
             (
-                "When {target_name} asks if a mandatory group meeting for {academic_task} can be held before 5 PM so they can catch the point bus, "
-                "{initiator_name} replies rudely in the class group: 'If you can't stay on campus until 9 PM, why did you take this degree?' "
-                "The group deliberately schedules meetings at night and then blames {target_name} for missing them."
+                "{target_name} commutes from an outlying town each morning to study {academic_task} alongside urban peers. Due to severe road blockages, they arrived thirty minutes late to a collaborative group workshop. {initiator_name} took a photo of {target_name} entering the classroom breathless and posted it on {platform} with a humiliating caption. The post mocked their punctuality and questioned whether students from distant towns belonged at a top university. Classmates reacted with laughing emojis, treating the difficult daily commute as a running joke. {target_name} stopped sitting with the group, began skipping morning lectures, and studied alone at home. A classmate who also experienced transportation delays that morning saw the mocking post."
             ),
             (
-                "A group of hostel resident students refuses to partner with commuter students like {target_name} for {academic_task}. "
-                "In their {platform} group, {initiator_name} shares sarcastic memes calling day-scholars outsiders who don't belong, "
-                "creating a sharp divide between hostelites and day-scholars."
+                "{target_name} requested that a project team for {academic_task} conduct their weekend discussions online instead of on campus. They explained in {platform} that weekend transportation from their village was unavailable and costly. {initiator_name} mocked the request publicly, stating that students with financial or travel constraints should not choose difficult degrees. Several peers supported {initiator_name}'s dismissive attitude, refusing to accommodate virtual meetings. A few students recognized the insensitivity of the comments, but chose not to get involved. {target_name} paid for an expensive taxi to attend, sat quietly throughout the meeting, and did not speak to anyone. A student who had suggested online meetings earlier that week was reading the group discussion."
             ),
         ],
         "questions": [

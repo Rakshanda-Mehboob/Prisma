@@ -304,98 +304,61 @@ SITUATION_TEMPLATES = [
     # ── Department-Tailored Scenarios ──────────────────────────────────────────
     {
         "id": "cs_github_conflict",
-        "context": (
-            "During a group programming project, {actor} publicly posts abrasive, sarcastic comments on {target}'s "
-            "GitHub pull request, calling their code 'embarrassingly incompetent' and tagging the entire class in {platform}. "
-            "Several classmates respond with laughing memes, and {target} stops contributing to the codebase out of humiliation."
-        ),
+        "context": ("{actor} and {target} are third-year Computer Science students working on the same group project. Their code review comments are shared through {platform}. {actor} posted a public reply on {target}'s code submission, calling it sloppy and tagging other classmates to mock it. Several students reacted with laughing emojis and added short dismissive remarks. A few read the thread and did not respond. {target} stopped posting updates to the shared repository and did not attend the next project meeting. One classmate saw the original post go up and is still in the group."),
         "category": "department_cs",
         "department_tags": ["Computer Science", "Software Engineering", "Information Technology"],
     },
     {
         "id": "cs_discord_gaming_flame",
-        "context": (
-            "In {platform}, {actor} and a circle of classmates repeatedly kick {target} from study voice channels "
-            "and post doctored screenshots falsely blaming {target} for breaking the project's build server. "
-            "Other group members stay silent rather than risk being targeted themselves."
-        ),
+        "context": ("{actor} and {target} are classmates in the same software engineering section. They both use {platform} to coordinate assignments and share study resources. {actor} posted edited screenshots in the server, suggesting {target} had deleted shared project files on purpose. The claim was not verified, but several members reacted with angry emojis and started excluding {target} from voice channels. Some students stayed silent even though they had seen the original files. {target} stopped joining the server's voice channels and sent fewer messages. A student who had the original files saved has not said anything yet."),
         "category": "department_cs",
         "department_tags": ["Computer Science", "Software Engineering", "Information Technology"],
     },
     {
         "id": "psych_mental_health_leak",
-        "context": (
-            "During a class seminar on mental health, {target} confided a vulnerable personal experience regarding stress and therapy. "
-            "{actor} took screenshots of {target}'s confidential remarks and shared them in {platform} with mocking commentary, "
-            "inviting peers to ridicule {target}'s emotional stability."
-        ),
+        "context": ("{target} and {actor} are second-year Psychology students in the same seminar group. During a class activity on stress and coping, {target} shared something personal about their own experience with anxiety. {actor} took a screenshot of {target}'s typed message and posted it in {platform} with a mocking caption. Several students in the group reacted with laughing emojis and added comments. Others read the post but did not reply. {target} did not speak in the following seminar session and stopped contributing to the shared group document. A classmate who was in both the seminar and the group is currently online."),
         "category": "department_psych",
         "department_tags": ["Psychology", "Social Sciences"],
     },
     {
         "id": "psych_peer_gaslighting",
-        "context": (
-            "In {platform}, {actor} begins a subtle campaign to isolate {target} by privately telling study group members "
-            "that {target} is psychologically unstable and cannot be trusted with research project findings. "
-            "Peers gradually stop responding to {target}'s messages without explanation."
-        ),
+        "context": ("{actor} and {target} are part of a small research group in their Social Sciences program. They communicate regularly through {platform} to plan meetings, divide tasks, and share notes. {actor} began sending private direct messages to other group members, saying {target} was emotionally unreliable and could not be trusted with the project data. Group members gradually started responding much more slowly to {target}'s messages. Some stopped replying altogether, and no one offered any explanation. {target} noticed the sudden distance, started sending fewer updates, and missed the next group call. One member who received {actor}'s private messages has not spoken to {target} about it yet."),
         "category": "department_psych",
         "department_tags": ["Psychology", "Social Sciences", "Education"],
     },
     {
         "id": "med_clinical_rotation_leak",
-        "context": (
-            "Following a hospital ward practical rotation, {actor} posts a dramatized, distorted account in {platform} "
-            "claiming {target} made a dangerous clinical error during patient rounds. "
-            "Peers begin questioning {target}'s fitness to practice medicine, even though the attending doctor had clarified it was a minor learning check."
-        ),
+        "context": ("{target} and {actor} are medical students completing a hospital ward rotation together. After a morning round, {actor} posted a message in {platform} claiming {target} had made a serious mistake with a patient's chart. The attending doctor had already explained it was a routine learning check, not an error. Several classmates shared the post and added concerned comments questioning {target}'s skills. A few students said nothing but read the thread. {target} stopped asking questions during rounds and sat away from the group at lunch. One classmate who was present during the round has seen the post."),
         "category": "department_med",
         "department_tags": ["Medical / Health Sciences", "Medical Sciences"],
     },
     {
         "id": "med_ward_duty_blame",
-        "context": (
-            "In {platform}, {actor} publicly accuses {target} of faking illness to skip an overnight hospital shift, "
-            "posting private medical discharge notes that {target} had shared strictly in confidence with the team coordinator."
-        ),
+        "context": ("{target} and {actor} are final-year medical students sharing overnight hospital practical shifts. They coordinate their hospital duties and shift handovers through {platform}. {target} had taken a day off with a valid medical certificate and informed the team coordinator. {actor} posted in {platform} that {target} was faking illness to avoid duty, attaching a photo of the confidential medical certificate that {target} had shared in private. Some classmates reacted with surprise and posted skeptical questions in the thread. Others stayed completely silent. {target} stopped posting in the group and skipped the next team briefing entirely. A student who knew about the valid certificate has been reading the thread."),
         "category": "department_med",
         "department_tags": ["Medical / Health Sciences", "Medical Sciences"],
     },
     {
         "id": "biz_startup_pitch_smear",
-        "context": (
-            "Following a university startup pitch competition, {actor} posts allegations in {platform} "
-            "claiming {target} stole their business plan and investor deck. The thread tags industry mentors and alumni on LinkedIn, "
-            "threatening {target}'s emerging professional standing before facts can be checked."
-        ),
+        "context": ("{actor} and {target} are business students who competed in the same university startup pitch event. After the official results were announced, {actor} posted a public message in {platform} claiming {target} had copied the winning business proposal from an older project. The post tagged senior students, batch representatives, and faculty mentors. Several people shared the post quickly or left comments asking for more proof. A few alumni who follow the group also noticed the discussion. {target} did not reply publicly and remained absent from the next entrepreneurship workshop session. One student who attended the pitch event and knows both people has not commented yet."),
         "category": "department_biz",
         "department_tags": ["Business"],
     },
     {
         "id": "biz_team_presentation_conflict",
-        "context": (
-            "Minutes before an executive panel presentation, {actor} edits the shared slide deck to remove {target}'s name, "
-            "then posts in {platform} claiming {target} contributed nothing to the business strategy. "
-            "Other group members witness this but avoid speaking up to protect their own presentation grades."
-        ),
+        "context": ("{actor} and {target} are business students in the same group assignment. They prepare presentations together through {platform}. Before the final class presentation, {actor} edited the shared slide deck and removed {target}'s name from the contributors list. {actor} then posted in the group that {target} had not contributed anything. Other group members saw the post and did not correct it publicly. Some reacted with agreement emojis. {target} stayed quiet during the presentation and left the project group chat the same evening. One group member who saw {target} working on the slides has not said anything."),
         "category": "department_biz",
         "department_tags": ["Business"],
     },
     {
         "id": "eng_cad_hardware_mock",
-        "context": (
-            "In {platform}, {actor} circulates an edited slow-motion clip of {target}'s engineering prototype failing "
-            "during a lab demonstration, overlaying derogatory sound bites and ridiculing {target}'s technical design skills."
-        ),
+        "context": ("{actor} and {target} are engineering students in the same lab section. During a hardware demonstration, {target}'s prototype did not work on the first attempt. {actor} recorded the moment and posted a short edited clip in {platform} with a mocking caption about the design. Several classmates watched the clip and reacted with laughing emojis. A few added short comments. Others opened the post and said nothing. {target} did not speak during the debrief after the lab and left early. A classmate who was standing next to {actor} during the recording is still in the group."),
         "category": "department_eng",
         "department_tags": ["Engineering"],
     },
     {
         "id": "law_moot_court_attack",
-        "context": (
-            "After {target} won a competitive round in the university moot court trials, {actor} launches an anonymous smear campaign "
-            "in {platform}, alleging {target} had improper prior access to the bench brief. The posts circulate rapidly among faculty and peers."
-        ),
+        "context": ("{target} and {actor} are law students who competed against each other in a moot court round. {target} won the round and advanced to the next stage. That evening, an anonymous account posted in {platform} claiming {target} had received the bench brief in advance and had an unfair advantage. Students and faculty members who follow the group saw and shared the post. Some commented with questions. Others reacted with skeptical emojis. {target} stopped posting on their student profile and did not attend the next prep session. One student who was at the competition and knows what actually happened is still online."),
         "category": "department_law",
         "department_tags": ["Law", "Social Sciences"],
     },
@@ -403,49 +366,31 @@ SITUATION_TEMPLATES = [
     # ── Living Environment-Tailored Scenarios ──────────────────────────────────
     {
         "id": "hostel_hall_shaming",
-        "context": (
-            "In {platform}, {actor} secretly takes photos of {target}'s hostel dorm room during exam week "
-            "and posts them with mocking captions about {target}'s personal habits and background. "
-            "Other hostel residents jump into the thread adding hurtful comments and nicknames."
-        ),
+        "context": ("{actor} and {target} are both first-year students living in the university hostel. They share a floor and both use {platform} to stay in touch with other residents. During exam week, {actor} took photos inside {target}'s dorm room without permission and posted them in the hostel group with mocking captions. Several hostel residents reacted with laughing emojis and added comments about the room. Some tagged other friends to make sure they saw the post. {target} stopped coming to the common area and ate meals alone in their room. A resident who saw {actor} take the photos has been reading the thread."),
         "category": "living_hostel",
         "living_tags": ["University hostel"],
     },
     {
         "id": "hostel_roommate_recording",
-        "context": (
-            "Following an argument over study hours in their hostel room, {actor} secretly audio-records {target} "
-            "crying during a private phone conversation with their parents and shares excerpts in {platform}. "
-            "{target} feels unable to return to the room or face hostel peers."
-        ),
+        "context": ("{actor} and {target} are hostel roommates in the same university residence block. After a disagreement about study schedules late at night, things became tense between them. {actor} secretly recorded part of a private call {target} was making to family, then shared a short clip in {platform}. Some hostel residents listened to the clip and shared it further. Others reacted with surprised emojis and did not say anything else. {target} started staying out of the room and spending time in the library instead. Another resident on the same floor heard the clip being shared."),
         "category": "living_hostel",
         "living_tags": ["University hostel"],
     },
     {
         "id": "commuter_schedule_exclusion",
-        "context": (
-            "{actor} and on-campus students deliberately schedule all required group project discussions at midnight on campus, "
-            "publicly mocking {target} in {platform} for living with family and having to commute: 'If you can't stay on campus late, drop the course.' "
-            "They threaten to strike {target}'s name from the final report."
-        ),
+        "context": ("{target} is a commuter student who travels from home to campus each day. They are in the same project group as {actor} and several on-campus students. {actor} posted in {platform} that group meetings would only happen late at night on campus, adding a comment saying commuter students should not join university programs if they cannot stay. Some group members agreed in the thread. Others read it and did not reply. {target} stopped asking about meeting times and was absent from two group sessions. A group member who commutes part-time has seen the post."),
         "category": "living_home",
         "living_tags": ["Home with family"],
     },
     {
         "id": "home_privacy_leak",
-        "context": (
-            "{actor} learns sensitive details about {target}'s family financial difficulties and posts them anonymously "
-            "in {platform}. Several peers speculate and mock {target}'s living situation, while others observe without challenging the post."
-        ),
+        "context": ("{actor} and {target} are classmates who have been in the same program for two years. They are both members of {platform}. {actor} posted a message in the group sharing details about {target}'s family situation that {target} had mentioned only once in a private conversation. Several classmates commented with questions and some made dismissive remarks. A few read the post and did not respond. {target} stopped appearing in group discussions and removed themselves from a smaller study chat. One classmate who was present when {target} first mentioned the personal detail is online now."),
         "category": "living_home",
         "living_tags": ["Home with family"],
     },
     {
         "id": "flatmate_utility_slander",
-        "context": (
-            "After a dispute over utility payments in their shared apartment, {actor} posts {target}'s full name and phone number "
-            "in {platform}, labeling {target} a fraudulent deadbeat and urging other students to refuse them housing or project partnerships."
-        ),
+        "context": ("{actor} and {target} are university students sharing an off-campus apartment. After a disagreement about shared expenses, {actor} posted in {platform} using {target}'s full name and claiming {target} had refused to pay their share. The post asked other students to avoid partnering with {target} on projects or housing. Several students in the group reacted with supporting comments or angry emojis. Some shared the post in other groups. {target} did not reply publicly and stopped responding to messages from mutual classmates. A student who knows both people and the full situation has been reading the thread."),
         "category": "living_shared",
         "living_tags": ["Shared apartment", "Private accommodation"],
     },
@@ -453,92 +398,52 @@ SITUATION_TEMPLATES = [
     # ── Universal Academic & Bystander Scenarios ───────────────────────────────
     {
         "id": "presentation_mock",
-        "context": (
-            "{actor} secretly records {target} stumbling over their words during a class presentation "
-            "and creates a short video clip with laughing emojis, posting it in {platform}. "
-            "Several classmates react with laugh emojis and add mocking comments."
-        ),
+        "context": ("{actor} and {target} are in the same university class. During a class presentation, {target} paused for several seconds and stumbled over a few words. {actor} recorded that moment on their phone and posted it in {platform} with a caption making fun of the delivery. Several classmates watched the clip and reacted with laughing emojis. A few added comments. Others saw the post and said nothing. {target} did not speak in class for the rest of the session and left before the group debrief. One classmate who saw {actor} record the moment is still in the group."),
         "category": "harmful_comments",
     },
     {
         "id": "grade_rumor",
-        "context": (
-            "After {target} scored the highest marks in a difficult midterm, {actor} starts "
-            "spreading unverified rumors on {platform} claiming {target} cheated by manipulating the instructor. "
-            "Several classmates join in calling {target} names and questioning their academic integrity."
-        ),
+        "context": ("{actor} and {target} are classmates who received their midterm results on the same day. {target} scored the highest in a particularly hard paper. {actor} posted in {platform} suggesting {target} had gotten the marks unfairly by having a close relationship with the instructor. Several students reacted with agreement and added further comments. Some shared the post in other class groups. A few read it and did not respond. {target} stopped sitting in the front of the class and did not join the post-exam discussion. One classmate who knows {target}'s actual study routine has not replied to the post."),
         "category": "rumor_spreading",
     },
     {
         "id": "group_exclusion",
-        "context": (
-            "{target} is excluded from all informal study groups and social circles because an influential classmate "
-            "announced on {platform}: 'Whoever collaborates with {target} is off our project team.' "
-            "Most students are silently complying with this social boycott."
-        ),
+        "context": ("{target} is in the same second-year batch as {actor} and several other students. They all use {platform} to coordinate study sessions and project work. {actor} posted a message saying anyone who works with {target} would be dropped from the main study group before exams. Most students stopped replying to {target}'s messages after the post. Some sent {actor} agreement reactions. A few stayed in contact with {target} privately but said nothing publicly. {target} stopped asking questions in the group and submitted the next assignment alone. One student who had been working closely with {target} has read the post."),
         "category": "online_exclusion",
     },
     {
         "id": "meme_harassment",
-        "context": (
-            "{actor} takes an old, awkward personal photo of {target} and turns it into a meme, "
-            "using it repeatedly in {platform} whenever {target} shares an opinion. "
-            "The meme is gaining traction and spreading beyond the original group."
-        ),
+        "context": ("{actor} and {target} are both active members of {platform}. Whenever {target} shares an opinion or asks a question in the group, {actor} replies using an old photo of {target} edited into a meme format. Other students start reacting to the meme with laughing emojis each time it appears. A few share it with comments of their own. Some members stop reacting but do not say anything to {actor}. {target} posted less and less over the following week, then stopped contributing entirely. A member who has saved the original photo knows how it was obtained."),
         "category": "humiliating_content",
     },
     {
         "id": "derogatory_poll",
-        "context": (
-            "An anonymous account creates a poll on {platform} titled 'Who is the most annoying person in our batch?' "
-            "with {target} listed as one of the options. The poll is gaining votes rapidly, "
-            "and some students are actively sharing it."
-        ),
+        "context": ("{target} is a student in a large batch that shares {platform} for announcements and discussions. An account with no profile photo created a poll in the group asking which student in the batch was the most difficult to work with, listing {target} by name. The poll received many votes within a few hours. Several students shared it in other groups. Some reacted with laughing emojis and tagged friends. Others saw the poll and did not vote or comment. {target} left the main group the same day and did not attend the next class. A student who recognized the anonymous account's profile picture is still in the group."),
         "category": "harmful_comments",
     },
     {
         "id": "private_screenshot",
-        "context": (
-            "{actor} takes a screenshot of a private conversation between {target} and a mutual friend "
-            "and shares it on {platform} without permission, revealing sensitive personal information. "
-            "The post quickly receives comments mocking {target}'s private concerns."
-        ),
+        "context": ("{actor} and {target} are classmates who have known each other since the first semester. {target} had sent {actor} a private message asking for advice about a personal problem. {actor} took a screenshot of that conversation and shared it in {platform} without warning. Several classmates read the message and commented with jokes. Some forwarded it to other groups. A few members saw it and went silent. {target} removed themselves from the main group and did not come to campus the next day. One student who received the forwarded screenshot knows it was a private message."),
         "category": "sharing_private_info",
     },
     {
         "id": "threatening_messages",
-        "context": (
-            "You witness {actor} sending repeated threatening and intimidating direct messages to {target} "
-            "in {platform}. {target} has stopped responding and appears visibly distressed in class, "
-            "but has not reported the situation to anyone."
-        ),
+        "context": ("{actor} and {target} are in the same university department and share {platform} for coursework. Over several days, {actor} sent a series of aggressive private messages to {target}, warning them to stop raising issues in group discussions. Other students in the group noticed {target} had stopped posting but did not know why. Some commented that {target} had gone quiet. A few reached out privately and got no reply. {target} stopped attending the weekly group session and submitted work late. One student who accidentally saw one of {actor}'s messages is still in the group."),
         "category": "threats",
     },
     {
         "id": "group_project_blame",
-        "context": (
-            "After a group project receives low marks, {actor} publicly posts in {platform} "
-            "blaming all the mistakes on {target}, despite {target} contributing equally to the work. "
-            "Other group members are either agreeing or staying silent."
-        ),
+        "context": ("{actor} and {target} are in the same project group for an important semester course. After the group received a disappointing grade, {actor} posted publicly in {platform} listing all the mistakes and claiming every issue was {target}'s fault alone. The other project partners did not correct the post or explain what happened. Some classmates reacted with supporting emojis and critical comments. Others read the thread quietly and chose to stay uninvolved. {target} did not respond to the public post and stopped sending messages in the group. One group member who knows {target} contributed equally has been online but has not replied."),
         "category": "harmful_comments",
     },
     {
         "id": "bystander_situation",
-        "context": (
-            "In {platform}, a group of senior students has been systematically mocking {target}'s "
-            "academic questions for several days, calling them 'too basic' and discouraging engagement. "
-            "You and several other students have observed this pattern but no one has responded."
-        ),
+        "context": ("{target} is a first-year student who recently joined {platform} for coursework discussions. Over the past week, a group of senior students has been replying to {target}'s questions with short dismissive comments, saying the questions are too basic for the group. Each time {target} posts, several students react with eye-roll emojis or ignore the message. A few newer members have noticed the pattern. None of them have said anything yet. {target} started posting less and asked one question outside the group instead. You have seen every exchange and are still a member of the group."),
         "category": "bystander",
     },
     {
         "id": "clinical_mistake",
-        "context": (
-            "{target} makes an error during a practical or lab session and classmates begin "
-            "discussing the incident on {platform}, sharing screenshots and making increasingly harsh comments. "
-            "The discussion has moved from constructive critique to personal attacks."
-        ),
+        "context": ("{target} and {actor} are lab partners in a practical session for their science program. During the lab, {target} made a small measurement error that the instructor corrected quickly. {actor} photographed {target}'s worksheet at that moment and posted it in {platform} with a caption calling the error embarrassing. Several classmates reacted with laughing emojis and added comments. The discussion moved from the mistake to personal remarks about {target}'s abilities. Some students did not join in but did not ask others to stop either. {target} left the lab early and did not submit the final worksheet that day. A classmate who knows it was a minor corrected error is still in the group."),
         "category": "harmful_comments",
     },
 ]
