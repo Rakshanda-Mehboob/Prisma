@@ -1231,22 +1231,23 @@ export default function Assessment() {
           >
             {/* Scenario Narrative Box */}
             <div
+              className="assessment-scenario-card"
               style={{
                 background: 'var(--color-surface)',
                 borderRadius: '20px',
                 border: '1px solid rgba(99, 102, 241, 0.16)',
-                padding: '2rem',
+                padding: '2.25rem 2.5rem',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
                 position: 'relative',
                 overflow: 'hidden',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.25rem' }}>
                 <div
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '8px',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
                     background: 'rgba(79, 70, 229, 0.1)',
                     color: 'var(--color-primary)',
                     display: 'flex',
@@ -1254,17 +1255,17 @@ export default function Assessment() {
                     justifyContent: 'center',
                   }}
                 >
-                  <MessageSquareQuote size={18} />
+                  <MessageSquareQuote size={20} />
                 </div>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Situation Context • {currentScenarioIdx + 1} of {scenarios.length}
                 </span>
               </div>
 
               <p
                 style={{
-                  fontSize: '1.08rem',
-                  lineHeight: 1.7,
+                  fontSize: '1.32rem',
+                  lineHeight: 1.85,
                   color: 'var(--color-text-primary)',
                   margin: 0,
                   fontWeight: 500,
@@ -1276,13 +1277,13 @@ export default function Assessment() {
 
             {/* Questions Group Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <HelpCircle size={18} style={{ color: 'var(--color-primary)' }} />
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <HelpCircle size={22} style={{ color: 'var(--color-primary)' }} />
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>
                   Questions for this Situation
                 </h3>
               </div>
-              <span style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '0.92rem', color: 'var(--color-text-muted)' }}>
                 {currentScenarioAnsweredCount} of {currentScenarioQuestions.length} answered
               </span>
             </div>
@@ -1311,18 +1312,18 @@ export default function Assessment() {
                         : isAnswered
                         ? '1px solid rgba(99, 102, 241, 0.2)'
                         : '1px solid var(--color-border)',
-                      padding: '1.5rem',
+                      padding: '1.75rem 2rem',
                       boxShadow: questionError
                         ? '0 0 0 3px rgba(220, 38, 38, 0.12), 0 4px 16px rgba(220, 38, 38, 0.06)'
                         : '0 2px 8px rgba(0, 0, 0, 0.02)',
                       transition: 'all 0.25s ease',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', marginBottom: '1.35rem' }}>
                       <span
                         style={{
-                          width: '26px',
-                          height: '26px',
+                          width: '34px',
+                          height: '34px',
                           borderRadius: '50%',
                           background: questionError
                             ? 'rgba(220, 38, 38, 0.12)'
@@ -1337,7 +1338,7 @@ export default function Assessment() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '0.82rem',
+                          fontSize: '0.95rem',
                           fontWeight: 700,
                           flexShrink: 0,
                           marginTop: '2px',
@@ -1348,11 +1349,11 @@ export default function Assessment() {
                       <p
                         id={`q-title-${question.id}`}
                         style={{
-                          fontSize: '1.02rem',
-                          fontWeight: 600,
+                          fontSize: '1.24rem',
+                          fontWeight: 700,
                           color: 'var(--color-text-primary)',
                           margin: 0,
-                          lineHeight: 1.55,
+                          lineHeight: 1.6,
                         }}
                       >
                         {question.question_text}
@@ -1361,9 +1362,10 @@ export default function Assessment() {
 
                     {/* Options list */}
                     <div
+                      className="assessment-options-group"
                       role="radiogroup"
                       aria-labelledby={`q-title-${question.id}`}
-                      style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', paddingLeft: '2.25rem' }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingLeft: '2.75rem' }}
                     >
                       {(question.options || []).map((opt, optIdx) => {
                         const isSelected = selectedOption === opt.index;
@@ -1379,10 +1381,10 @@ export default function Assessment() {
                             style={{
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '0.85rem',
+                              gap: '1rem',
                               textAlign: 'left',
-                              padding: '0.9rem 1.15rem',
-                              borderRadius: '12px',
+                              padding: '1.05rem 1.35rem',
+                              borderRadius: '14px',
                               border: isSelected
                                 ? '2px solid var(--color-primary)'
                                 : '1px solid var(--color-border)',
@@ -1396,8 +1398,8 @@ export default function Assessment() {
                           >
                             <div
                               style={{
-                                width: '28px',
-                                height: '28px',
+                                width: '32px',
+                                height: '32px',
                                 borderRadius: '50%',
                                 border: isSelected
                                   ? '2px solid var(--color-primary)'
@@ -1407,20 +1409,20 @@ export default function Assessment() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '0.82rem',
+                                fontSize: '0.92rem',
                                 fontWeight: 700,
                                 flexShrink: 0,
                               }}
                             >
-                              {isSelected ? <Check size={14} /> : optionLetter}
+                              {isSelected ? <Check size={16} strokeWidth={2.5} /> : optionLetter}
                             </div>
                             <span
                               style={{
                                 flex: 1,
-                                fontSize: '0.94rem',
+                                fontSize: '1.08rem',
                                 color: isSelected ? 'var(--color-primary)' : 'var(--color-text-primary)',
-                                fontWeight: isSelected ? 600 : 400,
-                                lineHeight: 1.45,
+                                fontWeight: isSelected ? 650 : 450,
+                                lineHeight: 1.55,
                               }}
                             >
                               {opt.text}
@@ -1432,8 +1434,8 @@ export default function Assessment() {
 
                     {/* Inline Error Directly Beneath Question */}
                     {questionError && (
-                      <div id={`q-error-${question.id}`} className="question-inline-error" role="alert">
-                        <AlertCircle size={15} />
+                      <div id={`q-error-${question.id}`} className="question-inline-error" role="alert" style={{ marginLeft: '2.75rem', fontSize: '0.92rem' }}>
+                        <AlertCircle size={16} />
                         <span>{questionError}</span>
                       </div>
                     )}
@@ -1576,7 +1578,7 @@ export default function Assessment() {
                                 cursor: 'pointer',
                               }}
                             >
-                              <span style={{ fontSize: '0.86rem', color: 'var(--color-text-primary)', flex: 1, paddingRight: '0.75rem' }}>
+                              <span style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', flex: 1, paddingRight: '0.75rem' }}>
                                 Q{qIdx + 1}: {q.question_text?.slice(0, 75)}...
                               </span>
                               {isAnswered ? (
