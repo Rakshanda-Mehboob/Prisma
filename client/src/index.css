@@ -2562,8 +2562,7 @@ select.form-input option {
 
 /* ── Modern Split-Screen Onboarding Experience ────────────────────────────── */
 .onb-layout {
-  display: grid;
-  grid-template-columns: 310px 1fr;
+  display: flex;
   min-height: 100vh;
   width: 100%;
   background: #ffffff;
@@ -2572,12 +2571,14 @@ select.form-input option {
 
 @media (max-width: 900px) {
   .onb-layout {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
 
 /* 1. Left Step Sidebar */
 .onb-sidebar {
+  width: 310px;
+  flex-shrink: 0;
   background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(124, 58, 237, 0.04) 50%, #ffffff 100%);
   border-right: 1px solid rgba(99, 102, 241, 0.12);
   padding: 2.75rem 2rem;
@@ -2594,6 +2595,7 @@ select.form-input option {
 
 @media (max-width: 900px) {
   .onb-sidebar {
+    width: 100%;
     min-height: auto;
     height: auto;
     position: relative;
@@ -2695,32 +2697,35 @@ select.form-input option {
 
 /* 2. Main Content Area with Soft Gradient Background */
 .onb-main-area {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
-  justify-content: flex-start;
+  min-width: 0;
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(238, 242, 255, 0.45) 100%);
-  padding: 2.5rem 1.5rem 4rem 1.5rem; /* mobile pt-10 px-6 */
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(238, 242, 255, 0.5) 100%);
+  padding: 2rem 1.5rem 3rem 1.5rem; /* py-8 px-6 */
   box-sizing: border-box;
 }
 
 @media (min-width: 1024px) {
   .onb-main-area {
-    padding: 4rem 3rem 5rem 3rem; /* desktop pt-16 px-12 */
+    padding: 3rem 3rem; /* py-12 px-12 */
   }
 }
 
-/* 3. Large Form Card: w-full max-w-4xl rounded-2xl border soft shadow */
+/* 3. Large Form Card: w-full max-w-5xl rounded-2xl border soft shadow */
 .onb-card {
   width: 100%;
-  max-width: 56rem; /* max-w-4xl (896px) */
+  max-width: 64rem; /* max-w-5xl (1024px) */
+  margin-left: auto;
+  margin-right: auto;
   background: #ffffff;
   border: 1px solid rgba(99, 102, 241, 0.14);
   border-radius: 20px; /* rounded-2xl */
   box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
-  padding: 2rem;
+  padding: 2rem; /* p-8 */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -2729,12 +2734,13 @@ select.form-input option {
 
 @media (min-width: 1024px) {
   .onb-card {
-    padding: 3rem; /* desktop lg:p-12 */
+    padding: 3rem; /* lg:p-12 */
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .onb-card {
+    max-width: 100%; /* max-w-full on mobile/tablet */
     padding: 1.5rem; /* mobile p-6 */
     border-radius: 16px;
   }
@@ -2831,12 +2837,14 @@ select.form-input option {
 .onb-grid-2col {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.85rem;
+  gap: 1.5rem; /* gap-6 */
+  width: 100%;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .onb-grid-2col {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 

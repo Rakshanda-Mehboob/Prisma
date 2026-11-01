@@ -14,10 +14,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { authApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import PrismaLogo from '../components/PrismaLogo';
+import OnboardingStepWrapper from '../components/OnboardingStepWrapper';
 import {
   GraduationCap, Home, Smartphone, Users,
-  ChevronRight, ChevronLeft, CheckCircle2,
-  Sparkles, ArrowRight, ShieldCheck, Lock
+  CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Lock
 } from 'lucide-react';
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
@@ -339,24 +339,21 @@ export default function Onboarding() {
         </div>
       </aside>
 
-      {/* ─── 2. Main Content Area (Anchored Top-Left with Soft Gradient) ─── */}
-      <main className="onb-main-area">
-        {/* Large White Form Card (w-full max-w-4xl rounded-2xl) */}
-        <div className="onb-card">
-          {/* Card Top Progress Bar: Step X of 6 */}
-          <div className="onb-card-progress">
-            <div className="onb-card-progress-header">
-              <span>Step {step + 1} of {totalSteps}: {STEPS[step]?.label}</span>
-              <span>{Math.round(((step + 1) / totalSteps) * 100)}% Completed</span>
-            </div>
-            <div className="onb-card-progress-track">
-              <div
-                className="onb-card-progress-fill"
-                style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
-              />
-            </div>
-          </div>
-
+      {/* ─── 2. Main Content Area (Centered & Top-Aligned with Soft Gradient) ─── */}
+      <main className="flex-1 flex justify-center items-start min-w-0 px-6 lg:px-12 py-8 lg:py-12 onb-main-area">
+        {/* Shared StepWrapper (Identical Card Width, Progress Bar & Spacing) */}
+        <OnboardingStepWrapper
+          step={step}
+          totalSteps={totalSteps}
+          stepLabel={STEPS[step]?.label}
+          error={error}
+          onBack={() => setStep((s) => Math.max(0, s - 1))}
+          onNext={handleNext}
+          onSkip={handleSkipAndSave}
+          canProceed={canProceed()}
+          saving={saving}
+          showNav={step < totalSteps - 1}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -377,16 +374,16 @@ export default function Onboarding() {
                     Welcome to Prisma! 👋
                   </h1>
 
-                  <p className="onb-body-text" style={{ marginBottom: '1.25rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '1.25rem' }}>
                     Thank you for creating your account. Before starting your diagnostic assessment, we would like to understand a little about your university background and everyday digital environment.
                   </p>
 
-                  <p className="onb-body-text" style={{ color: 'var(--color-text-muted)', marginBottom: '2.25rem' }}>
+                  <p className="onb-body-text w-full" style={{ color: 'var(--color-text-muted)', marginBottom: '2.25rem' }}>
                     These brief questions help personalize diagnostic scenarios and tailored interventions to your faculty. It takes about a minute, and you select all your answers manually.
                   </p>
 
                   {/* Full-width Safe, Confidential & Academic Box */}
-                  <div className="onb-privacy-box">
+                  <div className="onb-privacy-box w-full">
                     <div className="onb-privacy-icon">
                       <ShieldCheck size={26} />
                     </div>
@@ -408,82 +405,24 @@ export default function Onboarding() {
                   <h2 className="onb-heading">
                     Academic Details
                   </h2>
-                  <p className="onb-body-text" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
                     Tell us about your university, field of study, and academic year.
                   </p>
 
-                  <div className="form-group" style={{ marginBottom: '1.75rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
-                      University / Institution
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. Riphah International University"
-                      value={profile.university}
-                      onChange={(e) => set('university', e.target.value)}
-                      style={{ fontSize: '1rem', padding: '0.85rem 1.15rem' }}
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: '1.75rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
-                      Department / Field of Study
-                    </label>
-                    <div className="onb-grid-2col">
-                      {DEPARTMENTS.map((d) => {
-                        const sel = profile.degree_program === d.id;
-                        return (
-                          <button
-                            key={d.id}
-                            type="button"
-                            className={`onb-card-option ${sel ? 'active' : ''}`}
-                            onClick={() => set('degree_program', d.id)}
-                            style={{ padding: '0.95rem 1.15rem' }}
-                          >
-                            <span style={{ fontSize: '1.4rem', marginBottom: '0.35rem' }}>{d.icon}</span>
-                            <span style={{ fontSize: '0.94rem', fontWeight: sel ? 700 : 600, color: 'var(--color-text-primary)' }}>{d.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {profile.degree_program === 'Other' && (
+                  {/* University & Year of Study in 2-column grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                        University / Institution
+                      </label>
                       <input
                         type="text"
                         className="form-input"
-                        placeholder="Type your department or major name…"
-                        value={profile.custom_department}
-                        onChange={(e) => set('custom_department', e.target.value)}
-                        style={{ marginTop: '0.85rem', fontSize: '0.98rem' }}
-                        autoFocus
+                        placeholder="e.g. Riphah International University"
+                        value={profile.university}
+                        onChange={(e) => set('university', e.target.value)}
+                        style={{ fontSize: '1rem', padding: '0.85rem 1.15rem' }}
                       />
-                    )}
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.75rem', marginTop: '1.5rem' }}>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
-                        Academic Level
-                      </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '0.85rem' }}>
-                        {ACADEMIC_LEVELS.map((lvl) => {
-                          const sel = profile.academic_level === lvl.id;
-                          return (
-                            <button
-                              key={lvl.id}
-                              type="button"
-                              className={`onb-card-option ${sel ? 'active' : ''}`}
-                              onClick={() => set('academic_level', lvl.id)}
-                              style={{ padding: '0.95rem 1.15rem' }}
-                            >
-                              <span style={{ fontSize: '1.35rem', marginBottom: '0.25rem' }}>{lvl.icon}</span>
-                              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{lvl.label}</span>
-                              <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>{lvl.sub}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
                     </div>
 
                     <div className="form-group" style={{ marginBottom: 0 }}>
@@ -499,7 +438,7 @@ export default function Onboarding() {
                               type="button"
                               className={`onb-pill-btn ${sel ? 'active' : ''}`}
                               onClick={() => set('academic_year', yr)}
-                              style={{ padding: '0.7rem 1.25rem', fontSize: '0.92rem' }}
+                              style={{ padding: '0.75rem 1.25rem', fontSize: '0.92rem' }}
                             >
                               {sel && <CheckCircle2 size={16} />}
                               <span>{yr}</span>
@@ -508,6 +447,67 @@ export default function Onboarding() {
                         })}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Academic Level */}
+                  <div className="form-group mb-6" style={{ marginBottom: '1.75rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      Academic Level
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {ACADEMIC_LEVELS.map((lvl) => {
+                        const sel = profile.academic_level === lvl.id;
+                        return (
+                          <button
+                            key={lvl.id}
+                            type="button"
+                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            onClick={() => set('academic_level', lvl.id)}
+                            style={{ padding: '1rem 1.25rem' }}
+                          >
+                            <span style={{ fontSize: '1.45rem', marginBottom: '0.35rem' }}>{lvl.icon}</span>
+                            <span style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>{lvl.label}</span>
+                            <span style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem', lineHeight: 1.4 }}>{lvl.sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Department in 2-column grid */}
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.6rem' }}>
+                      Department / Field of Study
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {DEPARTMENTS.map((d) => {
+                        const sel = profile.degree_program === d.id;
+                        return (
+                          <button
+                            key={d.id}
+                            type="button"
+                            className={`onb-card-option ${sel ? 'active' : ''}`}
+                            onClick={() => set('degree_program', d.id)}
+                            style={{ padding: '1rem 1.25rem' }}
+                          >
+                            <span style={{ fontSize: '1.45rem', marginBottom: '0.35rem' }}>{d.icon}</span>
+                            <span style={{ fontSize: '0.96rem', fontWeight: sel ? 700 : 600, color: 'var(--color-text-primary)' }}>{d.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {profile.degree_program === 'Other' && (
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Type your department or major name…"
+                        value={profile.custom_department}
+                        onChange={(e) => set('custom_department', e.target.value)}
+                        style={{ marginTop: '0.85rem', fontSize: '0.98rem', padding: '0.85rem 1.15rem' }}
+                        autoFocus
+                      />
+                    )}
                   </div>
                 </div>
               )}
@@ -518,11 +518,11 @@ export default function Onboarding() {
                   <h2 className="onb-heading">
                     Living Situation
                   </h2>
-                  <p className="onb-body-text" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
                     Where do you currently reside during your university studies?
                   </p>
 
-                  <div className="onb-grid-2col">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {LIVING_SITUATIONS.map((sit) => {
                       const sel = profile.living_situation === sit.id;
                       return (
@@ -531,7 +531,7 @@ export default function Onboarding() {
                           type="button"
                           className={`onb-card-option ${sel ? 'active' : ''}`}
                           onClick={() => set('living_situation', sit.id)}
-                          style={{ padding: '1.25rem 1.35rem' }}
+                          style={{ padding: '1.35rem 1.5rem' }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '0.5rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -565,24 +565,27 @@ export default function Onboarding() {
                   <h2 className="onb-heading">
                     Digital Environment
                   </h2>
-                  <p className="onb-body-text" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
                     Which platforms and online channels do you use regularly? (Select all that apply)
                   </p>
 
                   <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
                       Frequently Used Platforms
                     </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.7rem' }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* None option */}
                       <button
                         type="button"
-                        className={`onb-pill-btn ${profile.platforms_used.includes('None') ? 'active' : ''}`}
+                        className={`onb-card-option ${profile.platforms_used.includes('None') ? 'active' : ''}`}
                         onClick={selectNonePlatforms}
-                        style={{ padding: '0.7rem 1.25rem', fontSize: '0.92rem' }}
+                        style={{ padding: '0.95rem 1.25rem', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                       >
-                        <span>🚫</span>
-                        <span>None</span>
-                        {profile.platforms_used.includes('None') && <CheckCircle2 size={16} style={{ marginLeft: 3 }} />}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <span style={{ fontSize: '1.35rem' }}>🚫</span>
+                          <span style={{ fontWeight: 600, fontSize: '0.98rem', color: 'var(--color-text-primary)' }}>None</span>
+                        </div>
+                        {profile.platforms_used.includes('None') && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)' }} />}
                       </button>
 
                       {PLATFORMS.map((p) => {
@@ -591,13 +594,15 @@ export default function Onboarding() {
                           <button
                             key={p.id}
                             type="button"
-                            className={`onb-pill-btn ${sel ? 'active' : ''}`}
+                            className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => togglePlatform(p.id)}
-                            style={{ padding: '0.7rem 1.25rem', fontSize: '0.92rem' }}
+                            style={{ padding: '0.95rem 1.25rem', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                           >
-                            <span>{p.icon}</span>
-                            <span>{p.label}</span>
-                            {sel && <CheckCircle2 size={16} style={{ marginLeft: 3 }} />}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <span style={{ fontSize: '1.35rem' }}>{p.icon}</span>
+                              <span style={{ fontWeight: sel ? 700 : 600, fontSize: '0.98rem', color: 'var(--color-text-primary)' }}>{p.label}</span>
+                            </div>
+                            {sel && <CheckCircle2 size={18} style={{ color: 'var(--color-primary)' }} />}
                           </button>
                         );
                       })}
@@ -605,10 +610,10 @@ export default function Onboarding() {
                   </div>
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
                       How often do you interact online?
                     </label>
-                    <div className="onb-grid-2col">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {INTERACTION_FREQUENCIES.map((freq) => {
                         const sel = profile.online_activity_level === freq.id;
                         return (
@@ -617,11 +622,11 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('online_activity_level', freq.id)}
-                            style={{ padding: '1.15rem 1.35rem' }}
+                            style={{ padding: '1.25rem 1.35rem' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{freq.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{freq.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.45rem' }}>
+                              <span style={{ fontSize: '1.4rem' }}>{freq.icon}</span>
+                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{freq.label}</span>
                             </div>
                             <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                               {freq.desc}
@@ -640,15 +645,15 @@ export default function Onboarding() {
                   <h2 className="onb-heading">
                     Student Community
                   </h2>
-                  <p className="onb-body-text" style={{ marginBottom: '2rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '2rem' }}>
                     Tell us about your peer interactions and university group participation.
                   </p>
 
                   <div className="form-group" style={{ marginBottom: '2rem' }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
                       Who do you mainly interact with online?
                     </label>
-                    <div className="onb-grid-2col">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {INTERACTION_PARTNERS.map((partner) => {
                         const sel = profile.main_interaction_with === partner.id;
                         return (
@@ -657,13 +662,13 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('main_interaction_with', partner.id)}
-                            style={{ padding: '1.15rem 1.35rem' }}
+                            style={{ padding: '1.25rem 1.35rem' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{partner.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{partner.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+                              <span style={{ fontSize: '1.4rem' }}>{partner.icon}</span>
+                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{partner.label}</span>
                             </div>
-                            <span style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
+                            <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
                               {partner.sub}
                             </span>
                           </button>
@@ -673,10 +678,10 @@ export default function Onboarding() {
                   </div>
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                    <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.75rem' }}>
                       Do you participate in online university groups?
                     </label>
-                    <div className="onb-grid-2col">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {[
                         { val: 'Yes', label: 'Yes, I participate', desc: 'Batch WhatsApp chats, LMS forums, Discord servers, or student societies', icon: '✅' },
                         { val: 'No', label: 'No, rarely or never', desc: 'Prefer direct 1-on-1 messages or independent study without large groups', icon: '❌' },
@@ -688,11 +693,11 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('university_groups_participation', item.val)}
-                            style={{ padding: '1.15rem 1.35rem' }}
+                            style={{ padding: '1.25rem 1.35rem' }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
-                              <span style={{ fontSize: '1.35rem' }}>{item.icon}</span>
-                              <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.45rem' }}>
+                              <span style={{ fontSize: '1.4rem' }}>{item.icon}</span>
+                              <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
                             </div>
                             <span style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                               {item.desc}
@@ -708,24 +713,24 @@ export default function Onboarding() {
               {/* Step 5: Complete */}
               {step === 5 && (
                 <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(5, 150, 105, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#059669', marginBottom: '1.75rem', boxShadow: '0 8px 24px -4px rgba(5, 150, 105, 0.25)' }}>
-                    <CheckCircle2 size={46} strokeWidth={2.5} />
+                  <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'rgba(5, 150, 105, 0.12)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#059669', marginBottom: '1.75rem', boxShadow: '0 8px 24px -4px rgba(5, 150, 105, 0.25)' }}>
+                    <CheckCircle2 size={48} strokeWidth={2.5} />
                   </div>
 
                   <h2 className="onb-heading">
                     Profile Setup Complete
                   </h2>
 
-                  <p className="onb-body-text" style={{ maxWidth: '480px', margin: '0 auto 2.5rem' }}>
+                  <p className="onb-body-text w-full" style={{ marginBottom: '2.5rem' }}>
                     Your academic profile has been calibrated. You are now prepared to begin your baseline diagnostic assessment.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '380px', margin: '0 auto' }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
                     <button
                       type="button"
                       onClick={() => navigate('/assessment?stage=pre')}
                       className="onb-btn-continue"
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', justifyContent: 'center' }}
                     >
                       <span>Start Baseline Assessment</span>
                       <ArrowRight size={18} />
@@ -734,7 +739,7 @@ export default function Onboarding() {
                       type="button"
                       onClick={() => navigate('/dashboard')}
                       className="onb-btn-ghost"
-                      style={{ width: '100%', justifyContent: 'center', border: '1px solid var(--color-border)' }}
+                      style={{ width: '100%', justifyContent: 'center' }}
                     >
                       Continue to Dashboard
                     </button>
@@ -743,47 +748,7 @@ export default function Onboarding() {
               )}
             </motion.div>
           </AnimatePresence>
-
-          {error && <div className="alert alert-danger" style={{ marginTop: '1.25rem' }}>{error}</div>}
-
-          {/* Navigation Controls (h-12 buttons, Ghost Back & Large Continue) */}
-          {step < totalSteps - 1 && (
-            <div className="onb-nav-bar" style={{ marginTop: '2.5rem' }}>
-              <button
-                type="button"
-                onClick={() => setStep((s) => Math.max(0, s - 1))}
-                disabled={step === 0 || saving}
-                className="onb-btn-ghost"
-              >
-                <ChevronLeft size={18} />
-                <span>Back</span>
-              </button>
-
-              <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-                {step > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleSkipAndSave}
-                    disabled={saving}
-                    style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '0.92rem', cursor: 'pointer', textDecoration: 'underline' }}
-                  >
-                    Skip for now
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={!canProceed() || saving}
-                  className="onb-btn-continue"
-                >
-                  <span>{saving ? 'Saving Profile…' : step === totalSteps - 2 ? 'Save & Continue' : 'Continue'}</span>
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        </OnboardingStepWrapper>
       </main>
     </div>
   );
