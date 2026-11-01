@@ -116,11 +116,17 @@ export default function Navbar() {
           >
             How it works
           </button>
-
           <button
             type="button"
             className="nav-link landing-nav-btn"
-            onClick={() => handleSectionScroll('about')}
+            onClick={() => handleSectionScroll('values')}
+          >
+            Values
+          </button>
+          <button
+            type="button"
+            className="nav-link landing-nav-btn"
+            onClick={() => handleSectionScroll('about-prisma')}
           >
             About
           </button>
@@ -221,16 +227,16 @@ export default function Navbar() {
               <button
                 type="button"
                 className="nav-link mobile-nav-link"
-                onClick={() => handleSectionScroll('features')}
+                onClick={() => handleSectionScroll('values')}
               >
-                Features
+                Values
               </button>
               <button
                 type="button"
                 className="nav-link mobile-nav-link"
-                onClick={() => handleSectionScroll('about')}
+                onClick={() => handleSectionScroll('about-prisma')}
               >
-                About & Values
+                About
               </button>
               <div className="mobile-divider" />
               <Link to="/login" className="btn btn-secondary mobile-auth-btn" onClick={() => setMobileMenuOpen(false)}>
