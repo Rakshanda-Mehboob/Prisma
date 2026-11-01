@@ -26,10 +26,7 @@ export default function Landing() {
         <div className="about-container">
           {/* Header */}
           <div className="about-header">
-            <span className="about-badge">
-              <Sparkles size={14} />
-              About Prisma
-            </span>
+
             <h2 className="about-title">
               Empowering Students Against
               <span className="about-title-accent"> Cyberbullying</span>

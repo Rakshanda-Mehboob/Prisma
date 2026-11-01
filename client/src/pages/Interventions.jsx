@@ -213,14 +213,14 @@ function CourseQuiz({ quizData, isCompleted, onCompleteQuiz, actionLoading }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Progress</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Progress</div>
             <div style={{ fontWeight: 800, fontSize: '1rem', color: isAllAnswered ? 'var(--color-success)' : 'var(--color-text-primary)' }}>
               {answeredCount} of {totalQuestions} answered
             </div>
           </div>
           {answeredCount > 0 && (
             <div style={{ borderLeft: '1px solid var(--color-border)', paddingLeft: '1.25rem' }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Score</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Score</div>
               <div style={{ fontWeight: 800, fontSize: '1rem', color: scorePercent >= 75 ? 'var(--color-success)' : 'var(--color-warning)' }}>
                 {correctCount}/{answeredCount} ({scorePercent}%)
               </div>
@@ -789,7 +789,7 @@ export default function Interventions() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          style={{ maxWidth: '640px', margin: '2rem auto 3rem auto', padding: '0 1rem' }}
+          style={{ width: '100%', maxWidth: '80rem', margin: 0, padding: 0 }}
         >
           <div
             style={{
@@ -924,7 +924,7 @@ export default function Interventions() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.72rem',
+                      fontSize: '0.78rem',
                       fontWeight: 700,
                       flexShrink: 0,
                       background: isDone
@@ -951,7 +951,7 @@ export default function Interventions() {
                     >
                       {l.title}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
                       {typeCfg.icon}
                       <span>{typeCfg.label}</span>
                       <span>•</span>
@@ -971,7 +971,7 @@ export default function Interventions() {
               marginTop: 'auto',
             }}
           >
-            <div style={{ fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
               Why this was assigned
             </div>
             <div style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: 4, lineHeight: 1.5 }}>

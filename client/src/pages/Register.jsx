@@ -335,7 +335,7 @@ export default function Register() {
             </div>
 
             <div id="password-requirements" className="pwd-requirements-box" style={{ marginTop: "0.65rem" }}>
-              <div style={{ fontSize: "0.73rem", fontWeight: 700, color: "var(--color-text-secondary)", marginBottom: "0.3rem" }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: "var(--color-text-secondary)", marginBottom: "0.3rem" }}>
                 Password requirements:
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.3rem" }}>

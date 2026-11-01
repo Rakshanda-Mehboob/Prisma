@@ -3,7 +3,7 @@
 /* ── Prisma Design Tokens — Modern Indigo Theme ──────────────────────────── */
 :root {
   /* ── Surfaces ── */
-  --color-bg: #f5f6fa;
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
   --color-surface-2: #f0f1f7;
   --color-surface-3: #e2e3ef;
@@ -81,17 +81,28 @@
   padding: 0;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
 html {
   scroll-behavior: smooth;
-  font-size: 17px;
+  font-size: 16px;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-bg);
+  background-color: #ffffff;
   color: var(--color-text);
   min-height: 100vh;
-  line-height: 1.75;
+  line-height: 1.65;
+  font-size: 0.95rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -123,21 +134,43 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  background: #ffffff;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .app-layout.with-sidebar {
   flex-direction: row;
   align-items: stretch;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .page-content {
   flex: 1;
-  padding: 2rem 2.5rem;
-  max-width: 1380px;
-  margin: 0 auto;
   width: 100%;
-  animation: fadeInPage 0.3s ease-out;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  max-width: none;
+  padding: 1rem;
+  background: #ffffff;
+  box-sizing: border-box;
+  animation: fadeInPage 0.25s ease-out;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-content {
+    padding: 2rem;
+  }
 }
 
 .page-content.landing-main {
@@ -203,7 +236,7 @@ body {
 }
 
 .brand-badge {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   background: rgba(79, 70, 229, 0.08);
   color: var(--color-primary);
@@ -283,7 +316,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.02em;
@@ -326,11 +359,11 @@ h6 {
 
 /* ── Card System ──────────────────────────────────────────────────────────── */
 .card {
-  background: var(--color-surface);
+  background: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl, 18px);
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 18px -4px rgba(15, 23, 42, 0.04);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
@@ -535,9 +568,21 @@ h6 {
 /* ── Stats Grid ────────────────────────────────────────────────────────────── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
@@ -893,7 +938,7 @@ select.form-input option {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .pwd-req-item.met .pwd-req-icon {
@@ -1202,9 +1247,10 @@ select.form-input option {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
+  max-width: 80rem;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .coursera-header-card {
@@ -2842,7 +2888,7 @@ select.form-input option {
 
   .digital-values-tab-btn {
     padding: 0.35rem 0.65rem !important;
-    font-size: 0.74rem !important;
+    font-size: 0.78rem !important;
   }
 }
 
@@ -2850,13 +2896,59 @@ select.form-input option {
    ASSESSMENT RESULTS PAGE — Clean Modern SaaS UI (Simplified & Spacious)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.results-page-layout {
-  max-width: 840px;
-  margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
+/* ── Edge-to-Edge Assessment Page Experience ── */
+.app-main-wrapper.assessment-mode,
+.page-content.sidebar-main.assessment-main {
+  background: #ffffff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  min-height: calc(100vh - 60px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+.results-page-layout,
+.assessment-page-root {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background: #ffffff;
+  padding: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.5rem, 4.5vw, 4.5rem);
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 2rem;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.assessment-page-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
 }
 
 /* ── Top Hero / Summary Card ── */
@@ -2932,7 +3024,7 @@ select.form-input option {
 }
 
 .results-hero-score-label {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -3001,8 +3093,33 @@ select.form-input option {
 
 .results-tpb-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .results-tpb-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .results-tpb-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.assessment-stepper-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .assessment-stepper-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .results-tpb-card {
@@ -3056,7 +3173,7 @@ select.form-input option {
 }
 
 .results-card-status-badge {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   padding: 0.18rem 0.55rem;
   border-radius: var(--radius-full);
@@ -3200,8 +3317,9 @@ select.form-input option {
 
 /* ── Responsive Results ── */
 @media (max-width: 640px) {
-  .results-page-layout {
-    padding: 1.25rem 0.85rem 3rem;
+  .results-page-layout,
+  .assessment-page-container {
+    padding: 0 0 2rem 0;
     gap: 1.25rem;
   }
 
@@ -3635,7 +3753,7 @@ select.form-input option {
 }
 
 .scenario-module-tag {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
   font-family: var(--font-mono);
   background: var(--color-surface-2);
@@ -3723,7 +3841,7 @@ select.form-input option {
 }
 
 .option-badge {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-success);
   background: rgba(5, 150, 105, 0.1);
@@ -3821,7 +3939,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-success);
 }
@@ -3866,7 +3984,7 @@ select.form-input option {
 }
 
 .tip-tag {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-accent);
   text-transform: uppercase;
@@ -4042,7 +4160,7 @@ select.form-input option {
 }
 
 .step-card-badge {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--color-primary);
   text-transform: uppercase;
@@ -4717,7 +4835,7 @@ select.form-input option {
     color: var(--color-primary-dark);
     padding: 0.1rem 0.4rem;
     border-radius: var(--radius-full);
-    font-size: 0.7rem;
+    font-size: 0.78rem;
   }
 
   .feat-bars {
@@ -4776,10 +4894,18 @@ select.form-input option {
 .page-content.sidebar-main {
   max-width: none;
   margin: 0;
-  padding: 2rem 2.5rem;
+  padding: 1.5rem;
   flex: 1;
   min-width: 0;
   overflow-x: hidden;
+  background: var(--color-bg);
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .page-content.sidebar-main {
+    padding: 2rem;
+  }
 }
 
 .sidebar {
@@ -4926,7 +5052,7 @@ select.form-input option {
 }
 
 .sidebar-brand-tag {
-  font-size: 0.58rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   background: rgba(79, 70, 229, 0.08);
   color: var(--color-primary);
@@ -4959,7 +5085,7 @@ select.form-input option {
 }
 
 .sidebar-section-label {
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -5057,7 +5183,7 @@ select.form-input option {
 }
 
 .sidebar-mission-sub {
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   margin-top: 0.1rem;
 }
@@ -5087,7 +5213,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #fff;
   letter-spacing: 0.02em;
@@ -5109,7 +5235,7 @@ select.form-input option {
 }
 
 .sidebar-user-cms {
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   color: var(--color-text-muted);
   white-space: nowrap;
@@ -5234,7 +5360,7 @@ select.form-input option {
 }
 
 .student-module-pill {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--color-primary);
@@ -5260,7 +5386,7 @@ select.form-input option {
 }
 
 .student-hub-tag {
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-muted);
   padding-left: 0.5rem;
@@ -5278,7 +5404,7 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #4f46e5;
   background: rgba(79, 70, 229, 0.08);
@@ -5319,7 +5445,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-success);
 }
@@ -5389,7 +5515,7 @@ select.form-input option {
 
 .student-float-sub {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
 }
 
@@ -5577,7 +5703,7 @@ select.form-input option {
 
 .digital-values-tab-num {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   opacity: 0.85;
 }
 
@@ -5908,7 +6034,7 @@ select.form-input option {
 }
 
 .cybermirror-action-num {
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-family: var(--font-mono);
   color: rgba(224, 231, 255, 0.65);
   font-weight: 600;
@@ -6220,6 +6346,7 @@ select.form-input option {
   flex: 1;
   min-width: 0;
   min-height: 100vh;
+  background: var(--color-bg);
 }
 
 .app-main-direct {
@@ -6262,7 +6389,7 @@ select.form-input option {
 }
 
 .top-header-badge-tag {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--color-primary, #4f46e5);
@@ -6437,7 +6564,7 @@ select.form-input option {
 }
 
 .clickup-dropdown-email {
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   color: #64748b;
   white-space: nowrap;
   overflow: hidden;
@@ -6447,7 +6574,7 @@ select.form-input option {
 
 .clickup-dropdown-cms-badge {
   display: inline-block;
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   font-weight: 700;
   color: #4f46e5;

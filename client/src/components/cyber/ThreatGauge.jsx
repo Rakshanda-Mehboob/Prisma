@@ -84,7 +84,7 @@ export default function ThreatGauge({ score = 75, label = 'Composite TPB Readine
           >
             {normalizedScore}
           </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Score / 100
           </div>
         </div>

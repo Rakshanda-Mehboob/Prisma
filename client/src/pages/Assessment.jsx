@@ -23,7 +23,6 @@ import {
   CheckCircle, AlertCircle, Target
 } from 'lucide-react';
 import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import Skeleton from '../components/ui/Skeleton';
 
@@ -178,7 +177,7 @@ function AssessmentResultsView({
                 <CheckCircle2 size={13} /> Assessment Completed
               </Badge>
               {isJustSubmitted && (
-                <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
                   Just now
                 </span>
               )}
@@ -213,7 +212,7 @@ function AssessmentResultsView({
               <h2 className="results-hero-readiness">{statusInfo.rating}</h2>
               <span
                 style={{
-                  fontSize: '0.72rem',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   padding: '0.15rem 0.55rem',
                   borderRadius: 'var(--radius-full)',
@@ -423,7 +422,7 @@ export default function Assessment() {
   const stage = searchParams.get('stage') || 'pre';
   const mode = searchParams.get('mode'); // 'take', 'retake', or null
 
-  const [assessmentInstance, setAssessmentInstance] = useState(null);
+  const [_assessmentInstance, setAssessmentInstance] = useState(null);
   const [scenarios, setScenarios] = useState([]);
   const [currentScenarioIdx, setCurrentScenarioIdx] = useState(0);
   const [answers, setAnswers] = useState({}); // { [questionId]: selectedOptionIndex }
@@ -440,8 +439,8 @@ export default function Assessment() {
   const [assessmentStatus, setAssessmentStatus] = useState(null);
   const [showHub, setShowHub] = useState(false);
 
-  // Helper to calculate composite score
-  const calcOverallScore = (assessment) => {
+  // Helper to calculate composite score (used in results display)
+  const _calcOverallScore = (assessment) => {
     if (!assessment) return 0;
     return Math.round(
       ((assessment.attitude_score ?? 0) * 0.22) +
@@ -496,7 +495,7 @@ export default function Assessment() {
 
       const isPreDone = Boolean(statusData?.pre_completed);
       const isPostDone = Boolean(statusData?.post_completed);
-      const isPostUnlocked = Boolean(statusData?.post_unlocked);
+      const _isPostUnlocked = Boolean(statusData?.post_unlocked);
 
       // Explicit results view request
       if (mode === 'results') {
@@ -728,10 +727,22 @@ export default function Assessment() {
   // ── Loading Skeleton ────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div style={{ maxWidth: '860px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem' }}>
-        <Skeleton height="50px" width="60%" />
+      <div
+        className="assessment-page-root"
+        style={{
+          width: '100%',
+          minHeight: 'calc(100vh - 60px)',
+          background: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          flex: 1,
+          boxSizing: 'border-box',
+        }}
+      >
+        <Skeleton height="50px" width="40%" />
         <Skeleton height="14px" width="100%" borderRadius="var(--radius-full)" />
-        <Skeleton height="280px" width="100%" borderRadius="var(--radius-xl)" />
+        <Skeleton height="240px" width="100%" borderRadius="var(--radius-xl)" />
         <Skeleton height="320px" width="100%" borderRadius="var(--radius-xl)" />
       </div>
     );
@@ -740,28 +751,40 @@ export default function Assessment() {
   // ── Error / Locked State ───────────────────────────────────────────────────
   if (error && !scenarios.length) {
     return (
-      <div style={{ maxWidth: '720px', margin: '2rem auto', textAlign: 'center', padding: '1rem' }}>
-        <Card glow="primary" style={{ padding: '3rem 2rem' }}>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-            <Lock size={32} />
-          </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
-            {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
-          </h2>
-          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '480px', margin: '0 auto 2rem' }}>
-            {error}
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {stage === 'post' && (
-              <Button variant="primary" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
-                Go to Learning Modules
-              </Button>
-            )}
-            <Button variant="secondary" onClick={() => navigate('/dashboard')}>
-              Back to Dashboard
+      <div
+        className="assessment-page-root"
+        style={{
+          width: '100%',
+          minHeight: 'calc(100vh - 60px)',
+          background: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          flex: 1,
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+          <Lock size={32} />
+        </div>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
+          {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
+        </h2>
+        <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '580px', margin: '0 auto 2rem' }}>
+          {error}
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {stage === 'post' && (
+            <Button variant="primary" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
+              Go to Learning Modules
             </Button>
-          </div>
-        </Card>
+          )}
+          <Button variant="secondary" onClick={() => navigate('/dashboard')}>
+            Back to Dashboard
+          </Button>
+        </div>
       </div>
     );
   }
@@ -797,12 +820,26 @@ export default function Assessment() {
 
     // Fallback if neither assessment is completed yet
     return (
-      <div style={{ maxWidth: '640px', margin: '2rem auto', padding: '1rem', textAlign: 'center' }}>
-        <Card style={{ padding: '2.5rem' }}>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
+      <div
+        className="assessment-page-root"
+        style={{
+          width: '100%',
+          minHeight: 'calc(100vh - 60px)',
+          background: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          flex: 1,
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ maxWidth: '640px', width: '100%' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
             No Assessment Results Found
           </h2>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.75rem', lineHeight: 1.6 }}>
             Please complete your baseline assessment to view your results across the four Theory of Planned Behavior areas.
           </p>
           <Button
@@ -815,7 +852,7 @@ export default function Assessment() {
           >
             Start Baseline Assessment
           </Button>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -826,257 +863,255 @@ export default function Assessment() {
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="assessment-page-root"
         style={{
-          maxWidth: '680px',
-          margin: '2rem auto 3rem auto',
-          padding: '0 1rem',
+          width: '100%',
+          minHeight: 'calc(100vh - 60px)',
+          background: '#ffffff',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+          flex: 1,
         }}
       >
+        {/* Soft ambient light */}
         <div
           style={{
-            position: 'relative',
-            background: 'var(--color-surface, #ffffff)',
-            borderRadius: '24px',
-            border: '1px solid rgba(99, 102, 241, 0.14)',
-            boxShadow: '0 20px 48px -12px rgba(79, 70, 229, 0.09), 0 1px 3px rgba(0, 0, 0, 0.04)',
-            padding: 'clamp(2.25rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.75rem)',
-            textAlign: 'center',
-            overflow: 'hidden',
+            position: 'absolute',
+            top: '-120px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '650px',
+            height: '320px',
+            background: 'radial-gradient(ellipse at center, rgba(79, 70, 229, 0.08), transparent 70%)',
+            pointerEvents: 'none',
           }}
-        >
+        />
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '980px', width: '100%' }}>
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.05, duration: 0.3 }}
+            style={{
+              width: '68px',
+              height: '68px',
+              borderRadius: '22px',
+              margin: '0 auto 1.5rem auto',
+              background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(8, 145, 178, 0.10))',
+              border: '1px solid rgba(79, 70, 229, 0.18)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px -6px rgba(79, 70, 229, 0.18)',
+            }}
+          >
+            <Sparkles size={32} style={{ color: 'var(--color-primary, #4f46e5)' }} />
+          </motion.div>
+
+          <h1
+            style={{
+              fontSize: 'clamp(2rem, 4vw, 2.85rem)',
+              fontWeight: 800,
+              color: 'var(--color-text-primary, #18181b)',
+              letterSpacing: '-0.025em',
+              lineHeight: 1.2,
+              margin: '0 0 1rem 0',
+            }}
+          >
+            {isPost ? 'Adaptive Cyberbullying Review' : 'Personalised Behavioral Reflection'}
+          </h1>
+
+          <p
+            style={{
+              fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+              color: 'var(--color-text-muted, #71717a)',
+              lineHeight: 1.65,
+              maxWidth: '680px',
+              margin: '0 auto 2.75rem auto',
+            }}
+          >
+            Answer each question honestly based on the situation presented.
+          </p>
+
           <div
             style={{
-              position: 'absolute',
-              top: '-100px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '420px',
-              height: '200px',
-              background: 'radial-gradient(ellipse at center, rgba(79, 70, 229, 0.12), transparent 70%)',
-              pointerEvents: 'none',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '1.25rem',
+              marginBottom: '3rem',
+              textAlign: 'left',
+              width: '100%',
             }}
-          />
-
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.05, duration: 0.3 }}
+          >
+            <div
               style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '20px',
-                margin: '0 auto 1.5rem auto',
-                background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(8, 145, 178, 0.10))',
-                border: '1px solid rgba(79, 70, 229, 0.18)',
+                background: 'var(--color-surface-2, #f8fafc)',
+                borderRadius: '16px',
+                border: '1px solid var(--color-border)',
+                padding: '1.25rem 1.35rem',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px -6px rgba(79, 70, 229, 0.18)',
+                gap: '1rem',
               }}
             >
-              <Sparkles size={30} style={{ color: 'var(--color-primary, #4f46e5)' }} />
-            </motion.div>
-
-            <h1
-              style={{
-                fontSize: 'clamp(1.75rem, 3.6vw, 2.3rem)',
-                fontWeight: 800,
-                color: 'var(--color-text-primary, #18181b)',
-                letterSpacing: '-0.025em',
-                lineHeight: 1.25,
-                margin: '0 0 0.75rem 0',
-              }}
-            >
-              {isPost ? 'Adaptive Cyberbullying Review' : 'Personalised Behavioral Reflection'}
-            </h1>
-
-            <p
-              style={{
-                fontSize: 'clamp(0.95rem, 1.8vw, 1.05rem)',
-                color: 'var(--color-text-muted, #71717a)',
-                lineHeight: 1.6,
-                maxWidth: '540px',
-                margin: '0 auto 2.25rem auto',
-              }}
-            >
-              Answer each question honestly based on the situation presented.
-            </p>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(79, 70, 229, 0.1)',
+                  color: 'var(--color-primary, #4f46e5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <MessageSquareQuote size={22} />
+              </div>
+              <div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
+                  3 Real Scenarios
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted, #71717a)' }}>
+                  Tailored to your digital life
+                </div>
+              </div>
+            </div>
 
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+                background: 'var(--color-surface-2, #f8fafc)',
+                borderRadius: '16px',
+                border: '1px solid var(--color-border)',
+                padding: '1.25rem 1.35rem',
+                display: 'flex',
+                alignItems: 'center',
                 gap: '1rem',
-                marginBottom: '2.5rem',
-                textAlign: 'left',
               }}
             >
               <div
                 style={{
-                  background: 'var(--color-surface-2, #f8fafc)',
-                  borderRadius: '16px',
-                  border: '1px solid var(--color-border)',
-                  padding: '1rem 1.1rem',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(8, 145, 178, 0.1)',
+                  color: 'var(--color-secondary, #0891b2)',
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.85rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    background: 'rgba(79, 70, 229, 0.1)',
-                    color: 'var(--color-primary, #4f46e5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <MessageSquareQuote size={20} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
-                    3 Real Scenarios
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted, #71717a)' }}>
-                    Tailored to your digital life
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  background: 'var(--color-surface-2, #f8fafc)',
-                  borderRadius: '16px',
-                  border: '1px solid var(--color-border)',
-                  padding: '1rem 1.1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.85rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    background: 'rgba(8, 145, 178, 0.1)',
-                    color: 'var(--color-secondary, #0891b2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Clock size={20} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
-                    5–8 Minutes
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted, #71717a)' }}>
-                    Self-paced reflection
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  background: 'var(--color-surface-2, #f8fafc)',
-                  borderRadius: '16px',
-                  border: '1px solid var(--color-border)',
-                  padding: '1rem 1.1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.85rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    background: 'rgba(5, 150, 105, 0.1)',
-                    color: 'var(--color-success, #059669)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <HeartHandshake size={20} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
-                    Zero Pressure
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted, #71717a)' }}>
-                    No right or wrong answers
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.85rem' }}>
-              <motion.button
-                type="button"
-                onClick={() => setHasStarted(true)}
-                whileHover={{ scale: 1.025, boxShadow: '0 14px 30px -4px rgba(79, 70, 229, 0.45)' }}
-                whileTap={{ scale: 0.98 }}
-                style={{
-                  display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.75rem',
-                  padding: '1.05rem 2.85rem',
-                  borderRadius: '9999px',
-                  background: 'linear-gradient(135deg, var(--color-primary, #4f46e5) 0%, #6366f1 100%)',
-                  color: '#ffffff',
-                  fontSize: '1.15rem',
-                  fontWeight: 700,
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 24px -4px rgba(79, 70, 229, 0.38), 0 2px 6px rgba(79, 70, 229, 0.2)',
-                  transition: 'background 0.2s ease, box-shadow 0.2s ease',
-                  letterSpacing: '0.01em',
-                  width: '100%',
-                  maxWidth: '340px',
+                  flexShrink: 0,
                 }}
               >
-                <span>Begin Assessment</span>
-                <ArrowRight size={20} />
-              </motion.button>
-
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--color-text-muted)',
-                  fontSize: '0.86rem',
-                  cursor: 'pointer',
-                  padding: '0.4rem 0.8rem',
-                  borderRadius: 'var(--radius-sm)',
-                  transition: 'color 0.15s ease',
-                }}
-              >
-                Back to Dashboard
-              </button>
+                <Clock size={22} />
+              </div>
+              <div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
+                  5–8 Minutes
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted, #71717a)' }}>
+                  Self-paced reflection
+                </div>
+              </div>
             </div>
+
+            <div
+              style={{
+                background: 'var(--color-surface-2, #f8fafc)',
+                borderRadius: '16px',
+                border: '1px solid var(--color-border)',
+                padding: '1.25rem 1.35rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+              }}
+            >
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(5, 150, 105, 0.1)',
+                  color: 'var(--color-success, #059669)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <HeartHandshake size={22} />
+              </div>
+              <div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary, #18181b)' }}>
+                  Zero Pressure
+                </div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted, #71717a)' }}>
+                  No right or wrong answers
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <motion.button
+              type="button"
+              onClick={() => setHasStarted(true)}
+              whileHover={{ scale: 1.025, boxShadow: '0 14px 30px -4px rgba(79, 70, 229, 0.45)' }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.75rem',
+                padding: '1.15rem 3.25rem',
+                borderRadius: '9999px',
+                background: 'linear-gradient(135deg, var(--color-primary, #4f46e5) 0%, #6366f1 100%)',
+                color: '#ffffff',
+                fontSize: '1.15rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px -4px rgba(79, 70, 229, 0.38), 0 2px 6px rgba(79, 70, 229, 0.2)',
+                transition: 'background 0.2s ease, box-shadow 0.2s ease',
+                letterSpacing: '0.01em',
+                width: '100%',
+                maxWidth: '360px',
+              }}
+            >
+              <span>Begin Assessment</span>
+              <ArrowRight size={20} />
+            </motion.button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text-muted)',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                padding: '0.5rem 1rem',
+                borderRadius: 'var(--radius-sm)',
+                transition: 'color 0.15s ease',
+              }}
+            >
+              Back to Dashboard
+            </button>
           </div>
         </div>
       </motion.div>
     );
   }
-
   // ── Submitted / Results Screen — uses the clean AssessmentResultsView ────────
   if (submitted && result) {
     return (
@@ -1097,7 +1132,7 @@ export default function Assessment() {
 
   // ── Active Assessment Flow: 3 Situations with Grouped Questions ─────────────
   return (
-    <div style={{ maxWidth: '880px', margin: '0 auto', padding: '1rem' }}>
+    <div className="assessment-page-root" style={{ width: '100%', minHeight: 'calc(100vh - 60px)', background: '#ffffff', display: 'flex', flexDirection: 'column', gap: '2rem', boxSizing: 'border-box', flex: 1 }}>
       {/* Top Header & Global Progress */}
       <div style={{ marginBottom: '1.75rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
@@ -1132,12 +1167,7 @@ export default function Assessment() {
 
       {/* Situation Stepper Tabs */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${scenarios.length || 3}, 1fr)`,
-          gap: '0.75rem',
-          marginBottom: '1.5rem',
-        }}
+        className="assessment-stepper-grid"
       >
         {scenarios.map((sc, idx) => {
           const isCurrent = idx === currentScenarioIdx;
@@ -1200,7 +1230,7 @@ export default function Assessment() {
                 <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isCurrent ? 'var(--color-primary)' : 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   {theme.label}
                 </div>
-                <div style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                   {answeredInSc} of {scQuestions.length} answered
                 </div>
               </div>
@@ -1571,11 +1601,11 @@ export default function Assessment() {
                                 Q{qIdx + 1}: {q.question_text?.slice(0, 75)}...
                               </span>
                               {isAnswered ? (
-                                <span className="badge badge-success" style={{ fontSize: '0.72rem' }}>
+                                <span className="badge badge-success" style={{ fontSize: '0.78rem' }}>
                                   <Check size={11} /> Complete
                                 </span>
                               ) : (
-                                <span className="badge badge-danger" style={{ fontSize: '0.72rem' }}>
+                                <span className="badge badge-danger" style={{ fontSize: '0.78rem' }}>
                                   Missing
                                 </span>
                               )}

@@ -31,7 +31,7 @@ function ConstructScoreRow({ label, score, color, preScore, postScore }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {delta != null && (
             <span style={{
-              fontSize: '0.72rem', fontWeight: 700, padding: '0.1rem 0.4rem',
+              fontSize: '0.78rem', fontWeight: 700, padding: '0.1rem 0.4rem',
               borderRadius: 'var(--radius-full)',
               background: delta >= 0 ? 'rgba(5,150,105,0.1)' : 'rgba(220,38,38,0.08)',
               color: delta >= 0 ? 'var(--color-success)' : 'var(--color-danger)',
@@ -79,7 +79,7 @@ function JourneyStep({ label, icon, done, active, route, navigate }) {
           fontSize: '0.86rem', fontWeight: 600,
           color: done ? 'var(--color-success)' : active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
         }}>{label}</div>
-        <div style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)' }}>
+        <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
           {done ? 'Completed' : active ? 'Up next' : 'Locked'}
         </div>
       </div>

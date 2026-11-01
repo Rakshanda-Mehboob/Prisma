@@ -295,7 +295,7 @@ export default function Profile() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
+      style={{ width: '100%', maxWidth: '80rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '1.75rem' }}
     >
       {/* ── Global Alerts ── */}
       {saveSuccess && (

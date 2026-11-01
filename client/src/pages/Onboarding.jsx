@@ -286,7 +286,7 @@ export default function Onboarding() {
             <PrismaLogo size={36} />
             <div>
               <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--color-text-primary)' }}>Prisma</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }}>
                 STUDENT ONBOARDING
               </div>
             </div>
@@ -455,7 +455,7 @@ export default function Onboarding() {
                             >
                               <span style={{ fontSize: '1.1rem', marginBottom: '0.15rem' }}>{lvl.icon}</span>
                               <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>{lvl.label}</span>
-                              <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{lvl.sub}</span>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{lvl.sub}</span>
                             </button>
                           );
                         })}
