@@ -57,25 +57,25 @@ const LIVING_SITUATIONS = [
   {
     id: 'University hostel',
     title: 'University hostel',
-    sub: 'On-campus dorms or university halls',
+    sub: 'On-campus dorms or halls',
     icon: '🏢',
   },
   {
     id: 'Home with family',
     title: 'Home with family',
-    sub: 'Living with family, commuting to campus',
+    sub: 'Living at home & commuting',
     icon: '🏡',
   },
   {
     id: 'Private accommodation',
     title: 'Private housing',
-    sub: 'Independent private student flat',
+    sub: 'Independent student flat',
     icon: '🛋️',
   },
   {
     id: 'Shared apartment',
     title: 'Shared apartment',
-    sub: 'Off-campus rented flat with peers',
+    sub: 'Rented flat with peers',
     icon: '🏘️',
   },
   {
@@ -99,10 +99,10 @@ const PLATFORMS = [
 ];
 
 const INTERACTION_FREQUENCIES = [
-  { id: 'Rarely', label: 'Rarely', desc: 'Essential academic updates only', icon: '🍃' },
-  { id: 'Sometimes', label: 'Sometimes', desc: 'A few hours daily for study & friends', icon: '🌤️' },
-  { id: 'Frequently', label: 'Frequently', desc: 'Active throughout the day across apps', icon: '⚡' },
-  { id: 'Almost daily', label: 'Almost daily', desc: 'Constantly connected to study groups', icon: '🔥' },
+  { id: 'Rarely', label: 'Rarely', desc: 'Essential updates only', icon: '🍃' },
+  { id: 'Sometimes', label: 'Sometimes', desc: 'A few hours daily', icon: '🌤️' },
+  { id: 'Frequently', label: 'Frequently', desc: 'Active throughout the day', icon: '⚡' },
+  { id: 'Almost daily', label: 'Almost daily', desc: 'Constantly connected', icon: '🔥' },
 ];
 
 const INTERACTION_PARTNERS = [
@@ -410,7 +410,7 @@ export default function Onboarding() {
                   </p>
 
                   {/* Row 1: University & Year of Study in 2-column grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="onb-grid-2col" style={{ marginBottom: '1.5rem' }}>
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                         University / Institution
@@ -454,7 +454,7 @@ export default function Onboarding() {
                     <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.55rem' }}>
                       Academic Level
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div className="onb-grid-3col">
                       {ACADEMIC_LEVELS.map((lvl) => {
                         const sel = profile.academic_level === lvl.id;
                         return (
@@ -515,7 +515,7 @@ export default function Onboarding() {
                 </div>
               )}
 
-              {/* Step 2: Living — 5 Horizontal Cards Across 1 Row on Desktop */}
+              {/* Step 2: Living — 5 Compact Horizontal Cards in 1 Row */}
               {step === 2 && (
                 <div>
                   <h2 className="onb-heading">
@@ -525,42 +525,30 @@ export default function Onboarding() {
                     Where do you currently reside during your university studies?
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+                  <div className="onb-living-grid">
                     {LIVING_SITUATIONS.map((sit) => {
                       const sel = profile.living_situation === sit.id;
                       return (
                         <button
                           key={sit.id}
                           type="button"
-                          className={`onb-card-option ${sel ? 'active' : ''}`}
+                          className={`onb-living-card ${sel ? 'active' : ''}`}
                           onClick={() => set('living_situation', sit.id)}
-                          style={{
-                            padding: '1.35rem 1rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                            justifyContent: 'center',
-                            gap: '0.55rem',
-                            borderRadius: '16px',
-                            minHeight: '155px',
-                          }}
                         >
-                          <span style={{ fontSize: '2.2rem' }}>{sit.icon}</span>
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
-                              {sit.title}
-                            </span>
-                            <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', marginTop: '0.25rem', lineHeight: 1.35 }}>
-                              {sit.sub}
-                            </span>
+                          <div className="onb-living-icon-wrap">
+                            {sit.icon}
                           </div>
-                          {sel ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-primary)', marginTop: '0.25rem' }}>
-                              <CheckCircle2 size={15} /> Selected
-                            </span>
-                          ) : (
-                            <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid var(--color-border)', marginTop: '0.25rem' }} />
+                          <div className="onb-living-title">
+                            {sit.title}
+                          </div>
+                          <div className="onb-living-sub">
+                            {sit.sub}
+                          </div>
+                          {sel && (
+                            <div className="onb-living-check">
+                              <CheckCircle2 size={14} />
+                              <span>Selected</span>
+                            </div>
                           )}
                         </button>
                       );
@@ -617,7 +605,7 @@ export default function Onboarding() {
                     <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       How often do you interact online?
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    <div className="onb-grid-4col">
                       {INTERACTION_FREQUENCIES.map((freq) => {
                         const sel = profile.online_activity_level === freq.id;
                         return (
@@ -626,7 +614,7 @@ export default function Onboarding() {
                             type="button"
                             className={`onb-card-option ${sel ? 'active' : ''}`}
                             onClick={() => set('online_activity_level', freq.id)}
-                            style={{ padding: '1.15rem 1.1rem', textAlign: 'left', minHeight: '110px' }}
+                            style={{ padding: '1.15rem 1.1rem', textAlign: 'left', minHeight: '105px' }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
                               <span style={{ fontSize: '1.35rem' }}>{freq.icon}</span>
@@ -681,7 +669,7 @@ export default function Onboarding() {
                     <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                       Do you participate in online university groups?
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="onb-grid-2col">
                       {[
                         { val: 'Yes', label: 'Yes, I participate', desc: 'Batch WhatsApp chats, LMS forums, Discord servers, or student societies', icon: '✅' },
                         { val: 'No', label: 'No, rarely or never', desc: 'Prefer direct 1-on-1 messages or independent study without large groups', icon: '❌' },
@@ -725,7 +713,7 @@ export default function Onboarding() {
                     Your academic profile has been calibrated. You are now prepared to begin your baseline diagnostic assessment.
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                  <div className="onb-grid-2col" style={{ maxWidth: '440px', margin: '0 auto' }}>
                     <button
                       type="button"
                       onClick={() => navigate('/assessment?stage=pre')}
