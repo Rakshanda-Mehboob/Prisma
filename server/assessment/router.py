@@ -20,6 +20,7 @@ import json
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from database import get_db
 from models import (
@@ -59,6 +60,7 @@ def _get_instance(db: Session, user_id: int, stage: str) -> AssessmentInstance |
     return (
         db.query(AssessmentInstance)
         .filter(AssessmentInstance.user_id == user_id, AssessmentInstance.stage == stage)
+        .order_by(AssessmentInstance.id.desc())
         .first()
     )
 
@@ -103,7 +105,7 @@ def _format_instance_for_frontend(instance: AssessmentInstance) -> dict:
             questions.append({
                 "id": q.id,
                 "question_text": q.question_text,
-                "options": [{"text": o["text"], "score": o["score"]} for o in options],
+                "options": [{"index": i, "text": o["text"]} for i, o in enumerate(options)],
             })
 
         scenarios.append({
@@ -191,7 +193,11 @@ def get_pre_assessment(
 
     if not instance:
         # Generate a new assessment
-        instance = generate_scenario_assessment(db, current_user.id, "pre")
+        try:
+            instance = generate_scenario_assessment(db, current_user.id, "pre")
+        except IntegrityError:
+            db.rollback()
+            instance = _get_instance(db, current_user.id, "pre")
 
     return _format_instance_for_frontend(instance)
 
@@ -228,16 +234,47 @@ def submit_pre_assessment(
         for q in scenario.questions:
             all_questions[q.id] = q
 
+    # 1. If any answer.question_id does not belong to this instance, raise HTTP 400 "Invalid question ID".
+    for answer in payload.answers:
+        if answer.question_id not in all_questions:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid question ID",
+            )
+
+    # 2. Reject duplicate question_ids in the payload.
+    seen_qids = set()
+    for answer in payload.answers:
+        if answer.question_id in seen_qids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Duplicate question ID in submission.",
+            )
+        seen_qids.add(answer.question_id)
+
+    # 3. If distinct answered questions != total questions in instance, raise HTTP 400 "Please answer all questions".
+    if len(seen_qids) != len(all_questions):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please answer all questions",
+        )
+
     # Save answers and build enriched response data for scoring
     enriched = []
     for answer in payload.answers:
-        q = all_questions.get(answer.question_id)
-        if q:
-            q.selected_score = answer.selected_score
-            enriched.append({
-                "construct": q.tpb_construct,
-                "selected_score": answer.selected_score,
-            })
+        q = all_questions[answer.question_id]
+        options = json.loads(q.options_json) if q.options_json else []
+        if answer.selected_option >= len(options):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"selected_option {answer.selected_option} is out of range for question {answer.question_id}.",
+            )
+        resolved_score = options[answer.selected_option]["score"]
+        q.selected_score = resolved_score
+        enriched.append({
+            "construct": q.tpb_construct,
+            "selected_score": resolved_score,
+        })
 
     # Score all 4 TPB constructs
     scores = calculate_scores(enriched)
@@ -335,6 +372,11 @@ def get_post_assessment(
             status_code=status.HTTP_409_CONFLICT,
             detail="You have already completed the post-assessment."
         )
+    if not _is_stage_completed(db, current_user.id, "pre"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Complete the pre-assessment first.",
+        )
     if not _all_interventions_complete(db, current_user.id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -343,7 +385,11 @@ def get_post_assessment(
 
     instance = _get_instance(db, current_user.id, "post")
     if not instance:
-        instance = generate_scenario_assessment(db, current_user.id, "post")
+        try:
+            instance = generate_scenario_assessment(db, current_user.id, "post")
+        except IntegrityError:
+            db.rollback()
+            instance = _get_instance(db, current_user.id, "post")
 
     return _format_instance_for_frontend(instance)
 
@@ -359,6 +405,11 @@ def submit_post_assessment(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Post-assessment already submitted."
+        )
+    if not _is_stage_completed(db, current_user.id, "pre"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Complete the pre-assessment first.",
         )
     if not _all_interventions_complete(db, current_user.id):
         raise HTTPException(
@@ -378,15 +429,46 @@ def submit_post_assessment(
         for q in scenario.questions:
             all_questions[q.id] = q
 
+    # 1. If any answer.question_id does not belong to this instance, raise HTTP 400 "Invalid question ID".
+    for answer in payload.answers:
+        if answer.question_id not in all_questions:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid question ID",
+            )
+
+    # 2. Reject duplicate question_ids in the payload.
+    seen_qids = set()
+    for answer in payload.answers:
+        if answer.question_id in seen_qids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Duplicate question ID in submission.",
+            )
+        seen_qids.add(answer.question_id)
+
+    # 3. If distinct answered questions != total questions in instance, raise HTTP 400 "Please answer all questions".
+    if len(seen_qids) != len(all_questions):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please answer all questions",
+        )
+
     enriched = []
     for answer in payload.answers:
-        q = all_questions.get(answer.question_id)
-        if q:
-            q.selected_score = answer.selected_score
-            enriched.append({
-                "construct": q.tpb_construct,
-                "selected_score": answer.selected_score,
-            })
+        q = all_questions[answer.question_id]
+        options = json.loads(q.options_json) if q.options_json else []
+        if answer.selected_option >= len(options):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"selected_option {answer.selected_option} is out of range for question {answer.question_id}.",
+            )
+        resolved_score = options[answer.selected_option]["score"]
+        q.selected_score = resolved_score
+        enriched.append({
+            "construct": q.tpb_construct,
+            "selected_score": resolved_score,
+        })
 
     scores = calculate_scores(enriched)
     overall = calculate_overall(scores)

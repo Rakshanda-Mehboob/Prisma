@@ -89,7 +89,7 @@ function AssessmentResultsView({
   isPostUnlocked = false,
   isJustSubmitted = false,
   onContinue,
-  onRetake: _onRetake,
+  onRetake,
   onStartPost,
 }) {
   const overall = activeScores.overall_score ?? Math.round(
@@ -394,6 +394,16 @@ function AssessmentResultsView({
           >
             {stage === 'post' || postAssessment || isPostDone ? 'Return to Dashboard' : 'Continue to Learning Module'}
           </Button>
+
+          {onRetake && (
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => onRetake()}
+            >
+              Retake Assessment
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -408,7 +418,7 @@ const SCENARIO_THEMES = [
 
 export default function Assessment() {
   const navigate = useNavigate();
-  const { user: _user } = useAuth();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const stage = searchParams.get('stage') || 'pre';
   const mode = searchParams.get('mode'); // 'take', 'retake', or null
@@ -416,7 +426,7 @@ export default function Assessment() {
   const [assessmentInstance, setAssessmentInstance] = useState(null);
   const [scenarios, setScenarios] = useState([]);
   const [currentScenarioIdx, setCurrentScenarioIdx] = useState(0);
-  const [answers, setAnswers] = useState({}); // { [questionId]: selectedScore }
+  const [answers, setAnswers] = useState({}); // { [questionId]: selectedOptionIndex }
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -579,7 +589,6 @@ export default function Assessment() {
       setHasStarted(false);
       const targetStage = stageToReset === 'post' ? 'post' : 'pre';
       navigate(`/assessment?stage=${targetStage}&mode=retake`);
-      await loadAssessmentData();
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to reset assessment. Please try again.');
     } finally {
@@ -587,10 +596,10 @@ export default function Assessment() {
     }
   };
 
-  const handleSelectOption = (questionId, score) => {
+  const handleSelectOption = (questionId, optionIndex) => {
     setAnswers((prev) => ({
       ...prev,
-      [questionId]: score,
+      [questionId]: optionIndex,
     }));
     // Disappear inline error automatically once answered
     setQuestionErrors((prev) => {
@@ -696,9 +705,9 @@ export default function Assessment() {
     setSubmitting(true);
     setError('');
     try {
-      const answersPayload = Object.entries(answers).map(([question_id, selected_score]) => ({
+      const answersPayload = Object.entries(answers).map(([question_id, selected_option]) => ({
         question_id: parseInt(question_id, 10),
-        selected_score,
+        selected_option,
       }));
 
       const res = stage === 'pre'
@@ -776,7 +785,7 @@ export default function Assessment() {
           isPostDone={isPostDone}
           isPostUnlocked={Boolean(assessmentStatus.post_unlocked)}
           onContinue={() => navigate(isViewingPost ? '/dashboard' : '/interventions')}
-          onRetake={(retakeStage) => handleRetake(retakeStage || (isViewingPost ? 'post' : 'pre'))}
+          onRetake={user?.role === 'admin' ? (retakeStage) => handleRetake(retakeStage || (isViewingPost ? 'post' : 'pre')) : null}
           onStartPost={() => {
             setShowHub(false);
             setHasStarted(true);
@@ -1080,7 +1089,7 @@ export default function Assessment() {
         isPostUnlocked={Boolean(assessmentStatus?.post_unlocked)}
         isJustSubmitted
         onContinue={() => navigate(stage === 'pre' ? '/interventions' : '/dashboard')}
-        onRetake={(retakeStage) => handleRetake(retakeStage || stage)}
+        onRetake={user?.role === 'admin' ? (retakeStage) => handleRetake(retakeStage || stage) : null}
         onStartPost={() => navigate('/assessment?stage=post&mode=take')}
       />
     );
@@ -1272,8 +1281,8 @@ export default function Assessment() {
             {/* Grouped Questions List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {currentScenarioQuestions.map((question, qIdx) => {
-                const selectedScore = answers[question.id];
-                const isAnswered = selectedScore != null;
+                const selectedOption = answers[question.id];
+                const isAnswered = selectedOption != null;
                 const questionError = questionErrors[question.id];
 
                 return (
@@ -1348,7 +1357,7 @@ export default function Assessment() {
                       style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', paddingLeft: '2.25rem' }}
                     >
                       {(question.options || []).map((opt, optIdx) => {
-                        const isSelected = selectedScore === opt.score;
+                        const isSelected = selectedOption === opt.index;
                         const optionLetter = String.fromCharCode(65 + optIdx);
 
                         return (
@@ -1357,7 +1366,7 @@ export default function Assessment() {
                             type="button"
                             role="radio"
                             aria-checked={isSelected}
-                            onClick={() => handleSelectOption(question.id, opt.score)}
+                            onClick={() => handleSelectOption(question.id, opt.index)}
                             style={{
                               display: 'flex',
                               alignItems: 'center',

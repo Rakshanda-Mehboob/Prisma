@@ -29,7 +29,7 @@ warnings.filterwarnings(
 class RegisterRequest(BaseModel):
     full_name: Optional[str] = Field(None, max_length=120)
     email: EmailStr
-    cms_number: Optional[str] = Field(None, max_length=50)
+    cms_number: Optional[str] = Field(None, max_length=20)
     password: str = Field(..., min_length=6)
     age_group: Optional[str] = None
     gender: Optional[str] = None
@@ -294,9 +294,9 @@ class AssessmentStatusOut(BaseModel):
 # ──────────────────────────────────────────────
 
 class QuestionOptionOut(BaseModel):
-    """A single answer option shown to the student."""
+    """A single answer option shown to the student. Score is never sent to the browser."""
+    index: int
     text: str
-    score: int
 
 
 class AssessmentQuestionOut(BaseModel):
@@ -331,7 +331,7 @@ class AssessmentInstanceOut(BaseModel):
 class QuestionAnswerIn(BaseModel):
     """A single question answer submitted by the student."""
     question_id: int
-    selected_score: int = Field(..., ge=1, le=7)
+    selected_option: int = Field(..., ge=0)  # 0-based index into the option list
 
 
 class ScenarioAssessmentSubmitRequest(BaseModel):

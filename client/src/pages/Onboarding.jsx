@@ -138,6 +138,18 @@ export default function Onboarding() {
     university_groups_participation: '',
   });
 
+  // Pre-fill from user context if user becomes available after mount
+  useEffect(() => {
+    if (user) {
+      setProfile((prev) => ({
+        ...prev,
+        university: prev.university || user.university || '',
+        degree_program: prev.degree_program || user.department || '',
+        living_situation: prev.living_situation || user.living_situation || '',
+      }));
+    }
+  }, [user]);
+
   // Pre-load existing profile if present
   useEffect(() => {
     authApi.getStudentProfile()

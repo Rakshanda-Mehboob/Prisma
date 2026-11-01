@@ -26,9 +26,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('tpb_token');
-      localStorage.removeItem('tpb_user');
-      window.location.href = '/login';
+      const isLoginRequest = error.config?.url?.includes('/auth/login');
+      const token = localStorage.getItem('tpb_token');
+
+      if (!isLoginRequest && token) {
+        localStorage.removeItem('tpb_token');
+        localStorage.removeItem('tpb_user');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+      }
     }
     return Promise.reject(error);
   }

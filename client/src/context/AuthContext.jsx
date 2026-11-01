@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
           const merged = {
             ...res.data,
             avatar_url: savedAvatar || null,
-            university: savedUni || 'Riphah International University',
+            university: savedUni || res.data.university || '',
           };
           setUser(merged);
           localStorage.setItem('tpb_user', JSON.stringify(merged));
@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
     const fullUser = {
       ...me.data,
       avatar_url: savedAvatar || null,
-      university: savedUni || 'Riphah International University',
+      university: savedUni || me.data.university || '',
     };
     setUser(fullUser);
     localStorage.setItem('tpb_user', JSON.stringify(fullUser));

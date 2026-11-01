@@ -76,35 +76,37 @@ def run_test():
     print(f" - Platforms: {profile_data.get('social_media_platforms')}")
     print(f" - Patterns: {profile_data.get('digital_usage_patterns')}")
 
-    # 4. Fetch Pre-Assessment Adaptive Scenarios (correct endpoint: /assessment/pre)
+    # 4. Fetch Pre-Assessment Adaptive Scenarios (GET /assessment/pre)
     print("Generating/fetching adaptive pre-assessment scenarios...")
-    status, scenarios = api_get("/assessment/pre", headers=headers)
-    assert status == 200, f"Get scenarios failed: {scenarios}"
-    print(f"Total scenarios received: {len(scenarios)}")
-    assert len(scenarios) == 20, f"Expected 20 scenarios, got {len(scenarios)}"
+    status, assessment_data = api_get("/assessment/pre", headers=headers)
+    assert status == 200, f"Get assessment failed: {assessment_data}"
+    scenarios = assessment_data.get("scenarios", [])
+    print(f"Assessment instance ID: {assessment_data.get('id')}, Scenarios received: {len(scenarios)}")
+    assert len(scenarios) == 3, f"Expected 3 scenarios, got {len(scenarios)}"
 
-    construct_counts = {}
-    platforms = set()
+    total_questions = 0
     for idx, s in enumerate(scenarios, 1):
-        c = s.get("construct")
-        construct_counts[c] = construct_counts.get(c, 0) + 1
-        platforms.add(s.get("platform_context"))
-        assert len(s.get("options", [])) > 0, f"Scenario {idx} has no options!"
+        questions = s.get("questions", [])
+        assert len(questions) > 0, f"Scenario {idx} has no questions!"
+        total_questions += len(questions)
+        for q in questions:
+            assert len(q.get("options", [])) > 0, f"Question {q.get('id')} has no options!"
+            # Options should not contain scores (Task 4)
+            for opt in q["options"]:
+                assert "score" not in opt, f"Option should not contain 'score': {opt}"
+                assert "index" in opt, f"Option missing 'index': {opt}"
 
-    print("Construct breakdown (balanced 5 per dimension):", construct_counts)
-    print("Platforms referenced across scenarios:", platforms)
-    for c in ["Attitude", "SubjectiveNorm", "PBC", "BehavioralIntention"]:
-        assert construct_counts.get(c) == 5, f"Expected 5 items for {c}, got {construct_counts.get(c)}"
+    print(f"Total questions across 3 scenarios: {total_questions}")
 
-    # 5. Submit responses (correct endpoint: POST /assessment/pre)
-    print("Submitting answers for all 20 scenarios...")
-    responses = []
-    for s in scenarios:
-        # Choose the first option score
-        score = s["options"][0]["score"]
-        responses.append({"scenario_id": s["id"], "selected_score": score})
+    # 5. Submit responses (POST /assessment/pre)
+    print("Submitting answers for all questions...")
+    answers = []
+    for sc in scenarios:
+        for q in sc.get("questions", []):
+            # Select option index 0
+            answers.append({"question_id": q["id"], "selected_option": 0})
 
-    submit_payload = {"responses": responses}
+    submit_payload = {"answers": answers}
     status, result = api_post("/assessment/pre", headers=headers, json_body=submit_payload)
     assert status == 201, f"Submit failed: {result}"
     print("Pre-assessment submitted successfully!")

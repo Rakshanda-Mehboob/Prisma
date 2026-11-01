@@ -42,7 +42,7 @@ from auth.utils import (
     get_current_user,
 )
 from auth.email_service import send_password_reset_email
-from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL
+from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL, DEBUG, SMTP_HOST
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -60,7 +60,7 @@ def _serialize_user(user: User) -> dict:
         "living_situation": user.living_situation,
         "created_at": user.created_at,
         "login_count": user.login_count,
-        "has_profile": (user.student_profile is not None) or (user.user_profile is not None),
+        "has_profile": user.student_profile is not None,
     }
 
 
@@ -153,12 +153,12 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     def _json(val):
         return json.dumps(val) if val is not None else None
 
-    platforms = payload.social_media_platforms or payload.platforms_used or ["WhatsApp", "Instagram"]
-    frequency = payload.social_media_frequency or payload.online_activity_level or "Frequently"
-    online_comm = payload.online_communities or (["Group chats", "University communities"] if payload.university_groups_participation == "Yes" else ["Group chats"])
-    digital_patterns = payload.digital_usage_patterns or ["Academic communication", "Social interaction"]
+    platforms = payload.social_media_platforms or payload.platforms_used or None
+    frequency = payload.social_media_frequency or payload.online_activity_level or None
+    online_comm = payload.online_communities or None
+    digital_patterns = payload.digital_usage_patterns or None
 
-    # 1. Create UserProfile (Adaptive Assessment Intelligence Requirement 5)
+    # Create UserProfile with only values the user actually provided
     user_prof = UserProfile(
         user_id=user.id,
         age_group=payload.age_group,
@@ -173,23 +173,6 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         digital_usage_patterns=_json(digital_patterns),
     )
     db.add(user_prof)
-
-    # 2. Maintain StudentProfile for seamless backward compatibility
-    profile = StudentProfile(
-        user_id=user.id,
-        university=payload.university.strip() if payload.university else None,
-        degree_program=payload.department.strip() if payload.department else None,
-        faculty_department=payload.department.strip() if payload.department else None,
-        academic_level=payload.academic_level.strip() if payload.academic_level else None,
-        academic_year=payload.academic_year.strip() if payload.academic_year else None,
-        living_situation=payload.living_situation.strip() if payload.living_situation else None,
-        platforms_used=_json(platforms),
-        online_activity_level=frequency,
-        main_online_activities=_json(digital_patterns),
-        main_interaction_with=payload.main_interaction_with or "Classmates",
-        university_groups_participation=payload.university_groups_participation or "Yes",
-    )
-    db.add(profile)
 
     db.commit()
     db.refresh(user)
@@ -431,7 +414,7 @@ def forgot_password(
       1. Invalidates any previously active, unused reset tokens for this user.
       2. Creates a cryptographically secure, expiring reset token (30m lifetime).
       3. Sends a branded password reset email (or logs fallback to terminal in dev).
-      4. Includes `dev_reset_url` to facilitate seamless local testing.
+      4. Includes `dev_reset_url` only when DEBUG=true and SMTP is not configured (local dev only).
     """
     email_clean = payload.email.strip().lower()
     user = db.query(User).filter(func.lower(User.email) == email_clean).first()
@@ -460,7 +443,11 @@ def forgot_password(
         db.commit()
 
         reset_url = f"{FRONTEND_URL}/reset-password?token={token_str}"
-        dev_url = reset_url
+
+        # Only expose the reset URL in the response during local development
+        # (DEBUG=true and no SMTP configured). Never in production.
+        if DEBUG and not SMTP_HOST:
+            dev_url = reset_url
 
         # Dispatch via SMTP or dev fallback logger
         send_password_reset_email(to_email=user.email, reset_url=reset_url, user_name=user.full_name)

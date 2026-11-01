@@ -6,12 +6,12 @@ Supports .env files via python-dotenv if available.
 """
 
 import os
+from pathlib import Path
 from typing import List
 
 # Attempt to load .env file if python-dotenv is installed
 try:
     from dotenv import load_dotenv
-    from pathlib import Path
     _server_env = Path(__file__).resolve().parent / ".env"
     if _server_env.exists():
         load_dotenv(dotenv_path=_server_env)
@@ -32,6 +32,11 @@ if SECRET_KEY == _DEFAULT_DEV_SECRET:
         "Using development fallback key. "
         "Please set a strong SECRET_KEY in production environments."
     )
+
+# ── Debug / Development Mode ──────────────────────────────────────────────────
+# Set DEBUG=true in .env ONLY during local development with no real SMTP configured.
+# Never enable in production — it exposes password-reset URLs in API responses.
+DEBUG: bool = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
 
 ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))

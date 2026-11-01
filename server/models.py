@@ -11,7 +11,8 @@ v1.1 additions:
 from datetime import datetime
 from typing import Optional
 from sqlalchemy import (
-    Integer, String, Text, Float, DateTime, ForeignKey, CheckConstraint, Boolean, JSON
+    Integer, String, Text, Float, DateTime, ForeignKey, CheckConstraint, Boolean, JSON,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
@@ -265,7 +266,7 @@ class AssessmentResponse(Base):
 
     # Relationships
     assessment: Mapped["Assessment"] = relationship("Assessment", back_populates="responses")
-    scenario: Mapped[["Scenario"]] = relationship("Scenario", back_populates="responses")
+    scenario: Mapped["Scenario"] = relationship("Scenario", back_populates="responses")
 
     __table_args__ = (
         CheckConstraint("selected_score BETWEEN 1 AND 7", name="response_score_check"),
@@ -376,6 +377,7 @@ class AssessmentInstance(Base):
             "status IN ('generated','in_progress','submitted')",
             name="instance_status_check",
         ),
+        UniqueConstraint("user_id", "stage"),
     )
 
 

@@ -30,6 +30,7 @@ def _make_user_out(user: User) -> UserOut:
         email=user.email,
         cms_number=user.cms_number,
         role=user.role,
+        university=user.university,
         department=user.department,
         living_situation=user.living_situation,
         created_at=user.created_at,

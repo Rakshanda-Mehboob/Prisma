@@ -23,6 +23,7 @@ import random
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple, Set
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 import models
 from config import OPENAI_API_KEY
@@ -88,7 +89,10 @@ def resolve_student_profile(db: Session, user_id: int) -> Dict:
     gender = user_prof.gender if user_prof and user_prof.gender else "Prefer not to say"
 
     # Digital Behaviour
-    raw_platforms = user_prof.social_media_platforms if user_prof else (student_prof.platforms_used if student_prof else None)
+    raw_platforms = (
+        (user_prof.social_media_platforms if user_prof and user_prof.social_media_platforms else None)
+        or (student_prof.platforms_used if student_prof and student_prof.platforms_used else None)
+    )
     platforms = _safe_json(raw_platforms, ["WhatsApp", "Instagram", "Discord"])
 
     freq = (
@@ -96,10 +100,16 @@ def resolve_student_profile(db: Session, user_id: int) -> Dict:
         or (student_prof.online_activity_level if student_prof and student_prof.online_activity_level else "Frequently")
     )
 
-    raw_comm = user_prof.online_communities if user_prof else None
+    raw_comm = (
+        (user_prof.online_communities if user_prof and user_prof.online_communities else None)
+        or (student_prof.participation_types if student_prof and student_prof.participation_types else None)
+    )
     communities = _safe_json(raw_comm, ["Group chats", "University communities"])
 
-    raw_patterns = user_prof.digital_usage_patterns if user_prof else (student_prof.main_online_activities if student_prof else None)
+    raw_patterns = (
+        (user_prof.digital_usage_patterns if user_prof and user_prof.digital_usage_patterns else None)
+        or (student_prof.main_online_activities if student_prof and student_prof.main_online_activities else None)
+    )
     patterns = _safe_json(raw_patterns, ["Academic communication", "Social interaction"])
 
     return {
@@ -196,6 +206,20 @@ def record_scenario_history(
 # 3. OPENAI GENERATION (WITH FULL PROFILE & ANTI-REPETITION CONTEXT)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def is_openai_configured(key: Optional[str] = OPENAI_API_KEY) -> bool:
+    """Return True only if key is non-empty, >= 20 chars, and not a placeholder."""
+    if not key or not key.strip():
+        return False
+    k = key.strip().lower()
+    if len(k) < 20:
+        return False
+    if "your" in k and "key" in k:
+        return False
+    if "your-openai" in k or "your_openai" in k:
+        return False
+    return True
+
+
 def generate_with_openai(
     profile_data: Dict,
     previously_used_summaries: List[str],
@@ -210,9 +234,7 @@ def generate_with_openai(
       - Strong user profile relevance (department, year, living, platforms).
       - Clear narrative coherence (the scenario must make complete, believable sense).
     """
-    if not OPENAI_API_KEY or not OPENAI_API_KEY.strip() or "your_openai" in OPENAI_API_KEY.lower():
-        return None
-    if not OpenAI:
+    if not is_openai_configured(OPENAI_API_KEY) or not OpenAI:
         return None
 
     dept = profile_data.get("department", "Computer Science")
@@ -334,28 +356,56 @@ Output strictly valid JSON with this exact format:
         data = json.loads(content)
         scenarios = data.get("scenarios", [])
 
-        if len(scenarios) >= 3:
-            validated = []
-            for s in scenarios[:3]:
-                if not s.get("scenario_text") or not s.get("questions") or len(s["questions"]) < 4:
-                    return None
-                cleaned_questions = []
-                for q in s["questions"]:
-                    c = normalize_construct(q.get("tpb_construct", "Attitude"))
-                    opts = q.get("options", [])
-                    if len(opts) >= 4:
-                        cleaned_questions.append({
-                            "question_text": q.get("question_text"),
-                            "tpb_construct": c,
-                            "options": opts[:4],
-                        })
-                if len(cleaned_questions) >= 4:
-                    s["questions"] = cleaned_questions
-                    validated.append(s)
+        if not isinstance(scenarios, list) or len(scenarios) < 3:
+            return None
 
-            if len(validated) == 3:
-                print(f"[Adaptive Engine] Successfully generated 3 runtime scenarios via OpenAI with simple words and cultural relevance.")
-                return validated
+        validated = []
+        for s in scenarios[:3]:
+            scenario_text = s.get("scenario_text")
+            if not isinstance(scenario_text, str) or not scenario_text.strip():
+                return None
+            questions = s.get("questions")
+            if not isinstance(questions, list) or len(questions) < 4:
+                return None
+
+            cleaned_questions = []
+            for q in questions:
+                if not isinstance(q, dict):
+                    return None
+                q_text = q.get("question_text")
+                if not isinstance(q_text, str) or not q_text.strip():
+                    return None
+                opts = q.get("options")
+                if not isinstance(opts, list) or len(opts) != 4:
+                    return None
+
+                cleaned_opts = []
+                for opt in opts:
+                    if not isinstance(opt, dict):
+                        return None
+                    opt_text = opt.get("text")
+                    opt_score = opt.get("score")
+                    if not isinstance(opt_text, str) or not opt_text.strip():
+                        return None
+                    if not isinstance(opt_score, int) or opt_score not in (1, 3, 5, 7):
+                        return None
+                    cleaned_opts.append({"text": opt_text.strip(), "score": opt_score})
+
+                c = normalize_construct(q.get("tpb_construct", "Attitude"))
+                cleaned_questions.append({
+                    "question_text": q_text.strip(),
+                    "tpb_construct": c,
+                    "options": cleaned_opts,
+                })
+
+            s["scenario_text"] = scenario_text.strip()
+            s["questions"] = cleaned_questions
+            validated.append(s)
+
+        if len(validated) == 3:
+            print(f"[Adaptive Engine] Successfully generated 3 runtime scenarios via OpenAI with simple words and cultural relevance.")
+            return validated
+        return None
     except Exception as e:
         print(f"[Adaptive Engine] OpenAI runtime generation unavailable or failed: {e}. Falling back to easy-word local synthesizer.")
 
@@ -580,7 +630,7 @@ def generate_scenario_assessment(
 
     # 1. Try OpenAI first if configured
     raw_scenarios = None
-    if OPENAI_API_KEY and OPENAI_API_KEY.strip():
+    if is_openai_configured(OPENAI_API_KEY):
         raw_scenarios = generate_with_openai(profile_data, previous_summaries, stage)
 
     # 2. Fall back to the diverse Scenario Template Library synthesizer
@@ -598,51 +648,63 @@ def generate_scenario_assessment(
         "stage": stage,
     })
 
-    # Create top-level AssessmentInstance
-    instance = models.AssessmentInstance(
-        user_id=user_id,
-        stage=stage,
-        status="generated",
-    )
-    db.add(instance)
-    db.flush()
-
-    # Create 3 scenarios with questions and record history
-    for s_idx, scenario_data in enumerate(raw_scenarios[:3]):
-        scenario = models.AssessmentScenario(
-            instance_id=instance.id,
-            order_index=s_idx,
-            scenario_text=scenario_data["scenario_text"],
-            category=scenario_data.get("category", "Digital Interaction"),
-            platform_context=scenario_data.get("platform_context"),
-            user_context_used=context_used,
+    try:
+        # Create top-level AssessmentInstance
+        instance = models.AssessmentInstance(
+            user_id=user_id,
+            stage=stage,
+            status="generated",
         )
-        db.add(scenario)
+        db.add(instance)
         db.flush()
 
-        # Record in UserScenarioHistory for anti-repetition tracking
-        template_key = scenario_data.get("template_key")
-        record_scenario_history(
-            db=db,
-            user_id=user_id,
-            template_key=template_key,
-            scenario_text=scenario_data["scenario_text"],
-            stage=stage,
-            difficulty=scenario_data.get("difficulty_level", 1),
-        )
-
-        # Create questions for this scenario
-        questions = scenario_data.get("questions", [])
-        for q_idx, q_data in enumerate(questions[:6]):
-            question = models.AssessmentQuestion(
-                scenario_id=scenario.id,
-                order_index=q_idx,
-                question_text=q_data["question_text"],
-                options_json=json.dumps(q_data["options"]),
-                tpb_construct=normalize_construct(q_data.get("tpb_construct", "Attitude")),
+        # Create 3 scenarios with questions and record history
+        for s_idx, scenario_data in enumerate(raw_scenarios[:3]):
+            scenario = models.AssessmentScenario(
+                instance_id=instance.id,
+                order_index=s_idx,
+                scenario_text=scenario_data["scenario_text"],
+                category=scenario_data.get("category", "Digital Interaction"),
+                platform_context=scenario_data.get("platform_context"),
+                user_context_used=context_used,
             )
-            db.add(question)
+            db.add(scenario)
+            db.flush()
 
-    db.commit()
-    db.refresh(instance)
-    return instance
+            # Record in UserScenarioHistory for anti-repetition tracking
+            template_key = scenario_data.get("template_key")
+            record_scenario_history(
+                db=db,
+                user_id=user_id,
+                template_key=template_key,
+                scenario_text=scenario_data["scenario_text"],
+                stage=stage,
+                difficulty=scenario_data.get("difficulty_level", 1),
+            )
+
+            # Create questions for this scenario
+            questions = scenario_data.get("questions", [])
+            for q_idx, q_data in enumerate(questions[:6]):
+                question = models.AssessmentQuestion(
+                    scenario_id=scenario.id,
+                    order_index=q_idx,
+                    question_text=q_data["question_text"],
+                    options_json=json.dumps(q_data["options"]),
+                    tpb_construct=normalize_construct(q_data.get("tpb_construct", "Attitude")),
+                )
+                db.add(question)
+
+        db.commit()
+        db.refresh(instance)
+        return instance
+    except IntegrityError:
+        db.rollback()
+        existing = (
+            db.query(models.AssessmentInstance)
+            .filter(models.AssessmentInstance.user_id == user_id, models.AssessmentInstance.stage == stage)
+            .order_by(models.AssessmentInstance.id.desc())
+            .first()
+        )
+        if existing:
+            return existing
+        raise
