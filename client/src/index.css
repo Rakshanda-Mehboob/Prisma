@@ -1728,12 +1728,15 @@ select.form-input option {
 
 /* ── Layout Override for Auth Pages ── */
 .app-layout.auth-mode {
-  background-color: var(--auth-bg, #f8fafc);
+  background-color: #ffffff;
+  min-height: 100vh;
 }
 
 .page-content.auth-main {
   padding: 0;
+  width: 100%;
   max-width: 100%;
+  min-height: 100vh;
   animation: none;
 }
 
@@ -2555,6 +2558,203 @@ select.form-input option {
   margin-top: 1.75rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--color-border);
+}
+
+/* ── Modern Split-Screen Onboarding Experience ────────────────────────────── */
+.onb-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  min-height: 100vh;
+  width: 100%;
+  background: #ffffff;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .onb-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 1. Left Step Sidebar */
+.onb-sidebar {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(124, 58, 237, 0.04) 50%, #ffffff 100%);
+  border-right: 1px solid rgba(99, 102, 241, 0.12);
+  padding: 2.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 900px) {
+  .onb-sidebar {
+    min-height: auto;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+.onb-steps-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: 2rem;
+}
+
+.onb-step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.onb-step-row:last-child {
+  padding-bottom: 0;
+}
+
+.onb-step-connector {
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(99, 102, 241, 0.14);
+  transition: background 0.3s ease;
+  z-index: 0;
+}
+
+.onb-step-connector.completed {
+  background: var(--color-primary);
+}
+
+.onb-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  z-index: 1;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.onb-step-circle.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2), 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.onb-step-circle.completed {
+  background: var(--color-success);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+}
+
+.onb-step-circle.upcoming {
+  background: #ffffff;
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.onb-step-text-wrap {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+
+.onb-step-label {
+  font-size: 0.94rem; /* 15px */
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.onb-step-label.active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.onb-step-label.completed {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* 2. Main Area Split: Form Column & Decorative Column */
+.onb-main-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 3rem;
+  width: 100%;
+  min-height: 100vh;
+  padding: 3rem 4rem;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .onb-main-area {
+    padding: 2.5rem 2.5rem;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .onb-main-area {
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem 1.5rem; /* px-6 */
+    justify-content: center;
+  }
+}
+
+.onb-form-column {
+  width: 100%;
+  max-width: 38rem; /* max-w-xl */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.onb-decorative-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .onb-decorative-column {
+    display: none;
+  }
+}
+
+.onb-decorative-card {
+  background: linear-gradient(145deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.03), rgba(255, 255, 255, 0.95));
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  border-radius: var(--radius-xl, 22px);
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 12px 36px -8px rgba(79, 70, 229, 0.09), 0 2px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Fallback centered auth card */
