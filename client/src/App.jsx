@@ -33,7 +33,6 @@ function AppShell() {
   const { user } = useAuth();
 
   const isAuthPage = AUTH_PAGES.some((p) => location.pathname.startsWith(p));
-  const isAssessment = location.pathname.startsWith('/assessment');
   // Show sidebar when: user is logged in AND not on an auth page AND not on landing
   const isLanding = location.pathname === '/';
   const showSidebar = !!user && !isAuthPage && !isLanding;
@@ -47,11 +46,11 @@ function AppShell() {
       {showSidebar && <Sidebar />}
 
       {/* Content wrapper with ClickUp-style TopHeader for authenticated app pages */}
-      <div className={`${showSidebar ? 'app-main-wrapper' : 'app-main-direct'} ${isAssessment ? 'assessment-mode' : ''}`}>
+      <div className={showSidebar ? 'app-main-wrapper' : 'app-main-direct'}>
         {showSidebar && <TopHeader />}
 
         {/* Main content */}
-        <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''} ${isLanding ? 'landing-main' : ''} ${isAssessment ? 'assessment-main' : ''}`}>
+        <main className={`page-content ${isAuthPage ? 'auth-main' : ''} ${showSidebar ? 'sidebar-main' : ''} ${isLanding ? 'landing-main' : ''}`}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />

@@ -160,6 +160,7 @@ function AssessmentResultsView({
   const growthDelta = hasBothAssessments ? postOverall - preOverall : null;
 
   return (
+    <PageContainer>
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
@@ -407,6 +408,7 @@ function AssessmentResultsView({
         </div>
       </div>
     </motion.div>
+    </PageContainer>
   );
 }
 

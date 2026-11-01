@@ -1242,22 +1242,16 @@ select.form-input option {
   border-top: 1px solid var(--color-border);
 }
 
-/* Shared Page Container: w-full max-w-7xl mx-auto px-6 lg:px-10 py-6 */
+/* Shared Page Container: full-width next to sidebar, left-aligned, no centering */
 .page-container {
   width: 100%;
-  max-width: 80rem;   /* 1280px */
-  margin: 0 auto;
-  padding: 1.5rem;    /* px-6 py-6 */
+  max-width: none;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
-}
-
-@media (min-width: 1024px) {
-  .page-container {
-    padding: 1.5rem 2.5rem; /* lg:px-10 */
-  }
 }
 
 /* Coursera-Style Learning Module Experience */
@@ -2833,21 +2827,7 @@ select.form-input option {
     display: flex;
   }
 
-  .page-content {
-    padding: 1.5rem 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .intervention-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -2914,26 +2894,12 @@ select.form-input option {
    ASSESSMENT RESULTS PAGE — Clean Modern SaaS UI (Simplified & Spacious)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Edge-to-Edge Assessment Page Experience ── */
-.app-main-wrapper.assessment-mode,
-.page-content.sidebar-main.assessment-main {
-  background: #ffffff !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  max-width: none !important;
-  width: 100% !important;
-  min-height: calc(100vh - 60px) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-}
-
 .results-page-layout,
 .assessment-page-root {
   width: 100%;
   min-height: calc(100vh - 60px);
   background: #ffffff;
-  padding: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.5rem, 4.5vw, 4.5rem);
+  padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -4912,12 +4878,20 @@ select.form-input option {
 .page-content.sidebar-main {
   max-width: none;
   margin: 0;
-  padding: 1.5rem;
+  padding: 1rem;
   flex: 1;
   min-width: 0;
+  min-height: calc(100vh - 60px);
   overflow-x: hidden;
-  background: var(--color-bg);
+  background: #ffffff;
   width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .page-content.sidebar-main {
+    padding: 1.5rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -6362,9 +6336,10 @@ select.form-input option {
   display: flex;
   flex-direction: column;
   flex: 1;
+  width: 100%;
   min-width: 0;
   min-height: 100vh;
-  background: var(--color-bg);
+  background: #ffffff;
 }
 
 .app-main-direct {

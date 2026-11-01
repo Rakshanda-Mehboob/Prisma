@@ -18,8 +18,8 @@ import React from 'react';
 
 const PAGE_CONTAINER_STYLE = {
   width: '100%',
-  maxWidth: '80rem',       /* 1280px — equivalent to max-w-7xl */
-  margin: '0 auto',        /* mx-auto — centers when viewport > max-width */
+  minWidth: 0,
+  margin: 0,
   boxSizing: 'border-box',
 };
 
@@ -40,3 +40,4 @@ export default function PageContainer({
     </Tag>
   );
 }
+
