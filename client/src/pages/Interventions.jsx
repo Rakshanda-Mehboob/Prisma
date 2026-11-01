@@ -623,7 +623,7 @@ export default function Interventions() {
 
   if (loading) {
     return (
-      <div className="coursera-container" style={{ padding: '2rem 1rem' }}>
+      <div className="coursera-container">
         <Skeleton height="80px" width="60%" borderRadius="var(--radius-lg)" />
         <Skeleton height="100px" width="100%" borderRadius="var(--radius-lg)" style={{ margin: '1rem 0' }} />
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.5rem' }}>
@@ -637,7 +637,7 @@ export default function Interventions() {
   const hasAssessment = dashboardData?.has_assessment || dashboardData?.pre_scores != null;
   if (!hasAssessment && records.length === 0) {
     return (
-      <div className="coursera-container" style={{ padding: '2rem 1rem' }}>
+      <div className="coursera-container">
         <EmptyState
           icon={<Compass size={44} color="var(--color-primary)" />}
           title="Diagnostic Assessment Required"
@@ -789,7 +789,7 @@ export default function Interventions() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          style={{ width: '100%', maxWidth: '80rem', margin: 0, padding: 0 }}
+          style={{ width: '100%', margin: 0, padding: 0 }}
         >
           <div
             style={{

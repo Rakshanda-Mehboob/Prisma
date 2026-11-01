@@ -1248,7 +1248,7 @@ select.form-input option {
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
-  max-width: 80rem;
+  max-width: none;
   margin: 0;
   box-sizing: border-box;
 }
