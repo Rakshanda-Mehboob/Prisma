@@ -2693,68 +2693,208 @@ select.form-input option {
   font-weight: 600;
 }
 
-/* 2. Main Area Split: Form Column & Decorative Column */
+/* 2. Main Content Area with Soft Gradient Background */
 .onb-main-area {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   width: 100%;
   min-height: 100vh;
-  padding: 3rem 4rem;
-  align-items: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(238, 242, 255, 0.45) 100%);
+  padding: 2.5rem 1.5rem 4rem 1.5rem; /* mobile pt-10 px-6 */
   box-sizing: border-box;
 }
 
-@media (max-width: 1200px) {
+@media (min-width: 1024px) {
   .onb-main-area {
-    padding: 2.5rem 2.5rem;
-    gap: 2rem;
+    padding: 4rem 3rem 5rem 3rem; /* desktop pt-16 px-12 */
   }
 }
 
-@media (max-width: 1024px) {
-  .onb-main-area {
-    display: flex;
-    flex-direction: column;
-    padding: 2.5rem 1.5rem; /* px-6 */
-    justify-content: center;
-  }
-}
-
-.onb-form-column {
+/* 3. Large Form Card: w-full max-w-4xl rounded-2xl border soft shadow */
+.onb-card {
   width: 100%;
-  max-width: 38rem; /* max-w-xl */
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.onb-decorative-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-@media (max-width: 1024px) {
-  .onb-decorative-column {
-    display: none;
-  }
-}
-
-.onb-decorative-card {
-  background: linear-gradient(145deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.03), rgba(255, 255, 255, 0.95));
+  max-width: 56rem; /* max-w-4xl (896px) */
+  background: #ffffff;
   border: 1px solid rgba(99, 102, 241, 0.14);
-  border-radius: var(--radius-xl, 22px);
-  padding: 2.5rem 2.25rem;
-  box-shadow: 0 12px 36px -8px rgba(79, 70, 229, 0.09), 0 2px 6px rgba(0, 0, 0, 0.02);
+  border-radius: 20px; /* rounded-2xl */
+  box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+  padding: 2rem;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  position: relative;
+  gap: 1.75rem;
+}
+
+@media (min-width: 1024px) {
+  .onb-card {
+    padding: 3rem; /* desktop lg:p-12 */
+  }
+}
+
+@media (max-width: 640px) {
+  .onb-card {
+    padding: 1.5rem; /* mobile p-6 */
+    border-radius: 16px;
+  }
+}
+
+/* Thin card progress indicator */
+.onb-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.onb-card-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.02em;
+}
+
+.onb-card-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 999px;
   overflow: hidden;
+}
+
+.onb-card-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #6366f1);
+  border-radius: 999px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Typography Inside Card */
+.onb-heading {
+  font-size: clamp(2.1rem, 3.2vw, 2.75rem); /* text-4xl/5xl */
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  margin-bottom: 0.75rem;
+}
+
+.onb-body-text {
+  font-size: 1.125rem; /* text-lg */
+  line-height: 1.75; /* leading-relaxed */
+  color: var(--color-text-secondary);
+}
+
+/* Safe & Confidential Box: Full Width */
+.onb-privacy-box {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.35rem 1.6rem;
+  background: rgba(79, 70, 229, 0.04);
+  border: 1px solid rgba(79, 70, 229, 0.16);
+  border-radius: var(--radius-lg, 16px);
+  box-sizing: border-box;
+}
+
+.onb-privacy-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onb-privacy-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.onb-privacy-desc {
+  font-size: 1rem; /* text-base */
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* Two-column options grid for wide card */
+.onb-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .onb-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ghost Button & Large Continue Button (h-12 / 48px) */
+.onb-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 48px; /* h-12 */
+  padding: 0 1.5rem;
+  border-radius: 12px; /* rounded-xl */
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.onb-btn-ghost:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--color-primary);
+}
+
+.onb-btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.onb-btn-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 48px; /* h-12 */
+  padding: 0 2rem;
+  border-radius: 12px; /* rounded-xl */
+  background: linear-gradient(135deg, var(--color-primary), #6366f1);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  transition: all 0.2s ease;
+}
+
+.onb-btn-continue:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.38);
+}
+
+.onb-btn-continue:disabled {
+  background: var(--color-surface-3);
+  color: var(--color-text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 /* Fallback centered auth card */
