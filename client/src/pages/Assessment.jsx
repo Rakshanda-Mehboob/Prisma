@@ -190,16 +190,7 @@ function AssessmentResultsView({
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <Button
-              variant="primary"
-              size="sm"
-              iconRight={<ArrowRight size={14} />}
-              onClick={onContinue}
-            >
-              {stage === 'post' || postAssessment || isPostDone ? 'Go to Dashboard' : 'Continue to Learning'}
-            </Button>
-          </div>
+
         </div>
 
         {/* Central Overall Score Display */}
