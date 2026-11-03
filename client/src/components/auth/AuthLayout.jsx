@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, ShieldCheck, GraduationCap } from 'lucide-react';
+import PrismaLogo from '../PrismaLogo';
 
 /**
  * AuthLayout — Prisma Authentication Frame.
@@ -33,6 +34,10 @@ export default function AuthLayout({ activeTab = 'login', children }) {
         <div className="auth-main-grid">
           {/* Left Column: Prisma Mission & Feature Highlights */}
           <section className="auth-hero-col" aria-label="Prisma System Overview">
+            <div className="auth-hero-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              <PrismaLogo size={46} />
+              <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--auth-text-dark)', letterSpacing: '-0.02em' }}>Prisma</span>
+            </div>
             <h1 className="auth-hero-title">
               Empowering students to stand against online harassment.
             </h1>

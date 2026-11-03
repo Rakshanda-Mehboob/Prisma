@@ -36,7 +36,7 @@ export default function OnboardingLayout({
         <div>
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.5rem' }}>
-            <PrismaLogo size={34} />
+            <PrismaLogo size={42} />
             <div>
               <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#0f172a', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
                 Prisma

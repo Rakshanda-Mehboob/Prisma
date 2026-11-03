@@ -93,7 +93,19 @@ body,
 
 html {
   scroll-behavior: smooth;
-  font-size: 16px;
+  font-size: 80%; /* 12.8px base (~20% global reduction across all rem units) */
+}
+
+@media (min-width: 1600px) {
+  html {
+    font-size: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 78%;
+  }
 }
 
 body {
@@ -101,7 +113,7 @@ body {
   background-color: #ffffff;
   color: var(--color-text);
   min-height: 100vh;
-  line-height: 1.65;
+  line-height: 1.55;
   font-size: 0.95rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -174,17 +186,18 @@ body {
 }
 
 .page-content.landing-main {
-  max-width: 1560px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 2.5rem 4.5rem;
+  padding: 1rem 1.5rem 3rem;
   width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 1536px) {
   .page-content.landing-main {
-    max-width: 1640px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 3.5rem 5rem;
+    padding: 1rem 1.5rem 3rem;
   }
 }
 
@@ -205,8 +218,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  height: 70px;
+  padding: 0 1.5rem;
+  height: 58px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -221,17 +234,17 @@ body {
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   color: var(--color-text);
   text-decoration: none;
   letter-spacing: -0.02em;
 }
 
 .navbar-brand .brand-icon {
-  width: 38px;
   height: 38px;
+  width: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,10 +273,10 @@ body {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.05rem;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
   border-radius: var(--radius-md);
-  font-size: 1.15rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   text-decoration: none;
@@ -379,8 +392,8 @@ h6 {
 .card {
   background: var(--color-surface, #ffffff);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl, 18px);
-  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 6px 18px -4px rgba(15, 23, 42, 0.04);
   transition: var(--transition);
   position: relative;
@@ -441,11 +454,11 @@ h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
+  gap: 0.45rem;
+  padding: 0.5rem 1.05rem;
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -524,14 +537,14 @@ h6 {
 }
 
 .btn-sm {
-  padding: 0.4rem 0.85rem;
-  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
   border-radius: var(--radius-sm);
 }
 
 .btn-lg {
-  padding: 0.85rem 1.75rem;
-  font-size: 1rem;
+  padding: 0.65rem 1.35rem;
+  font-size: 0.95rem;
   border-radius: var(--radius-md);
 }
 
@@ -539,10 +552,10 @@ h6 {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -828,13 +841,13 @@ h6 {
 
 .form-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 0.85rem;
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   transition: var(--transition);
   outline: none;
 }
@@ -1099,7 +1112,7 @@ select.form-input option {
 
 .scenario-top {
   background: var(--color-surface-2);
-  padding: 1.75rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -1107,33 +1120,33 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-family: var(--font-mono);
 }
 
 .scenario-text {
-  font-size: 1.32rem;
+  font-size: 1.1rem;
   font-weight: 500;
   color: var(--color-text);
-  line-height: 1.85;
+  line-height: 1.65;
 }
 
 .scenario-bottom {
-  padding: 2rem;
+  padding: 1.35rem 1.5rem;
 }
 
 .scenario-question {
-  font-size: 1.24rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 1.15rem;
+  line-height: 1.5;
 }
 
 .options-list {
@@ -1145,16 +1158,16 @@ select.form-input option {
 .option-btn {
   display: flex;
   align-items: center;
-  gap: 1.15rem;
-  padding: 1.05rem 1.35rem;
-  border-radius: var(--radius-lg);
+  gap: 0.95rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
   text-align: left;
-  font-size: 1.08rem;
-  line-height: 1.55;
+  font-size: 0.95rem;
+  line-height: 1.45;
   transition: var(--transition);
   outline: none;
 }
@@ -1279,13 +1292,13 @@ select.form-input option {
 /* Shared Page Container: full-width next to sidebar, left-aligned, no centering */
 .page-container {
   width: 100%;
-  max-width: none;
+  max-width: 1200px;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.25rem;
 }
 
 /* Coursera-Style Learning Module Experience */
@@ -1303,7 +1316,7 @@ select.form-input option {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: 1.75rem 2rem;
+  padding: 1.25rem 1.5rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
@@ -1332,7 +1345,7 @@ select.form-input option {
 }
 
 .coursera-title {
-  font-size: 1.75rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
@@ -1593,7 +1606,7 @@ select.form-input option {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: 2.25rem;
+  padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
@@ -1797,7 +1810,7 @@ select.form-input option {
   width: 100%;
   background-color: var(--auth-bg);
   color: var(--auth-text-dark);
-  padding: 1.75rem 1.5rem 3.5rem;
+  padding: 1.25rem 1.25rem 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1810,7 +1823,7 @@ select.form-input option {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
 /* Top bar: Back to Home + Prisma Brand */
@@ -1853,7 +1866,7 @@ select.form-input option {
 .auth-main-grid {
   display: grid;
   grid-template-columns: 1.08fr 1fr;
-  gap: 3.5rem;
+  gap: 2rem;
   align-items: start;
   width: 100%;
 }
@@ -1882,10 +1895,10 @@ select.form-input option {
 
 .auth-hero-title {
   font-family: var(--auth-font-heading);
-  font-size: clamp(2.2rem, 3.8vw, 3.1rem);
+  font-size: clamp(1.75rem, 3vw, 2.3rem);
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
   color: var(--auth-text-dark);
   margin: 0;
 }
@@ -1968,7 +1981,7 @@ select.form-input option {
 .auth-form-card {
   background: #ffffff;
   border-radius: var(--auth-card-radius);
-  padding: 2.25rem 2.25rem 1.85rem;
+  padding: 1.5rem 1.5rem 1.25rem;
   box-shadow: 0 12px 36px -4px rgba(79, 70, 229, 0.08), 0 2px 10px rgba(0, 0, 0, 0.03);
   border: 1px solid #e2e8f0;
   width: 100%;
@@ -1983,7 +1996,7 @@ select.form-input option {
   background: var(--auth-track-bg);
   border-radius: 9999px;
   padding: 4px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   gap: 4px;
   border: 1px solid #e2e8f0;
 }
@@ -3519,7 +3532,7 @@ select.form-input option {
 .results-page-layout,
 .assessment-page-root {
   width: 100%;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 52px);
   background: #ffffff;
   padding: 0;
   margin: 0;
@@ -3980,8 +3993,9 @@ select.form-input option {
   border: 1px solid transparent;
   cursor: pointer;
   font-family: inherit;
-  font-size: 1.15rem;
+  font-size: 0.98rem;
   font-weight: 600;
+  padding: 0.4rem 0.85rem;
   color: var(--color-text-secondary);
 }
 
@@ -4019,7 +4033,7 @@ select.form-input option {
 
 .navbar-mobile-drawer {
   position: fixed;
-  top: 70px;
+  top: 58px;
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.98);
@@ -4040,12 +4054,12 @@ select.form-input option {
   background: none;
   border: 1px solid transparent;
   font-family: inherit;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   cursor: pointer;
   width: 100%;
-  padding: 0.65rem 1rem;
+  padding: 0.5rem 0.85rem;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -4090,15 +4104,15 @@ select.form-input option {
 .landing-page-root {
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
+  gap: 2.25rem;
   width: 100%;
-  margin-top: -1rem;
+  margin-top: -0.5rem;
 }
 
 /* ── Hero Section ── */
 .hero-section {
   position: relative;
-  padding: 2.5rem 0 3.5rem;
+  padding: 1.25rem 0 2rem;
   width: 100%;
 }
 
@@ -4177,12 +4191,14 @@ select.form-input option {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.05fr);
-  gap: 4.5rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+  gap: 2.25rem;
   align-items: center;
   width: 100%;
-  max-width: 1540px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .hero-content {
@@ -4195,16 +4211,16 @@ select.form-input option {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   background: rgba(79, 70, 229, 0.08);
   border: 1px solid rgba(79, 70, 229, 0.22);
   border-radius: var(--radius-full);
-  padding: 0.35rem 0.95rem;
-  font-size: 0.82rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-primary);
   letter-spacing: 0.01em;
-  margin-bottom: 1.35rem;
+  margin-bottom: 0.85rem;
 }
 
 .hero-badge-icon {
@@ -4214,13 +4230,13 @@ select.form-input option {
 }
 
 .hero-title {
-  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.03em;
   color: var(--color-text-primary);
-  margin-bottom: 1.25rem;
-  max-width: 640px;
+  margin-bottom: 0.85rem;
+  max-width: 580px;
 }
 
 .hero-gradient-text {
@@ -4231,19 +4247,19 @@ select.form-input option {
 }
 
 .hero-description {
-  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   color: var(--color-text-secondary);
-  line-height: 1.72;
-  max-width: 580px;
-  margin-bottom: 2.25rem;
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 1.5rem;
 }
 
 .hero-actions {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .hero-cta-link {
@@ -4282,16 +4298,16 @@ select.form-input option {
 .hero-trust-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 2rem;
+  gap: 0.5rem 1.25rem;
   width: 100%;
-  max-width: 620px;
+  max-width: 540px;
 }
 
 .hero-trust-item {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  font-size: 0.86rem;
+  gap: 0.45rem;
+  font-size: 0.82rem;
   font-weight: 500;
   color: var(--color-text-secondary);
 }
@@ -4701,33 +4717,33 @@ select.form-input option {
 
 .section-header {
   text-align: center;
-  margin-bottom: 2.75rem;
+  margin-bottom: 1.75rem;
 }
 
 .section-eyebrow {
   display: inline-block;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .section-title {
-  font-size: clamp(2rem, 3.2vw, 2.65rem);
+  font-size: clamp(1.65rem, 2.6vw, 2.15rem);
   font-weight: 800;
   color: var(--color-text-primary);
   letter-spacing: -0.025em;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.5rem;
 }
 
 .section-subtitle {
-  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  font-size: 0.95rem;
   color: var(--color-text-muted);
-  max-width: 720px;
+  max-width: 680px;
   margin: 0 auto;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 /* ── How It Works Section ── */
@@ -4759,7 +4775,7 @@ select.form-input option {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: 1.85rem;
+  padding: 1.35rem;
   box-shadow: var(--shadow-sm);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   display: flex;
@@ -5526,8 +5542,8 @@ select.form-input option {
 
 /* ── Sidebar Layout ─────────────────────────────────────────────────────────── */
 :root {
-  --sidebar-width: 240px;
-  --sidebar-collapsed-width: 68px;
+  --sidebar-width: 210px;
+  --sidebar-collapsed-width: 58px;
 }
 
 .page-content.sidebar-main {
@@ -5674,7 +5690,7 @@ select.form-input option {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(124, 58, 237, 0.08));
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5938,7 +5954,7 @@ select.form-input option {
 .student-hero-visual-wrapper {
   position: relative;
   width: 100%;
-  max-width: 680px;
+  max-width: 480px;
   margin: 0 auto;
   perspective: 1000px;
 }
@@ -5972,7 +5988,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.35rem 0.85rem;
+  padding: 0.75rem 1.1rem 0.65rem;
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.6));
   border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 }
@@ -6018,7 +6034,7 @@ select.form-input option {
 }
 
 .student-graphic-canvas {
-  padding: 1.5rem 1.5rem 0.75rem;
+  padding: 0.85rem 1rem 0.5rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.98));
   display: flex;
   justify-content: center;
@@ -6028,7 +6044,7 @@ select.form-input option {
 .student-scene-svg {
   width: 100%;
   height: auto;
-  max-height: 350px;
+  max-height: 240px;
   display: block;
 }
 
@@ -6068,7 +6084,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.35rem;
+  padding: 0.65rem 1.1rem;
   background: var(--color-surface);
   border-top: 1px solid rgba(99, 102, 241, 0.08);
   flex-wrap: wrap;
@@ -6270,7 +6286,7 @@ select.form-input option {
 /* Header */
 .digital-values-header {
   text-align: center;
-  margin-bottom: 2.75rem;
+  margin-bottom: 1.75rem;
 }
 
 .digital-values-badge {
@@ -6294,16 +6310,16 @@ select.form-input option {
 }
 
 .digital-values-title {
-  font-size: clamp(2rem, 3.4vw, 2.75rem);
+  font-size: clamp(1.65rem, 2.8vw, 2.2rem);
   font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.55rem;
 }
 
 .digital-values-subtitle {
   color: var(--color-text-muted);
-  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  font-size: 0.95rem;
   max-width: 680px;
   margin: 0 auto;
   line-height: 1.65;
@@ -6364,7 +6380,7 @@ select.form-input option {
   /* max-w-6xl */
   margin: 0 auto;
   width: 100%;
-  min-height: 520px;
+  min-height: auto;
   /* Deep Navy-Blue #0b1120 / #111827 to Royal Indigo #2e1065 / #3b1368 diagonal gradient */
   background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 45%, #2e1065 85%, #3b1368 100%) !important;
   border-radius: 2rem !important;
@@ -6373,7 +6389,7 @@ select.form-input option {
     0 25px 65px -15px rgba(15, 23, 42, 0.65),
     0 14px 35px -8px rgba(79, 70, 229, 0.35),
     0 0 0 1px rgba(129, 140, 248, 0.18) inset !important;
-  padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3.25rem);
+  padding: clamp(1.85rem, 3.8vw, 2.75rem) clamp(1.5rem, 4vw, 3.5rem) clamp(1.75rem, 3.5vw, 2.5rem);
   color: #f8fafc;
   overflow: hidden;
   outline: none;
@@ -6434,7 +6450,7 @@ select.form-input option {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 1.35rem;
 }
 
 .cybermirror-badge-pill {
@@ -6447,7 +6463,7 @@ select.form-input option {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.85rem;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #e0e7ff;
   letter-spacing: 0.02em;
@@ -6500,7 +6516,7 @@ select.form-input option {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-full);
   padding: 0.35rem 0.85rem;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-family: var(--font-mono);
   font-weight: 600;
   color: #e0e7ff;
@@ -6575,9 +6591,9 @@ select.form-input option {
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
-  padding: 1rem 1rem 1.5rem;
+  padding: 0.5rem 0.5rem 1rem;
   width: 100%;
 }
 
@@ -6591,10 +6607,10 @@ select.form-input option {
 /* Arabic Verse (Lavender/Cyan Blue glow, Generous Line-Height) */
 .cybermirror-arabic-text {
   font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Noto Naskh Arabic', serif;
-  font-size: clamp(1.8rem, 3.8vw, 2.6rem);
-  line-height: 1.95;
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+  line-height: 1.85;
   color: #e0e7ff;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 18px rgba(129, 140, 248, 0.4);
 }
@@ -6606,7 +6622,7 @@ select.form-input option {
   line-height: 1.42;
   color: #ffffff;
   letter-spacing: -0.02em;
-  margin: 0 0 1.75rem;
+  margin: 0 0 1.25rem;
   max-width: 840px;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
@@ -6617,21 +6633,25 @@ select.form-input option {
   height: 3.5px;
   border-radius: 999px;
   background: linear-gradient(90deg, #38bdf8, #818cf8, #a78bfa);
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1.25rem;
   box-shadow: 0 0 12px rgba(129, 140, 248, 0.6);
 }
 
 /* Translucent Glass Panel (Campus Action: bg-white/10, backdrop-blur, border-white/20) */
 .cybermirror-action-panel {
   width: 100%;
-  max-width: 780px;
+  max-width: 820px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1.65rem;
+  padding: 1.25rem 1.5rem;
+  height: auto;
+  min-height: auto;
+  overflow: visible;
+  box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   gap: 1.15rem;
@@ -6672,7 +6692,7 @@ select.form-input option {
 }
 
 .cybermirror-action-title {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -6681,24 +6701,24 @@ select.form-input option {
 }
 
 .cybermirror-action-num {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-family: var(--font-mono);
-  color: rgba(224, 231, 255, 0.65);
+  color: rgba(224, 231, 255, 0.75);
   font-weight: 600;
 }
 
 .cybermirror-action-explanation {
-  font-size: 0.94rem;
-  color: #f1f5f9;
-  font-weight: 500;
-  line-height: 1.55;
-  margin: 0 0 0.45rem;
+  font-size: clamp(1.05rem, 1.35vw, 1.15rem);
+  color: #ffffff;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 0.55rem;
 }
 
 .cybermirror-action-takeaway {
-  font-size: 0.84rem;
-  color: rgba(224, 231, 255, 0.85);
-  line-height: 1.55;
+  font-size: clamp(0.95rem, 1.2vw, 1rem);
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -6776,8 +6796,17 @@ select.form-input option {
 
   .cybermirror-action-panel {
     flex-direction: column;
-    padding: 1rem;
+    padding: 1rem 1.15rem;
     gap: 0.75rem;
+  }
+
+  .cybermirror-action-explanation {
+    font-size: 1.02rem;
+  }
+
+  .cybermirror-action-takeaway {
+    font-size: 0.92rem;
+    line-height: 1.55;
   }
 
   .cybermirror-action-icon-box {
@@ -6839,7 +6868,7 @@ select.form-input option {
 /* Header */
 .about-header {
   text-align: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2rem;
 }
 
 .about-badge {
@@ -6858,11 +6887,11 @@ select.form-input option {
 }
 
 .about-title {
-  font-size: 2.4rem;
+  font-size: clamp(1.75rem, 3vw, 2.2rem);
   font-weight: 800;
   color: #0f172a;
   line-height: 1.2;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .about-title-accent {
@@ -6884,8 +6913,8 @@ select.form-input option {
 .about-features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  gap: 1.25rem;
+  margin-bottom: 2.25rem;
 }
 
 .about-feature-card {
@@ -6894,7 +6923,7 @@ select.form-input option {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(79,70,229,0.08);
   border-radius: 16px;
-  padding: 1.8rem 1.5rem;
+  padding: 1.35rem 1.2rem;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -7005,7 +7034,7 @@ select.form-input option {
   position: sticky;
   top: 0;
   z-index: 70;
-  height: 60px;
+  height: 52px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -7013,7 +7042,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 

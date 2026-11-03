@@ -8,7 +8,7 @@ export default function Footer() {
         {/* Left: Brand & Copyright */}
         <div className="footer-compact-left">
           <div className="footer-compact-logo">
-            <PrismaLogo size={20} />
+            <PrismaLogo size={36} />
           </div>
           <span className="footer-compact-brand">Prisma</span>
           <span className="footer-compact-dot" aria-hidden="true">·</span>

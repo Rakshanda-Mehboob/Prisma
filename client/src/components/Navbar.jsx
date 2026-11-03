@@ -101,7 +101,7 @@ export default function Navbar() {
       {/* Brand */}
       <Link to="/" className="navbar-brand">
         <div className="brand-icon">
-          <PrismaLogo size={32} />
+          <PrismaLogo size={38} />
         </div>
         <span>Prisma</span>
       </Link>
