@@ -35,8 +35,8 @@ const CONSTRUCT_CONFIG = {
     ],
     reflectionPrompt: 'Think of an online interaction where someone was mocked. What made that exchange cross the line from humor into harm?'
   },
-  'Subjective Norm': {
-    name: 'Subjective Norm',
+  'Subjective Norms': {
+    name: 'Subjective Norms',
     key: 'subjective_norm',
     themeColor: '#0891b2',
     headline: 'Fostering Positive Peer Influence and Community Standards',
@@ -54,8 +54,8 @@ const CONSTRUCT_CONFIG = {
     ],
     reflectionPrompt: 'How do your peers typically react when someone is targeted online? What would make it easier for your group to speak up?'
   },
-  'Perceived Behavioral Control': {
-    name: 'Perceived Behavioral Control',
+  'Perceived Behavioural Control': {
+    name: 'Perceived Behavioural Control',
     key: 'pbc',
     themeColor: '#7c3aed',
     headline: 'Building Practical Response Skills and Digital Confidence',
@@ -73,8 +73,8 @@ const CONSTRUCT_CONFIG = {
     ],
     reflectionPrompt: 'Which response tool (screenshotting evidence, platform reporting, or contacting support) do you feel most confident using right now?'
   },
-  'Behavioral Intention': {
-    name: 'Behavioral Intention',
+  'Behavioural Intention': {
+    name: 'Behavioural Intention',
     key: 'behavioral_intention',
     themeColor: '#059669',
     headline: 'Turning Prosocial Intentions into Decisive Action',
@@ -105,9 +105,9 @@ function normalizeConstruct(raw) {
   if (!raw) return 'Attitude';
   const str = String(raw).toLowerCase().replace(/[^a-z]/g, '');
   if (str.includes('attitude')) return 'Attitude';
-  if (str.includes('norm')) return 'Subjective Norm';
-  if (str.includes('intention')) return 'Behavioral Intention';
-  if (str.includes('pbc') || str.includes('control') || str.includes('behavioral')) return 'Perceived Behavioral Control';
+  if (str.includes('norm')) return 'Subjective Norms';
+  if (str.includes('intention')) return 'Behavioural Intention';
+  if (str.includes('pbc') || str.includes('control') || str.includes('behavioral') || str.includes('behavioural')) return 'Perceived Behavioural Control';
   return 'Attitude';
 }
 
@@ -644,7 +644,7 @@ export default function Interventions() {
         <EmptyState
           icon={<Compass size={44} color="var(--color-primary)" />}
           title="Diagnostic Assessment Required"
-          description="Your personalized learning module will be tailored specifically to your diagnostic assessment results across Attitude, Subjective Norm, and Perceived Behavioral Control. Take the 10-minute assessment to unlock your personalized learning path."
+          description="Your personalized learning module will be tailored specifically to your diagnostic assessment results across Attitude, Subjective Norms, Perceived Behavioural Control, and Behavioural Intention. Take the 10-minute assessment to unlock your personalized learning path."
           actionLabel="Take Baseline Assessment"
           onAction={() => navigate('/assessment?stage=pre')}
         />

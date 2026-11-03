@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, ShieldCheck, GraduationCap } from 'lucide-react';
-import PrismaLogo from '../PrismaLogo';
 
 /**
  * AuthLayout — Prisma Authentication Frame.
  * Designed with a modern 2-column structure matching Prisma's Indigo/Teal/Violet design system:
  * - Clean Prisma surface background (#f8fafc / #f5f6fa)
- * - Top row: "← Back to Home" pill button + authentic Prisma logo & brand
+ * - Top row: Single intentional "← Back to Home" navigation option
  * - Left column:
  *    * Proactive Cyberbullying Intervention badge
  *    * Heading & description focused on Prisma's student bystander mission
@@ -22,18 +21,11 @@ export default function AuthLayout({ activeTab = 'login', children }) {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        {/* Top bar: Back to Home + Authentic Prisma Logo */}
+        {/* Top bar: Single clear navigation option (Back to Home) */}
         <header className="auth-top-bar">
           <Link to="/" className="auth-back-link" aria-label="Back to Home">
             <ArrowLeft size={16} />
             <span>Back to Home</span>
-          </Link>
-
-          <Link to="/" className="navbar-brand auth-top-brand" aria-label="Prisma Home">
-            <div className="brand-icon">
-              <PrismaLogo size={34} />
-            </div>
-            <span>Prisma</span>
           </Link>
         </header>
 

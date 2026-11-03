@@ -28,7 +28,7 @@ export default function Hero({ user }) {
       </div>
 
       <div className="hero-container">
-        {/* Left Column: Headline, Copy, CTAs, Trust Grid (Untouched original texts) */}
+        {/* Left Column: Headline, Copy, CTAs, Trust Grid */}
         <motion.div
           className="hero-content"
           initial={{ opacity: 0, y: 20 }}
@@ -45,14 +45,14 @@ export default function Hero({ user }) {
 
           {/* Headline */}
           <h1 className="hero-title">
-            Build healthier online communities{' '}
-            <span className="hero-gradient-text">through behavioural science.</span>
+            Know how to respond to{' '}
+            <span className="hero-gradient-text">cyberbullying — before it happens.</span>
           </h1>
 
           {/* Subtext */}
           <p className="hero-description">
-            Prisma helps university students understand and improve their response to
-            cyberbullying through personalised assessments and AI-guided learning modules.
+            Take a short assessment, get lessons matched to your results, and track your
+            progress over time. Built for university students. Free and private.
           </p>
 
           {/* CTAs */}

@@ -13,6 +13,7 @@ export default function Navbar() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('platform');
 
   // Monitor scroll position to apply elevated styling and shadow
   useEffect(() => {
@@ -23,6 +24,34 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Track active section on landing page
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setActiveSection('');
+      return;
+    }
+
+    const sections = ['about-prisma', 'values', 'how-it-works', 'platform'];
+    const handleSectionTracking = () => {
+      const scrollPos = window.scrollY + 140;
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          if (scrollPos >= top) {
+            setActiveSection(sectionId);
+            return;
+          }
+        }
+      }
+      setActiveSection('platform');
+    };
+
+    handleSectionTracking();
+    window.addEventListener('scroll', handleSectionTracking, { passive: true });
+    return () => window.removeEventListener('scroll', handleSectionTracking);
+  }, [location.pathname]);
 
   const [prevPath, setPrevPath] = useState(location.pathname);
   if (prevPath !== location.pathname) {
@@ -37,6 +66,7 @@ export default function Navbar() {
 
   const handleSectionScroll = (sectionId) => {
     setMobileMenuOpen(false);
+    setActiveSection(sectionId);
     if (location.pathname === '/') {
       const el = document.getElementById(sectionId);
       if (el) {
@@ -80,23 +110,23 @@ export default function Navbar() {
       {user ? (
         <nav className="navbar-nav" aria-label="Main User Navigation">
           <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <LayoutDashboard size={15} />
+            <LayoutDashboard size={18} />
             Dashboard
           </NavLink>
           <NavLink to="/assessment" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <ClipboardList size={15} />
+            <ClipboardList size={18} />
             Assessment
           </NavLink>
           <NavLink to="/interventions" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <BookOpen size={15} />
+            <BookOpen size={18} />
             Learning
           </NavLink>
           <NavLink to="/feedback" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <MessageSquare size={15} />
+            <MessageSquare size={18} />
             Feedback
           </NavLink>
           <NavLink to="/profile" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            <UserIcon size={15} />
+            <UserIcon size={18} />
             Profile
           </NavLink>
         </nav>
@@ -104,28 +134,28 @@ export default function Navbar() {
         <nav className="navbar-nav landing-nav" aria-label="Landing Page Navigation">
           <button
             type="button"
-            className="nav-link landing-nav-btn"
+            className={`nav-link landing-nav-btn ${activeSection === 'platform' ? 'active' : ''}`}
             onClick={() => handleSectionScroll('platform')}
           >
             Platform
           </button>
           <button
             type="button"
-            className="nav-link landing-nav-btn"
+            className={`nav-link landing-nav-btn ${activeSection === 'how-it-works' ? 'active' : ''}`}
             onClick={() => handleSectionScroll('how-it-works')}
           >
             How it works
           </button>
           <button
             type="button"
-            className="nav-link landing-nav-btn"
+            className={`nav-link landing-nav-btn ${activeSection === 'values' ? 'active' : ''}`}
             onClick={() => handleSectionScroll('values')}
           >
             Values
           </button>
           <button
             type="button"
-            className="nav-link landing-nav-btn"
+            className={`nav-link landing-nav-btn ${activeSection === 'about-prisma' ? 'active' : ''}`}
             onClick={() => handleSectionScroll('about-prisma')}
           >
             About
@@ -152,12 +182,12 @@ export default function Navbar() {
               <span>{user.full_name?.split(' ')[0]}</span>
             </Link>
             <button
-              className="btn btn-sm btn-danger"
+              className="btn btn-danger btn-sm"
               onClick={handleLogout}
               title="Logout session"
               style={{ padding: '0.45rem 0.65rem' }}
             >
-              <LogOut size={15} />
+              <LogOut size={16} />
             </button>
           </>
         ) : (
@@ -179,7 +209,7 @@ export default function Navbar() {
           aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={mobileMenuOpen}
         >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
@@ -188,52 +218,72 @@ export default function Navbar() {
         <div className="navbar-mobile-drawer">
           {user ? (
             <>
-              <Link to="/dashboard" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                <LayoutDashboard size={16} /> Dashboard
-              </Link>
-              <Link to="/assessment" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                <ClipboardList size={16} /> Assessment
-              </Link>
-              <Link to="/interventions" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                <BookOpen size={16} /> Learning Modules
-              </Link>
-              <Link to="/feedback" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                <MessageSquare size={16} /> Module Feedback
-              </Link>
-              <Link to="/profile" className="nav-link mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
-                <UserIcon size={16} /> User Profile
-              </Link>
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) => `nav-link mobile-nav-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <LayoutDashboard size={18} /> Dashboard
+              </NavLink>
+              <NavLink
+                to="/assessment"
+                className={({ isActive }) => `nav-link mobile-nav-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <ClipboardList size={18} /> Assessment
+              </NavLink>
+              <NavLink
+                to="/interventions"
+                className={({ isActive }) => `nav-link mobile-nav-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BookOpen size={18} /> Learning Modules
+              </NavLink>
+              <NavLink
+                to="/feedback"
+                className={({ isActive }) => `nav-link mobile-nav-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <MessageSquare size={18} /> Module Feedback
+              </NavLink>
+              <NavLink
+                to="/profile"
+                className={({ isActive }) => `nav-link mobile-nav-link ${isActive ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserIcon size={18} /> User Profile
+              </NavLink>
               <div className="mobile-divider" />
               <button className="btn btn-danger btn-sm" onClick={handleLogout}>
-                <LogOut size={15} /> Sign Out
+                <LogOut size={16} /> Sign Out
               </button>
             </>
           ) : (
             <>
               <button
                 type="button"
-                className="nav-link mobile-nav-link"
+                className={`nav-link mobile-nav-link ${activeSection === 'platform' ? 'active' : ''}`}
                 onClick={() => handleSectionScroll('platform')}
               >
-                Platform Overview
+                Platform
               </button>
               <button
                 type="button"
-                className="nav-link mobile-nav-link"
+                className={`nav-link mobile-nav-link ${activeSection === 'how-it-works' ? 'active' : ''}`}
                 onClick={() => handleSectionScroll('how-it-works')}
               >
                 How it works
               </button>
               <button
                 type="button"
-                className="nav-link mobile-nav-link"
+                className={`nav-link mobile-nav-link ${activeSection === 'values' ? 'active' : ''}`}
                 onClick={() => handleSectionScroll('values')}
               >
                 Values
               </button>
               <button
                 type="button"
-                className="nav-link mobile-nav-link"
+                className={`nav-link mobile-nav-link ${activeSection === 'about-prisma' ? 'active' : ''}`}
                 onClick={() => handleSectionScroll('about-prisma')}
               >
                 About

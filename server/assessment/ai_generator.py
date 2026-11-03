@@ -699,7 +699,7 @@ def _build_tpb_block_prompt(stage: str, profile_data: Optional[dict]) -> str:
     return f"""You are creating an assessment scenario for a university student.
 
 CRITICAL WRITING RULE — EASY & SIMPLE WORDS:
-- Use clear, simple, everyday English (grade 6-8 reading level).
+- Use clear, easy,simple, everyday English (grade 6-8 reading level).
 - DO NOT use difficult academic words or research jargon (avoid words like: "prosocial", "weaponize", "objectify", "normative", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive").
 - Questions and options must be short, clear, and easy to understand for any student on the first read.
 

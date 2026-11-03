@@ -44,7 +44,7 @@ const TPB_CONSTRUCTS = [
   {
     key: 'subjective_norm_score',
     id: 'SubjectiveNorm',
-    label: 'Peer Influence',
+    label: 'Subjective Norms',
     subLabel: 'Social Standards & Norms',
     icon: Users,
     getSimpleSummary: (score) => {
@@ -56,7 +56,7 @@ const TPB_CONSTRUCTS = [
   {
     key: 'pbc_score',
     id: 'PBC',
-    label: 'Action Confidence',
+    label: 'Perceived Behavioural Control',
     subLabel: 'Safety Tools & Control',
     icon: Shield,
     getSimpleSummary: (score) => {
@@ -68,7 +68,7 @@ const TPB_CONSTRUCTS = [
   {
     key: 'behavioral_intention_score',
     id: 'BehavioralIntention',
-    label: 'Action Intention',
+    label: 'Behavioural Intention',
     subLabel: 'Willingness to Support Peers',
     icon: Target,
     getSimpleSummary: (score) => {

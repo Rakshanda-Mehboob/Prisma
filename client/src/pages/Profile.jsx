@@ -429,7 +429,7 @@ export default function Profile() {
                 </h1>
                 <Badge variant="primary">{user?.role === 'admin' ? 'Campus Admin' : 'Student'}</Badge>
                 {user?.cms_number && (
-                  <Badge variant="secondary">CMS: {user.cms_number}</Badge>
+                  <Badge variant="secondary">SAP ID: {user.cms_number}</Badge>
                 )}
               </div>
 
@@ -633,7 +633,7 @@ export default function Profile() {
 
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label" htmlFor="edit-cms">
-                      CMS Identifier
+                      SAP ID
                     </label>
                     <input
                       id="edit-cms"
@@ -704,7 +704,7 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  {/* Student CMS Number */}
+                  {/* Student SAP ID */}
                   <div style={{ padding: '1.15rem 1.35rem', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
                     <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '0.4rem' }}>
                       Student CMS Number

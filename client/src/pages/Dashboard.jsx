@@ -17,9 +17,9 @@ import PageContainer from '../components/PageContainer';
 
 const CONSTRUCTS = [
   { key: 'attitude',             label: 'Attitude',                     color: '#4f46e5' },
-  { key: 'subjective_norm',      label: 'Subjective Norm',              color: '#0891b2' },
-  { key: 'pbc',                  label: 'Perceived Behavioral Control', color: '#7c3aed' },
-  { key: 'behavioral_intention', label: 'Behavioral Intention',         color: '#059669' },
+  { key: 'subjective_norm',      label: 'Subjective Norms',              color: '#0891b2' },
+  { key: 'pbc',                  label: 'Perceived Behavioural Control', color: '#7c3aed' },
+  { key: 'behavioral_intention', label: 'Behavioural Intention',         color: '#059669' },
 ];
 
 function ConstructScoreRow({ label, score, color, preScore, postScore }) {
@@ -130,7 +130,12 @@ export default function Dashboard() {
   const intervDone  = data?.completed_interventions ?? 0;
   const intervTotal = data?.total_interventions ?? 0;
   const postUnlocked = data?.post_unlocked ?? false;
-  const isNew = user?.login_count <= 1;
+  const currentUser = data?.user || user;
+  const rawName = (currentUser?.full_name || '').trim();
+  const welcomeName = rawName && !/^\d+$/.test(rawName)
+    ? rawName.split(' ')[0]
+    : 'Student';
+  const isNew = currentUser?.login_count <= 1;
 
   const ctaLabel = !pre ? 'Start Pre-Assessment'
     : intervDone < intervTotal ? `Resume Learning (${intervTotal - intervDone} left)`
@@ -172,12 +177,9 @@ export default function Dashboard() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <Badge variant="primary" icon={<Sparkles size={12} />}>Active Session</Badge>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
-              CMS: {user?.cms_number || 'ENROLLED'}
-            </span>
           </div>
           <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
-            {isNew ? <>👋 Welcome, {user?.full_name?.split(' ')[0]}!</> : <>👋 Welcome back, {user?.full_name?.split(' ')[0]}</>}
+            {isNew ? <>👋 Welcome, {welcomeName}!</> : <>👋 Welcome back, {welcomeName}</>}
           </h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.92rem', maxWidth: '560px', lineHeight: 1.6 }}>
             {!pre ? "Let's get started — take the Pre-Assessment to discover your personalised learning path."
