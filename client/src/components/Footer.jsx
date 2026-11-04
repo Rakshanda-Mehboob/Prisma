@@ -16,17 +16,6 @@ export default function Footer() {
             © {new Date().getFullYear()} Riphah International University
           </span>
         </div>
-
-        {/* Right: Single-line Contact Support */}
-        <div className="footer-compact-right">
-          <span className="footer-compact-label">Contact Support:</span>
-          <a
-            href="mailto:rakshandamehboob123@gmail.com"
-            className="footer-compact-email"
-          >
-            rakshandamehboob123@gmail.com
-          </a>
-        </div>
       </div>
     </footer>
   );
