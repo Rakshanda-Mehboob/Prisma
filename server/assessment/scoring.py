@@ -116,17 +116,29 @@ def calculate_scores(
 
 def calculate_overall(scores: TPBScores) -> float:
     """
-    Compute the overall composite TPB score using a weighted average.
-    Weights follow Ajzen's model where BI is the proximate predictor
-    (Attitude + SN + PBC → BI → Behavior).
+    Compute the overall composite TPB score using equal weightage (25% each).
+
+    Formula:
+        Overall Score = (Attitude + Subjective Norms + PBC + Behavioral Intention) / 4
+
+    All four TPB constructs contribute equally to the overall score.
+    Equal weighting is used because there is no statistical evidence,
+    regression analysis, or research-based validation to justify different
+    importance values for these constructs.
+
+    Example:
+        Attitude=60, SubjectiveNorm=70, PBC=80, BehavioralIntention=90
+        → (60 + 70 + 80 + 90) / 4 = 75.0
     """
-    weighted = (
-        scores.attitude * 0.22
-        + scores.subjective_norm * 0.22
-        + scores.pbc * 0.28
-        + scores.behavioral_intention * 0.28
+    return round(
+        (
+            scores.attitude
+            + scores.subjective_norm
+            + scores.pbc
+            + scores.behavioral_intention
+        ) / 4,
+        2,
     )
-    return round(weighted, 2)
 
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:

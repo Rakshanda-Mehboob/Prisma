@@ -89,10 +89,12 @@ function AssessmentResultsView({
   onStartPost,
 }) {
   const overall = activeScores.overall_score ?? Math.round(
-    ((activeScores.attitude_score ?? 0) * 0.22) +
-    ((activeScores.subjective_norm_score ?? 0) * 0.22) +
-    ((activeScores.pbc_score ?? 0) * 0.28) +
-    ((activeScores.behavioral_intention_score ?? 0) * 0.28)
+    (
+      (activeScores.attitude_score ?? 0) +
+      (activeScores.subjective_norm_score ?? 0) +
+      (activeScores.pbc_score ?? 0) +
+      (activeScores.behavioral_intention_score ?? 0)
+    ) / 4
   );
 
   const items = TPB_CONSTRUCTS.map((c) => {
@@ -135,16 +137,20 @@ function AssessmentResultsView({
 
   const hasBothAssessments = Boolean(preAssessment && postAssessment);
   const preOverall = preAssessment ? Math.round(
-    ((preAssessment.attitude_score ?? 0) * 0.22) +
-    ((preAssessment.subjective_norm_score ?? 0) * 0.22) +
-    ((preAssessment.pbc_score ?? 0) * 0.28) +
-    ((preAssessment.behavioral_intention_score ?? 0) * 0.28)
+    (
+      (preAssessment.attitude_score ?? 0) +
+      (preAssessment.subjective_norm_score ?? 0) +
+      (preAssessment.pbc_score ?? 0) +
+      (preAssessment.behavioral_intention_score ?? 0)
+    ) / 4
   ) : null;
   const postOverall = postAssessment ? Math.round(
-    ((postAssessment.attitude_score ?? 0) * 0.22) +
-    ((postAssessment.subjective_norm_score ?? 0) * 0.22) +
-    ((postAssessment.pbc_score ?? 0) * 0.28) +
-    ((postAssessment.behavioral_intention_score ?? 0) * 0.28)
+    (
+      (postAssessment.attitude_score ?? 0) +
+      (postAssessment.subjective_norm_score ?? 0) +
+      (postAssessment.pbc_score ?? 0) +
+      (postAssessment.behavioral_intention_score ?? 0)
+    ) / 4
   ) : null;
   const growthDelta = hasBothAssessments ? postOverall - preOverall : null;
 
@@ -422,15 +428,18 @@ export default function Assessment() {
   const [assessmentStatus, setAssessmentStatus] = useState(null);
   const [showHub, setShowHub] = useState(false);
 
-  // Helper to calculate composite score (used in results display)
-  const _calcOverallScore = (assessment) => {
-    if (!assessment) return 0;
-    return Math.round(
-      ((assessment.attitude_score ?? 0) * 0.22) +
-      ((assessment.subjective_norm_score ?? 0) * 0.22) +
-      ((assessment.pbc_score ?? 0) * 0.28) +
-      ((assessment.behavioral_intention_score ?? 0) * 0.28)
-    );
+  // Helper to calculate composite score (equal 25% weightage per TPB construct)
+  // Overall = (Attitude + SubjectiveNorm + PBC + BehavioralIntention) / 4
+  const _calcOverallScore = (assessment) => {
+    if (!assessment) return 0;
+    return Math.round(
+      (
+        (assessment.attitude_score ?? 0) +
+        (assessment.subjective_norm_score ?? 0) +
+        (assessment.pbc_score ?? 0) +
+        (assessment.behavioral_intention_score ?? 0)
+      ) / 4
+    );
   };
 
   // Flattened list of all questions across all 3 scenarios
