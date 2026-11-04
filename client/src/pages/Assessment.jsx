@@ -33,48 +33,44 @@ const TPB_CONSTRUCTS = [
     key: 'attitude_score',
     id: 'Attitude',
     label: 'Attitude',
-    subLabel: 'Empathy & Digital Awareness',
+    subLabel: 'How you view online behavior (harmful vs. acceptable)',
     icon: HeartHandshake,
     getSimpleSummary: (score) => {
-      if (score >= 75) return "You easily recognize how online words impact others' emotions.";
-      if (score >= 50) return "You recognize digital harm and can spot subtle teasing.";
-      return "Practice noticing how online comments affect friends emotionally.";
+      if (score >= 50) return "You recognize how hurtful online comments can be and clearly understand that cyberbullying is harmful.";
+      return "You may need more guidance on noticing how online teasing, rumors, and unkind words affect others emotionally.";
     },
   },
   {
     key: 'subjective_norm_score',
     id: 'SubjectiveNorm',
     label: 'Subjective Norms',
-    subLabel: 'Social Standards & Norms',
+    subLabel: 'What friends, classmates, and peers expect you to do',
     icon: Users,
     getSimpleSummary: (score) => {
-      if (score >= 75) return "You value respectful communities and encourage positive peers.";
-      if (score >= 50) return "You notice social pressure and are building confidence to speak up.";
-      return "Learn how your voice can set a positive tone in group chats.";
+      if (score >= 50) return "You feel positive peer support to stand up for others and help create a respectful student community.";
+      return "You may feel group pressure to stay silent, but positive peer support can make speaking up much easier.";
     },
   },
   {
     key: 'pbc_score',
     id: 'PBC',
-    label: 'Perceived Behavioural Control',
-    subLabel: 'Safety Tools & Control',
+    label: 'Perceived Behavioral Control',
+    subLabel: 'Your confidence and skills to take safe action',
     icon: Shield,
     getSimpleSummary: (score) => {
-      if (score >= 75) return "You feel confident using reporting tools and knowing how to respond.";
-      if (score >= 50) return "You know basic safety tools and can practice using them more often.";
-      return "Explore practical safety tools to handle online situations safely.";
+      if (score >= 50) return "You feel confident in your ability to step in safely, report issues, and offer help to a classmate.";
+      return "You can build more confidence and learn practical ways to safely respond when online harassment happens.";
     },
   },
   {
     key: 'behavioral_intention_score',
     id: 'BehavioralIntention',
-    label: 'Behavioural Intention',
-    subLabel: 'Willingness to Support Peers',
+    label: 'Behavioral Intention',
+    subLabel: 'Your readiness to act responsibly in future situations',
     icon: Target,
     getSimpleSummary: (score) => {
-      if (score >= 75) return "You are ready to step in and support peers when issues happen.";
-      if (score >= 50) return "You want to help; having a simple plan makes taking action easier.";
-      return "Practice small, safe bystander steps like checking in on friends.";
+      if (score >= 50) return "You are prepared to support your peers, avoid participating in harmful comments, and take positive action.";
+      return "With simple learning and practice, you can feel more prepared to support friends and take positive action.";
     },
   },
 ];
@@ -121,24 +117,17 @@ function AssessmentResultsView({
   });
 
   const getRiskAndReadiness = (score) => {
-    if (score >= 75) {
-      return {
-        rating: 'Strong Readiness',
-        risk: 'High Readiness • Low Risk',
-        simpleSummary: 'You have strong digital awareness and are well prepared to support peers online.',
-      };
-    }
     if (score >= 50) {
       return {
-        rating: 'Moderate Readiness',
-        risk: 'Moderate Readiness',
-        simpleSummary: 'You have a solid foundation with practical skills to develop in your learning modules.',
+        rating: 'High Score (50–100)',
+        risk: 'Good Readiness',
+        simpleSummary: 'You show good awareness, confidence, and readiness to handle cyberbullying situations. You understand the impact of cyberbullying and are more prepared to take positive action.',
       };
     }
     return {
-      rating: 'Building Readiness',
-      risk: 'Foundational Readiness',
-      simpleSummary: 'Your upcoming modules will guide you with simple ways to handle difficult online situations.',
+      rating: 'Low Score (0–49)',
+      risk: 'Guidance Needed',
+      simpleSummary: 'You may need more guidance and learning support to better understand cyberbullying situations and develop effective ways to respond.',
     };
   };
 
@@ -186,7 +175,7 @@ function AssessmentResultsView({
             </div>
             <h1 className="results-hero-title">Your Assessment Summary</h1>
             <p className="results-hero-subtitle">
-              A quick, student-friendly breakdown of your digital awareness and bystander readiness.
+              Your assessment result shows your current awareness, confidence, and readiness to respond to cyberbullying situations. These results help Prisma understand your learning needs and provide personalized recommendations to improve your knowledge and response skills.
             </p>
           </div>
 
@@ -274,7 +263,7 @@ function AssessmentResultsView({
         <div className="results-section-header">
           <h3 className="results-section-title">Key Behavioral Insights</h3>
           <p className="results-section-desc">
-            Your readiness score across the four core digital bystander dimensions.
+            Your awareness and readiness across the four core cyberbullying assessment areas.
           </p>
         </div>
 
@@ -307,7 +296,7 @@ function AssessmentResultsView({
                   <div className="results-card-score-row">
                     <span className="results-card-score">{item.score}%</span>
                     <span className="results-card-level">
-                      {item.score >= 75 ? 'Proficient' : item.score >= 50 ? 'Developing' : 'Foundational'}
+                      {item.score >= 50 ? 'Good Readiness' : 'Needs Support'}
                     </span>
                   </div>
 

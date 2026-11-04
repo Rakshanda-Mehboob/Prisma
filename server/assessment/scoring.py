@@ -1,5 +1,5 @@
 """
-assessment/scoring.py — Core TPB scoring engine (v1.1).
+assessment/scoring.py — Core TPB scoring engine (v2.0).
 
 Theory of Planned Behavior constructs measured:
   - Attitude (AT)                  : student's evaluation of cyberbullying as harmful/acceptable
@@ -7,14 +7,28 @@ Theory of Planned Behavior constructs measured:
   - Perceived Behavioral Control   : perceived ability to intervene, avoid, or support
   - Behavioral Intention (BI)      : stated intention to act responsibly in future situations
 
-Scoring logic (7-point Likert):
-  1. Collect selected_score (1–7) for all questions of each construct.
-  2. Average the raw scores per construct.
-  3. Normalize to 0–100 scale: normalized = ((avg - 1) / 6) * 100
-     → score of 1 (most negative) → 0
-     → score of 7 (most positive) → 100
-  4. Constructs with normalized score < WEAK_THRESHOLD (60) are flagged for intervention.
-  5. If all are strong, at least the weakest is assigned an intervention.
+Scoring model (Hidden 4-Option Scale: 0–3):
+  Every question has 4 natural-language choices mapped to internal scores 0–3:
+    0 = Strongly Disagree / Passive / Tolerating harm
+    1 = Disagree / Hesitant / Unsure
+    2 = Agree / Supportive / Constructive
+    3 = Strongly Agree / Active Upstander / Prosocial Intervention
+
+Reverse Scoring:
+  For negatively worded questions (where agreement reflects tolerating bullying):
+    Strongly Disagree → 3
+    Disagree → 2
+    Agree → 1
+    Strongly Agree → 0
+  Formula: reverse_score(score) = 3 - score.
+  This ensures higher scores always represent healthier cyberbullying attitudes and intentions.
+
+Score Normalization:
+  Normalized Score = (Obtained Score / Maximum Possible Score) * 100
+  For N questions in a construct, Maximum Possible Score = N * 3.
+  Normalized Score = (sum(scores) / (N * 3)) * 100.
+  Produces a 0–100 percentage.
+  Constructs with normalized score < WEAK_THRESHOLD (60.0%) are flagged for intervention.
 
 References:
   Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and
@@ -23,8 +37,8 @@ References:
 
 from typing import NamedTuple
 
-WEAK_THRESHOLD = 60.0  # Scores below this trigger intervention assignment
-LIKERT_MAX = 7         # 7-point scale per full TPB psychometric standard
+WEAK_THRESHOLD = 60.0       # Scores below this percentage trigger intervention assignment
+MAX_SCORE_PER_QUESTION = 3  # 4-option scale: 0, 1, 2, 3
 
 
 class TPBScores(NamedTuple):
@@ -34,19 +48,37 @@ class TPBScores(NamedTuple):
     behavioral_intention: float
 
 
-def normalize_score(raw_avg: float, max_points: int = LIKERT_MAX) -> float:
-    """Convert a 1–N Likert average to a 0–100 normalized score."""
-    return round(((raw_avg - 1) / (max_points - 1)) * 100, 2)
+def reverse_score(score: int, max_score: int = MAX_SCORE_PER_QUESTION) -> int:
+    """
+    Reverse scoring for negatively worded questions:
+      Strongly Disagree (0) -> 3
+      Disagree (1) -> 2
+      Agree (2) -> 1
+      Strongly Agree (3) -> 0
+    Formula: max_score - score
+    """
+    return max(0, min(max_score, max_score - score))
+
+
+def normalize_score(obtained: float, max_possible: float) -> float:
+    """
+    Convert obtained score and maximum possible score to a 0–100 percentage.
+    Formula: Normalized Score = (Obtained Score / Maximum Possible Score) * 100
+    """
+    if max_possible <= 0:
+        return 0.0
+    return round((obtained / max_possible) * 100, 2)
 
 
 def calculate_scores(
-    responses: list[dict],  # list of {"construct": str, "selected_score": int}
+    responses: list[dict],  # list of {"construct": str, "selected_score": int, Optional "is_reversed": bool}
 ) -> TPBScores:
     """
-    Compute per-construct normalized scores (0–100) from raw assessment responses.
+    Compute per-construct normalized scores (0–100) from 0–3 assessment responses.
+    Applies reverse scoring when a question is flagged as is_reversed/reverse_scored.
 
     Args:
-        responses: list of dicts with keys "construct" and "selected_score"
+        responses: list of dicts with keys "construct", "selected_score", and optional "is_reversed"
 
     Returns:
         TPBScores namedtuple with attitude, subjective_norm, pbc, behavioral_intention fields.
@@ -59,21 +91,26 @@ def calculate_scores(
     }
 
     for r in responses:
-        construct = r["construct"]
-        score = r["selected_score"]
+        construct = r.get("construct")
         if construct in buckets:
+            score = int(r.get("selected_score", 0))
+            is_reversed = bool(r.get("is_reversed") or r.get("reverse_scored"))
+            if is_reversed:
+                score = reverse_score(score)
             buckets[construct].append(score)
 
-    def safe_avg(scores: list[int]) -> float:
+    def calculate_construct_normalized(scores: list[int]) -> float:
         if not scores:
             return 0.0
-        return normalize_score(sum(scores) / len(scores))
+        obtained = sum(scores)
+        max_possible = len(scores) * MAX_SCORE_PER_QUESTION
+        return normalize_score(obtained, max_possible)
 
     return TPBScores(
-        attitude=safe_avg(buckets["Attitude"]),
-        subjective_norm=safe_avg(buckets["SubjectiveNorm"]),
-        pbc=safe_avg(buckets["PBC"]),
-        behavioral_intention=safe_avg(buckets["BehavioralIntention"]),
+        attitude=calculate_construct_normalized(buckets["Attitude"]),
+        subjective_norm=calculate_construct_normalized(buckets["SubjectiveNorm"]),
+        pbc=calculate_construct_normalized(buckets["PBC"]),
+        behavioral_intention=calculate_construct_normalized(buckets["BehavioralIntention"]),
     )
 
 
@@ -83,7 +120,6 @@ def calculate_overall(scores: TPBScores) -> float:
     Weights follow Ajzen's model where BI is the proximate predictor
     (Attitude + SN + PBC → BI → Behavior).
     """
-    # Weighted: BI carries highest weight as the direct intention measure
     weighted = (
         scores.attitude * 0.22
         + scores.subjective_norm * 0.22
@@ -95,11 +131,11 @@ def calculate_overall(scores: TPBScores) -> float:
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:
     """
-    Return a list of TPB construct names that fall below WEAK_THRESHOLD.
+    Return a list of TPB construct names that fall below WEAK_THRESHOLD (60.0%).
     These constructs will have interventions assigned to the student.
 
     Example:
-        scores = TPBScores(attitude=45, subjective_norm=72, pbc=38, behavioral_intention=55)
+        scores = TPBScores(attitude=45.0, subjective_norm=72.0, pbc=38.0, behavioral_intention=55.0)
         → ["Attitude", "PBC", "BehavioralIntention"]
     """
     weak = []
@@ -166,9 +202,6 @@ def generate_feedback_text(
     """
     Rule-based personalized feedback generator comparing pre vs post scores.
     Returns a list of human-readable feedback strings for the dashboard.
-
-    Reference: Theory of change messaging draws on social-cognitive theory
-    (Bandura, 1986) — positive reinforcement of behavioral change.
     """
     messages: list[str] = []
 

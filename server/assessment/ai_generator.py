@@ -174,28 +174,22 @@ SCENARIO_BLOCK_TEMPLATES = {
             "questions": [
                 {
                     "question": "How do you evaluate {actor}'s behavior in this situation?",
-                    "scale_type": "evaluation",  # Harmful ← → Helpful
+                    "scale_type": "evaluation",
                     "options": [
-                        ("Completely unacceptable — this is harmful digital behavior that causes real emotional damage.", 7),
-                        ("Clearly wrong — the behavior disrespects {target} and the broader community.", 6),
-                        ("Mostly inappropriate, though the intent may not have been malicious.", 5),
-                        ("Uncertain — it depends on context and relationships involved.", 4),
-                        ("Somewhat justified given the circumstances.", 3),
-                        ("Mostly acceptable — people sometimes react this way online.", 2),
-                        ("Completely fine — there is nothing wrong with this behavior.", 1),
+                        ("Completely unacceptable — this is harmful behavior that causes real emotional damage.", 3),
+                        ("Wrong and hurtful — it disrespects {target} and the community.", 2),
+                        ("A bit insensitive, but not necessarily meant with bad intentions.", 1),
+                        ("Completely fine — there is nothing wrong with this behavior.", 0),
                     ],
                 },
                 {
                     "question": "If you were a bystander witnessing this, how would you describe the harm caused to {target}?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Very severe — online harassment like this causes lasting psychological harm.", 7),
-                        ("Significant — this kind of behavior is genuinely damaging to wellbeing.", 6),
-                        ("Moderate — it would affect {target} but they could manage it.", 5),
-                        ("Unclear — it depends on how sensitive {target} is.", 4),
-                        ("Minor — most people would brush it off.", 3),
-                        ("Very minor — online interactions rarely cause real harm.", 2),
-                        ("Non-existent — {target} should not be affected by this.", 1),
+                        ("Very severe — online harassment causes serious psychological and emotional harm.", 3),
+                        ("Significant — it would make {target} feel anxious, excluded, and upset.", 2),
+                        ("Minor — it might be uncomfortable, but {target} should brush it off.", 1),
+                        ("No harm at all — online comments should not affect anyone.", 0),
                     ],
                 },
             ],
@@ -208,26 +202,20 @@ SCENARIO_BLOCK_TEMPLATES = {
                     "question": "What would the people who matter most to you expect you to do in this situation?",
                     "scale_type": "agreement",
                     "options": [
-                        ("They would strongly expect me to speak up or support {target} publicly or privately.", 7),
-                        ("They would expect me to take some constructive action, even if small.", 6),
-                        ("They would probably expect me to avoid the situation but not participate.", 5),
-                        ("They would be neutral — it is my personal choice.", 4),
-                        ("They might understand if I stay quiet to avoid drama.", 3),
-                        ("They might expect me to go along with the group to maintain relationships.", 2),
-                        ("They would expect me to participate along with everyone else.", 1),
+                        ("They would strongly expect me to speak up or support {target}.", 3),
+                        ("They would expect me to support {target} quietly or check in privately.", 2),
+                        ("They would expect me to stay quiet and stay out of it.", 1),
+                        ("They would expect me to join in or laugh along with the group.", 0),
                     ],
                 },
                 {
                     "question": "How do you think most responsible students in your university would respond to this situation?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Most responsible students would actively intervene or report this behavior.", 7),
-                        ("Most would privately support {target} and discourage the behavior.", 6),
-                        ("Most would stay neutral but not participate in the harmful behavior.", 5),
-                        ("Reactions would vary — some would help, some would stay silent.", 4),
-                        ("Most would be passive and avoid getting involved.", 3),
-                        ("Most would go along with the crowd to avoid standing out.", 2),
-                        ("Most would participate, as this kind of behavior is normalized in student culture.", 1),
+                        ("Most responsible students would actively step in or report this behavior.", 3),
+                        ("Most would privately support {target} and discourage the behavior.", 2),
+                        ("Most would stay passive and avoid getting involved.", 1),
+                        ("Most would participate or treat it as normal student banter.", 0),
                     ],
                 },
             ],
@@ -240,26 +228,20 @@ SCENARIO_BLOCK_TEMPLATES = {
                     "question": "How confident are you in your ability to intervene or help {target} in this situation?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Very confident — I know exactly what to do and have the skills to act safely.", 7),
-                        ("Confident — I would take action even if I wasn't sure of the perfect response.", 6),
-                        ("Somewhat confident — I would try to help but might hesitate.", 5),
-                        ("Unsure — I would want to help but wouldn't know the best approach.", 4),
-                        ("Low confidence — I feel I lack the skills or influence to make a difference.", 3),
-                        ("Very low confidence — I would probably freeze or avoid getting involved.", 2),
-                        ("No confidence — there is nothing I could effectively do.", 1),
+                        ("Very confident — I know how to step in safely and offer meaningful support.", 3),
+                        ("Confident — I would try to help even if I felt a little unsure of the perfect response.", 2),
+                        ("Unsure — I would want to help but worry about making things worse.", 1),
+                        ("Not confident at all — I feel completely powerless to do anything in this situation.", 0),
                     ],
                 },
                 {
                     "question": "How capable do you feel in reporting or escalating this situation through appropriate channels?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Fully capable — I know exactly how to report this to university authorities and document evidence.", 7),
-                        ("Capable — I would know how to find the right reporting channel and take action.", 6),
-                        ("Somewhat capable — I would try to report but might need guidance on the process.", 5),
-                        ("Uncertain — I'm not sure what reporting channels exist or how they work.", 4),
-                        ("Low capability — I don't believe reporting would make a meaningful difference.", 3),
-                        ("Very low capability — I lack knowledge about how to escalate this properly.", 2),
-                        ("Incapable — I do not feel able to report or escalate this situation.", 1),
+                        ("Fully capable — I know how to document evidence and report through proper channels.", 3),
+                        ("Capable — I could find the right channel or group admin to notify.", 2),
+                        ("Uncertain — I am not sure what reporting channels exist or how they work.", 1),
+                        ("Incapable — I do not feel able to report or believe reporting makes any difference.", 0),
                     ],
                 },
             ],
@@ -272,26 +254,20 @@ SCENARIO_BLOCK_TEMPLATES = {
                     "question": "If you were to encounter a situation like this in the next month, how likely are you to respond responsibly?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Extremely likely — I am fully committed to responding responsibly in all online interactions.", 7),
-                        ("Very likely — I intend to take responsible action when I encounter situations like this.", 6),
-                        ("Likely — I plan to respond responsibly though I may hesitate in the moment.", 5),
-                        ("Uncertain — I'm not sure how I would actually respond.", 4),
-                        ("Somewhat unlikely — I might go along with the group depending on the situation.", 3),
-                        ("Unlikely — I probably would not intervene or report in this type of situation.", 2),
-                        ("Very unlikely — I do not intend to respond differently than the majority.", 1),
+                        ("Extremely likely — I would immediately take action to support {target} and report the behavior.", 3),
+                        ("Likely — I would try to support the student or encourage others to stop.", 2),
+                        ("Unlikely — I would feel unsure but might think about helping.", 1),
+                        ("Very unlikely — I would ignore the messages because it is not my problem.", 0),
                     ],
                 },
                 {
                     "question": "How strongly do you intend to avoid participating in similar harmful online behaviors in the future?",
                     "scale_type": "agreement",
                     "options": [
-                        ("Very strongly — I am fully committed to never participating in or enabling harmful online behavior.", 7),
-                        ("Strongly — I intend to actively avoid harmful behavior and encourage others to do the same.", 6),
-                        ("Moderately — I plan to avoid participating but may not actively challenge others.", 5),
-                        ("Neutral — I haven't made a firm commitment either way.", 4),
-                        ("Somewhat weakly — it depends on the social pressure in the moment.", 3),
-                        ("Weakly — I would likely go along with the group if pressured.", 2),
-                        ("Not at all — I do not have a strong intention to change my online behavior.", 1),
+                        ("Very strongly — I actively avoid enabling, laughing at, or joining in on harmful behavior.", 3),
+                        ("Strongly — I try to keep my online interactions positive and respectful.", 2),
+                        ("Uncertain — I might go along if peer pressure in the group is strong.", 1),
+                        ("Not at all — I do not think about whether my online comments hurt others.", 0),
                     ],
                 },
             ],
@@ -588,7 +564,7 @@ SCENARIO_BLOCK_JSON_SCHEMA = {
                         "question_text": {"type": "string", "description": "A clear diagnostic question."},
                         "options": {
                             "type": "array",
-                            "description": "Exactly 7 calibrated response options (scores 7 down to 1).",
+                            "description": "Exactly 4 calibrated response options with hidden scores 0 to 3.",
                             "items": {
                                 "type": "object",
                                 "properties": {
@@ -627,12 +603,12 @@ SCENARIO_JSON_SCHEMA = {
             },
             "options": {
                 "type": "array",
-                "description": "Exactly 7 calibrated response options corresponding to scores 7 down to 1.",
+                "description": "Exactly 4 calibrated response options with hidden scores 0 to 3.",
                 "items": {
                     "type": "object",
                     "properties": {
                         "text": {"type": "string", "description": "The response option text."},
-                        "score": {"type": "integer", "description": "Calibrated integer score from 1 to 7."}
+                        "score": {"type": "integer", "description": "Hidden integer score from 0 to 3."}
                     },
                     "required": ["text", "score"],
                     "additionalProperties": False
@@ -698,10 +674,33 @@ def _build_tpb_block_prompt(stage: str, profile_data: Optional[dict]) -> str:
 
     return f"""You are creating an assessment scenario for a university student.
 
-CRITICAL WRITING RULE — EASY & SIMPLE WORDS:
-- Use clear, easy,simple, everyday English (grade 6-8 reading level).
-- DO NOT use difficult academic words or research jargon (avoid words like: "prosocial", "weaponize", "objectify", "normative", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive").
-- Questions and options must be short, clear, and easy to understand for any student on the first read.
+CRITICAL SCENARIO LANGUAGE & QUALITY RULES:
+- Generate scenarios using simple, clear, and student-friendly language.
+- Do NOT reduce the length, number of lines, or amount of information in the scenarios. Keep scenarios detailed and explainable, NOT short summaries.
+- Avoid complex vocabulary, technical terms, academic phrases, or confusing sentence structures (avoid words like: "prosocial", "weaponize", "objectify", "normative", "disseminates", "derogatory", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive").
+- The scenario should be easy for a university student to read once and understand immediately.
+- The user should be able to clearly visualize the situation in their mind while reading the scenario.
+
+SCENARIO WRITING STYLE:
+- Write like a real-life situation a university student could experience in everyday life.
+- Use natural storytelling language.
+- Include enough context: who is involved, where it happens, what action occurs, and why it matters.
+- Keep the emotional and social context clear (peer pressure, group dynamics, hesitation to speak up).
+- Avoid academic wording; use everyday language throughout.
+- EXAMPLE STYLE GUIDELINE:
+  * Instead of: "A peer disseminates derogatory comments through a digital communication channel targeting an individual's online identity."
+  * Generate: "During a university WhatsApp group discussion, one student starts sharing negative comments about another student's personal posts. Other classmates see these messages, but some students stay silent because they are unsure whether they should say something."
+
+REALISM & ASSESSMENT CALIBRATION:
+- Keep scenarios realistic and based on everyday digital experiences (social media, WhatsApp groups, online communities, gaming platforms, university interactions, etc.).
+- Do not make scenarios too obvious. The situation should require the student to think and evaluate their response.
+- Do not make scenarios extremely difficult or ambiguous.
+- Keep the same scenario complexity and assessment value, but make the wording easier to understand.
+- Maintain the psychological assessment purpose and ensure scenarios still measure TPB constructs:
+  * Attitude: How the student views the behavior — is it harmful, unacceptable, or justifiable?
+  * Subjective Norms: What close friends, batch mates, or respected peers would expect them to do.
+  * Perceived Behavioral Control (PBC): How confident and capable they feel about speaking up, helping, or reporting.
+  * Behavioral Intention: What they would realistically do in this situation in the future.
 
 CULTURAL CONTEXT — PAKISTANI / SOUTH ASIAN UNIVERSITY CAMPUS:
 - Setting: Pakistani / South Asian university campus.
@@ -733,14 +732,20 @@ TPB CONSTRUCT DEFINITIONS:
 3. PBC (Perceived Behavioral Control): How confident and capable they feel about speaking up, helping, or reporting.
 4. BehavioralIntention: What they would realistically do in this situation in the future.
 
-SCORING (7-point Likert scale per question):
-- Score 7: Highest ethical stance — active upstander, speaks up, fully committed.
-- Score 6: Constructive and supportive response with slight hesitation.
-- Score 5: Positive but cautious — helpful private support or quiet reporting.
-- Score 4: Neutral, uncertain, minds own business.
-- Score 3: Passive, minimizes the harm, rationalizing the teasing.
-- Score 2: Conforming to mean peers, low confidence to act.
-- Score 1: Endorsing harm, laughing along, full passivity.
+SCORING (Hidden 4-Option Scale: 0 to 3 per question):
+Every question must have exactly 4 natural-language answer choices with hidden scores 0, 1, 2, 3 (one of each):
+- Score 0: Strongly Disagree / Passive / Endorsing harm (e.g. "I would ignore the messages because it is not my problem.")
+- Score 1: Disagree / Hesitant / Unsure (e.g. "I would feel unsure but might think about helping.")
+- Score 2: Agree / Supportive / Constructive (e.g. "I would try to support the student or encourage others to stop.")
+- Score 3: Strongly Agree / Active Upstander / Prosocial (e.g. "I would immediately take action to support the student and report the behavior.")
+
+REVERSE SCORING:
+For negatively worded questions (e.g. statements minimizing cyberbullying), reverse scoring applies:
+- Strongly Disagree → score 3
+- Disagree → score 2
+- Agree → score 1
+- Strongly Agree → score 0
+Higher scores must ALWAYS represent healthier attitudes and upstander intentions.
 
 SCENARIO WRITING RULES:
 Write 90 to 130 words. Keep each sentence under 20 words. Include setting, trigger, harmful act, spread and reactions, impact on the target, and an open moment for a bystander. Include only information that matters. Do not state the correct action or add a moral.
@@ -758,7 +763,7 @@ REQUIREMENTS:
 - Each sentence must be under 20 words. Use simple everyday English (grade 6-8 reading level).
 - One main harm per scenario. No filler or backstory that does not affect a decision.
 - Questions: Clear, simple language, no jargon, non-judgmental.
-- Options: Exactly 7 options per question with unique scores 7, 6, 5, 4, 3, 2, 1 (one each), written in plain everyday English.
+- Options: Exactly 4 options per question with unique scores 0, 1, 2, 3 (one each), written in natural everyday English.
 - Use fictional South Asian names (e.g., Zainab, Hamza, Fatima, Bilal, Usman, Mahnoor).
 
 Return exactly 8 questions in the array: 2 Attitude, 2 SubjectiveNorm, 2 PBC, 2 BehavioralIntention.
@@ -801,10 +806,20 @@ def _build_tpb_prompt(construct: str, stage: str) -> str:
 
     guideline = construct_guidelines.get(construct, construct_guidelines["Attitude"])
 
-    return f"""You are an educational psychometrics expert designing assessment scenarios for a university-level cyberbullying intervention system based on the Theory of Planned Behavior (TPB).
+    return f"""You are an educational counselor designing assessment scenarios for a university-level cyberbullying intervention system based on the Theory of Planned Behavior (TPB).
 
 TASK:
 Generate a single, realistic, fictional cyberbullying scenario, diagnostic question, and exactly 7 calibrated response options.
+
+SCENARIO LANGUAGE & QUALITY REQUIREMENTS:
+- Generate scenarios using simple, clear, and student-friendly language that any university student can read once, understand, and visualize in their mind.
+- Do not reduce the length or amount of information in the scenarios. Keep scenarios detailed and explainable, not short summaries.
+- Avoid complex vocabulary, technical terms, academic phrases, or confusing sentence structures.
+- Write like a real-life situation a university student could experience using natural storytelling language and everyday digital contexts (social media, WhatsApp groups, Discord, university interactions).
+- Include enough context: who is involved, where it happens, what action occurs, and why it matters, keeping emotional and social context clear.
+- Example Style: Instead of "A peer disseminates derogatory comments through a digital communication channel targeting an individual's online identity", generate: "During a university WhatsApp group discussion, one student starts sharing negative comments about another student's personal posts. Other classmates see these messages, but some students stay silent because they are unsure whether they should say something."
+- Keep scenarios realistic and thoughtful—not overly obvious, nor ambiguous or extremely difficult.
+- Maintain the assessment purpose to measure TPB constructs (Attitude, Subjective Norms, PBC, Behavioral Intention).
 
 TARGET SPECIFICATIONS:
 - TPB Construct: {construct} ({guideline})
@@ -813,26 +828,25 @@ TARGET SPECIFICATIONS:
 - Safety & Content Policy: Entirely fictional scenarios. Non-graphic content. Do NOT use real people's names or real victims. Do NOT reference real-world incidents. Suitable for an educational assessment measuring behavioral decision-making.
 
 SCORING CRITERIA FOR OPTIONS:
-Each of the exactly 7 options must represent a distinct level on a 7-point Likert scale:
-- Score 7: Highest ethical stance, active upstander behavior, or maximum perceived control/intention.
-- Score 6: Constructive and supportive response with mild hesitation or moderate action.
-- Score 5: Positive but cautious stance with some action.
-- Score 4: Neutral bystander, uncertain, or passive stance avoiding involvement.
-- Score 3: Minimizing the harm, rationalizing the bullying, or low confidence to act.
-- Score 2: Conforming to harmful norms, very low confidence.
-- Score 1: Endorsing/participating in harassment, full peer conformity with bullies, or total helplessness.
+Each question must have exactly 4 natural-language answer choices with hidden scores 0 to 3:
+- Score 0: Strongly Disagree / Passive / Endorsing harm
+- Score 1: Disagree / Hesitant / Unsure
+- Score 2: Agree / Supportive / Constructive
+- Score 3: Strongly Agree / Active Upstander / Prosocial
+
+For negatively worded questions, reverse scoring applies (Strongly Disagree=3, Disagree=2, Agree=1, Strongly Agree=0).
 
 REQUIREMENTS:
-- Exactly 7 options with unique text.
-- Scores must be unique integers: 7, 6, 5, 4, 3, 2, 1 (one of each).
+- Exactly 4 options with unique text.
+- Scores must be unique integers: 0, 1, 2, 3 (one of each).
 - Return strictly valid JSON adhering to the specified schema.
 """
 
 
 def _validate_openai_scenario(data: dict) -> bool:
     """
-    Validates that OpenAI returned a complete scenario with exactly 7 unique options
-    and calibrated scores 7 through 1.
+    Validates that OpenAI returned a complete scenario with exactly 4 unique options
+    and calibrated hidden scores 0 through 3.
     """
     if not isinstance(data, dict):
         return False
@@ -844,7 +858,7 @@ def _validate_openai_scenario(data: dict) -> bool:
         return False
     if not isinstance(question_text, str) or len(question_text.strip()) < 10:
         return False
-    if not isinstance(options, list) or len(options) != 7:
+    if not isinstance(options, list) or len(options) != 4:
         return False
 
     seen_scores = set()
@@ -857,14 +871,14 @@ def _validate_openai_scenario(data: dict) -> bool:
         score = opt.get("score")
         if not isinstance(text, str) or not text.strip():
             return False
-        if not isinstance(score, int) or score not in {1, 2, 3, 4, 5, 6, 7}:
+        if not isinstance(score, int) or score not in {0, 1, 2, 3}:
             return False
         seen_scores.add(score)
         seen_texts.add(text.strip().lower())
 
-    if seen_scores != {1, 2, 3, 4, 5, 6, 7}:
+    if seen_scores != {0, 1, 2, 3}:
         return False
-    if len(seen_texts) != 7:
+    if len(seen_texts) != 4:
         return False
 
     return True
@@ -904,16 +918,16 @@ def _validate_openai_block(data: dict) -> bool:
 
         if not isinstance(question_text, str) or len(question_text.strip()) < 10:
             return False
-        if not isinstance(options, list) or len(options) != 7:
+        if not isinstance(options, list) or len(options) != 4:
             return False
 
         seen_scores = set()
         for opt in options:
             score = opt.get("score")
-            if not isinstance(score, int) or score not in {1, 2, 3, 4, 5, 6, 7}:
+            if not isinstance(score, int) or score not in {0, 1, 2, 3}:
                 return False
             seen_scores.add(score)
-        if seen_scores != {1, 2, 3, 4, 5, 6, 7}:
+        if seen_scores != {0, 1, 2, 3}:
             return False
 
     # Each construct must appear exactly twice
@@ -948,9 +962,14 @@ def _call_openai_api(prompt: str, schema: dict) -> Optional[dict]:
                 {
                     "role": "system",
                     "content": (
-                        "You are a friendly educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
-                        "Write in very simple, plain everyday English (grade 6-8 reading level). Avoid all academic and psychometric jargon. "
-                        "Every scenario must be 90 to 130 words long (target about 110 words). Keep each sentence under 20 words. "
+                        "You are an educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
+                        "Generate scenarios using simple, clear, and student-friendly language. "
+                        "Do not reduce the length, number of lines, or amount of information. Keep scenarios detailed and explainable, not short summaries. "
+                        "Avoid complex vocabulary, technical terms, or confusing sentence structures. The scenario should be easy for a student to read once and understand, and easily visualize in their mind. "
+                        "Use natural storytelling language with clear emotional and social context based on everyday digital experiences. "
+                        "Keep situations thoughtful and realistic—not too obvious, nor overly difficult or ambiguous. "
+                        "Maintain the psychological assessment purpose measuring TPB constructs (Attitude, Subjective Norms, PBC, Behavioral Intention). "
+                        "Every scenario must be 90 to 130 words long (target about 110 words). Keep each sentence clear and under 20 words. "
                         "Include all six elements in order: setting, trigger, harmful act, spread and reactions, behavioral impact on the target, and an open bystander moment."
                     ),
                 },

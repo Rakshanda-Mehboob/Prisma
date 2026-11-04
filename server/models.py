@@ -229,7 +229,7 @@ class ScenarioOption(Base):
     scenario: Mapped["Scenario"] = relationship("Scenario", back_populates="options")
 
     __table_args__ = (
-        CheckConstraint("score BETWEEN 1 AND 7", name="option_score_check"),
+        CheckConstraint("score BETWEEN 0 AND 3", name="option_score_check"),
     )
 
 
@@ -269,7 +269,7 @@ class AssessmentResponse(Base):
     scenario: Mapped["Scenario"] = relationship("Scenario", back_populates="responses")
 
     __table_args__ = (
-        CheckConstraint("selected_score BETWEEN 1 AND 7", name="response_score_check"),
+        CheckConstraint("selected_score BETWEEN 0 AND 3", name="response_score_check"),
     )
 
 

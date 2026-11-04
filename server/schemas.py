@@ -253,7 +253,7 @@ class ScenarioTemplateOut(BaseModel):
 class AssessmentResponseIn(BaseModel):
     """A single question answer submitted by the student."""
     scenario_id: int
-    selected_score: int = Field(..., ge=1, le=7)
+    selected_score: int = Field(..., ge=0, le=3)
 
 
 class AssessmentSubmitRequest(BaseModel):

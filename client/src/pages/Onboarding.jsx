@@ -23,7 +23,7 @@ import {
 const STEPS = [
   { id: 'welcome', label: 'Welcome', icon: Sparkles },
   { id: 'academic', label: 'Academic', icon: GraduationCap },
-  { id: 'living', label: 'Living', icon: Home },
+  { id: 'living', label: 'Accommodation', icon: Home },
   { id: 'digital', label: 'Digital Life', icon: Smartphone },
   { id: 'social', label: 'Community', icon: Users },
   { id: 'complete', label: 'Complete', icon: CheckCircle2 },
@@ -99,6 +99,38 @@ const INTERACTION_PARTNERS = [
   { id: 'None', label: 'None', icon: '🚫' },
 ];
 
+const UNIVERSITIES = [
+  'Air University',
+  'Allama Iqbal Open University (AIOU)',
+  'Bahria University',
+  'Capital University of Science & Technology (CUST)',
+  'COMSATS University Islamabad',
+  'FAST – National University of Computer & Emerging Sciences (FAST-NUCES)',
+  'Federal Urdu University of Arts, Sciences & Technology (FUUAST)',
+  'Foundation University Islamabad',
+  'HITEC University',
+  'Institute of Space Technology (IST)',
+  'International Islamic University Islamabad (IIUI)',
+  'National Defence University (NDU)',
+  'National Skills University (NSU)',
+  'National University of Medical Sciences (NUMS)',
+  'National University of Modern Languages (NUML)',
+  'National University of Sciences & Technology (NUST)',
+  'National University of Technology (NUTECH)',
+  'Pakistan Institute of Development Economics (PIDE)',
+  'Pakistan Institute of Engineering & Applied Sciences (PIEAS)',
+  'Pir Mehr Ali Shah Arid Agriculture University (PMAS-AAUR)',
+  'Quaid-i-Azam University (QAU)',
+  'Rawalpindi Medical University (RMU)',
+  'Rawalpindi Women University (RWU)',
+  'Riphah International University',
+  'Shaheed Zulfiqar Ali Bhutto Medical University (SZABMU)',
+  'Shifa Tameer-e-Millat University',
+  'Sir Syed CASE Institute of Technology',
+  'Virtual University of Pakistan',
+  'Other',
+];
+
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
@@ -106,12 +138,15 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uniSearch, setUniSearch] = useState('');
+  const [uniDropdownOpen, setUniDropdownOpen] = useState(false);
 
   // Profile state — all start completely empty so nothing is pre-selected
   const [profile, setProfile] = useState({
     university: user?.university || '',
     degree_program: user?.department || '',
     custom_department: '',
+    custom_university: '',
     academic_level: 'Undergraduate',
     academic_year: '1st Year',
     living_situation: user?.living_situation || '',
@@ -183,7 +218,8 @@ export default function Onboarding() {
     if (step === 1) {
       if (!profile.degree_program) return false;
       if (profile.degree_program === 'Other' && !profile.custom_department.trim()) return false;
-      return Boolean(profile.university && profile.university.trim());
+      if (profile.university === 'Other') return Boolean(profile.custom_university && profile.custom_university.trim());
+      return Boolean(profile.university && profile.university.trim() && profile.university !== 'Other');
     }
     if (step === 2) return Boolean(profile.living_situation);
     if (step === 3) return profile.platforms_used.length > 0;
@@ -202,7 +238,9 @@ export default function Onboarding() {
           : profile.degree_program;
 
         const payload = {
-          university: profile.university.trim() || 'Riphah International University',
+          university: (profile.university === 'Other'
+            ? (profile.custom_university.trim() || 'Riphah International University')
+            : (profile.university.trim() || 'Riphah International University')),
           degree_program: finalDepartment,
           faculty_department: finalDepartment,
           academic_level: profile.academic_level || 'Undergraduate',
@@ -240,7 +278,9 @@ export default function Onboarding() {
         : profile.degree_program;
 
       await authApi.submitStudentProfile({
-        university: profile.university.trim() || 'Riphah International University',
+        university: (profile.university === 'Other'
+          ? (profile.custom_university.trim() || 'Riphah International University')
+          : (profile.university.trim() || 'Riphah International University')),
         degree_program: finalDepartment,
         faculty_department: finalDepartment,
         academic_level: profile.academic_level || 'Undergraduate',
@@ -290,15 +330,11 @@ export default function Onboarding() {
               </div>
 
               <h1 className="onb-heading">
-                Welcome to Prisma! 👋
+                Welcome to Prisma
               </h1>
 
-              <p className="onb-body-text w-full" style={{ marginBottom: '1.25rem' }}>
-                Thank you for creating your account. Before starting your diagnostic assessment, we would like to understand a little about your university background and everyday digital environment.
-              </p>
-
-              <p className="onb-body-text w-full" style={{ color: 'var(--color-text-muted)', marginBottom: '2.25rem' }}>
-                These brief questions help personalize diagnostic scenarios and tailored interventions to your faculty. It takes about a minute, and you select all your answers manually.
+              <p className="onb-body-text w-full" style={{ marginBottom: '2.25rem' }}>
+                Thank you for creating your account. Before starting your assessment, answer a few quick questions about your background and digital habits. This helps personalize your assessment and interventions. It takes about a minute.
               </p>
 
               {/* Full-width Safe, Confidential & Academic Box */}
@@ -328,19 +364,87 @@ export default function Onboarding() {
                 Tell us about your university and field of study.
               </p>
 
-              {/* University / Institution */}
+              {/* University / Institution — searchable combobox */}
               <div className="form-group" style={{ marginBottom: '2rem' }}>
                 <label className="form-label" style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.65rem' }}>
                   University / Institution
                 </label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. Riphah International University"
-                  value={profile.university}
-                  onChange={(e) => set('university', e.target.value)}
-                  style={{ fontSize: '1rem', padding: '0.85rem 1.15rem', width: '100%' }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Select your University"
+                    value={
+                      profile.university && profile.university !== 'Other'
+                        ? profile.university
+                        : uniSearch
+                    }
+                    onChange={(e) => {
+                      setUniSearch(e.target.value);
+                      set('university', '');
+                      setUniDropdownOpen(true);
+                    }}
+                    onFocus={() => setUniDropdownOpen(true)}
+                    onBlur={() => setTimeout(() => setUniDropdownOpen(false), 200)}
+                    style={{ fontSize: '1rem', padding: '0.85rem 1.15rem', width: '100%', boxSizing: 'border-box' }}
+                    autoComplete="off"
+                  />
+                  {uniDropdownOpen && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-md)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+                      maxHeight: '240px', overflowY: 'auto', marginTop: '4px',
+                    }}>
+                      {UNIVERSITIES.filter((u) =>
+                        u.toLowerCase().includes(uniSearch.toLowerCase())
+                      ).map((u) => (
+                        <div
+                          key={u}
+                          onMouseDown={() => {
+                            set('university', u);
+                            setUniSearch(u === 'Other' ? '' : u);
+                            setUniDropdownOpen(false);
+                          }}
+                          style={{
+                            padding: '0.65rem 1rem',
+                            cursor: 'pointer',
+                            fontSize: '0.95rem',
+                            color: profile.university === u ? 'var(--color-primary)' : 'var(--color-text)',
+                            background: profile.university === u ? 'rgba(79,70,229,0.07)' : 'transparent',
+                            fontWeight: profile.university === u ? 600 : 400,
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-2, rgba(255,255,255,0.05))'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = profile.university === u ? 'rgba(79,70,229,0.07)' : 'transparent'; }}
+                        >
+                          {u}
+                        </div>
+                      ))}
+                      {UNIVERSITIES.filter((u) => u.toLowerCase().includes(uniSearch.toLowerCase())).length === 0 && (
+                        <div style={{ padding: '0.65rem 1rem', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+                          No matching university found
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* "Other" — reveal free-text field */}
+                {profile.university === 'Other' && (
+                  <div style={{ marginTop: '0.85rem' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Enter your University Name"
+                      value={profile.custom_university}
+                      onChange={(e) => setProfile((p) => ({ ...p, custom_university: e.target.value }))}
+                      style={{ fontSize: '1rem', padding: '0.85rem 1.15rem', width: '100%', boxSizing: 'border-box' }}
+                      autoFocus
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Department / Field of Study */}
@@ -386,7 +490,7 @@ export default function Onboarding() {
           {step === 2 && (
             <div>
               <h2 className="onb-heading">
-                Living Situation
+                Accommodation
               </h2>
               <p className="onb-body-text w-full" style={{ marginBottom: '1.75rem' }}>
                 Where do you currently reside during your university studies?

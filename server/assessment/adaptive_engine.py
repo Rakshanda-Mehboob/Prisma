@@ -255,10 +255,33 @@ def generate_with_openai(
 
     prompt = f"""You are generating an assessment for a university student.
 
-CRITICAL WRITING RULE — EASY & SIMPLE WORDS:
-- Use clear, simple, everyday English (6th to 8th grade reading level).
-- DO NOT use difficult academic words or research jargon (NEVER use words like: "prosocial", "weaponize", "objectify", "normative", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive", "dichotomy").
-- Sentences must be short, plain, and easy to read so any student understands immediately on the first read.
+CRITICAL SCENARIO LANGUAGE & QUALITY RULES:
+- Generate scenarios using simple, clear, and student-friendly language.
+- Do NOT reduce the length, number of lines, or amount of information in the scenarios. Keep scenarios detailed and explainable, NOT short summaries.
+- Avoid complex vocabulary, technical terms, academic phrases, or confusing sentence structures (NEVER use words like: "prosocial", "weaponize", "objectify", "normative", "disseminates", "derogatory", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive", "dichotomy").
+- The scenario should be easy for a university student to read once and understand immediately.
+- The user should be able to clearly visualize the situation in their mind while reading the scenario.
+
+SCENARIO WRITING STYLE:
+- Write like a real-life situation a university student could experience in everyday life.
+- Use natural storytelling language.
+- Include enough context: who is involved, where it happens, what action occurs, and why it matters.
+- Keep the emotional and social context clear (peer dynamics, group tension, hesitation to intervene).
+- Avoid academic wording; use everyday language throughout.
+- EXAMPLE STYLE GUIDELINE:
+  * Instead of: "A peer disseminates derogatory comments through a digital communication channel targeting an individual's online identity."
+  * Generate: "During a university WhatsApp group discussion, one student starts sharing negative comments about another student's personal posts. Other classmates see these messages, but some students stay silent because they are unsure whether they should say something."
+
+REALISM & ASSESSMENT CALIBRATION:
+- Keep scenarios realistic and based on everyday digital experiences (social media, WhatsApp groups, online communities, gaming platforms, university interactions, etc.).
+- Do not make scenarios too obvious. The situation should require the student to think and evaluate their response.
+- Do not make scenarios extremely difficult or ambiguous.
+- Keep the same scenario complexity and assessment value, but make the wording easier to understand.
+- Maintain the psychological assessment purpose and ensure scenarios still measure TPB constructs:
+  * Attitude: How the student views the behavior — is it harmful, mean, or just harmless fun?
+  * Subjective Norms: What close friends, batch mates, or respected peers would expect them to do.
+  * Perceived Behavioral Control (PBC): How confident and capable they feel about speaking up, helping, or reporting.
+  * Behavioral Intention: What they would realistically do in this situation.
 
 CULTURAL CONTEXT — PAKISTANI / SOUTH ASIAN UNIVERSITY CAMPUS:
 - Setting: A Pakistani / South Asian university campus.
@@ -279,8 +302,9 @@ STUDENT PROFILE (Make scenarios naturally relevant to this student):
 - Main Online Activities: {patterns}
 {prev_context}
 
-NARRATIVE COHERENCE (The scenario MUST make complete sense):
-- Tell a realistic, believable, and coherent story in 3-4 simple sentences.
+NARRATIVE COHERENCE & DETAIL:
+- Tell a realistic, believable, and coherent story in detailed sentences that build a vivid scene in the reader's mind.
+- Do NOT reduce length or omit details; keep the scenario rich and explainable, not a brief summary.
 - Do NOT randomly insert keywords into odd places. The plot must flow naturally and make sense for a student in {dept}.
 - For Computer Science / IT: A student's code is leaked and mocked in the batch WhatsApp group, or someone is blamed for a broken group project submission before the deadline.
 - For Business / Management: A teammate's presentation slides are mocked in an Instagram story, or someone is excluded from a competition team.
@@ -301,12 +325,14 @@ Cover all 4 Theory of Planned Behavior (TPB) constructs:
 - 1-2 PBC questions (How confident and capable they feel about speaking up, helping, or reporting)
 - 1-2 BehavioralIntention questions (What they would realistically do in this situation)
 
-EVERY QUESTION MUST HAVE EXACTLY 4 ANSWER OPTIONS (scored 1, 3, 5, 7):
+EVERY QUESTION MUST HAVE EXACTLY 4 ANSWER OPTIONS (scored 0, 1, 2, 3):
 Write all options in EASY, EVERYDAY WORDS:
-- Score 1 = Joins in, finds it funny, or thinks it is harmless fun
-- Score 3 = Passive bystander, ignores it, minds own business
-- Score 5 = Helpful private support, checks in on the person, or quietly reports
-- Score 7 = Active upstander, speaks up in the chat, asks poster/admin to remove it, and openly supports the peer
+- Score 0 = Strongly Disagree / Completely passive, ignores it, thinks it is not their problem
+- Score 1 = Disagree / Unsure, hesitating, low confidence
+- Score 2 = Agree / Supportive, helpful private support, checking in or encouraging others to stop
+- Score 3 = Strongly Agree / Active upstander, immediately speaks up, reports the behavior, and stands by the peer
+
+For negatively worded statements, reverse the scoring (Strongly Disagree=3, Disagree=2, Agree=1, Strongly Agree=0) so higher scores always reflect healthier, prosocial behavior.
 
 Output strictly valid JSON with this exact format:
 {{
@@ -320,10 +346,10 @@ Output strictly valid JSON with this exact format:
           "question_text": "...",
           "tpb_construct": "Attitude",
           "options": [
+            {{"text": "...", "score": 0}},
             {{"text": "...", "score": 1}},
-            {{"text": "...", "score": 3}},
-            {{"text": "...", "score": 5}},
-            {{"text": "...", "score": 7}}
+            {{"text": "...", "score": 2}},
+            {{"text": "...", "score": 3}}
           ]
         }}
       ]
@@ -340,8 +366,13 @@ Output strictly valid JSON with this exact format:
                 {
                     "role": "system",
                     "content": (
-                        "You are a friendly, student-focused educational guide creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
-                        "CRITICAL INSTRUCTION: Write in very simple, plain everyday English (grade 6-8 reading level). Avoid all academic and psychometric jargon. "
+                        "You are an educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
+                        "Generate scenarios using simple, clear, and student-friendly language. "
+                        "Do not reduce the length, number of lines, or amount of information. Keep scenarios detailed and explainable, not short summaries. "
+                        "Avoid complex vocabulary, technical terms, or confusing sentence structures. The scenario should be easy for a student to read once, understand, and visualize in their mind. "
+                        "Use natural storytelling language with clear emotional and social context based on everyday digital experiences. "
+                        "Keep situations thoughtful and realistic—not too obvious, nor overly difficult or ambiguous. "
+                        "Maintain the psychological assessment purpose measuring TPB constructs (Attitude, Subjective Norms, PBC, Behavioral Intention). "
                         "Ensure scenarios and questions make total narrative sense for the student's department and student life. "
                         "Respond ONLY with valid JSON."
                     ),
@@ -387,7 +418,7 @@ Output strictly valid JSON with this exact format:
                     opt_score = opt.get("score")
                     if not isinstance(opt_text, str) or not opt_text.strip():
                         return None
-                    if not isinstance(opt_score, int) or opt_score not in (1, 3, 5, 7):
+                    if not isinstance(opt_score, int) or opt_score not in (0, 1, 2, 3):
                         return None
                     cleaned_opts.append({"text": opt_text.strip(), "score": opt_score})
 
