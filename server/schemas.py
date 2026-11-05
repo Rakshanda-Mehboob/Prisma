@@ -64,7 +64,19 @@ class ForgotPasswordRequest(BaseModel):
 
 class ForgotPasswordResponse(BaseModel):
     message: str
+    otp: Optional[str] = None
     dev_reset_url: Optional[str] = None
+
+
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(..., min_length=6, max_length=6)
+
+
+class VerifyOTPResponse(BaseModel):
+    valid: bool
+    reset_token: str
+    message: str
 
 
 class VerifyTokenResponse(BaseModel):
@@ -74,7 +86,10 @@ class VerifyTokenResponse(BaseModel):
 
 
 class ResetPasswordRequest(BaseModel):
-    token: str = Field(..., min_length=10)
+    token: Optional[str] = None
+    reset_token: Optional[str] = None
+    email: Optional[EmailStr] = None
+    otp: Optional[str] = None
     new_password: str = Field(..., min_length=6)
     confirm_password: Optional[str] = None
 

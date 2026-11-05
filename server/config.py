@@ -72,5 +72,6 @@ SMTP_HOST: str | None = os.getenv("SMTP_HOST")
 SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER: str | None = os.getenv("SMTP_USER")
 SMTP_PASSWORD: str | None = os.getenv("SMTP_PASSWORD")
-SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@prisma-defense.edu.pk")
+EMAIL_FROM: str = os.getenv("EMAIL_FROM") or os.getenv("SMTP_FROM_EMAIL") or "noreply@prisma-defense.edu.pk"
+SMTP_FROM_EMAIL: str = EMAIL_FROM
 SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("true", "1", "yes")

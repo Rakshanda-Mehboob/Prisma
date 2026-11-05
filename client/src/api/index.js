@@ -54,8 +54,9 @@ export const authApi = {
   // Student behavioral profile (onboarding)
   submitStudentProfile: (data) => api.post('/auth/student-profile', data),
   getStudentProfile: () => api.get('/auth/student-profile'),
-  // Password Recovery
+  // Password Recovery (In-App OTP Verification Flow)
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
   verifyResetToken: (token) => api.get('/auth/verify-reset-token', { params: { token } }),
   resetPassword: (data) => api.post('/auth/reset-password', data),
 };

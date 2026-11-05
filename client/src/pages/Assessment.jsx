@@ -36,7 +36,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'How you view online behavior (harmful vs. acceptable)',
     icon: HeartHandshake,
     getSimpleSummary: (score) => {
-      if (score >= 50) return "You recognize how hurtful online comments can be and clearly understand that cyberbullying is harmful.";
+      if (score >= 60) return "You recognize how hurtful online comments can be and clearly understand that cyberbullying is harmful.";
       return "You may need more guidance on noticing how online teasing, rumors, and unkind words affect others emotionally.";
     },
   },
@@ -47,7 +47,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'What friends, classmates, and peers expect you to do',
     icon: Users,
     getSimpleSummary: (score) => {
-      if (score >= 50) return "You feel positive peer support to stand up for others and help create a respectful student community.";
+      if (score >= 60) return "You feel positive peer support to stand up for others and help create a respectful student community.";
       return "You may feel group pressure to stay silent, but positive peer support can make speaking up much easier.";
     },
   },
@@ -58,7 +58,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'Your confidence and skills to take safe action',
     icon: Shield,
     getSimpleSummary: (score) => {
-      if (score >= 50) return "You feel confident in your ability to step in safely, report issues, and offer help to a classmate.";
+      if (score >= 60) return "You feel confident in your ability to step in safely, report issues, and offer help to a classmate.";
       return "You can build more confidence and learn practical ways to safely respond when online harassment happens.";
     },
   },
@@ -69,7 +69,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'Your readiness to act responsibly in future situations',
     icon: Target,
     getSimpleSummary: (score) => {
-      if (score >= 50) return "You are prepared to support your peers, avoid participating in harmful comments, and take positive action.";
+      if (score >= 60) return "You are prepared to support your peers, avoid participating in harmful comments, and take positive action.";
       return "With simple learning and practice, you can feel more prepared to support friends and take positive action.";
     },
   },
@@ -89,12 +89,18 @@ function AssessmentResultsView({
   onStartPost,
 }) {
   const overall = activeScores.overall_score ?? Math.round(
-    (
-      (activeScores.attitude_score ?? 0) +
-      (activeScores.subjective_norm_score ?? 0) +
-      (activeScores.pbc_score ?? 0) +
-      (activeScores.behavioral_intention_score ?? 0)
-    ) / 4
+    (
+
+      (activeScores.attitude_score ?? 0) +
+
+      (activeScores.subjective_norm_score ?? 0) +
+
+      (activeScores.pbc_score ?? 0) +
+
+      (activeScores.behavioral_intention_score ?? 0)
+
+    ) / 4
+
   );
 
   const items = TPB_CONSTRUCTS.map((c) => {
@@ -119,15 +125,15 @@ function AssessmentResultsView({
   });
 
   const getRiskAndReadiness = (score) => {
-    if (score >= 50) {
+    if (score >= 60) {
       return {
-        rating: 'High Score (50–100)',
+        rating: 'High Score (60–100)',
         risk: 'Good Readiness',
         simpleSummary: 'You show good awareness, confidence, and readiness to handle cyberbullying situations. You understand the impact of cyberbullying and are more prepared to take positive action.',
       };
     }
     return {
-      rating: 'Low Score (0–49)',
+      rating: 'Low Score (0–59)',
       risk: 'Guidance Needed',
       simpleSummary: 'You may need more guidance and learning support to better understand cyberbullying situations and develop effective ways to respond.',
     };
@@ -137,20 +143,32 @@ function AssessmentResultsView({
 
   const hasBothAssessments = Boolean(preAssessment && postAssessment);
   const preOverall = preAssessment ? Math.round(
-    (
-      (preAssessment.attitude_score ?? 0) +
-      (preAssessment.subjective_norm_score ?? 0) +
-      (preAssessment.pbc_score ?? 0) +
-      (preAssessment.behavioral_intention_score ?? 0)
-    ) / 4
+    (
+
+      (preAssessment.attitude_score ?? 0) +
+
+      (preAssessment.subjective_norm_score ?? 0) +
+
+      (preAssessment.pbc_score ?? 0) +
+
+      (preAssessment.behavioral_intention_score ?? 0)
+
+    ) / 4
+
   ) : null;
   const postOverall = postAssessment ? Math.round(
-    (
-      (postAssessment.attitude_score ?? 0) +
-      (postAssessment.subjective_norm_score ?? 0) +
-      (postAssessment.pbc_score ?? 0) +
-      (postAssessment.behavioral_intention_score ?? 0)
-    ) / 4
+    (
+
+      (postAssessment.attitude_score ?? 0) +
+
+      (postAssessment.subjective_norm_score ?? 0) +
+
+      (postAssessment.pbc_score ?? 0) +
+
+      (postAssessment.behavioral_intention_score ?? 0)
+
+    ) / 4
+
   ) : null;
   const growthDelta = hasBothAssessments ? postOverall - preOverall : null;
 
@@ -302,7 +320,7 @@ function AssessmentResultsView({
                   <div className="results-card-score-row">
                     <span className="results-card-score">{item.score}%</span>
                     <span className="results-card-level">
-                      {item.score >= 50 ? 'Good Readiness' : 'Needs Support'}
+                      {item.score >= 60 ? 'Good Readiness' : 'Needs Support'}
                     </span>
                   </div>
 
@@ -428,18 +446,30 @@ export default function Assessment() {
   const [assessmentStatus, setAssessmentStatus] = useState(null);
   const [showHub, setShowHub] = useState(false);
 
-  // Helper to calculate composite score (equal 25% weightage per TPB construct)
-  // Overall = (Attitude + SubjectiveNorm + PBC + BehavioralIntention) / 4
-  const _calcOverallScore = (assessment) => {
-    if (!assessment) return 0;
-    return Math.round(
-      (
-        (assessment.attitude_score ?? 0) +
-        (assessment.subjective_norm_score ?? 0) +
-        (assessment.pbc_score ?? 0) +
-        (assessment.behavioral_intention_score ?? 0)
-      ) / 4
-    );
+  // Helper to calculate composite score (equal 25% weightage per TPB construct)
+
+  // Overall = (Attitude + SubjectiveNorm + PBC + BehavioralIntention) / 4
+
+  const _calcOverallScore = (assessment) => {
+
+    if (!assessment) return 0;
+
+    return Math.round(
+
+      (
+
+        (assessment.attitude_score ?? 0) +
+
+        (assessment.subjective_norm_score ?? 0) +
+
+        (assessment.pbc_score ?? 0) +
+
+        (assessment.behavioral_intention_score ?? 0)
+
+      ) / 4
+
+    );
+
   };
 
   // Flattened list of all questions across all 3 scenarios
