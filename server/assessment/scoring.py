@@ -39,6 +39,10 @@ from typing import NamedTuple
 
 WEAK_THRESHOLD = 60.0       # Scores below this percentage trigger intervention assignment
 MAX_SCORE_PER_QUESTION = 3  # 4-option scale: 0, 1, 2, 3
+QUESTIONS_PER_CONSTRUCT = 6  # 2 questions × 3 scenarios = 6 questions per construct
+MAX_SCORE_PER_CONSTRUCT = 18  # 6 questions × 3 max score = 18
+TOTAL_QUESTIONS = 24  # 3 scenarios × 8 questions = 24
+MAX_TOTAL_SCORE = 72  # 24 questions × 3 max score = 72
 
 
 class TPBScores(NamedTuple):
@@ -120,15 +124,7 @@ def calculate_overall(scores: TPBScores) -> float:
 
     Formula:
         Overall Score = (Attitude + Subjective Norms + PBC + Behavioral Intention) / 4
-
-    All four TPB constructs contribute equally to the overall score.
-    Equal weighting is used because there is no statistical evidence,
-    regression analysis, or research-based validation to justify different
-    importance values for these constructs.
-
-    Example:
-        Attitude=60, SubjectiveNorm=70, PBC=80, BehavioralIntention=90
-        → (60 + 70 + 80 + 90) / 4 = 75.0
+        Equivalently: (Total Adjusted Score / 72) * 100 when each construct has 6 questions.
     """
     return round(
         (
@@ -139,6 +135,32 @@ def calculate_overall(scores: TPBScores) -> float:
         ) / 4,
         2,
     )
+
+
+def calculate_total_adjusted_score(responses: list[dict]) -> int:
+    """
+    Calculate the total sum of adjusted (reverse-scored where applicable) scores.
+    Across 24 questions, range is 0 to 72.
+    """
+    total = 0
+    valid_constructs = {"Attitude", "SubjectiveNorm", "PBC", "BehavioralIntention"}
+    for r in responses:
+        construct = r.get("construct")
+        if construct in valid_constructs:
+            score = int(r.get("selected_score", 0))
+            is_reversed = bool(r.get("is_reversed") or r.get("reverse_scored"))
+            if is_reversed:
+                score = reverse_score(score)
+            total += max(0, min(MAX_SCORE_PER_QUESTION, score))
+    return total
+
+
+def calculate_overall_percentage(total_adjusted_score: int) -> float:
+    """
+    Convert total adjusted score (0–72) to percentage:
+    (Total Adjusted Score / 72) * 100
+    """
+    return normalize_score(float(total_adjusted_score), float(MAX_TOTAL_SCORE))
 
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:
