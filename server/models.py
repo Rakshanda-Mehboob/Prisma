@@ -427,6 +427,7 @@ class AssessmentQuestion(Base):
 
     # Internal metadata (NEVER exposed to student)
     tpb_construct: Mapped[str] = mapped_column(String(25), nullable=False)
+    is_reverse_scored: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Student's answer (filled during assessment)
     selected_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
