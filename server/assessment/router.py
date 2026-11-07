@@ -274,7 +274,7 @@ def submit_pre_assessment(
         enriched.append({
             "construct": q.tpb_construct,
             "selected_score": resolved_score,
-            "is_reversed": getattr(q, "is_reversed", False),
+            "is_reversed": getattr(q, "is_reverse_scored", False),
         })
 
     # Score all 4 TPB constructs
@@ -469,7 +469,7 @@ def submit_post_assessment(
         enriched.append({
             "construct": q.tpb_construct,
             "selected_score": resolved_score,
-            "is_reversed": getattr(q, "is_reversed", False),
+            "is_reversed": getattr(q, "is_reverse_scored", False),
         })
 
     scores = calculate_scores(enriched)
