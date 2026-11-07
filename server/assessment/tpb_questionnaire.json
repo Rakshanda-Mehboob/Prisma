@@ -1,0 +1,178 @@
+{
+  "scale": {
+    "options": [
+      { "value": 0, "label": "Strongly disagree" },
+      { "value": 1, "label": "Disagree" },
+      { "value": 2, "label": "Agree" },
+      { "value": 3, "label": "Strongly agree" }
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "S1",
+      "text": "Someone in your class group chat shares a video of a classmate doing something embarrassing at school. The video starts getting forwarded around and people are reacting with laughing emojis.",
+      "target_behavior": "Forwarding the embarrassing video to others in the next two weeks",
+      "items": [
+        {
+          "id": "S1_ATT_1",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Sharing a video like that is just part of having a laugh."
+        },
+        {
+          "id": "S1_ATT_2",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Forwarding the video to a few more people is pretty normal online stuff."
+        },
+        {
+          "id": "S1_SN_1",
+          "construct": "subjective_norm",
+          "subtype": "injunctive",
+          "text": "My close friends would be totally fine with me forwarding the video."
+        },
+        {
+          "id": "S1_SN_2",
+          "construct": "subjective_norm",
+          "subtype": "descriptive",
+          "text": "Most people in my year would share the video with others."
+        },
+        {
+          "id": "S1_PBC_1",
+          "construct": "perceived_behavioral_control",
+          "subtype": "ease",
+          "text": "It would be easy for me to forward the video to other people."
+        },
+        {
+          "id": "S1_PBC_2",
+          "construct": "perceived_behavioral_control",
+          "subtype": "difficulty_resisting",
+          "text": "If everyone in the chat was sharing the video, it would be hard for me to stay out of it."
+        },
+        {
+          "id": "S1_INT_1",
+          "construct": "intention",
+          "subtype": "intend",
+          "text": "I intend to share the video with others in the next two weeks."
+        },
+        {
+          "id": "S1_INT_2",
+          "construct": "intention",
+          "subtype": "plan",
+          "text": "I plan to forward the video if I come across it in the next two weeks."
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "text": "Someone creates an anonymous social media account and starts posting stories and comments about a classmate from your school. A few people from your year have started following the account and adding their own posts.",
+      "target_behavior": "Contributing posts or comments to the anonymous account in the next two weeks",
+      "items": [
+        {
+          "id": "S2_ATT_1",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Posting on an anonymous account about someone from school is just how people vent online."
+        },
+        {
+          "id": "S2_ATT_2",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Adding a comment to an account like that is a pretty casual thing to do."
+        },
+        {
+          "id": "S2_SN_1",
+          "construct": "subjective_norm",
+          "subtype": "injunctive",
+          "text": "People I look up to would be okay with me posting on a page like that."
+        },
+        {
+          "id": "S2_SN_2",
+          "construct": "subjective_norm",
+          "subtype": "descriptive",
+          "text": "Plenty of people at my school would post or comment on an account like that."
+        },
+        {
+          "id": "S2_PBC_1",
+          "construct": "perceived_behavioral_control",
+          "subtype": "ease",
+          "text": "It would be easy for me to add a post or comment to the account."
+        },
+        {
+          "id": "S2_PBC_2",
+          "construct": "perceived_behavioral_control",
+          "subtype": "difficulty_resisting",
+          "text": "If my friends were all posting on the account, it would be hard for me to stay out of it."
+        },
+        {
+          "id": "S2_INT_1",
+          "construct": "intention",
+          "subtype": "intend",
+          "text": "I intend to post or comment on the account in the next two weeks."
+        },
+        {
+          "id": "S2_INT_2",
+          "construct": "intention",
+          "subtype": "plan",
+          "text": "I plan to add something to the account if I see it in the next two weeks."
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "text": "A group of classmates creates a new online group for hanging out and making plans, but they deliberately leave one classmate out. Everyone in the group knows that person was left out on purpose.",
+      "target_behavior": "Going along with keeping the classmate out of the online group in the next two weeks",
+      "items": [
+        {
+          "id": "S3_ATT_1",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Leaving someone out of a group chat is just how friend groups work."
+        },
+        {
+          "id": "S3_ATT_2",
+          "construct": "attitude",
+          "subtype": "evaluation",
+          "text": "Keeping someone out of the group is a pretty standard thing to do."
+        },
+        {
+          "id": "S3_SN_1",
+          "construct": "subjective_norm",
+          "subtype": "injunctive",
+          "text": "My friends would be fine with me going along with leaving that person out."
+        },
+        {
+          "id": "S3_SN_2",
+          "construct": "subjective_norm",
+          "subtype": "descriptive",
+          "text": "Most people I know would just go along with keeping someone out of the group."
+        },
+        {
+          "id": "S3_PBC_1",
+          "construct": "perceived_behavioral_control",
+          "subtype": "ease",
+          "text": "It would be easy for me to just go along with keeping that person out."
+        },
+        {
+          "id": "S3_PBC_2",
+          "construct": "perceived_behavioral_control",
+          "subtype": "difficulty_resisting",
+          "text": "If everyone in the group wanted to keep that person out, it would be hard for me to stay out of it."
+        },
+        {
+          "id": "S3_INT_1",
+          "construct": "intention",
+          "subtype": "intend",
+          "text": "I intend to go along with keeping them out of the group in the next two weeks."
+        },
+        {
+          "id": "S3_INT_2",
+          "construct": "intention",
+          "subtype": "plan",
+          "text": "I plan to keep that person out of the group in the next two weeks."
+        }
+      ]
+    }
+  ]
+}
+
