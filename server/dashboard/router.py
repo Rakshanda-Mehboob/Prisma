@@ -102,7 +102,9 @@ def get_dashboard(
     total = len(progress_records)
     completed = sum(1 for p in progress_records if p.status == "completed")
     completion_pct = round((completed / total * 100) if total > 0 else 0.0, 1)
-    post_unlocked = total > 0 and completed == total
+    # Post-assessment is unlocked once pre-assessment is done and either no interventions
+    # were required (score >= 70%) or all assigned interventions are completed.
+    post_unlocked = (pre is not None) and (total == 0 or completed == total)
 
     # Personalized feedback text (only if both assessments done)
     feedback_messages: list[str] = []

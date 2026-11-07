@@ -244,9 +244,10 @@ def test_scoring_reverse_and_normalization():
     overall = calculate_overall(scores)
     assert round(overall, 1) == 75.0
 
-    # Weak construct identification: below 60% threshold
+    # Weak construct identification: below 70% threshold
     weak = identify_weak_constructs(scores)
     assert "BehavioralIntention" in weak
+    assert "PBC" in weak  # 66.67% is now below the 70% threshold
     assert "Attitude" not in weak
     assert "SubjectiveNorm" not in weak
 
@@ -257,4 +258,50 @@ def test_no_double_reverse_scoring():
     scores = calculate_scores(response)
     # selected 0, reversed = 3 - 0 = 3; normalized out of 3 = 100%
     assert scores.attitude == 100.0
+
+
+def test_weak_threshold_69_70_71_boundary_rules():
+    """
+    Test intervention rules across the 70% threshold boundary:
+    - Score < 70% (e.g. 69%): Classified as Weak and receives intervention.
+    - Score == 70%: Receives NO intervention.
+    - Score > 70% (e.g. 71%): Receives NO intervention.
+    """
+    # 1. Test score = 69% (< 70%): Must be flagged as weak
+    scores_69_single = TPBScores(attitude=69.0, subjective_norm=75.0, pbc=80.0, behavioral_intention=85.0)
+    weak_69 = identify_weak_constructs(scores_69_single)
+    assert "Attitude" in weak_69, "Score of 69% must be flagged as weak"
+    assert len(weak_69) == 1
+
+    scores_69_all = TPBScores(attitude=69.0, subjective_norm=69.0, pbc=69.0, behavioral_intention=69.0)
+    assert set(identify_weak_constructs(scores_69_all)) == {
+        "Attitude", "SubjectiveNorm", "PBC", "BehavioralIntention"
+    }, "All constructs at 69% must be flagged as weak"
+
+    # 2. Test score = 70% (== 70%): Exactly 70% must receive NO intervention
+    scores_70_single = TPBScores(attitude=70.0, subjective_norm=75.0, pbc=80.0, behavioral_intention=85.0)
+    weak_70_single = identify_weak_constructs(scores_70_single)
+    assert "Attitude" not in weak_70_single, "Score of 70% must NOT be flagged as weak"
+    assert len(weak_70_single) == 0, "When all scores >= 70%, no intervention must be assigned"
+
+    scores_70_all = TPBScores(attitude=70.0, subjective_norm=70.0, pbc=70.0, behavioral_intention=70.0)
+    weak_70_all = identify_weak_constructs(scores_70_all)
+    assert weak_70_all == [], "Exactly 70% across all constructs must receive NO intervention"
+
+    # 3. Test score = 71% (> 70%): Score above 70% must receive NO intervention
+    scores_71_single = TPBScores(attitude=71.0, subjective_norm=75.0, pbc=80.0, behavioral_intention=85.0)
+    weak_71_single = identify_weak_constructs(scores_71_single)
+    assert "Attitude" not in weak_71_single, "Score of 71% must NOT be flagged as weak"
+    assert len(weak_71_single) == 0, "When all scores >= 70%, no intervention must be assigned"
+
+    scores_71_all = TPBScores(attitude=71.0, subjective_norm=71.0, pbc=71.0, behavioral_intention=71.0)
+    assert identify_weak_constructs(scores_71_all) == [], "Scores of 71% must receive NO intervention"
+
+    # 4. Mixed boundary comparison: 69% is weak, 70% and 71% are strong
+    scores_mixed = TPBScores(attitude=69.0, subjective_norm=70.0, pbc=71.0, behavioral_intention=80.0)
+    weak_mixed = identify_weak_constructs(scores_mixed)
+    assert weak_mixed == ["Attitude"], "Only 69% should be identified as weak in mixed boundary test"
+    assert "SubjectiveNorm" not in weak_mixed, "70% must NOT be weak"
+    assert "PBC" not in weak_mixed, "71% must NOT be weak"
+
 

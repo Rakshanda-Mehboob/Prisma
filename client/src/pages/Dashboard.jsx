@@ -185,6 +185,7 @@ export default function Dashboard() {
             {!pre ? "Let's get started — take the Pre-Assessment to discover your personalised learning path."
               : intervDone < intervTotal ? 'Keep going! Complete your learning modules to unlock the Post-Assessment.'
               : post ? 'You have completed the full program. Review your progress below.'
+              : intervTotal === 0 ? 'Great score on your Pre-Assessment! No intervention required (Score ≥ 70%). You can now take the Post-Assessment.'
               : 'All modules done! You can now take the Post-Assessment.'}
           </p>
         </div>
@@ -210,7 +211,7 @@ export default function Dashboard() {
           </div>
           <div className="stat-value" style={{ color: 'var(--color-secondary)' }}>{intervDone}/{intervTotal}</div>
           <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-            {intervTotal === 0 ? 'Assigned after assessment' : `${intervTotal - intervDone} module${intervTotal - intervDone !== 1 ? 's' : ''} remaining`}
+            {!pre ? 'Assigned after assessment' : intervTotal === 0 ? 'No modules needed (Score ≥ 70%)' : `${intervTotal - intervDone} module${intervTotal - intervDone !== 1 ? 's' : ''} remaining`}
           </span>
         </div>
         <div className="stat-card">
@@ -280,7 +281,7 @@ export default function Dashboard() {
               ))}
             </div>
             <div style={{ marginTop: '1rem', fontSize: '0.76rem', color: 'var(--color-text-muted)', borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem' }}>
-              Scores below 60% are targeted for personalised learning.
+              Scores below 70% are targeted for personalised learning.
               {post && ' Delta badges show improvement since Pre-Assessment.'}
             </div>
           </Card>

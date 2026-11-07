@@ -72,7 +72,7 @@ def run_tests():
     print("\n--- 3. Testing 7-Point Likert Scoring Engine ---")
     # Simulate low Attitude (scores: 2, 2, 1, 2, 1, 2 -> avg ~1.67 -> norm ~11.1)
     # High SubjectiveNorm (scores: 6, 7, 6, 7, 6, 7 -> avg 6.5 -> norm ~91.7)
-    # Moderate PBC (scores: 4, 5, 4, 4, 5, 4 -> avg 4.33 -> norm ~55.5 -> weak (<60))
+    # Moderate PBC (scores: 4, 5, 4, 4, 5, 4 -> avg 4.33 -> norm ~55.5 -> weak (<70))
     # High BehavioralIntention (scores: 6, 6, 7, 6, 6, 7 -> avg 6.33 -> norm ~88.9)
     test_responses = []
     for s in scenarios:
@@ -95,7 +95,7 @@ def run_tests():
     print(f"PBC Score: {scores.pbc:.1f}/100")
     print(f"Behavioral Intention Score: {scores.behavioral_intention:.1f}/100")
     print(f"Composite Overall Score: {overall:.1f}/100")
-    print(f"Identified Weak Constructs (<60): {weak}")
+    print(f"Identified Weak Constructs (<70): {weak}")
 
     assert "Attitude" in weak, "Attitude should be weak"
     assert "PBC" in weak, "PBC should be weak"

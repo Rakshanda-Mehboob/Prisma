@@ -36,7 +36,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'How you view online behavior (harmful vs. acceptable)',
     icon: HeartHandshake,
     getSimpleSummary: (score) => {
-      if (score >= 60) return "You recognize how hurtful online comments can be and clearly understand that cyberbullying is harmful.";
+      if (score >= 70) return "You recognize how hurtful online comments can be and clearly understand that cyberbullying is harmful.";
       return "You may need more guidance on noticing how online teasing, rumors, and unkind words affect others emotionally.";
     },
   },
@@ -47,7 +47,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'What friends, classmates, and peers expect you to do',
     icon: Users,
     getSimpleSummary: (score) => {
-      if (score >= 60) return "You feel positive peer support to stand up for others and help create a respectful student community.";
+      if (score >= 70) return "You feel positive peer support to stand up for others and help create a respectful student community.";
       return "You may feel group pressure to stay silent, but positive peer support can make speaking up much easier.";
     },
   },
@@ -58,7 +58,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'Your confidence and skills to take safe action',
     icon: Shield,
     getSimpleSummary: (score) => {
-      if (score >= 60) return "You feel confident in your ability to step in safely, report issues, and offer help to a classmate.";
+      if (score >= 70) return "You feel confident in your ability to step in safely, report issues, and offer help to a classmate.";
       return "You can build more confidence and learn practical ways to safely respond when online harassment happens.";
     },
   },
@@ -69,7 +69,7 @@ const TPB_CONSTRUCTS = [
     subLabel: 'Your readiness to act responsibly in future situations',
     icon: Target,
     getSimpleSummary: (score) => {
-      if (score >= 60) return "You are prepared to support your peers, avoid participating in harmful comments, and take positive action.";
+      if (score >= 70) return "You are prepared to support your peers, avoid participating in harmful comments, and take positive action.";
       return "With simple learning and practice, you can feel more prepared to support friends and take positive action.";
     },
   },
@@ -88,6 +88,7 @@ function AssessmentResultsView({
   onRetake,
   onStartPost,
 }) {
+  const navigate = useNavigate();
   const overall = activeScores.overall_score ?? Math.round(
     (
 
@@ -125,15 +126,15 @@ function AssessmentResultsView({
   });
 
   const getRiskAndReadiness = (score) => {
-    if (score >= 60) {
+    if (score >= 70) {
       return {
-        rating: 'High Score (60–100)',
+        rating: 'High Score (70–100)',
         risk: 'Good Readiness',
         simpleSummary: 'You show good awareness, confidence, and readiness to handle cyberbullying situations. You understand the impact of cyberbullying and are more prepared to take positive action.',
       };
     }
     return {
-      rating: 'Low Score (0–59)',
+      rating: 'Low Score (0–69)',
       risk: 'Guidance Needed',
       simpleSummary: 'You may need more guidance and learning support to better understand cyberbullying situations and develop effective ways to respond.',
     };
@@ -222,8 +223,8 @@ function AssessmentResultsView({
                   fontWeight: 700,
                   padding: '0.15rem 0.55rem',
                   borderRadius: 'var(--radius-full)',
-                  background: overall >= 75 ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.08)',
-                  color: overall >= 75 ? 'var(--color-success)' : 'var(--color-primary)',
+                  background: overall >= 70 ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                  color: overall >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
                 }}
               >
                 {statusInfo.risk}
@@ -320,7 +321,7 @@ function AssessmentResultsView({
                   <div className="results-card-score-row">
                     <span className="results-card-score">{item.score}%</span>
                     <span className="results-card-level">
-                      {item.score >= 60 ? 'Good Readiness' : 'Needs Support'}
+                      {item.score >= 70 ? 'Good Readiness' : 'Needs Support'}
                     </span>
                   </div>
 
@@ -329,7 +330,7 @@ function AssessmentResultsView({
                       className="results-bar-fill"
                       style={{
                         width: `${item.score}%`,
-                        background: item.score >= 75 ? 'var(--color-success)' : 'var(--color-primary)',
+                        background: item.score >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
                       }}
                     />
                   </div>
@@ -343,74 +344,111 @@ function AssessmentResultsView({
       </div>
 
       {/* ── BOTTOM SECTION: Short Recommendations & Action CTA ── */}
-      <div className="results-bottom-card">
-        <div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.2rem' }}>
-            Recommended Next Steps
-          </h3>
-          <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0 }}>
-            Simple, practical guidance based on your results.
-          </p>
-        </div>
+      {(() => {
+        const weakConstructs = activeScores.weak_constructs !== undefined
+          ? activeScores.weak_constructs
+          : items.filter((i) => i.score < 70).map((i) => i.id);
+        const hasIntervention = weakConstructs && weakConstructs.length > 0;
 
-        <div className="results-actions-grid">
-          <div className="results-action-item">
-            <div className="results-action-icon">
-              <BookOpen size={17} />
-            </div>
-            <div className="results-action-content">
-              <span className="results-action-title">Targeted Learning Module</span>
-              <p className="results-action-desc">
-                Start with your recommended <strong>{focusArea.label}</strong> module to build safe bystander skills.
+        return (
+          <div className="results-bottom-card">
+            <div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.2rem' }}>
+                Recommended Next Steps
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0 }}>
+                Simple, practical guidance based on your results.
               </p>
             </div>
+
+            <div className="results-actions-grid">
+              {hasIntervention ? (
+                <div className="results-action-item">
+                  <div className="results-action-icon">
+                    <BookOpen size={17} />
+                  </div>
+                  <div className="results-action-content">
+                    <span className="results-action-title">Targeted Learning Module</span>
+                    <p className="results-action-desc">
+                      Start with your recommended <strong>{focusArea.label}</strong> module to build safe bystander skills.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="results-action-item">
+                  <div className="results-action-icon" style={{ background: 'rgba(5, 150, 105, 0.1)', color: 'var(--color-success)' }}>
+                    <CheckCircle2 size={17} />
+                  </div>
+                  <div className="results-action-content">
+                    <span className="results-action-title">No Intervention Required</span>
+                    <p className="results-action-desc">
+                      You scored 70% or higher across all constructs, demonstrating good readiness. No remedial modules are needed.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="results-action-item">
+                <div className="results-action-icon">
+                  <Shield size={17} />
+                </div>
+                <div className="results-action-content">
+                  <span className="results-action-title">Everyday Peer Support</span>
+                  <p className="results-action-desc">
+                    Pause before commenting and reach out privately to check on friends when negativity happens.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="results-cta-bar">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
+                  {stage === 'post' || postAssessment || isPostDone
+                    ? 'Ready to review your dashboard progress?'
+                    : !hasIntervention
+                    ? 'Great score! No intervention required.'
+                    : 'Ready to start your personalized modules?'}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                  {stage === 'post' || postAssessment || isPostDone
+                    ? 'Review your updated progress and badges on the dashboard.'
+                    : !hasIntervention
+                    ? 'You have demonstrated solid readiness across all areas (Score ≥ 70%). You can return to your dashboard.'
+                    : 'Modules are short, interactive, and self-paced.'}
+                </div>
+              </div>
+
+              <Button
+                variant="primary"
+                size="md"
+                iconRight={<ArrowRight size={16} />}
+                onClick={() => {
+                  if (stage === 'post' || postAssessment || isPostDone || !hasIntervention) {
+                    navigate('/dashboard');
+                  } else {
+                    onContinue();
+                  }
+                }}
+              >
+                {stage === 'post' || postAssessment || isPostDone || !hasIntervention
+                  ? 'Return to Dashboard'
+                  : 'Continue to Learning Module'}
+              </Button>
+
+              {onRetake && (
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => onRetake()}
+                >
+                  Retake Assessment
+                </Button>
+              )}
+            </div>
           </div>
-
-          <div className="results-action-item">
-            <div className="results-action-icon">
-              <Shield size={17} />
-            </div>
-            <div className="results-action-content">
-              <span className="results-action-title">Everyday Peer Support</span>
-              <p className="results-action-desc">
-                Pause before commenting and reach out privately to check on friends when negativity happens.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="results-cta-bar">
-          <div>
-            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
-              {stage === 'post' || postAssessment || isPostDone
-                ? 'Ready to review your dashboard progress?'
-                : 'Ready to start your personalized modules?'}
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-              Modules are short, interactive, and self-paced.
-            </div>
-          </div>
-
-          <Button
-            variant="primary"
-            size="md"
-            iconRight={<ArrowRight size={16} />}
-            onClick={onContinue}
-          >
-            {stage === 'post' || postAssessment || isPostDone ? 'Return to Dashboard' : 'Continue to Learning Module'}
-          </Button>
-
-          {onRetake && (
-            <Button
-              variant="outline"
-              size="md"
-              onClick={() => onRetake()}
-            >
-              Retake Assessment
-            </Button>
-          )}
-        </div>
-      </div>
+        );
+      })()}
     </motion.div>
     </PageContainer>
   );

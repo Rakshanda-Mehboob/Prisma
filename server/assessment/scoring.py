@@ -28,7 +28,7 @@ Score Normalization:
   For N questions in a construct, Maximum Possible Score = N * 3.
   Normalized Score = (sum(scores) / (N * 3)) * 100.
   Produces a 0–100 percentage.
-  Constructs with normalized score < WEAK_THRESHOLD (60.0%) are flagged for intervention.
+  Constructs with normalized score < WEAK_THRESHOLD (70.0%) are flagged for intervention.
 
 References:
   Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and
@@ -37,7 +37,7 @@ References:
 
 from typing import NamedTuple
 
-WEAK_THRESHOLD = 60.0       # Scores below this percentage trigger intervention assignment
+WEAK_THRESHOLD = 70.0       # Scores below this percentage trigger intervention assignment
 MAX_SCORE_PER_QUESTION = 3  # 4-option scale: 0, 1, 2, 3
 QUESTIONS_PER_CONSTRUCT = 6  # 2 questions × 3 scenarios = 6 questions per construct
 MAX_SCORE_PER_CONSTRUCT = 18  # 6 questions × 3 max score = 18
@@ -165,8 +165,9 @@ def calculate_overall_percentage(total_adjusted_score: int) -> float:
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:
     """
-    Return a list of TPB construct names that fall below WEAK_THRESHOLD (60.0%).
+    Return a list of TPB construct names that fall below WEAK_THRESHOLD (70.0%).
     These constructs will have interventions assigned to the student.
+    Constructs with score >= 70.0% receive NO intervention.
 
     Example:
         scores = TPBScores(attitude=45.0, subjective_norm=72.0, pbc=38.0, behavioral_intention=55.0)
@@ -182,11 +183,6 @@ def identify_weak_constructs(scores: TPBScores) -> list[str]:
     for name, score in construct_map.items():
         if score < WEAK_THRESHOLD:
             weak.append(name)
-
-    # If all constructs are strong, still assign at least the weakest one
-    if not weak:
-        weakest = min(construct_map, key=lambda k: construct_map[k])
-        weak.append(weakest)
 
     return weak
 
