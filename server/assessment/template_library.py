@@ -3,12 +3,15 @@ assessment/template_library.py — Scenario Template Library & Variations.
 
 Psychometrically validated Scenario Template Library for the Theory of Planned Behavior (TPB):
 - Measures Attitude, Subjective Norm, Perceived Behavioral Control, Behavioral Intention.
-- Contains 18 distinct scenario templates across 3 core categories:
-    1. Social Media Interaction (public feeds, confession accounts, polls, viral reels, comments)
-    2. Private Group Communication (WhatsApp batch chats, Telegram channels, Discord study servers)
-    3. University & Campus Community (group project repositories, hostel living, student societies, LMS)
-- Written in clear, simple, everyday English (grade 6-8 reading level) with authentic
-  Pakistani / South Asian university cultural context.
+- Exactly 18 distinct scenario templates across 3 core categories:
+    1. Social Media Interaction (6 templates)
+    2. Private Group Communication (6 templates)
+    3. University & Campus Community (6 templates)
+- Structure: Exactly 8 items per template (2 ATT, 2 SN, 2 PBC, 2 BI = 8 items).
+- Wording: Question-specific, natural, conversational simple English answer options.
+- No standard Likert labels (no Strongly Agree/Agree).
+- Backend numeric scoring: 0 (lowest construct level), 1 (low), 2 (higher), 3 (highest).
+- Students only receive and view option text (scores are never exposed to frontend).
 """
 
 from typing import List, Dict, Any
@@ -124,12 +127,18 @@ LIVING_SETTINGS = {
     ],
 }
 
+def make_q(text: str, construct: str, options: List[Dict[str, Any]], is_reversed: bool = False) -> Dict[str, Any]:
+    """Helper to create a question with specific natural options and backend scores."""
+    return {
+        "tpb_construct": construct,
+        "question_text": text,
+        "is_reverse_scored": is_reversed,
+        "options": options,
+    }
+
 
 SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
-    # =========================================================================
-    # CATEGORY 1: SOCIAL MEDIA INTERACTION (6 TEMPLATES)
-    # =========================================================================
-    {
+{
         "template_key": "TEMPL_SM_CONFESSION",
         "category": "social_media",
         "difficulty_level": 1,
@@ -154,66 +163,86 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about taking photos of classmates without permission and posting them on confession pages?",
-                "options": [
-                    {"text": "It is just harmless fun; confession pages are a normal part of student life.", "score": 0},
-                    {"text": "A little rude, but students should expect their pictures might be taken in public.", "score": 1},
-                    {"text": "It is wrong and hurtful because mocking someone publicly causes real embarrassment.", "score": 2},
-                    {"text": "It is completely unacceptable and a clear form of online bullying that hurts people.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "How do you think this post will affect {target_name}?",
-                "options": [
-                    {"text": "It won't affect them at all; people forget social media posts in one day.", "score": 0},
-                    {"text": "They might feel slightly embarrassed, but they should learn to brush it off.", "score": 1},
-                    {"text": "It will make them feel anxious, upset, and uncomfortable coming to campus.", "score": 2},
-                    {"text": "It will cause serious emotional distress and make them feel unsafe among their peers.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would your close friends expect you to do regarding this post?",
-                "options": [
-                    {"text": "They would expect me to laugh and tag other friends in the comments.", "score": 0},
-                    {"text": "They would expect me to just ignore it because it's none of our business.", "score": 1},
-                    {"text": "They would expect me not to like, share, or encourage the post.", "score": 2},
-                    {"text": "They would support me if I reported the post and asked the page admin to delete it.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can do something helpful in this situation?",
-                "options": [
-                    {"text": "Not confident at all — one student cannot do anything against a big campus page.", "score": 0},
-                    {"text": "A bit unsure — I worry that speaking up might turn people against me.", "score": 1},
-                    {"text": "Fairly confident — I can message {target_name} to support them and report the post on {platform}.", "score": 2},
-                    {"text": "Very confident — I can report the post, ask friends to flag it, and stand by {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you saw this post on {platform}?",
-                "options": [
-                    {"text": "Read the comments for entertainment and maybe share it with a friend.", "score": 0},
-                    {"text": "Scroll past the post without saying or doing anything.", "score": 1},
-                    {"text": "Report the post quietly and send a friendly private message to check on {target_name}.", "score": 2},
-                    {"text": "Report the post, message the page admin to take it down, and offer direct support to {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If you notice {target_name} looking quiet and sitting alone over the next few days, what will you do?",
-                "options": [
-                    {"text": "Ignore it — students need to handle their own personal issues.", "score": 0},
-                    {"text": "Feel bad for them from a distance, but do nothing.", "score": 1},
-                    {"text": "Sit with them or invite them to study together so they don't feel left out.", "score": 2},
-                    {"text": "Check in on them warmly, let them know they have friends here, and help them if needed.", "score": 3},
-                ],
-            },
+            make_q(
+                "When an anonymous confession page posts a candid picture of a student with a teasing caption, how do you view that situation?",
+                "Attitude",
+                [
+                    {"text": "It is just casual campus entertainment that people forget in a few days.", "score": 0},
+                    {"text": "It might be slightly embarrassing, but public social spaces naturally come with occasional teasing.", "score": 1},
+                    {"text": "It crosses personal boundaries because unsolicited public attention can cause genuine anxiety.", "score": 2},
+                    {"text": "It is harmful and humiliating because public ridicule on large student pages deeply affects someone's emotional safety.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How would you describe the effect of students leaving laughing emojis and tagging batchmates under such a post?",
+                "Attitude",
+                [
+                    {"text": "It is just normal social media engagement with no harmful intent.", "score": 0},
+                    {"text": "People are usually just tagging friends without thinking about the person in the picture.", "score": 1},
+                    {"text": "It turns personal discomfort into a public spectacle for the whole campus to see.", "score": 2},
+                    {"text": "It significantly amplifies the distress because each tag shows the student how widely they are being mocked.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would the classmates you spend the most time with expect you to do when a post like this appears?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to view it, laugh along, and share it into our chat group.", "score": 0},
+                    {"text": "They would expect me to just scroll past and keep our group out of the conversation.", "score": 1},
+                    {"text": "They would expect me not to comment, like, or boost the post's visibility.", "score": 2},
+                    {"text": "They would support me in reporting the post and asking the page administrator to delete it.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do respected senior students or student representatives generally treat anonymous confession pages targeting classmates?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They treat them as regular campus humor and rarely pay attention.", "score": 0},
+                    {"text": "They only get involved if the university administration issues an official warning.", "score": 1},
+                    {"text": "They generally disapprove of targeting individual students for public laughs.", "score": 2},
+                    {"text": "They actively encourage students to report harmful pages and support the targeted individuals.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you wanted to help remove this humiliating post, how confident would you feel using the platform reporting tools?",
+                "PBC",
+                [
+                    {"text": "I feel completely unsure because social media reporting rarely seems to produce results.", "score": 0},
+                    {"text": "I could find the report button, but I doubt my single report would make any difference.", "score": 1},
+                    {"text": "I know how to report privacy violations and feel reasonably capable of submitting a clear report.", "score": 2},
+                    {"text": "I am fully confident in filing a detailed harassment report and showing friends how to report it as well.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If popular students in your batch are actively enjoying and commenting on the thread, how easy is it for you to step in?",
+                "PBC",
+                [
+                    {"text": "Extremely difficult because challenging popular peers would immediately make me a target.", "score": 0},
+                    {"text": "Quite challenging because public disagreement would feel very awkward in front of the batch.", "score": 1},
+                    {"text": "I could manage to reach out to the page or the targeted student quietly away from the public comments.", "score": 2},
+                    {"text": "I feel composed enough to express disagreement or flag the post regardless of who is laughing in the comments.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you come across this confession post while browsing your feed over the next two weeks, what are you most likely to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Read through the comments out of curiosity and perhaps share it with a roommate.", "score": 0},
+                    {"text": "Ignore the post and keep scrolling without taking any action.", "score": 1},
+                    {"text": "Submit a report against the post and avoid interacting with the comment thread.", "score": 2},
+                    {"text": "Report the post to the platform and message the page admin to request its immediate removal.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you notice {target_name} looking visibly troubled or sitting by themselves on campus after this incident, what is your plan?",
+                "BehavioralIntention",
+                [
+                    {"text": "Keep to myself because personal matters are best left to the individual.", "score": 0},
+                    {"text": "Feel bad for them quietly but wait for their close friends to help them.", "score": 1},
+                    {"text": "Sit nearby or invite them into our study circle so they do not feel alienated.", "score": 2},
+                    {"text": "Check in on them directly, offer sincere reassurance, and let them know they have allies on campus.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -241,66 +270,86 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about posting polls online to make fun of a classmate's presentation?",
-                "options": [
-                    {"text": "It is just light teasing; presenting in class means you should be ready for criticism.", "score": 0},
-                    {"text": "A bit unkind, but people post silly polls all the time without bad intentions.", "score": 1},
-                    {"text": "It is mean and hurtful because it publicly shames someone who was trying their best.", "score": 2},
-                    {"text": "It is completely unacceptable bullying that discourages students from speaking up in class.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would good classmates expect you to do when this story appears?",
-                "options": [
-                    {"text": "They would expect me to vote in the poll and laugh along.", "score": 0},
-                    {"text": "They would expect me to just swipe past and stay out of it.", "score": 1},
-                    {"text": "They would expect me not to vote or encourage the poll.", "score": 2},
-                    {"text": "They would respect me for telling {initiator_name} that the poll is unfair and should be deleted.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can handle this situation in a helpful way?",
-                "options": [
-                    {"text": "Not confident — speaking up against popular students only causes problems for yourself.", "score": 0},
-                    {"text": "Unsure — I would want to help, but I wouldn't know what words to say.", "score": 1},
-                    {"text": "Fairly confident — I can privately tell {initiator_name} that the poll is hurtful.", "score": 2},
-                    {"text": "Very confident — I can ask {initiator_name} to delete the poll and send encouragement to {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you realistically do when you see this story on {platform}?",
-                "options": [
-                    {"text": "Vote in the poll to see what others chose.", "score": 0},
-                    {"text": "Swipe past without voting or reacting.", "score": 1},
-                    {"text": "Refuse to vote, and send {target_name} a nice message about their effort.", "score": 2},
-                    {"text": "Ask {initiator_name} privately to take down the poll, and compliment {target_name}'s presentation.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "In future class presentations, how do you plan to support your classmates?",
-                "options": [
-                    {"text": "Just focus on my own presentation and ignore others.", "score": 0},
-                    {"text": "Stay quiet unless the teacher asks for comments.", "score": 1},
-                    {"text": "Make sure to clap and say something encouraging when nervous presenters finish.", "score": 2},
-                    {"text": "Actively encourage nervous peers and make sure our group never tolerates making fun of mistakes.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that making fun of mistakes in class stops students from participating in the future?",
-                "options": [
-                    {"text": "No — students should just be tough and not care what others think.", "score": 0},
-                    {"text": "Maybe a little, but most students get over it quickly.", "score": 1},
-                    {"text": "Yes — fear of being made fun of makes students scared to raise their hand or present.", "score": 2},
-                    {"text": "Definitely — mockery destroys confidence and prevents students from learning properly.", "score": 3},
-                ],
-            },
+            make_q(
+                "How do you view posting online story polls or quizzes highlighting a classmate's public speaking mistakes?",
+                "Attitude",
+                [
+                    {"text": "It is fair criticism because presenting in class naturally exposes you to peer feedback.", "score": 0},
+                    {"text": "It might feel a bit harsh, but lighthearted teasing about presentations is common among students.", "score": 1},
+                    {"text": "It is unfair because academic stumbles should never be turned into public entertainment.", "score": 2},
+                    {"text": "It creates an intimidating climate that discourages students from speaking up and learning.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When students vote and leave sarcastic stickers on a presentation poll, what is your perspective on that behavior?",
+                "Attitude",
+                [
+                    {"text": "Most people are just interacting casually without meaning any real harm.", "score": 0},
+                    {"text": "It is somewhat unkind, but students should learn not to take social media polls too seriously.", "score": 1},
+                    {"text": "It deepens the embarrassment by turning a learning mistake into public humiliation.", "score": 2},
+                    {"text": "It reinforces an unhealthy culture where classmates feel pressured to laugh at someone else's misfortune.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would peers whose academic opinions you value expect you to do regarding a mocking presentation poll?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to vote in the poll to see what the percentage breakdown looks like.", "score": 0},
+                    {"text": "They would expect me to stay quiet and not get involved in course drama.", "score": 1},
+                    {"text": "They would expect me to completely avoid engaging with or validating the poll.", "score": 2},
+                    {"text": "They would expect me to tell the creator privately that mocking a presenter is out of line.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do faculty members or academic mentors view public social media polls that ridicule student presentations?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They view it as informal student banter that occurs outside classroom jurisdiction.", "score": 0},
+                    {"text": "They only care if the incident disrupts an actual in-person classroom lecture.", "score": 1},
+                    {"text": "They consider it unprofessional behavior that damages peer collaboration.", "score": 2},
+                    {"text": "They view it as unacceptable harassment that directly undermines academic confidence.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you in approaching the person who posted the poll to suggest taking it down?",
+                "PBC",
+                [
+                    {"text": "I do not feel confident at all because they would probably tell me to mind my own business.", "score": 0},
+                    {"text": "I would hesitate because speaking to them might cause awkward tension in our next class.", "score": 1},
+                    {"text": "I feel reasonably capable of sending a calm, private message asking them to reconsider.", "score": 2},
+                    {"text": "I feel confident explaining clearly why the poll is unfair and asking them to delete it immediately.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If multiple section mates are sharing the poll into small group chats, how easy is it to avoid participating?",
+                "PBC",
+                [
+                    {"text": "Very difficult because everyone in the chat expects everyone else to vote and laugh.", "score": 0},
+                    {"text": "A bit difficult because staying silent might make me look detached or overly critical.", "score": 1},
+                    {"text": "Fairly manageable because I can simply decline to vote or comment in the chat.", "score": 2},
+                    {"text": "Completely straightforward because I have no problem setting boundaries against unfair mockery.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you see a story poll targeting a classmate's presentation over the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Tap through and vote out of quick curiosity to see the results.", "score": 0},
+                    {"text": "Skip past the story without voting or responding.", "score": 1},
+                    {"text": "Refuse to vote and send an encouraging note to the presenter about their effort.", "score": 2},
+                    {"text": "Message the student who created the poll and urge them to remove it right away.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When you next interact with {target_name} in your academic course, how do you intend to act?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid bringing up anything related to the presentation to prevent awkwardness.", "score": 0},
+                    {"text": "Act normally as if nothing happened and wait for them to initiate conversation.", "score": 1},
+                    {"text": "Compliment a solid point they made in their slides to restore their academic confidence.", "score": 2},
+                    {"text": "Express clear support for their work and partner with them on upcoming class tasks.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -308,173 +357,213 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "social_media",
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["TikTok", "Instagram", "Snapchat", "Facebook"],
+        "platforms": ["TikTok", "Instagram", "Snapchat", "WhatsApp"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["video_recording", "unauthorised_filming", "viral_meme", "cafeteria_shaming"],
+        "context_tags": ["viral_video", "candid_recording", "algorithmic_spread", "reputation_damage"],
         "personalization_tags": {
             "media_type": "short_video",
-            "social_habits": ["Content creation", "Social interaction"],
+            "social_habits": ["Video platforms", "Public browsing"],
         },
         "narrative_variations": [
             (
-                "{target_name} is a student in your academic batch who regularly walks across the central university courtyard. While carrying a heavy stack of assignment files, they tripped on the concrete stairs and dropped everything. A bystander filmed the entire fall on a smartphone and uploaded the video to {platform} with dramatic sound effects. Within hours, the clip gathered dozens of shares, laughing comments, and sarcastic tags from mutual classmates. A few students who witnessed the accident in person felt uncomfortable with the humiliation online. {target_name} quickly gathered their scattered papers, left campus for the day, and deleted their profile picture. A student who helped pick up two fallen folders later saw the viral clip recommended on their feed."
+                "{target_name} was carrying a stack of course binders near the main university administrative fountain. They tripped over an uneven paver brick, scattering papers across the walkway while struggling to regain their balance. {initiator_name} captured the entire incident on video from the second-floor corridor railing and posted it to {platform} set to comedic sound effects. Within three hours, the clip gathered over six hundred views, attracting mocking commentary and duplicate reposts across student story reels. Several classmates recognized {target_name} immediately in the footage and forwarded the link into departmental discussion circles. {target_name} felt humiliated, switched their phone to airplane mode, and avoided walking through central campus paths. A peer studying on the nearby benches witnessed the fall and later saw the uploaded video circulating online."
             ),
             (
-                "{target_name} was rushing across the campus rain-soaked corridor to submit a late coursework assignment for {academic_task}. They slipped on the slick tiles, dropping their backpack and scattering their personal belongings across the floor. {initiator_name} recorded the slip from the cafeteria balcony and shared the footage across {platform} as a meme reel. The video gained traction across multiple student batches, attracting teasing emojis and mocking remarks. Several classmates watched without commenting, unsure whether speaking up would make things worse. {target_name} hurriedly retrieved their belongings, did not attend their remaining lab, and turned off incoming direct messages. A classmate standing near the noticeboard watched the recording happen in real time."
+                "During a crowded semester poster exhibition for {academic_task}, {target_name} accidentally bumped against a display board, causing the stand to collapse. The loud crash drew stares across the entire hall, leaving {target_name} visibly flustered as they hurried to pick up the materials. Someone recorded the blunder on their smartphone and uploaded the video to {platform} with an exaggerated slow-motion effect. Dozens of students commented on the clip with sarcastic jokes, resharing it to sectional groups and personal stories. While several peers found the public mockery unfair, nobody asked the poster to take down the clip. {target_name} left the exhibition early, did not return for the award ceremony, and stopped attending common project sessions. A classmate presenting at the adjacent booth saw the video gaining traction on their social feed."
             ),
             (
-                "{target_name} was practicing a speech for an upcoming student council debate near the open campus amphitheater. They stumbled over their opening lines and repeated the same sentence three times while checking their notes. A student nearby secretly recorded the rehearsal and posted the clip to {platform} with a humiliating caption. Students from competing departments reshared the video, leaving dismissive comments and mocking their public speaking capability. Some peers recognized the effort involved and felt the video was unfair, but stayed quiet. {target_name} withdrew their council nomination the following morning and sat at the back of the lecture room. A peer who supported the campaign saw the video circulating in several student group chats."
+                "{target_name} was rushing across the university sports ground to reach an afternoon lab on time when they slipped on wet turf, getting mud on their clothes. {initiator_name} filmed the moment from the stadium pavilion steps and posted the footage on {platform} with a humiliating hashtag. The video trended rapidly within the campus community, generating hundreds of likes and mocking comments from students across different faculties. Some viewers felt the recording crossed a personal boundary, but the post continued to gather traction unchecked. {target_name} spent the rest of the day hiding in an empty tutorial room and refused to attend classes for two days. A student walking behind {target_name} on the path saw the clip circulating widely before evening."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about secretly filming classmates and posting the video online for laughs?",
-                "options": [
-                    {"text": "It is normal internet humor; if you are in public, anyone can film you.", "score": 0},
-                    {"text": "A bit annoying, but viral videos happen every day and nobody means true harm.", "score": 1},
-                    {"text": "It is wrong and disrespectful — filming someone without their consent to laugh at them crosses the line.", "score": 2},
-                    {"text": "It is a serious violation of privacy that humiliates the person and makes campus feel unsafe.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do sensible students expect when a viral video makes fun of a classmate?",
-                "options": [
-                    {"text": "Most students forward it to friends because they find it funny.", "score": 0},
-                    {"text": "Most students just watch it quietly without saying anything.", "score": 1},
-                    {"text": "Sensible students refuse to like, comment, or share the video.", "score": 2},
-                    {"text": "Good peers expect people to tell {initiator_name} that posting the video went too far and should be deleted.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident do you feel that you can help get an unfair video removed?",
-                "options": [
-                    {"text": "Not confident — once a video is online, regular students can't do anything about it.", "score": 0},
-                    {"text": "A bit unsure — I know there is a report button, but I don't know if it works.", "score": 1},
-                    {"text": "Fairly confident — I know how to report privacy violations and ask friends to report it too.", "score": 2},
-                    {"text": "Very confident — I can report the video, support {target_name}, and ask {initiator_name} to take it down.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you saw this video appearing on your {platform} feed?",
-                "options": [
-                    {"text": "Watch it and maybe send it to a friend's private chat.", "score": 0},
-                    {"text": "Ignore it and keep scrolling down my feed.", "score": 1},
-                    {"text": "Report the video for bullying and avoid sharing it with anyone.", "score": 2},
-                    {"text": "Report the video, message {initiator_name} to delete it, and check in on {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "How do you plan to handle photos or videos of classmates on campus in the future?",
-                "options": [
-                    {"text": "Record whatever seems funny and post it on my private story.", "score": 0},
-                    {"text": "Avoid posting, but keep funny videos of classmates saved on my phone.", "score": 1},
-                    {"text": "Never record or share photos/videos of any student without asking them first.", "score": 2},
-                    {"text": "Always respect people's privacy and speak up if someone tries to film a classmate without consent.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that filming someone without their knowledge hurts their trust in fellow students?",
-                "options": [
-                    {"text": "No — everyone knows cameras are everywhere nowadays.", "score": 0},
-                    {"text": "Only for a little while, until another funny video comes along.", "score": 1},
-                    {"text": "Yes — it makes people anxious and constantly worried that they are being recorded.", "score": 2},
-                    {"text": "Completely — it breaks trust on campus and makes students feel guarded and uncomfortable.", "score": 3},
-                ],
-            },
+            make_q(
+                "When someone films an accidental slip or clumsy moment on campus and shares it online with funny sounds, how do you see that?",
+                "Attitude",
+                [
+                    {"text": "It is classic internet humor and anyone in that situation should just laugh it off.", "score": 0},
+                    {"text": "It can be slightly embarrassing, but recording funny public moments is normal on social media.", "score": 1},
+                    {"text": "It is an uninvited invasion of privacy that reduces a person's dignity to a quick laugh.", "score": 2},
+                    {"text": "It is unacceptable public shaming that causes genuine distress when it spreads across campus.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What do you think happens when students forward such videos into departmental WhatsApp groups and story feeds?",
+                "Attitude",
+                [
+                    {"text": "It just provides harmless entertainment between long lecture hours.", "score": 0},
+                    {"text": "It gives the clip a little more reach, but it naturally fades from memory in a day or two.", "score": 1},
+                    {"text": "It turns an everyday accident into an ongoing source of embarrassment for that student.", "score": 2},
+                    {"text": "It traps the student in an overwhelming spotlight, making them feel judged everywhere they walk on campus.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would your circle of close friends expect you to do if a candid video of a classmate starts trending?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to forward the link so we can all watch it together.", "score": 0},
+                    {"text": "They would expect me to stay quiet and not express an opinion either way.", "score": 1},
+                    {"text": "They would expect me to decline to reshare or like the video.", "score": 2},
+                    {"text": "They would expect me to report the video and stand up for the person who was recorded.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do students who are well-regarded for their maturity on campus typically respond to viral mockery videos?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They often repost them if the sound editing is humorous.", "score": 0},
+                    {"text": "They ignore them quietly without taking any public stance.", "score": 1},
+                    {"text": "They advise friends to stop circulating footage taken without someone's knowledge.", "score": 2},
+                    {"text": "They openly speak out against circulating non-consensual recordings of fellow students.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How capable do you feel of asking a classmate who posted the video to remove it from their public account?",
+                "PBC",
+                [
+                    {"text": "I feel incapable because people usually become defensive and dismissive when asked.", "score": 0},
+                    {"text": "I would feel very hesitant because I dislike getting involved in interpersonal friction.", "score": 1},
+                    {"text": "I feel reasonably able to send a private note explaining why it should be taken down.", "score": 2},
+                    {"text": "I feel fully capable of explaining why keeping the video online is harmful and requesting its deletion.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When everyone in a student group is laughing and sharing a viral clip, how difficult is it to ask them to stop forwarding it?",
+                "PBC",
+                [
+                    {"text": "Almost impossible because swimming against the entire group's mood feels overwhelming.", "score": 0},
+                    {"text": "Quite hard because nobody wants to be seen as the person who ruins the fun.", "score": 1},
+                    {"text": "Manageable if I phrase it calmly without sounding aggressive or accusatory.", "score": 2},
+                    {"text": "Entirely doable because doing the right thing matters more than temporary peer approval.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a candid video of a classmate surfaces on your feed in the next two weeks, what do you realistically intend to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Watch the video and share it with a friend who appreciates campus humor.", "score": 0},
+                    {"text": "Swipe past the video and continue browsing my feed.", "score": 1},
+                    {"text": "Report the video for harassment using the in-app reporting system.", "score": 2},
+                    {"text": "Report the content immediately and message the creator directly to take it down.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan if you cross paths with {target_name} on campus following this viral incident?",
+                "BehavioralIntention",
+                [
+                    {"text": "Look away and pretend I know nothing about the video to avoid awkwardness.", "score": 0},
+                    {"text": "Wait to see if they bring up the subject before offering any reaction.", "score": 1},
+                    {"text": "Greet them warmly and engage in regular academic conversation to normalize their day.", "score": 2},
+                    {"text": "Check in thoughtfully to see how they are holding up and assure them that sensible peers support them.", "score": 3},
+                ]
+            ),
         ],
     },
     {
         "template_key": "TEMPL_SM_LINKEDIN_DOGPILE",
         "category": "social_media",
-        "difficulty_level": 2,
+        "difficulty_level": 3,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["LinkedIn", "Twitter/X", "Instagram", "Facebook"],
-        "departments": ["Computer Science", "Software Engineering", "Business", "Engineering", "Any"],
+        "platforms": ["LinkedIn", "Twitter/X", "Facebook"],
+        "departments": ["Business", "Computer Science", "Software Engineering", "Any"],
         "livings": ["Any"],
-        "context_tags": ["professional_network", "sarcastic_comments", "achievement_shaming", "internship"],
+        "context_tags": ["professional_shaming", "career_sabotage", "comment_brigade", "public_ridicule"],
         "personalization_tags": {
-            "media_type": "professional_feed",
-            "social_habits": ["Academic communication", "Professional networking"],
+            "media_type": "professional_network",
+            "social_habits": ["Career development", "Public browsing"],
         },
         "narrative_variations": [
             (
-                "{target_name} is a final-year student who recently published a thoughtful post on {platform} celebrating an internship milestone. They shared key lessons learned from their recent project work in {academic_task}. {initiator_name} left a harsh, sarcastic comment calling the achievement exaggerated and labeling the student incompetent. Within hours, several peers from the same academic circle joined the thread, piling on with mocking replies and patronizing remarks. A few senior students saw the dispute unfold and chose not to intervene. {target_name} deleted the celebratory post, restricted their account visibility, and stopped sharing academic milestones online. A fellow classmate who worked on the same internship team saw the hostile thread expanding."
+                "{target_name} is a student who recently published a thoughtful reflective article on {platform} regarding their internship aspirations and learning goals in {academic_task}. {initiator_name}, an influential batchmate with a sizable campus following, took a screenshot of the post and reshared it publicly with sarcastic remarks belittling their professional qualifications. Within hours, multiple classmates joined the comment thread, leaving sarcastic comments questioning {target_name}'s competence and GPA. While some students recognized that public ridicule on a professional network could jeopardize career opportunities, no one defended {target_name}. {target_name} deleted their original post, deactivated their account profile, and felt anxious about attending upcoming industry networking sessions on campus. A classmate working on similar career applications noticed the hostile commentary accumulating on the public thread."
             ),
             (
-                "{target_name} shared an original research summary on {platform} regarding contemporary developments in {academic_task}. They expressed personal interest in pursuing graduate studies in the field. {initiator_name} publicly commented that the summary contained basic errors and questioned whether {target_name} understood the core concepts. Other students from competitive sections liked the critical remark and added dismissive comments beneath it. Some peers recognized the unnecessary cruelty but chose not to get involved publicly. {target_name} stopped contributing to student academic forums, avoided faculty office hours, and took down their project portfolio. A classmate who reviewed the original draft with {target_name} noticed the hostile comments accumulating."
+                "{target_name} announced their selection for a competitive student fellowship related to {academic_task} on their {platform} profile. {initiator_name} immediately commented publicly, hinting that the selection was based on favoritism rather than actual merit. Several peers from the same department chimed in with mocking comments and dismissive remarks, casting doubt on {target_name}'s achievement. A few classmates felt the commentary was malicious and damaging, but chose not to get involved to avoid professional awkwardness. {target_name} stopped posting updates about their academic milestones, withdrew from student society leadership, and avoided interacting with departmental peers. A student who also applied for the fellowship observed the coordinated negative comments on the feed."
             ),
             (
-                "{target_name} posted an update on {platform} announcing that they had been selected as a student delegate for an academic conference. They thanked their mentors and peers for encouraging their work in {academic_task}. {initiator_name} posted a public reply insinuating that {target_name} secured the spot through favoritism rather than merit. Several classmates reshared the comment, adding sarcastic remarks and fueling an uncomfortable public debate. A handful of batchmates felt the attack was unwarranted but remained on the sidelines. {target_name} turned off public comments, did not attend the delegate orientation meeting, and kept silent in class. A fellow student delegate read through the thread while preparing their conference materials."
+                "{target_name} shared a summary of a university project report for {academic_task} on {platform} to demonstrate their practical skills to prospective employers. {initiator_name} publicly pointed out minor formatting flaws and questioned the integrity of {target_name}'s findings in an aggressive tone. Other classmates piled on by liking the negative remarks and tagging recruiters sarcastically in the replies. Although some viewers realized this behavior crossed ethical professional standards, no one posted a counter-comment. {target_name} removed the portfolio link, felt deeply discouraged about applying for jobs, and skipped the departmental career fair. Another student reviewing the project saw the hostile interaction unfold in real time."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about leaving sarcastic or mocking comments on a classmate's achievements on {platform}?",
-                "options": [
-                    {"text": "It is fair — posting online means people can give you reality checks.", "score": 0},
-                    {"text": "A bit petty, but students are naturally competitive about jobs and internships.", "score": 1},
-                    {"text": "It is mean and unprofessional — tearing down a classmate's milestone crosses a clear line.", "score": 2},
-                    {"text": "It is completely wrong and toxic behavior meant to hurt a peer's confidence and career.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would respected teachers and mature peers expect when a student posts about an achievement?",
-                "options": [
-                    {"text": "They expect people to compete hard and humble anyone who shows off.", "score": 0},
-                    {"text": "They expect students to just mind their own business and stay out of it.", "score": 1},
-                    {"text": "They expect polite congratulations, encouragement, or respectful silence.", "score": 2},
-                    {"text": "They expect students to genuinely support and celebrate each other's successes.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that leaving a positive comment can help counter mean comments on {platform}?",
-                "options": [
-                    {"text": "Not confident — once people start making fun of someone, a positive comment looks silly.", "score": 0},
-                    {"text": "A bit doubtful — one nice comment usually gets drowned out.", "score": 1},
-                    {"text": "Fairly confident — leaving a supportive comment shows {target_name} that not everyone is mean.", "score": 2},
-                    {"text": "Very confident — positive comments encourage other quiet classmates to speak up and show support.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you saw classmates leaving mean comments on {target_name}'s post?",
-                "options": [
-                    {"text": "Read the drama and smile without commenting.", "score": 0},
-                    {"text": "Feel bad for {target_name}, but avoid commenting to stay out of trouble.", "score": 1},
-                    {"text": "Post a genuine message saying 'Congratulations!' and message {target_name} privately.", "score": 2},
-                    {"text": "Leave a supportive public comment praising their hard work and privately tell {initiator_name} to stop.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If a classmate is scared to share their project work because they fear being mocked, what will you tell them?",
-                "options": [
-                    {"text": "Agree with them that keeping quiet is the safest choice.", "score": 0},
-                    {"text": "Tell them it's their choice and leave it at that.", "score": 1},
-                    {"text": "Encourage them privately and tell them their work is valuable.", "score": 2},
-                    {"text": "Remind them to be proud of their effort, offer to review their work, and cheer them on.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe healthy competition among students ever excuses making fun of someone's achievements?",
-                "options": [
-                    {"text": "Yes — the job market is tough, so people need to grow thick skin.", "score": 0},
-                    {"text": "Sometimes — if someone boasts too much, they should expect some pushback.", "score": 1},
-                    {"text": "No — healthy competition means working hard on yourself, not putting others down.", "score": 2},
-                    {"text": "Never — making fun of a peer's success comes from jealousy and hurts the whole class atmosphere.", "score": 3},
-                ],
-            },
+            make_q(
+                "How do you view publicly undermining a classmate's achievements or career posts on professional platforms like LinkedIn?",
+                "Attitude",
+                [
+                    {"text": "It is just honest competition and public profiles should expect blunt feedback.", "score": 0},
+                    {"text": "It might be overly critical, but people should make sure their posts are flawless before sharing.", "score": 1},
+                    {"text": "It is mean-spirited because attacking someone's professional profile can jeopardize real opportunities.", "score": 2},
+                    {"text": "It is harmful sabotage that damages a student's career confidence and reputation in front of recruiters.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When peers coordinate sarcastic comments or tag recruiters sarcastically under a student's post, what is your view?",
+                "Attitude",
+                [
+                    {"text": "It is just witty banter that adds entertaining drama to professional feeds.", "score": 0},
+                    {"text": "It is questionable, but students will eventually learn how to handle critical attention online.", "score": 1},
+                    {"text": "It crosses ethical boundaries by turning a peer's genuine milestone into public ridicule.", "score": 2},
+                    {"text": "It represents malicious collective bullying designed to humiliate someone in their professional community.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would professors and industry mentors expect students to do when observing hostile comments under a classmate's work?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect students to stay out of it and let the individuals debate it out.", "score": 0},
+                    {"text": "They would expect students to only intervene if an official university page is tagged.", "score": 1},
+                    {"text": "They would expect students to uphold professional standards and refuse to join negative comment chains.", "score": 2},
+                    {"text": "They would expect students to post constructive, respectful comments and defend fair academic discourse.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do students with high integrity in your department handle competitive jealousy when a peer earns a milestone?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They often express their skepticism through sarcastic likes or sub-posts.", "score": 0},
+                    {"text": "They remain silent and distance themselves from celebrating the peer's achievement.", "score": 1},
+                    {"text": "They acknowledge the milestone civilly and keep any disagreements private.", "score": 2},
+                    {"text": "They congratulate the peer warmly and encourage collaborative success across the cohort.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident do you feel posting a supportive, constructive comment under a thread where influential peers are leaving negative remarks?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because the commentators would likely turn their sarcasm toward me.", "score": 0},
+                    {"text": "Uncertain because I prefer not to expose my own professional profile to campus debate.", "score": 1},
+                    {"text": "Reasonably confident that I can leave a polite, balanced remark supporting the project.", "score": 2},
+                    {"text": "Fully confident in publicly affirming the student's legitimate effort despite negative comments.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If leaving a supportive comment risks creating friction with influential classmates in your section, how do you handle that pressure?",
+                "PBC",
+                [
+                    {"text": "I prioritize protecting my own standing and stay completely silent.", "score": 0},
+                    {"text": "I feel quite conflicted and usually decide that getting involved is too risky.", "score": 1},
+                    {"text": "I find a way to offer support quietly through direct messages rather than in public.", "score": 2},
+                    {"text": "I maintain my principles because unfair public sabotage should not be allowed to go unchallenged.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you see a classmate being targeted by negative comments on a professional network in the coming weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Read the arguments for entertainment without adding anything.", "score": 0},
+                    {"text": "Keep moving past the post to avoid getting involved.", "score": 1},
+                    {"text": "Reach out privately to the student to validate their work and express encouragement.", "score": 2},
+                    {"text": "Leave a positive, professional comment endorsing their effort and flag abusive replies.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for collaborating with {target_name} on future academic or professional projects?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid working with them in case their controversial reputation brings unwanted attention.", "score": 0},
+                    {"text": "Only work with them if assigned by the course professor.", "score": 1},
+                    {"text": "Be fully open to partnering with them based on their actual merits and dedication.", "score": 2},
+                    {"text": "Actively invite them into project teams to ensure they have fair, supportive opportunities to excel.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -485,83 +574,103 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "platforms": ["Instagram", "Facebook", "Twitter/X", "WhatsApp"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["lecture_hall", "candid_photo", "viral_meme", "class_group"],
+        "context_tags": ["meme_culture", "unauthorized_photo", "social_exclusion", "casual_mockery"],
         "personalization_tags": {
-            "media_type": "meme_format",
+            "media_type": "meme_page",
             "social_habits": ["Meme sharing", "Social interaction"],
         },
         "narrative_variations": [
             (
-                "{target_name} is an undergraduate student who frequently studies in the quiet corners of the campus library. During a long revision marathon for {academic_task}, they rested their head on their desk and fell asleep. {initiator_name} snapped a close-up photo and turned it into a viral meme circulated widely on {platform}. By evening, the meme was reshared across multiple section groups with laughing emojis and sarcastic captions. A few students thought the meme went too far, but nobody suggested deleting it. {target_name} stopped studying in the library, deactivated their social media profiles, and avoided group study tables. A student who shared a desk with {target_name} that afternoon opened the forwarded meme in a group."
+                "{target_name} was sitting in the university central cafeteria engrossed in their notes for {academic_task}, unconsciously resting their head on their hand with an exhausted expression. A student at a nearby table snapped an unauthorized photo and edited it into a template meme comparing them to an unhappy cartoon character. The meme was posted on an unofficial campus meme account on {platform} and rapidly gained hundreds of likes and humorous resharing. Many classmates tagged each other in the comments, treating the image as harmless campus entertainment. {target_name} discovered the post through a mutual acquaintance, felt deeply self-conscious, and started avoiding public study spaces. A classmate who often studies in the same cafeteria noticed the post circulating through batch networks."
             ),
             (
-                "{target_name} was reviewing lecture notes on a cafeteria bench while having lunch between consecutive classes. They accidentally spilled water on their assignment folder and scrambled to save the handwritten pages. A student sitting across recorded the clumsy moment and posted a sticker pack on {platform} ridiculing their reaction. The sticker pack was adopted across departmental chats, with peers using it to respond to unrelated messages. Some students found the joke repetitive and mean-spirited, yet continued using the app normally. {target_name} stopped bringing physical notes to campus, isolated themselves during breaks, and walked away from conversations. A classmate who witnessed the original spill saw the sticker being used in their batch group."
+                "During a lengthy departmental seminar for {academic_task}, {target_name} yawned visibly while sitting in the front row of the lecture hall. Someone in the back row captured the moment with a phone camera, paired it with a sarcastic caption mocking their interest in the course, and published it on a student meme page on {platform}. The post earned dozens of laughing reactions and was reshared across multiple section group stories. Several classmates enjoyed the humor without considering the personal embarrassment it created for {target_name}. {target_name} stopped sitting near the front, avoided asking questions during lectures, and felt judged by peers. A student seated across the aisle recognized the photo angle and realized who took it."
             ),
             (
-                "{target_name} was carrying experimental equipment across the engineering corridor for an afternoon lab in {academic_task}. An awkwardly shaped cardboard box slipped from their hands, tumbling loudly across the polished corridor floor. {initiator_name} took a photo of the scattered mess and posted it on {platform} with a derogatory caption questioning their capability. The picture received dozens of sarcastic comments, and students began referencing it in hallway conversations. A few classmates helped gather the items but did not challenge the post online. {target_name} stopped volunteering for lab demonstrations, walked with their head down, and left immediately after practicals. A lab assistant who witnessed the incident saw the photo trending in the campus chat."
+                "{target_name} was waiting under the campus rain shelter wearing mismatched rain boots during a heavy downpour before their {academic_task} laboratory. An anonymous peer photographed their footwear from a distance and created a viral meme page post on {platform} ridiculing their fashion choices. The image circulated widely through campus student channels, prompting sarcastic remarks and joke votes on student stories. Although some peers felt uncomfortable with turning a classmate into a meme, no one requested the page admin to take down the image. {target_name} felt humiliated, discarded the boots, and stopped socializing with classmates between lecture hours. A friend waiting at the same shelter saw the meme trend online later that evening."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about turning candid pictures of classmates into meme stickers without asking?",
-                "options": [
-                    {"text": "It is completely fine — memes are just student humor and nobody means any harm.", "score": 0},
-                    {"text": "A bit annoying for the person, but it usually blows over in a few days.", "score": 1},
-                    {"text": "It is wrong — making fun of a classmate's picture without their permission is hurtful.", "score": 2},
-                    {"text": "It is completely unacceptable and disrespectful to turn a peer into a joke for cheap laughs.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would your circle of friends expect you to do when this meme appears in a chat?",
-                "options": [
-                    {"text": "Forward it with laughing emojis and tag other classmates.", "score": 0},
-                    {"text": "Look at it without forwarding or commenting.", "score": 1},
-                    {"text": "Refuse to share it and tell friends not to forward it.", "score": 2},
-                    {"text": "Say clearly in the chat that making stickers out of classmates is not cool.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that speaking up against a meme can stop people from sharing it?",
-                "options": [
-                    {"text": "Not confident — once people find something funny, nobody listens if you complain.", "score": 0},
-                    {"text": "Unsure — I might be called someone who can't take a joke.", "score": 1},
-                    {"text": "Fairly confident — reminding friends that it hurts their feelings usually makes them stop.", "score": 2},
-                    {"text": "Very confident — speaking up calmly reminds people of common decency and stops the trend.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do when this meme appears on {platform} or in WhatsApp?",
-                "options": [
-                    {"text": "Save the sticker to use in chats with other friends.", "score": 0},
-                    {"text": "Look at the meme and ignore the conversation.", "score": 1},
-                    {"text": "Don't share it, and send a private message to check on {target_name}.", "score": 2},
-                    {"text": "Ask the person who made it to delete it, and let {target_name} know you support them.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If someone in your study circle wants to make a meme out of another student's photo, what will you say?",
-                "options": [
-                    {"text": "Help them come up with funny captions for it.", "score": 0},
-                    {"text": "Stay quiet and let them do what they want.", "score": 1},
-                    {"text": "Tell them privately that making memes of classmates is hurtful.", "score": 2},
-                    {"text": "Tell them clearly not to do it because we shouldn't make fun of our own batch mates.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that 'it was just a joke' makes it okay to hurt someone's feelings?",
-                "options": [
-                    {"text": "Yes — if nobody intended harm, the person shouldn't complain.", "score": 0},
-                    {"text": "Mostly yes — people are sometimes too sensitive about jokes.", "score": 1},
-                    {"text": "No — calling it a joke doesn't take away the embarrassment and hurt it causes.", "score": 2},
-                    {"text": "Never — hiding behind 'it's just a joke' is an excuse that normalizes online teasing.", "score": 3},
-                ],
-            },
+            make_q(
+                "How do you view taking unapproved photos of tired or off-guard classmates and turning them into campus memes?",
+                "Attitude",
+                [
+                    {"text": "It is light student fun; creating memes about everyday campus life is completely normal.", "score": 0},
+                    {"text": "It might be slightly impolite, but people who appear in memes should take it as a compliment.", "score": 1},
+                    {"text": "It is insensitive because using someone's image without permission can cause lasting self-consciousness.", "score": 2},
+                    {"text": "It is disrespectful and dehumanizing to convert a fellow student into a public punchline for social media clout.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your perspective on students commenting and tagging friends under unauthorized memes of classmates?",
+                "Attitude",
+                [
+                    {"text": "Tagging friends is just routine browsing behavior that requires no second thought.", "score": 0},
+                    {"text": "It is slightly inconsiderate, but students rarely consider the emotional impact on the person pictured.", "score": 1},
+                    {"text": "It directly sustains the mockery by pushing the image onto more feeds across campus.", "score": 2},
+                    {"text": "It actively deepens the harm by showing the targeted student that their embarrassment is being celebrated.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would peers whose respect you value expect you to do when an unauthorized meme of a classmate appears?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to hit like and drop a laughing sticker in the comments.", "score": 0},
+                    {"text": "They would expect me to view it silently and move along.", "score": 1},
+                    {"text": "They would expect me to refrain from resharing or adding reactions to the post.", "score": 2},
+                    {"text": "They would expect me to ask the meme page admin to remove the photo of our classmate.", "score": 3},
+                ]
+            ),
+            make_q(
+                "In your student batch, how do thoughtful students generally treat memes that target recognizable individuals?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They treat all campus memes as harmless comedy regardless of who is depicted.", "score": 0},
+                    {"text": "They only object if the meme targets someone from their immediate inner circle.", "score": 1},
+                    {"text": "They quietly recognize that personal memes cross ethical boundaries.", "score": 2},
+                    {"text": "They set a positive example by encouraging peers not to treat fellow students as joke material.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can message a campus meme page administrator to request deleting a photo of a student?",
+                "PBC",
+                [
+                    {"text": "I have zero confidence because meme page admins usually ignore polite requests.", "score": 0},
+                    {"text": "I feel reluctant because drawing attention to myself might make me the subject of the next meme.", "score": 1},
+                    {"text": "I feel reasonably capable of sending a courteous request explaining the privacy concern.", "score": 2},
+                    {"text": "I feel completely confident in firmly pointing out the privacy violation and demanding its deletion.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When a humorous meme about a classmate is circulating in your section chat, how easily can you choose not to share it onward?",
+                "PBC",
+                [
+                    {"text": "Difficult because passing on funny images is the default habit in our group.", "score": 0},
+                    {"text": "A bit tempting because joining in the laughter makes group conversations livelier.", "score": 1},
+                    {"text": "Easy enough because I can choose not to hit forward or comment.", "score": 2},
+                    {"text": "Completely natural because I respect my classmates' dignity more than quick jokes.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If an unauthorized meme of a classmate lands on your social feed in the next two weeks, what will you realistically do?",
+                "BehavioralIntention",
+                [
+                    {"text": "React with a laugh and tag a friend who studies in that department.", "score": 0},
+                    {"text": "Look at the meme and scroll past without doing anything.", "score": 1},
+                    {"text": "Report the post for using someone's personal image without consent.", "score": 2},
+                    {"text": "Report the post and privately alert {target_name} with supportive words.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan if you see {target_name} studying alone in the cafeteria after their photo was made into a meme?",
+                "BehavioralIntention",
+                [
+                    {"text": "Sit somewhere else to avoid drawing attention to the awkward situation.", "score": 0},
+                    {"text": "Observe from a distance and hope they feel better soon.", "score": 1},
+                    {"text": "Sit at the same table and share a pleasant, ordinary conversation.", "score": 2},
+                    {"text": "Join them warmly, make sure they feel included, and let them know that good peers respect them.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -589,73 +698,89 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about making a fake account or parody profile of a student?",
-                "options": [
-                    {"text": "It is just funny campus drama; it's fun to watch.", "score": 0},
-                    {"text": "Not very polite, but fake profiles happen on social media all the time.", "score": 1},
-                    {"text": "It is completely wrong — making a fake profile can ruin someone's reputation.", "score": 2},
-                    {"text": "It is an unacceptable and dangerous act of harassment that can cause severe harm to a student.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would good peers and teachers expect when a fake student account is discovered?",
-                "options": [
-                    {"text": "Most students follow the account to see what crazy thing it posts next.", "score": 0},
-                    {"text": "People just watch silently until someone in authority notices.", "score": 1},
-                    {"text": "Responsible students report the account immediately for impersonation.", "score": 2},
-                    {"text": "Good peers alert {target_name} right away and collectively report the fake profile to get it banned.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can help {target_name} get a fake account removed on {platform}?",
-                "options": [
-                    {"text": "Not confident — social media platforms never respond to student reports.", "score": 0},
-                    {"text": "A bit unsure — I wouldn't know the exact reporting steps.", "score": 1},
-                    {"text": "Fairly confident — I can guide {target_name} on how to report impersonation with their student ID.", "score": 2},
-                    {"text": "Very confident — I can report it, help {target_name} report it, and ask our batch to flag it too.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "If classmates mistakenly think the fake account is real, how confident are you that you can clear things up?",
-                "options": [
-                    {"text": "Not confident — once rumors start, people believe whatever they want.", "score": 0},
-                    {"text": "A bit hesitant — explaining things might drag me into unwanted drama.", "score": 1},
-                    {"text": "Fairly confident — I can tell our batch group that the account is fake.", "score": 2},
-                    {"text": "Very confident — I can post an alert in our class groups to make sure everyone knows it's an imposter.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you do the moment you find this fake account on {platform}?",
-                "options": [
-                    {"text": "Follow the account and read its posts out of curiosity.", "score": 0},
-                    {"text": "Do nothing and see how long it stays online.", "score": 1},
-                    {"text": "Tell {target_name} right away so they know about it.", "score": 2},
-                    {"text": "Alert {target_name}, report the account for impersonation, and tell friends not to follow it.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If the person who made the fake account is in your friend group, what will you tell them?",
-                "options": [
-                    {"text": "Laugh with them about how funny the fake posts are.", "score": 0},
-                    {"text": "Stay quiet so I don't ruin my friendship with them.", "score": 1},
-                    {"text": "Tell them privately that making fake profiles is dangerous and wrong.", "score": 2},
-                    {"text": "Tell them firmly to delete the account and apologize to {target_name}, or I will report it.", "score": 3},
-                ],
-            },
+            make_q(
+                "How do you view someone creating a parody or spoof profile using a classmate's real photos and identity?",
+                "Attitude",
+                [
+                    {"text": "It is witty satire and students should appreciate the creative humor.", "score": 0},
+                    {"text": "It might be somewhat annoying, but parody accounts are common throughout social media.", "score": 1},
+                    {"text": "It is deceptive and unfair because impersonation can easily mislead professors and peers.", "score": 2},
+                    {"text": "It is a severe violation that threatens a student's personal safety, reputation, and academic future.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When classmates follow an impersonation account and comment on its satirical posts, how do you evaluate that?",
+                "Attitude",
+                [
+                    {"text": "Following the account is just keeping up with campus drama for fun.", "score": 0},
+                    {"text": "It gives the account a bit more popularity, but followers are not responsible for the creator's actions.", "score": 1},
+                    {"text": "Following and commenting legitimizes an unethical attack on a classmate's identity.", "score": 2},
+                    {"text": "It actively fuels targeted harassment by providing an audience and social encouragement to the creator.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would responsible classmates and departmental representatives expect you to do upon discovering a fake student account?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to follow it quietly to see what gets posted next.", "score": 0},
+                    {"text": "They would expect me to stay uninvolved unless the account targets me personally.", "score": 1},
+                    {"text": "They would expect me to avoid following or engaging with the imposter account.", "score": 2},
+                    {"text": "They would expect me to report the fake account immediately and alert the real student.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do mature peers in your academic program view following accounts that satirize real batchmates?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They treat it as regular entertainment that everyone secretly enjoys.", "score": 0},
+                    {"text": "They view it as slightly immature but do not actively discourage it.", "score": 1},
+                    {"text": "They see it as disrespectful behavior that harms departmental trust.", "score": 2},
+                    {"text": "They firmly condemn impersonation and advocate for swift reporting across student networks.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can help {target_name} report an impersonation account and gather verification evidence?",
+                "PBC",
+                [
+                    {"text": "I feel completely unsure of how impersonation reporting works on that platform.", "score": 0},
+                    {"text": "I could try to look up the instructions, but the reporting procedure seems complicated.", "score": 1},
+                    {"text": "I feel reasonably capable of walking through the reporting steps to document impersonation.", "score": 2},
+                    {"text": "I am fully confident in filing a clear impersonation report and mobilizing others to report it as well.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If some classmates believe the fake account's posts are genuine, how easily can you clarify the truth?",
+                "PBC",
+                [
+                    {"text": "Very difficult because once rumors start spreading, people believe whatever they want.", "score": 0},
+                    {"text": "Somewhat difficult because correcting peers might drag me into unwanted debates.", "score": 1},
+                    {"text": "Manageable because I can post a brief clarification in our class chat.", "score": 2},
+                    {"text": "Completely clear because I have no hesitation in stating firmly that the profile is an imposter.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a fake account targeting a student appears in your section over the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Follow the account to observe the posts before making any judgment.", "score": 0},
+                    {"text": "Decline to follow the account but take no further action.", "score": 1},
+                    {"text": "Report the account to the platform for identity impersonation.", "score": 2},
+                    {"text": "Report the fake profile immediately and message {target_name} to help them get it banned.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan regarding the classmate who is being impersonated when you see them in class?",
+                "BehavioralIntention",
+                [
+                    {"text": "Keep quiet about the account so as not to remind them of the unpleasant situation.", "score": 0},
+                    {"text": "Wait to see if they need assistance before offering any comment.", "score": 1},
+                    {"text": "Let them know privately that many students realize the account is fake and support them.", "score": 2},
+                    {"text": "Reassure them directly and assist them in alerting faculty or student council if necessary.", "score": 3},
+                ]
+            ),
         ],
     },
-
-    # =========================================================================
-    # CATEGORY 2: PRIVATE GROUP COMMUNICATION (6 TEMPLATES)
-    # =========================================================================
-    {
+{
         "template_key": "TEMPL_PG_BATCH_MOCKERY",
         "category": "private_group",
         "difficulty_level": 1,
@@ -663,83 +788,103 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "platforms": ["WhatsApp", "Telegram", "Discord"],
         "departments": ["Computer Science", "Software Engineering", "Information Technology", "Engineering", "Any"],
         "livings": ["Any"],
-        "context_tags": ["batch_group", "academic_query", "mocking_stickers", "voice_notes", "silence_of_majority"],
+        "context_tags": ["batch_group", "academic_struggle", "group_derision", "silent_bystanders"],
         "personalization_tags": {
-            "media_type": "group_messaging",
-            "social_habits": ["Group chats", "Academic communication"],
+            "media_type": "batch_chat",
+            "social_habits": ["Academic group chats", "Social interaction"],
         },
         "narrative_variations": [
             (
-                "{target_name} and {initiator_name} are both enrolled in a major lecture course for {academic_task}. {target_name} posted a polite clarification question about tomorrow's assignment submission deadline in the 120-member {platform}. {initiator_name} responded publicly with a harsh, sarcastic insult calling the question foolish and questioning their intelligence. Several classmates chimed in with laughing emojis and mocking memes, while over eighty other members read the messages in silence. No one typed a message to defend {target_name} or answer the original deadline question. {target_name} stopped asking questions in group chats, did not attend office hours, and submitted their assignment unassisted. A classmate who also needed clarification on the same deadline read the entire exchange in the group."
+                "In a 120-member official student WhatsApp batch group for {academic_task}, {target_name} asked an earnest question about an upcoming assignment deadline. {initiator_name}, an academically vocal student, responded with a sarcastic remark mocking their intelligence and asking if they ever paid attention in lectures. Within minutes, several other members joined in with laughing stickers and rude GIFs. Dozens of students viewed the messages in silence, leaving {target_name} with no helpful answer to their original query. {target_name} deleted their question, left the batch group completely, and felt isolated from class communication. A classmate who also found the assignment instructions confusing watched the entire exchange unfold on their phone."
             ),
             (
-                "{target_name} is an undergraduate student who shared a helpful revision guide for {academic_task} in {platform}. Due to a minor typo on page three, one formula was mislabeled in the shared PDF document. {initiator_name} screenshotted the mistake and posted it with a ridiculing comment calling the entire guide useless garbage. A flurry of sarcastic remarks and laughing reactions followed from active members of the group. Many students who had downloaded the notes stayed quiet and did not offer any appreciation. {target_name} deleted the shared study guide, muted the batch chat, and stopped sharing academic materials with peers. A student who had found the first two pages very useful saw the ridicule unfold in real time."
+                "During preparation for midterms in the section Telegram channel for {academic_task}, {target_name} shared a summary note they had prepared. {initiator_name} replied publicly pointing out several grammatical errors and a calculation mistake, sarcastically advising them never to write notes again. Several peers posted laughing emojis and sarcastic remarks, turning {target_name}'s helpful contribution into an embarrassing moment. Although many students knew the notes were genuinely useful, no one defended {target_name} in the chat. {target_name} removed the shared document, muted the channel, and refrained from sharing study resources again. A student who had already downloaded and found the notes helpful read the mocking replies."
             ),
             (
-                "{target_name} inquired about the location of an upcoming laboratory session for {academic_task} in the official {platform}. Having missed an earlier announcement due to illness, they hoped a peer would provide the room number. {initiator_name} posted a sarcastic reply telling {target_name} to wake up and learn how to read announcements properly. Multiple students reacted with laughing stickers, turning the simple inquiry into a shared departmental joke. Several group administrators saw the rude remarks but took no moderating action. {target_name} arrived late to the laboratory session, sat at an empty bench, and avoided speaking to group members. A student who knew the correct room number had their phone open on the chat screen."
+                "On the course Discord study server for {academic_task}, {target_name} asked for assistance debugging a practice problem before a scheduled lab quiz. {initiator_name} took a screenshot of the code snippet and posted it in the general banter channel with a mocking title. Multiple students chimed in with jokes about beginner errors, reacting with sarcastic custom emojis. A few peers realized the criticism was mean-spirited, but they kept quiet to avoid conflict. {target_name} disconnected from the voice channel, closed the application, and struggled through the quiz alone the next morning. A fellow student who was also working on the same problem saw the screenshot posted."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about making fun of a classmate who asks for academic help in a batch WhatsApp group?",
-                "options": [
-                    {"text": "It is normal banter; students should check lecture slides before asking silly questions.", "score": 0},
-                    {"text": "A bit harsh, but people in big groups need to develop thick skin.", "score": 1},
-                    {"text": "It is mean and unfair — it makes students scared to ask questions and seek help.", "score": 2},
-                    {"text": "It is completely wrong — batch groups should be helpful, not places where students get ridiculed.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would most reasonable classmates think if you stepped in to answer {target_name}'s question?",
-                "options": [
-                    {"text": "They would think I am ruining the fun and being overly serious.", "score": 0},
-                    {"text": "They wouldn't care either way — group chats move fast.", "score": 1},
-                    {"text": "They would quietly appreciate someone being helpful in the chat.", "score": 2},
-                    {"text": "They would respect me for breaking the silence and setting a polite tone in our batch group.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can change the mood in the group when people start teasing someone?",
-                "options": [
-                    {"text": "Not confident — speaking up usually makes the bullies start targeting you next.", "score": 0},
-                    {"text": "A bit hesitant — I want to help, but I worry about sounding awkward in a big group.", "score": 1},
-                    {"text": "Fairly confident — I can simply reply with the correct answer to shift focus away from the teasing.", "score": 2},
-                    {"text": "Very confident — I can answer the question politely and remind everyone to keep the chat respectful.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do right after seeing this teasing in {platform}?",
-                "options": [
-                    {"text": "Add a laughing sticker or reaction to go with the flow.", "score": 0},
-                    {"text": "Mute the group and ignore the messages.", "score": 1},
-                    {"text": "Message {target_name} privately with the answer and tell them not to feel bad.", "score": 2},
-                    {"text": "Reply in the group with the helpful answer, and say that making fun of questions is uncalled for.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If {target_name} left the group because they felt embarrassed, how would you respond?",
-                "options": [
-                    {"text": "Assume someone else will add them back if they really need updates.", "score": 0},
-                    {"text": "Feel bad, but take no personal step to reach out.", "score": 1},
-                    {"text": "Message them privately to share class notes and tell them what happened was unfair.", "score": 2},
-                    {"text": "Contact the class CR or admin to add them back, and make sure they feel welcomed in the class.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe class WhatsApp groups should have clear rules against insulting classmates?",
-                "options": [
-                    {"text": "No — group chats are informal and shouldn't have strict rules.", "score": 0},
-                    {"text": "Only if people use bad words, otherwise teasing is fine.", "score": 1},
-                    {"text": "Yes — basic respect is important so all students can stay updated without fear.", "score": 2},
-                    {"text": "Definitely — class groups should be safe study spaces where nobody gets bullied.", "score": 3},
-                ],
-            },
+            make_q(
+                "When a student is publicly ridiculed in a large class group chat for asking an academic question, how do you view that behavior?",
+                "Attitude",
+                [
+                    {"text": "It is just standard chat sarcasm and students need to develop thicker skin.", "score": 0},
+                    {"text": "It is slightly sharp, but basic questions sometimes frustrate classmates before deadlines.", "score": 1},
+                    {"text": "It is unfair and discouraging because asking questions is an essential part of learning.", "score": 2},
+                    {"text": "It creates a toxic atmosphere that silences struggling students and damages academic trust.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you view dozens of classmates reading the sarcastic replies and remaining completely silent?",
+                "Attitude",
+                [
+                    {"text": "Staying silent is the wisest choice to avoid unnecessary chat drama.", "score": 0},
+                    {"text": "Most people are just busy with their own studies and have no responsibility to step in.", "score": 1},
+                    {"text": "Silence indirectly allows the mocking behavior to seem acceptable in the group.", "score": 2},
+                    {"text": "Widespread silence makes the targeted student feel completely abandoned by their peers.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would peers whose opinions you value expect you to do when someone is mocked in the batch group?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to read through the banter without sending anything.", "score": 0},
+                    {"text": "They would expect me to stay quiet and let the conversation move on naturally.", "score": 1},
+                    {"text": "They would expect me to avoid joining in with laughing stickers or sarcastic comments.", "score": 2},
+                    {"text": "They would respect me if I stepped in with a helpful answer to redirect the chat.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do respected Class Representatives (CRs) or student leaders generally handle mockery in batch groups?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They often ignore it as long as professors are not in the chat.", "score": 0},
+                    {"text": "They only intervene if vulgar words or physical threats are exchanged.", "score": 1},
+                    {"text": "They remind students to keep official batch channels respectful and academic.", "score": 2},
+                    {"text": "They actively establish clear group rules prohibiting public humiliation of any student.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident do you feel sending a clear, constructive answer to the original question to shift the group focus?",
+                "PBC",
+                [
+                    {"text": "I feel completely unconfident because the vocal members might mock my answer too.", "score": 0},
+                    {"text": "I hesitate because drawing attention to myself in a 120-member group feels intimidating.", "score": 1},
+                    {"text": "I feel capable of calmly posting the deadline info or relevant lecture slide.", "score": 2},
+                    {"text": "I am fully confident in answering the question directly and reminding the group to remain helpful.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If vocal students in the group react negatively to anyone who tries to defend {target_name}, how easy is it to speak up?",
+                "PBC",
+                [
+                    {"text": "Extremely difficult because nobody wants to face collective hostility from the chat leaders.", "score": 0},
+                    {"text": "Quite hard because public conflict in a large cohort is uncomfortable to navigate.", "score": 1},
+                    {"text": "Manageable if I keep my response focused strictly on the assignment facts.", "score": 2},
+                    {"text": "Achievable because standing up for fair peer treatment is more important than avoiding minor awkwardness.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a situation like this happens in your class chat during the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Mute the chat group and check back later when things quiet down.", "score": 0},
+                    {"text": "Read the conversation but refrain from participating in any way.", "score": 1},
+                    {"text": "Post the correct academic answer in the group to resolve the query.", "score": 2},
+                    {"text": "Answer the question publicly and message {target_name} to ensure they have the materials they need.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan regarding {target_name} after seeing them leave the batch group in embarrassment?",
+                "BehavioralIntention",
+                [
+                    {"text": "Assume someone else closer to them will forward them important updates.", "score": 0},
+                    {"text": "Wait to see if they re-join the group on their own before reaching out.", "score": 1},
+                    {"text": "Send them the key assignment instructions in a private message so they do not fall behind.", "score": 2},
+                    {"text": "Reach out with a supportive message, share class notes, and encourage them to re-join the community.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -747,86 +892,106 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "private_group",
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["WhatsApp", "Telegram", "Discord", "Snapchat"],
+        "platforms": ["WhatsApp", "Instagram", "Discord"],
         "departments": ["Any"],
-        "livings": ["University hostel", "Shared apartment", "Home with family"],
-        "context_tags": ["breach_of_privacy", "leaked_screenshot", "exam_stress", "meme_circulation"],
+        "livings": ["Any"],
+        "context_tags": ["screenshot_leak", "trust_violation", "private_confession", "group_mockery"],
         "personalization_tags": {
-            "media_type": "private_screenshot",
-            "social_habits": ["Group chats", "Private conversations"],
+            "media_type": "private_message",
+            "social_habits": ["Group chats", "Private messaging"],
         },
         "narrative_variations": [
             (
-                "{target_name} and {initiator_name} have been classmates and occasional study partners since their first academic year. During a difficult week, {target_name} sent a confidential direct message admitting they were struggling emotionally with {academic_task}. {initiator_name} took a screenshot of the vulnerable conversation and forwarded it into the active section {platform} without permission. Several students shared laughing emojis and joked about {target_name} being unable to cope with university pressure. A few group members felt the breach of trust was wrong, but said nothing in the thread. {target_name} left the section group immediately, blocked {initiator_name}, and stopped attending lectures for two days. A mutual friend who was present in the group received the forwarded screenshot."
+                "{target_name} confided in a classmate via private messages on {platform}, sharing honest personal worries about struggling with marks in {academic_task} and feeling homesick. The recipient took screenshots of the vulnerable confession and forwarded them into an unofficial batch group chat without consent. Members of the group began discussing {target_name}'s private struggles, making insensitive remarks about their emotional resilience. Although several students recognized that forwarding private confidences was an unethical breach of trust, no one called it out in the group. {target_name} discovered the leak when an acquaintance brought it up, leaving them deeply betrayed and unable to trust peers. A classmate who received the forwarded screenshots felt uncomfortable reading them."
             ),
             (
-                "{target_name} reached out privately to a peer to discuss personal anxieties about failing their upcoming exam in {academic_task}. They admitted feeling overwhelmed by the coursework and asked for advice on speaking with a counselor. The recipient took screenshots of the candid chat and shared them into a large departmental {platform} with an unkind caption. Students in the chat began dissecting the private admission, leaving judgmental remarks and sarcastic reactions. Some readers were shocked by the leak but avoided confronting the person who posted it. {target_name} deactivated their messaging accounts, avoided common student lounges, and sat alone in the library. A classmate who also struggled with exam anxiety saw the private screenshot in the chat."
+                "{target_name} sent a private message to a peer expressing frustration about a difficult lab grading policy for {academic_task}. The recipient screenshotted the private complaint and circulated it in a private WhatsApp circle consisting of thirty section mates. Members added sarcastic commentary, speculating whether {target_name} would get into trouble with faculty if the professor saw the message. A few students felt circulating private messages was wrong, but the chat continued to share the screenshot with others. {target_name} became anxious that the messages would reach course instructors, stopped attending group discussions, and isolated themselves. A friend who was added to the circle saw the screenshot forwarded multiple times."
             ),
             (
-                "{target_name} shared a personal voice note with a friend expressing frustration about an unfair group grading policy in {academic_task}. The voice note was recorded in confidence late at night from their hostel dorm room. The recipient forwarded the private recording into a general {platform} where forty classmates could listen to it. Group members quickly began quoting the voice note sarcastically, sharing laughing stickers and mocking the emotional tone. Several members realized the recording was confidential but remained completely silent. {target_name} stopped contributing to project discussions, kept their camera off during online calls, and missed the next briefing. A student who was listening to the voice note in the campus cafeteria saw {target_name} walk past."
+                "{target_name} shared a personal voice note with a friend describing an awkward social interaction that occurred during a campus event. The friend forwarded the audio into a private gaming group on {platform}, where group members began mimicking {target_name}'s voice and laughing at the incident. The audio file was subsequently forwarded across several student circles across campus. Several recipients recognized that circulating private voice notes was inappropriate, yet they listened and laughed anyway. {target_name} found out when peers made inside jokes in front of them, causing intense embarrassment. A student sitting in the same tutorial section was forwarded the voice note by a roommate."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about leaking someone's private emotional messages into a group chat?",
-                "options": [
-                    {"text": "People shouldn't write sensitive things digitally if they don't want them shared.", "score": 0},
-                    {"text": "A breach of trust, but leaks in group chats are just part of university life.", "score": 1},
-                    {"text": "It is completely wrong — sharing someone's personal struggles breaks trust and causes deep hurt.", "score": 2},
-                    {"text": "It is a severe violation of privacy that is cruel and can deeply harm a person's mental health.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would your closest peers expect you to do when a leaked screenshot is shared in a chat?",
-                "options": [
-                    {"text": "They would expect me to forward it to other friends for gossip.", "score": 0},
-                    {"text": "They would expect me to stay quiet and read without getting involved.", "score": 1},
-                    {"text": "They would expect me not to forward it and to delete the image.", "score": 2},
-                    {"text": "They would expect me to tell the person who sent it that leaking private chats is wrong and must stop.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can help stop a leaked private message from spreading further?",
-                "options": [
-                    {"text": "Not confident — once something is forwarded on WhatsApp, you cannot stop it.", "score": 0},
-                    {"text": "Doubtful — asking people to delete things often makes them more curious.", "score": 1},
-                    {"text": "Fairly confident — I can tell friends in my chats to delete the screenshot and stop sharing it.", "score": 2},
-                    {"text": "Very confident — I can tell the sender it's wrong, alert {target_name}, and ask group admins to delete the message.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you received this leaked screenshot in a group chat?",
-                "options": [
-                    {"text": "Forward it to my close friends to discuss the gossip.", "score": 0},
-                    {"text": "Look at the screenshot and close the chat without doing anything.", "score": 1},
-                    {"text": "Do not forward it, delete it, and privately let {target_name} know about the leak.", "score": 2},
-                    {"text": "Say in the chat that sharing private messages is wrong, and message {target_name} to offer support.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If a close friend of yours is forwarding the screenshot, what will you tell them?",
-                "options": [
-                    {"text": "Ask them if there is any more news or gossip about it.", "score": 0},
-                    {"text": "Say nothing so I don't create awkwardness between us.", "score": 1},
-                    {"text": "Ask them quietly to delete it because it isn't right to spread someone's personal struggles.", "score": 2},
-                    {"text": "Tell them firmly that leaking private chats is hurtful and urge them to delete it everywhere.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that respecting privacy in student chats is a basic rule everyone should follow?",
-                "options": [
-                    {"text": "No — group chats are casual and nobody should expect true privacy.", "score": 0},
-                    {"text": "Only in formal groups, but in casual chats people share whatever they want.", "score": 1},
-                    {"text": "Yes — basic decency means you never share someone's private words without asking.", "score": 2},
-                    {"text": "Definitely — keeping personal conversations private is essential for trust among students.", "score": 3},
-                ],
-            },
+            make_q(
+                "When someone leaks screenshots of a classmate's vulnerable private conversation into a group chat, how do you view that action?",
+                "Attitude",
+                [
+                    {"text": "It is juicy group gossip and people should be careful about what they put in text.", "score": 0},
+                    {"text": "It is somewhat disloyal, but private messages get shared among friends all the time.", "score": 1},
+                    {"text": "It is a painful breach of trust that severely violates personal boundaries.", "score": 2},
+                    {"text": "It is an egregious act of betrayal that shatters a student's sense of psychological safety.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you evaluate group members dissecting and laughing over another student's leaked private worries?",
+                "Attitude",
+                [
+                    {"text": "It is just casual conversation and people will naturally discuss whatever is in the chat.", "score": 0},
+                    {"text": "It is insensitive, but most students join in simply out of curiosity rather than malice.", "score": 1},
+                    {"text": "It normalizes collective cruelty by making private pain a subject for group entertainment.", "score": 2},
+                    {"text": "It is deeply harmful behavior that destroys mutual respect across the entire student group.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would friends who value genuine trust expect you to do when a leaked private screenshot is dropped in the chat?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to read through the screenshots and comment on the drama.", "score": 0},
+                    {"text": "They would expect me to say nothing and let others talk about it.", "score": 1},
+                    {"text": "They would expect me to refuse to forward or react to the leaked messages.", "score": 2},
+                    {"text": "They would expect me to state clearly that leaking private confidences is wrong.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do students with strong ethical standards in your batch respond to someone who regularly shares private screenshots?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They find them entertaining because they always have insider information.", "score": 0},
+                    {"text": "They listen to them cautiously while being careful not to share their own secrets.", "score": 1},
+                    {"text": "They lose respect for that person's reliability and character.", "score": 2},
+                    {"text": "They openly discourage the behavior and refuse to participate in gossiping about leaks.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you in typing a message in the group asking peers to stop sharing a classmate's private conversation?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because others would dismiss me as acting like a hall monitor.", "score": 0},
+                    {"text": "Hesitant because calling it out might make the chat turn defensive and hostile.", "score": 1},
+                    {"text": "Reasonably capable of reminding the group that private conversations shouldn't be circulated.", "score": 2},
+                    {"text": "Fully confident in stating firmly that sharing private chats is unacceptable and asking to drop it.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If friends in the chat ask you what you think of the leaked conversation, how easily can you decline to join the gossip?",
+                "PBC",
+                [
+                    {"text": "Difficult because not sharing an opinion makes me look aloof or judgmental to my friends.", "score": 0},
+                    {"text": "Somewhat hard because curiosity naturally makes you want to discuss the details.", "score": 1},
+                    {"text": "Quite manageable because I can politely say that private business should stay private.", "score": 2},
+                    {"text": "Completely straightforward because I have firm principles against gossiping about someone's private struggles.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If someone forwards a classmate's private screenshot into your group chat in the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Forward the screenshot to a close friend to get their take on the situation.", "score": 0},
+                    {"text": "Read the message and ignore the ongoing chatter in the group.", "score": 1},
+                    {"text": "Ask the person who posted it not to circulate private conversations in the group.", "score": 2},
+                    {"text": "Object clearly to sharing private chats and privately alert the affected student about the leak.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for supporting {target_name} after their private messages have been exposed to the cohort?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid talking to them about it so they do not feel more embarrassed.", "score": 0},
+                    {"text": "Wait to see if they reach out before offering any comment.", "score": 1},
+                    {"text": "Send a supportive note assuring them that sensible classmates respect their privacy.", "score": 2},
+                    {"text": "Check in warmly, offer genuine friendship, and help them navigate any faculty or peer issues.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -835,85 +1000,105 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
         "platforms": ["Discord", "WhatsApp", "Telegram"],
-        "departments": ["Computer Science", "Software Engineering", "Engineering", "Information Technology", "Any"],
+        "departments": ["Computer Science", "Software Engineering", "Any"],
         "livings": ["Any"],
-        "context_tags": ["discord_server", "voice_channel_muting", "exclusion", "gang_up_mockery"],
+        "context_tags": ["online_exclusion", "study_group_removal", "deliberate_isolation", "academic_harm"],
         "personalization_tags": {
-            "media_type": "discord_channels",
-            "social_habits": ["Gaming communities", "Study servers"],
+            "media_type": "discord_server",
+            "social_habits": ["Academic communication", "Gaming communities"],
         },
         "narrative_variations": [
             (
-                "{target_name} and {initiator_name} are classmates who use a departmental {platform} server for coursework collaboration. During an active study voice channel session for {academic_task}, an argument broke out over code structure. {initiator_name} and two moderators repeatedly muted {target_name}, stripped their server roles, and posted mocking memes in general text. Other students in the channel watched the targeted exclusion happen without challenging the moderators' behavior. A few members sent laughing emojis whenever {target_name} attempted to rejoin the channel. {target_name} eventually left the server permanently, stopped collaborating with classmates, and worked entirely alone on the project. A student who had the same permissions as the moderators remained connected in the voice call."
+                "A student study and gaming server on {platform} was created for students taking {academic_task} to share resources, past papers, and study guides. {initiator_name}, who served as server administrator, arbitrarily kicked {target_name} out after a minor disagreement during a group project discussion. When other members asked why {target_name} was missing before midterms, {initiator_name} announced publicly in the general text channel that {target_name} was not welcome in their group. Several classmates knew that {target_name} relied on the shared study notes for exam preparation, but they hesitated to question the administrator. {target_name} was cut off from shared study notes, felt rejected by their cohort, and studied alone. A classmate in the server noticed the ban notification in the server logs."
             ),
             (
-                "{target_name} joined a student-run {platform} server dedicated to exam preparation and peer tutoring for {academic_task}. When they asked for assistance understanding an advanced topic, {initiator_name} publicly stated that the server was only for competent students. The server admins placed {target_name} on a permanent timeout, preventing them from accessing shared past papers and notes. Multiple members observed the restriction in the logs, but nobody objected to the unfair treatment. Some students privately downloaded the materials for themselves while ignoring the ban. {target_name} stopped seeking peer help, struggled through the syllabus alone, and appeared visibly isolated in classes. A classmate who had access to the restricted study files was actively browsing the channel."
+                "Students in a section created a private collaboration group on {platform} to coordinate revision sessions for {academic_task}. {initiator_name} and two peers decided to exclude {target_name} because they found {target_name}'s study questions repetitive. When {target_name} asked for an invite link, members made excuses about server limits while continuing to share past exam solutions among themselves. Although several students in the group realized the intentional exclusion was unfair and detrimental to {target_name}'s grades, no one shared the invite link. {target_name} spent exam preparation week with incomplete reference material, feeling socially cast out by the entire section. A student who joined the study group earlier that week observed the situation."
             ),
             (
-                "{target_name} was an active participant in a university gaming and academic community hosted on {platform}. Following a minor disagreement regarding scheduling a study session for {academic_task}, {initiator_name} launched an exclusion campaign. They created private channels excluding {target_name} and encouraged other members to ignore {target_name}'s messages in the public lounge. Peers gradually stopped responding to {target_name}'s posts, following the social pressure created by the core group. A few individual members felt uncomfortable with the cold shoulder but complied quietly. {target_name} sent fewer messages each day until stopping completely, abandoning both the games and the study group. A server member who was invited to the secret private channel had not replied yet."
+                "A Discord channel formed by classmates for working on {academic_task} suddenly created a restricted sub-channel where all project discussions were moved, deliberately leaving {target_name} in the dark. {initiator_name} instructed other members not to answer {target_name}'s questions about project meetings in the open channel. Some teammates felt uneasy about isolating a fellow student, but they complied to keep on good terms with the server leaders. {target_name} arrived at class unaware of key project decisions, was reprimanded by the professor for lack of contribution, and felt deeply humiliated. A group member who disagreed with the secrecy felt conflicted about speaking up."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about using server moderator powers to mute and tease a classmate?",
-                "options": [
-                    {"text": "Server owners can do whatever they want; it is not a big deal.", "score": 0},
-                    {"text": "A bit childish, but Discord and gaming servers always have some toxic banter.", "score": 1},
-                    {"text": "It is unfair and mean — using admin tools to silence a classmate is online bullying.", "score": 2},
-                    {"text": "It is completely unacceptable abuse of power that unfairly excludes a student from studying.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would fair classmates in the server expect from others when someone is being bullied like this?",
-                "options": [
-                    {"text": "They expect people to laugh along so they don't get kicked out too.", "score": 0},
-                    {"text": "They expect people to leave the voice call quietly and mind their business.", "score": 1},
-                    {"text": "They would respect anyone who un-mutes {target_name} or speaks up against the unfairness.", "score": 2},
-                    {"text": "They expect responsible members to tell the moderators that treating classmates like this is wrong.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can speak up when server moderators are the ones teasing someone?",
-                "options": [
-                    {"text": "Not confident — arguing with moderators means you will get banned or kicked out next.", "score": 0},
-                    {"text": "Unsure — I would feel powerless against people who have admin permissions.", "score": 1},
-                    {"text": "Fairly confident — I can leave the channel with {target_name} and study together in a separate call.", "score": 2},
-                    {"text": "Very confident — I can object in chat, support {target_name}, and create an open study space for everyone.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you were in the call when {target_name} was muted and teased?",
-                "options": [
-                    {"text": "Laugh along in chat and stay in the call to fit in with the group.", "score": 0},
-                    {"text": "Stay silent and wait until the argument ends.", "score": 1},
-                    {"text": "Leave the call, message {target_name} privately, and offer to study together separately.", "score": 2},
-                    {"text": "Speak up in the call to tell the moderators to stop, and make sure {target_name} is included.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If this server is the main place where study materials for {academic_task} are shared, how will you help {target_name}?",
-                "options": [
-                    {"text": "Assume they can find study resources on their own.", "score": 0},
-                    {"text": "Feel bad, but avoid sharing materials to stay on good terms with the server mods.", "score": 1},
-                    {"text": "Privately forward all important notes, assignments, and announcements to {target_name}.", "score": 2},
-                    {"text": "Share all study files with {target_name} and ask the class CR to ensure all study links are shared publicly.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you think study groups and servers should be welcoming and open to all classmates?",
-                "options": [
-                    {"text": "No — student groups are private and owners can exclude whoever they don't like.", "score": 0},
-                    {"text": "Only if teachers are watching, otherwise anything goes.", "score": 1},
-                    {"text": "Yes — when students study together online, everyone deserves respect and equal access.", "score": 2},
-                    {"text": "Definitely — isolating a student from academic study groups is unfair and harms their education.", "score": 3},
-                ],
-            },
+            make_q(
+                "When a student is deliberately kicked out of or excluded from an academic study server, how do you view that action?",
+                "Attitude",
+                [
+                    {"text": "Group creators have full authority to include or remove anyone they choose.", "score": 0},
+                    {"text": "It might be unfortunate, but students should form their own alternative groups if removed.", "score": 1},
+                    {"text": "It is petty and unfair because denying access to shared study resources directly hurts someone's grades.", "score": 2},
+                    {"text": "It is a damaging form of relational bullying that weaponizes academic resources to socially isolate a peer.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you view remaining silent when a classmate is cut off from essential exam preparation materials by group leaders?",
+                "Attitude",
+                [
+                    {"text": "Staying silent is practical because picking a fight with the group admin puts your own access at risk.", "score": 0},
+                    {"text": "It is an uncomfortable compromise, but members usually protect their own academic interests first.", "score": 1},
+                    {"text": "It is a troubling failure of fairness because everyone deserves equal access to shared learning.", "score": 2},
+                    {"text": "It is complicity in collective exclusion that leaves a vulnerable student completely stranded.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would fair-minded students in your academic cohort expect members of the server to do?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect members to accept the administrator's decision without interfering.", "score": 0},
+                    {"text": "They would expect students to avoid causing friction on the server.", "score": 1},
+                    {"text": "They would expect peers to share the study notes with {target_name} outside the server.", "score": 2},
+                    {"text": "They would expect members to ask the moderator to reinstate {target_name} and keep the group open.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do professors and academic coordinators generally view private student study groups that practice deliberate exclusion?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They consider unofficial student study groups entirely outside their concern.", "score": 0},
+                    {"text": "They advise students to resolve peer disagreements independently.", "score": 1},
+                    {"text": "They strongly emphasize collaborative learning and discourage creating exclusionary cliques.", "score": 2},
+                    {"text": "They view weaponizing academic study materials against classmates as unacceptable misconduct.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can share lecture slides, past papers, and study guides with an excluded classmate?",
+                "PBC",
+                [
+                    {"text": "Not confident because sharing resources might make the server leaders angry with me.", "score": 0},
+                    {"text": "Hesitant because going behind the group's back feels socially complicated.", "score": 1},
+                    {"text": "Reasonably confident that I can send the relevant study folders directly in private messages.", "score": 2},
+                    {"text": "Fully confident in ensuring {target_name} has every required academic resource regardless of group politics.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If asking the server admin to reinstate {target_name} could get you removed as well, how capable do you feel of speaking up?",
+                "PBC",
+                [
+                    {"text": "Completely unable because losing access to exam notes would severely damage my own preparation.", "score": 0},
+                    {"text": "Very hesitant because the personal academic risk feels disproportionately high.", "score": 1},
+                    {"text": "Able to raise the point diplomatically with the admin in a private direct message.", "score": 2},
+                    {"text": "Ready to voice that our study community should remain fair and inclusive for all classmates.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a classmate is intentionally excluded from a course study group in the coming two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Stay focused on my own revision and make use of the materials on the server.", "score": 0},
+                    {"text": "Feel sympathy for the student but avoid taking any action that creates drama.", "score": 1},
+                    {"text": "Quietly forward all shared study materials and past exam keys to {target_name}.", "score": 2},
+                    {"text": "Share all study guides with {target_name} and ask server members to end the exclusion.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for studying with {target_name} before the upcoming exam period?",
+                "BehavioralIntention",
+                [
+                    {"text": "Stick with the main study server group and study separately from {target_name}.", "score": 0},
+                    {"text": "Only study with them if they explicitly message me asking for help.", "score": 1},
+                    {"text": "Offer to review difficult practice problems together so they do not have to prepare alone.", "score": 2},
+                    {"text": "Actively invite them into my study circle and ensure they are fully supported throughout revision.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -921,86 +1106,106 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "private_group",
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["WhatsApp", "Telegram", "Instagram"],
+        "platforms": ["WhatsApp", "Instagram", "Discord"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["backchannel_group", "gossip", "deliberate_exclusion", "reputation_damage"],
+        "context_tags": ["backchannel_gossip", "secret_chat", "exclusionary_humor", "peer_pressure"],
         "personalization_tags": {
-            "media_type": "side_group",
+            "media_type": "side_chat",
             "social_habits": ["Group chats", "Social interaction"],
         },
         "narrative_variations": [
             (
-                "{target_name} is a dedicated student working alongside {initiator_name} and others on a semester assignment for {academic_task}. When {target_name} took a day off due to a documented family emergency, {initiator_name} created a secret backchannel group on {platform}. They spread false rumors claiming {target_name} was intentionally skipping work and faking personal problems to avoid contributing. The gossip spread across multiple project teams, and classmates began treating {target_name} with noticeable suspicion. Several peers knew {target_name}'s family situation was genuine, yet kept quiet to avoid group friction. {target_name} noticed the sudden coldness, stopped attending informal group lunches, and completed their project deliverables in isolation. A group partner who received the secret backchannel link had not added any comments."
+                "While {target_name} was actively contributing suggestions in the official course planning chat on {platform} for {academic_task}, {initiator_name} created a parallel secondary group chat called 'Planning Without Drama'. {initiator_name} added nearly everyone from the original group except {target_name}, using the side channel to mock {target_name}'s ideas and coordinate contradictory decisions. When {target_name} proposed ideas in the main chat, members replied with short, cold responses or inside jokes referencing comments from the hidden group. Several members found the parallel channel deceitful and uncomfortable, but they remained in it to stay informed. {target_name} grew increasingly confused, sensed the hostility, and eventually stopped participating in discussions. A student who was added to both groups saw the mocking messages sent in real time."
             ),
             (
-                "{target_name} achieved the top score in a difficult midterm examination for {academic_task}. Shortly after the grades were posted, {initiator_name} initiated a private rumor thread on {platform} alleging academic dishonesty. They claimed without evidence that {target_name} had obtained the answer key from an instructor beforehand. The rumor gained momentum as students forwarded the claims to friends across different sections. Some classmates knew {target_name} had studied for weeks in the library, but chose not to defend them. {target_name} stopped celebrating their achievement, avoided faculty mentors, and sat away from classmates in subsequent lectures. A student who had studied alongside {target_name} for the exam saw the rumor message forwarded into their chat."
+                "During an online revision session for {academic_task}, a side backchannel group was formed on {platform} excluding {target_name}. Whenever {target_name} spoke or shared an answer, members of the backchannel exchanged mocking memes and rated their responses sarcastically. Classmates in the main call kept laughing at seemingly unrelated moments, creating an awkward and hostile atmosphere for {target_name}. Although a few students felt the behavior was childish and exclusionary, no one asked the organizers to close the side chat. {target_name} realized they were the subject of unspoken ridicule, left the call early, and avoided subsequent study sessions. A peer participating in the revision session observed the double communication."
             ),
             (
-                "{target_name} was nominated by their department to represent the university in an intercollegiate competition for {academic_task}. Unsatisfied with the decision, {initiator_name} set up a side chat on {platform} to circulate derogatory gossip about {target_name}'s character. They claimed {target_name} had badmouthed other team members during the selection interviews. Peers in the department began giving {target_name} cold stares and excluding them from collaborative study tables. A handful of students recognized the malicious intent of the gossip, but stayed passive. {target_name} felt deeply alienated, withdrew from the competition team, and attended classes with minimal interaction. A student who was present during the selection interviews was added to the gossip group."
+                "In a student society organizing committee on {platform}, {initiator_name} set up an exclusive backchannel group that left out {target_name}. Every initiative {target_name} brought up in the main committee was systematically voted down or criticized because decisions were pre-arranged in the secret chat. Some committee members felt this undermined the team and treated {target_name} unfairly, but they didn't speak up for fear of losing their roles. {target_name} felt completely disrespected, resigned from their committee post, and stopped interacting with society members. A fellow member who witnessed the coordinated dismissals felt guilty about participating."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about making secret side groups to talk behind a classmate's back and exclude them?",
-                "options": [
-                    {"text": "People have the right to talk with whoever they want; venting about classmates is completely normal.", "score": 0},
-                    {"text": "A little mean, but private gossip doesn't hurt anyone as long as the person doesn't find out.", "score": 1},
-                    {"text": "It is toxic and unfair — creating secret groups to exclude someone ruins trust in the class.", "score": 2},
-                    {"text": "It is completely wrong and cowardly bullying that isolates a person and damages class unity.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would honest classmates expect you to do if you were added to such a gossip chat?",
-                "options": [
-                    {"text": "They would expect me to stay in the group and enjoy the gossip.", "score": 0},
-                    {"text": "They would expect me to stay quietly without saying anything.", "score": 1},
-                    {"text": "They would expect me to leave the group and say that I don't want to be part of gossiping.", "score": 2},
-                    {"text": "They would expect me to say gossiping is wrong, exit the group, and make sure {target_name} isn't being sabotaged.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can leave a gossip group even if it might make you unpopular?",
-                "options": [
-                    {"text": "Not confident — leaving might make them turn around and start gossiping about me next.", "score": 0},
-                    {"text": "Unsure — I would worry about missing out on class updates and friend circles.", "score": 1},
-                    {"text": "Fairly confident — I care more about doing the right thing than being in a mean chat.", "score": 2},
-                    {"text": "Very confident — I can leave without hesitation, explain my reason politely, and encourage others to leave too.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you were added to a secret chat created just to make fun of {target_name}?",
-                "options": [
-                    {"text": "Stay in the group to see what everyone is saying and stay in the loop.", "score": 0},
-                    {"text": "Mute the notifications and stay in the group quietly.", "score": 1},
-                    {"text": "Leave the group and make sure I treat {target_name} with kindness in person.", "score": 2},
-                    {"text": "Say that talking behind someone's back is wrong, exit the group, and check in on {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If you see members from the secret group giving {target_name} the cold shoulder in class, what will you do?",
-                "options": [
-                    {"text": "Join in ignoring {target_name} so I don't stand out from the group.", "score": 0},
-                    {"text": "Keep to myself and stay out of the social drama.", "score": 1},
-                    {"text": "Sit next to {target_name} and talk with them so they don't feel left out.", "score": 2},
-                    {"text": "Make sure {target_name} is included in discussions, and tell group members to stop acting childish.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that 'what someone doesn't know can't hurt them' applies to secret bullying groups?",
-                "options": [
-                    {"text": "Yes — if {target_name} never sees the chat, no real harm is done.", "score": 0},
-                    {"text": "Mostly yes, though it can create some awkwardness in class.", "score": 1},
-                    {"text": "No — secret gossip always leaks into how people treat each other in real life.", "score": 2},
-                    {"text": "Definitely not — talking behind someone's back leads to real exclusion and deeply hurts people.", "score": 3},
-                ],
-            },
+            make_q(
+                "When students create secret side chats specifically to mock and coordinate against an excluded classmate, how do you see that?",
+                "Attitude",
+                [
+                    {"text": "It is completely normal social dynamics; everyone needs a private space to vent about peers.", "score": 0},
+                    {"text": "It might be slightly immature, but creating side groups is harmless student behavior.", "score": 1},
+                    {"text": "It is deceitful and hostile because it undermines trust and isolates someone without their knowledge.", "score": 2},
+                    {"text": "It is toxic relational aggression that deliberately inflicts social humiliation and confusion on a peer.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you view laughing at inside jokes in the main meeting while knowing they refer to mockery in the secret chat?",
+                "Attitude",
+                [
+                    {"text": "Inside jokes are just funny and keep group meetings from feeling boring.", "score": 0},
+                    {"text": "It might make the excluded person feel slightly confused, but no one is directly insulting them.", "score": 1},
+                    {"text": "It creates a hostile environment where someone is made to feel out of place without knowing why.", "score": 2},
+                    {"text": "It is cruel passive-aggressive behavior that makes the victim feel surrounded by unspoken ridicule.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would classmates with high integrity expect members of a parallel backchannel group to do?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect members to stay in the group and enjoy the humorous commentary.", "score": 0},
+                    {"text": "They would expect members to remain silent and not rock the boat.", "score": 1},
+                    {"text": "They would expect members to stop fueling the mockery and leave the side group.", "score": 2},
+                    {"text": "They would expect members to dismantle the backchannel and advocate for transparent, unified communication.", "score": 3},
+                ]
+            ),
+            make_q(
+                "In your university department, how do respected and mature students view creating secret exclusionary groups?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They consider secret side groups standard campus behavior that everyone participates in.", "score": 0},
+                    {"text": "They tolerate them quietly even if they feel slightly uncomfortable.", "score": 1},
+                    {"text": "They view them as divisive tactics that destroy team chemistry and morale.", "score": 2},
+                    {"text": "They firmly refuse to participate in secretive groups organized around peer ridicule.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can tell peers in the side chat that mocking {target_name} is unfair and should stop?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because they would probably create another group that excludes me too.", "score": 0},
+                    {"text": "Reluctant because questioning the group's humor might cause immediate social awkwardness.", "score": 1},
+                    {"text": "Reasonably confident that I can state that we should focus on the actual project work.", "score": 2},
+                    {"text": "Fully confident in explaining that secret mockery is wrong and leaving the side chat if it continues.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When everyone in the secret chat is making jokes about {target_name}'s ideas, how easy is it to speak up in {target_name}'s favor in the main chat?",
+                "PBC",
+                [
+                    {"text": "Very difficult because the backchannel members will immediately text about me in the secret group.", "score": 0},
+                    {"text": "Somewhat hard because going against the secret consensus feels socially risky.", "score": 1},
+                    {"text": "Fairly manageable because I can evaluate {target_name}'s ideas objectively on their merits.", "score": 2},
+                    {"text": "Completely straightforward because good ideas deserve honest, public support regardless of side gossip.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you are added to a secret backchannel group formed to mock a classmate in the coming two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Stay in the group and read the messages to stay updated on what everyone is saying.", "score": 0},
+                    {"text": "Mute the group and never post anything in it.", "score": 1},
+                    {"text": "Tell the organizers that side mockery is counterproductive and exit the group.", "score": 2},
+                    {"text": "Leave the secret chat and make sure {target_name}'s suggestions are treated fairly in the main group.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for responding to {target_name}'s contributions in the main group chat?",
+                "BehavioralIntention",
+                [
+                    {"text": "Follow the group's lead and give short, non-committal replies.", "score": 0},
+                    {"text": "Wait for others to respond before deciding whether to engage.", "score": 1},
+                    {"text": "Reply constructively to their suggestions to ensure discussions remain fair and productive.", "score": 2},
+                    {"text": "Actively validate their effort, collaborate openly with them, and foster an inclusive team environment.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1011,83 +1216,103 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "platforms": ["WhatsApp", "Telegram"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["voice_note", "accent_mockery", "pronunciation", "forwarded_media"],
+        "context_tags": ["voice_note", "accent_mockery", "audio_forwarding", "group_derision"],
         "personalization_tags": {
-            "media_type": "voice_recordings",
-            "social_habits": ["Group chats", "Audio messages"],
+            "media_type": "audio_messaging",
+            "social_habits": ["Group chats", "Private messaging"],
         },
         "narrative_variations": [
             (
-                "{target_name} sent an earnest voice note in {platform} trying to clarify the submission requirements for {academic_task}. Because they were speaking in a hurry between classes, their accent sounded different and their phrasing was somewhat rushed. {initiator_name} clipped the recording, adjusted the pitch to make it sound ridiculous, and posted it back into the group. Dozens of students reacted with laughing emojis and began repeating the distorted phrases as inside jokes. Several members realized the mockery was disrespectful, but no one asked {initiator_name} to delete the clip. {target_name} stopped sending voice notes, kept their typed messages to a bare minimum, and left class early. A classmate who had been confused by the same requirements listened to the audio clip on their phone."
+                "{target_name}, who comes from a different regional background, sent an earnest voice note in the section WhatsApp group explaining a project query for {academic_task}. {initiator_name} downloaded the audio file, added comedic sound effects and pitch distortion, and forwarded it back into the group alongside laughing emojis. Several students began imitating {target_name}'s regional accent, creating voice stickers and meme clips that spread across related campus groups. While some peers recognized that mocking someone's accent bordered on cultural prejudice, no one reprimanded {initiator_name}. {target_name} stopped speaking in group chats, switched entirely to text with minimal words, and felt alienated from classmates. A student from the same hometown heard the distorted voice note circulating."
             ),
             (
-                "{target_name} was practicing pronunciation and presentation pacing for an oral assessment in {academic_task}. They shared a short voice recording in a peer review {platform} asking for constructive feedback on their tone. {initiator_name} forwarded the recording to an unofficial batch channel, adding mocking captions that ridiculed their voice. Classmates started creating audio remixes and sharing them across peer networks with laughing reactions. A few students thought the parody was unnecessarily cruel, but joined the collective laughter to fit in. {target_name} did not submit the optional practice recording and spoke quietly during the actual assessment. A student who originally promised to give constructive feedback saw the remix circulating in another chat."
+                "During a discussion about {academic_task} in a university Telegram channel, {target_name} sent a voice message asking for help locating a lost notebook. Someone isolated a two-second clip of their voice where their pitch cracked, looping it into a mocking audio meme that was shared widely in student circles. Members added laughing reactions, quoting the audio snippet in class hallways and common rooms when {target_name} walked past. Although several classmates knew how humiliating this was, no one told the group to stop. {target_name} kept their head down, stopped attending campus common areas, and walked alone to classes. A classmate who witnessed the original voice note being mocked felt sympathy for {target_name}."
             ),
             (
-                "{target_name} left a concerned voice note in the project {platform} explaining that they were stuck in heavy traffic during a storm. They worried about missing the group submission deadline for {academic_task} and apologized profusely to their teammates. {initiator_name} shared the audio clip into a larger social group, mocking {target_name}'s panicked tone and anxious breathing. Multiple students laughed at the emotional reaction, turning someone's stressful ordeal into casual entertainment. Some group partners knew how hard {target_name} had worked on the report, but said nothing in their defense. {target_name} arrived soaked at the department, submitted their section silently, and avoided speaking to teammates afterward. A teammate who was standing near the project submission desk saw the forwarded audio notification."
+                "{target_name} sent a hurried voice note to a course study group on {platform} explaining that they were sick and asking someone to record the lecture for {academic_task}. An insensitive peer forwarded the audio to an informal recreational chat with a caption questioning whether {target_name} was faking the illness. Members made sarcastic remarks about {target_name}'s tone and dedication, forwarding the voice note to students in other sections. A few classmates knew {target_name} was genuinely unwell, but they stayed quiet as the jokes continued. {target_name} learned of the mockery upon returning to campus, feeling deeply hurt by the lack of empathy. Another student who was genuinely ill that week heard about the incident."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about forwarding someone's voice note to make fun of their accent or pronunciation?",
-                "options": [
-                    {"text": "It is just casual humor; people tease accents in university all the time.", "score": 0},
-                    {"text": "A little insensitive, but students shouldn't take accent jokes too seriously.", "score": 1},
-                    {"text": "It is mean and hurtful — making fun of someone's accent or background makes them feel insecure.", "score": 2},
-                    {"text": "It is completely unacceptable bullying that silences students and makes them afraid to speak up.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do educated and respectful university students think of making fun of regional accents?",
-                "options": [
-                    {"text": "They laugh along because accent jokes are common among students.", "score": 0},
-                    {"text": "They ignore it as harmless campus banter.", "score": 1},
-                    {"text": "They view it as immature and disrespectful toward fellow classmates.", "score": 2},
-                    {"text": "They strongly condemn it and believe every student's background should be respected.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can defend someone whose voice note is being mocked?",
-                "options": [
-                    {"text": "Not confident — calling out accent teasing makes people say you have no sense of humor.", "score": 0},
-                    {"text": "Unsure — I wouldn't know how to address it without starting an argument.", "score": 1},
-                    {"text": "Fairly confident — I can remind the group that accents are natural and the idea itself was good.", "score": 2},
-                    {"text": "Very confident — I can clearly tell the group that mocking accents is wrong and support {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do upon seeing {target_name}'s voice note forwarded and teased?",
-                "options": [
-                    {"text": "Listen to it and smile at the funny imitation voice notes.", "score": 0},
-                    {"text": "Listen to it but stay quiet to stay out of the issue.", "score": 1},
-                    {"text": "Send a message in the chat saying {target_name}'s point was good and we should focus on the work.", "score": 2},
-                    {"text": "Tell {initiator_name} that mocking accents is wrong, and message {target_name} to reassure them.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "How will you encourage classmates who feel shy about speaking in group chats in the future?",
-                "options": [
-                    {"text": "Tell them to type messages instead of sending voice notes so they avoid teasing.", "score": 0},
-                    {"text": "Don't think about it — students need to get over their own shyness.", "score": 1},
-                    {"text": "Listen carefully, reply positively to their ideas, and appreciate their contributions.", "score": 2},
-                    {"text": "Make sure our study groups have a welcoming environment where everyone feels safe to speak.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe that making fun of how a student speaks stops them from participating in class?",
-                "options": [
-                    {"text": "No — if someone studies hard, teasing has no impact on their learning.", "score": 0},
-                    {"text": "Only a little bit, if the student is unusually shy.", "score": 1},
-                    {"text": "Yes — fear of being laughed at makes students stop asking questions and stay silent.", "score": 2},
-                    {"text": "Definitely — mocking how someone speaks shatters their confidence and damages their education.", "score": 3},
-                ],
-            },
+            make_q(
+                "When someone downloads a classmate's earnest voice note and remixes it with comedic effects to mock their voice or accent, how do you view that?",
+                "Attitude",
+                [
+                    {"text": "It is hilarious audio humor and students shouldn't be overly sensitive about friendly teasing.", "score": 0},
+                    {"text": "It might be slightly rude, but voice note memes are standard student comedy.", "score": 1},
+                    {"text": "It is offensive and hurtful because mocking someone's voice or accent targets their core identity.", "score": 2},
+                    {"text": "It is unacceptable discrimination that makes students from different backgrounds feel humiliated and unwelcome.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your view on classmates quoting mocking voice snippets when the affected student walks past in campus corridors?",
+                "Attitude",
+                [
+                    {"text": "It is just campus banter that will die down as soon as a new joke comes along.", "score": 0},
+                    {"text": "It can be awkward for the student, but they should learn to brush off corridor jokes.", "score": 1},
+                    {"text": "It crosses into ongoing harassment because it follows the person into their physical campus life.", "score": 2},
+                    {"text": "It is deeply intimidating behavior that makes campus feel hostile and emotionally unsafe.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would respectful and considerate classmates expect you to do when an audio meme mocking a peer's accent is shared?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect me to laugh and forward the audio clip to other friends.", "score": 0},
+                    {"text": "They would expect me to listen to it quietly and stay neutral.", "score": 1},
+                    {"text": "They would expect me to refuse to circulate the audio or use the audio stickers.", "score": 2},
+                    {"text": "They would expect me to call out the mockery and ask the sender to delete the remix.", "score": 3},
+                ]
+            ),
+            make_q(
+                "In your academic department, how do mature student leaders treat mockery of regional accents or vocal traits?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They ignore it as harmless joking between friends.", "score": 0},
+                    {"text": "They chuckle privately while avoiding public comment.", "score": 1},
+                    {"text": "They consider accent mockery disrespectful to the diversity of our student body.", "score": 2},
+                    {"text": "They firmly stand against accent-based ridicule and promote an inclusive, welcoming culture.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can state in the group chat that mocking someone's voice note is inappropriate?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because people will accuse me of having no sense of humor.", "score": 0},
+                    {"text": "Hesitant because speaking up in a large chat group feels awkward and tense.", "score": 1},
+                    {"text": "Reasonably capable of sending a calm message saying we shouldn't make fun of how classmates speak.", "score": 2},
+                    {"text": "Fully confident in speaking up clearly and setting a standard of respect in the group.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If prominent students in the section are repeating the voice joke in person, how easy is it to decline to join the laughter?",
+                "PBC",
+                [
+                    {"text": "Very difficult because laughing along is the easiest way to avoid looking awkward.", "score": 0},
+                    {"text": "Somewhat hard because standing in silence when everyone else laughs feels uncomfortable.", "score": 1},
+                    {"text": "Quite manageable because I can simply choose not to smile or participate in the joke.", "score": 2},
+                    {"text": "Completely natural because I refuse to validate humor built on humiliating a peer.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If an audio meme mocking a classmate is shared in your section chat over the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Listen to the audio and save it to share in a private chat.", "score": 0},
+                    {"text": "Listen to the clip and ignore the chat thread.", "score": 1},
+                    {"text": "Post a message asking the sender to stop circulating audio memes of classmates.", "score": 2},
+                    {"text": "Object clearly in the group and message {target_name} to offer reassurance and support.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for interacting with {target_name} when you see them in class after this incident?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid eye contact so they do not feel self-conscious around me.", "score": 0},
+                    {"text": "Treat them normally but avoid discussing what happened in the group.", "score": 1},
+                    {"text": "Greet them warmly and listen attentively whenever they speak in group discussions.", "score": 2},
+                    {"text": "Engage them enthusiastically in conversation and affirm that their contributions are valued by good peers.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1098,174 +1323,210 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "platforms": ["WhatsApp", "Discord", "Telegram"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["spam_tagging", "public_humiliation", "deadline_stress", "gang_up"],
+        "context_tags": ["notification_spam", "relentless_tagging", "public_pressure", "intrusive_behavior"],
         "personalization_tags": {
-            "media_type": "mention_spam",
-            "social_habits": ["Group chats", "Collaborative projects"],
+            "media_type": "group_notifications",
+            "social_habits": ["Group chats", "Notification usage"],
         },
         "narrative_variations": [
             (
-                "{target_name} posted a personal opinion about an ethical case study for {academic_task} in {platform}. Their perspective differed from the mainstream consensus in the student section. {initiator_name} disagreed aggressively and began repeatedly tagging {target_name} in dozens of hostile messages over several hours. Other students joined the pile-on, tagging {target_name} with dismissive memes and demanding they admit they were wrong. Many silent group members saw their notifications flood with the argument, but chose not to step in. {target_name} muted the group chat, stopped participating in class debates, and looked noticeably anxious during subsequent seminars. A classmate who agreed with {target_name}'s original perspective was watching the notifications accumulate."
+                "Following an unresolved debate regarding {academic_task} in a university WhatsApp group, {initiator_name} and three friends began repeatedly tagging {target_name} late at night with demanding and provocative messages. Over sixty notification tags were sent within an hour, waking {target_name} and flooding their phone with aggressive questions and sarcastic remarks. Even after {target_name} requested them to stop and stated they would discuss it during class hours, the tagging continued accompanied by laughing stickers. Other group members muted the chat to avoid the noise, ignoring the harassment taking place. {target_name} was left feeling stressed, sleep-deprived, and intimidated about attending class the next morning. A classmate who was studying late saw the continuous stream of notifications."
             ),
             (
-                "{target_name} made a simple scheduling suggestion for a makeup class in {academic_task} on the section {platform}. {initiator_name} felt the suggestion was inconvenient and started a continuous barrage of sarcastic messages tagging {target_name}. They encouraged ten other students to tag {target_name} simultaneously with spam reactions until the screen was filled. The targeted student's phone was overloaded with notifications during an ongoing lecture. Several classmates watched the spamming unfold on their screens and smiled, while others ignored the disruption. {target_name} switched their phone off, left the lecture room during the break, and did not return that afternoon. A student sitting next to {target_name} saw their screen vibrating constantly from the repeated tags."
+                "On a departmental Discord server, {initiator_name} repeatedly tagged @everyone alongside {target_name}'s username, blaming them publicly for a missing submission link for {academic_task}. The continuous notifications caused multiple students to log in angrily, directing their frustration toward {target_name} without verifying the facts. Although {target_name} explained that the link had been posted by the instructor earlier, the hostile tagging persisted for several hours. Several classmates realized that {target_name} was being unfairly scapegoated, but no one intervened to stop the barrage. {target_name} left the server, turned off all notifications, and felt anxious about class. A peer who had already submitted the assignment saw the unfair blame game."
             ),
             (
-                "{target_name} reminded the class group on {platform} that assignments for {academic_task} had to follow strict anti-plagiarism guidelines. {initiator_name} accused {target_name} of acting like a strict teacher and began tagging them with sarcastic nicknames. Throughout the evening, multiple classmates tagged {target_name} in hostile memes, telling them to mind their own business. The constant pinging made it impossible for {target_name} to use the group for academic purposes. Some students felt the response was disproportionate, but kept their opinions to themselves. {target_name} left the group, stopped sharing assignment reminders, and studied entirely on their own. A class representative who had administrative privileges in the group read through the harassment thread."
+                "In a class section group on {platform}, a dispute about group presentation scheduling led several students to spam {target_name}'s username with mocking questions and intrusive demands for immediate replies. Despite {target_name} stating they were at a family function, group members posted continuous alerts questioning their commitment and mocking their absence. Many students in the group observed the spam in silence, reluctant to get caught in the conflict. {target_name} returned home feeling harassed, overwhelmed, and unwilling to participate in team projects with those classmates. A student observing the notifications felt the pressure was unreasonable."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about spam-tagging and publicly calling out a classmate in a large group chat?",
-                "options": [
-                    {"text": "It is necessary — if someone is late or makes a mistake, public pressure gets the work done.", "score": 0},
-                    {"text": "A bit annoying, but when project deadlines approach people get stressed and vent.", "score": 1},
-                    {"text": "It is unfair and mean — problems should be solved privately, not through humiliating public spam.", "score": 2},
-                    {"text": "It is completely wrong — gang-up tagging is public harassment that causes intense stress and embarrassment.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do mature classmates expect when someone starts spamming and calling out a peer in the group?",
-                "options": [
-                    {"text": "Most students find it funny and join in tagging the person as well.", "score": 0},
-                    {"text": "People mute the chat and ignore the flood of messages.", "score": 1},
-                    {"text": "Responsible students expect someone to message: 'Please discuss this in private DMs.'", "score": 2},
-                    {"text": "Good peers expect members to tell {initiator_name} to stop the spam and handle issues respectfully.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that sending a calm message in the group can stop mass-tagging?",
-                "options": [
-                    {"text": "Not confident — angry students will just start tagging and attacking me too.", "score": 0},
-                    {"text": "Unsure — it is hard to stop people once a group spam trend starts.", "score": 1},
-                    {"text": "Fairly confident — a calm message reminding people to talk in private usually cools down the chat.", "score": 2},
-                    {"text": "Very confident — I can say clearly in the chat to stop, and ask the group admin to mute the spammer.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do while watching {target_name} get spam-tagged and insulted?",
-                "options": [
-                    {"text": "Tag {target_name} once as well just to be funny.", "score": 0},
-                    {"text": "Mute the group and wait for the spam to quiet down.", "score": 1},
-                    {"text": "Send a message in the chat: 'Please discuss this privately, no need to spam the group.'", "score": 2},
-                    {"text": "Call out the spam in the group, ask the admin to step in, and message {target_name} to check on them.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If you are leading a group project in the future and a teammate falls behind, how will you handle it?",
-                "options": [
-                    {"text": "Call them out in the batch group so everyone knows they didn't contribute.", "score": 0},
-                    {"text": "Ignore them and do all the work myself while staying angry.", "score": 1},
-                    {"text": "Talk to them privately, understand what happened, and agree on a realistic deadline.", "score": 2},
-                    {"text": "Talk to them with empathy, help them catch up, and solve issues respectfully without public shaming.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe publicly embarrassing a classmate ever produces good teamwork or results?",
-                "options": [
-                    {"text": "Yes — fear of public embarrassment is the only way to get lazy students to work.", "score": 0},
-                    {"text": "Sometimes — strict pressure produces results in tough situations.", "score": 1},
-                    {"text": "No — embarrassing someone only causes anger, panic, and stops genuine cooperation.", "score": 2},
-                    {"text": "Definitely not — public shaming destroys trust, hurts self-worth, and ruins team collaboration.", "score": 3},
-                ],
-            },
+            make_q(
+                "When students spam a classmate with dozens of aggressive notification tags late at night, how do you view that behavior?",
+                "Attitude",
+                [
+                    {"text": "It is an effective way to force someone to answer urgent group questions.", "score": 0},
+                    {"text": "It is slightly overbearing, but students can always mute their notifications if bothered.", "score": 1},
+                    {"text": "It is disrespectful and intrusive because everyone deserves personal boundaries outside university hours.", "score": 2},
+                    {"text": "It is an aggressive form of digital harassment designed to intimidate and overwhelm a student.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you evaluate classmates who simply mute the chat to avoid the notification spam while ignoring the harassment?",
+                "Attitude",
+                [
+                    {"text": "Muting the chat is the smartest move because staying out of drama saves peace of mind.", "score": 0},
+                    {"text": "It is understandable since people want quiet sleep and have no duty to intervene.", "score": 1},
+                    {"text": "It is unfortunate because passive silence allows aggressive peers to control the group culture.", "score": 2},
+                    {"text": "It leaves the targeted student completely isolated under an intense barrage of pressure.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would mature and responsible classmates expect students in the group to do during an aggressive tagging session?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect students to mute their phones and sleep through it.", "score": 0},
+                    {"text": "They would expect members to stay quiet and let the involved individuals resolve it tomorrow.", "score": 1},
+                    {"text": "They would expect students to tell the senders to stop spamming the group chat.", "score": 2},
+                    {"text": "They would expect members to step in firmly, protect group boundaries, and defend {target_name}.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do course instructors and academic advisors view students spamming and harassing peers late at night over group work?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They consider late-night WhatsApp interactions outside official university discipline.", "score": 0},
+                    {"text": "They expect students to handle communication frictions among themselves.", "score": 1},
+                    {"text": "They view intrusive late-night spam as unprofessional and counterproductive.", "score": 2},
+                    {"text": "They strictly condemn intrusive late-night harassment and consider it a disciplinary issue.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can message in the group requesting members to halt late-night aggressive tagging?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because the aggressive members would likely turn their spam on me.", "score": 0},
+                    {"text": "Reluctant because intervening in an ongoing argument late at night is stressful.", "score": 1},
+                    {"text": "Reasonably confident that I can post a reminder that discussions should resume during class hours.", "score": 2},
+                    {"text": "Fully confident in stating firmly that spamming someone's phone is unacceptable harassment that must stop.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When multiple students are ganging up and tagging one classmate, how easily can you resist joining in or validating their demands?",
+                "PBC",
+                [
+                    {"text": "Difficult because peer pressure pushes everyone to support the group's frustration.", "score": 0},
+                    {"text": "Somewhat hard because remaining detached makes you look uninvested in the project.", "score": 1},
+                    {"text": "Easy because I can choose not to add to the notification barrage.", "score": 2},
+                    {"text": "Completely straightforward because I refuse to participate in intimidating a fellow student.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If an aggressive tagging session breaks out in your class group in the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Mute notifications and check the chat the next afternoon.", "score": 0},
+                    {"text": "Read the messages quietly without sending anything.", "score": 1},
+                    {"text": "Send a message asking the senders to stop tagging and discuss the issue during the day.", "score": 2},
+                    {"text": "Tell the group to halt the spam immediately and privately check on {target_name}'s well-being.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for checking in with {target_name} the morning after an intense night of group chat harassment?",
+                "BehavioralIntention",
+                [
+                    {"text": "Say nothing about the chat unless they bring it up first.", "score": 0},
+                    {"text": "Wait to see if they look upset before deciding whether to talk to them.", "score": 1},
+                    {"text": "Ask them privately how they are doing and express regret over the chat behavior.", "score": 2},
+                    {"text": "Meet them warmly before lecture, offer full support, and help them address any group project concerns.", "score": 3},
+                ]
+            ),
         ],
     },
-
-    # =========================================================================
-    # CATEGORY 3: UNIVERSITY & CAMPUS COMMUNITY (6 TEMPLATES)
-    # =========================================================================
-    {
+{
         "template_key": "TEMPL_UC_PROJECT_EXCLUSION",
         "category": "university_community",
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["GitHub", "Google Docs", "WhatsApp", "Discord", "University portals"],
-        "departments": ["Computer Science", "Software Engineering", "Information Technology", "Engineering", "Business", "Any"],
+        "platforms": ["WhatsApp", "Google Drive", "Discord"],
+        "departments": ["Computer Science", "Software Engineering", "Business", "Engineering", "Any"],
         "livings": ["Any"],
-        "context_tags": ["academic_sabotage", "group_project", "silent_removal", "credit_theft"],
+        "context_tags": ["project_team", "academic_sabotage", "credit_removal", "group_abandonment"],
         "personalization_tags": {
-            "media_type": "shared_repository",
-            "social_habits": ["Academic communication", "Collaborative projects"],
+            "media_type": "project_collaboration",
+            "social_habits": ["Academic teamwork", "Group communication"],
         },
         "narrative_variations": [
             (
-                "{target_name} and {initiator_name} were assigned to the same four-person group project for {academic_task}. A few days before the final deadline, {initiator_name} edited the shared document and removed {target_name}'s name from the report. They posted in {platform} claiming {target_name} had contributed zero effort, despite {target_name} completing their assigned research sections. The other two group members watched the credit being stripped away but remained silent to protect their own grades. Peers from other teams heard about the dispute and assumed {target_name} was an unreliable partner. {target_name} discovered the erasure on the morning of submission, broke down quietly in the hallway, and did not enter the classroom. One group member who had reviewed {target_name}'s original drafts was standing by the submission counter."
+                "During a major semester project for {academic_task}, four students were assigned to work together. Two days before the final report submission, {initiator_name} and two teammates secretly created a separate submission document, omitting {target_name}'s name and contributions entirely. They claimed {target_name} had not done enough work, despite {target_name} having drafted the literature review and introductory sections on the shared drive. When {target_name} noticed they were locked out of the project folder on submission morning, {initiator_name} ignored their panicked calls. Other classmates in the lab saw {target_name} pleading with the team, but chose not to get involved in teammate disputes. {target_name} received a failing grade for the component, broke down emotionally in the hallway, and felt unable to face instructors. A classmate working at an adjacent computer terminal had witnessed {target_name}'s contributions earlier that week."
             ),
             (
-                "{target_name} was assigned as a partner alongside {initiator_name} for a critical semester project in {academic_task}. {initiator_name} deliberately changed the access permissions on the shared repository and cloud folder, locking {target_name} out. They announced in the class forum that {target_name} was unresponsive and asked the professor to reassign the work. Classmates who had seen {target_name} working diligently on campus did not step forward to set the record straight. Several peers sided with {initiator_name} simply because they were more popular in the batch. {target_name} attended the project presentation in silence, unable to present, and received a failing provisional mark. A classmate who shared a computer lab table with {target_name} while they coded the project was present in the room."
+                "In a semester-long group presentation for {academic_task}, {initiator_name} and other group members met privately and redistributed the presentation slides without informing {target_name}. On the day of the graded presentation in front of the department, they announced to the course instructor that {target_name} had contributed nothing and should not be allowed to present. {target_name} stood shocked and humiliated in front of the entire class, unable to prove their effort on the spot. While several classmates knew {target_name} had been attending all project discussions, no one spoke up to clarify the situation. {target_name} lost substantial marks, stopped attending social gatherings with batchmates, and requested a section transfer. A student who sat near the group during prep sessions knew {target_name} had attended every meeting."
             ),
             (
-                "{target_name} worked for three weeks compiling data for a complex collaborative study in {academic_task}. During a late-night editing session, {initiator_name} replaced {target_name}'s comprehensive analysis with their own summary. When {target_name} protested in {platform}, {initiator_name} told the entire group that {target_name}'s work was substandard and useless. Other teammates agreed with {initiator_name} to avoid conflict and finish the project quickly. Nobody validated the hours of effort {target_name} had invested into the data collection. {target_name} left the team workspace, did not attend the final debrief, and requested an individual meeting with the department head. A teammate who knew the analysis was accurate had not sent any message to the group."
+                "For a software lab project in {academic_task}, the group repository was managed by {initiator_name}. Right before the final git commit deadline, {initiator_name} removed {target_name}'s commit history and submitted the project without giving {target_name} credit. When {target_name} protested in the lab, teammates dismissed them sarcastically and told them to find another team next time. Other project teams in the laboratory observed the argument, but maintained silence to avoid taking sides. {target_name} was penalized by the lab instructor, felt academically sabotaged, and lost trust in collaborative assignments. A student who worked with {target_name} on a previous assignment knew their work ethic was reliable."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about removing a group member's name and work right before a deadline without telling them?",
-                "options": [
-                    {"text": "Leaders have to make tough decisions; if someone wasn't fast enough, they deserve it.", "score": 0},
-                    {"text": "A bit harsh, but group projects are competitive and everyone must look out for their own grade.", "score": 1},
-                    {"text": "It is completely unfair and dishonest — cutting someone off without discussion is academic sabotage.", "score": 2},
-                    {"text": "It is an intolerable act of dishonesty and bullying that steals someone's hard work and damages their future.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What would fair and honest group members expect when someone tries to drop a teammate without warning?",
-                "options": [
-                    {"text": "They would stay quiet so their own marks aren't put at risk.", "score": 0},
-                    {"text": "They would prefer to stay neutral and let the team leader make the call.", "score": 1},
-                    {"text": "They would expect members to stand up for fairness and give the teammate their rightful credit.", "score": 2},
-                    {"text": "They would refuse to submit the project until {target_name}'s legitimate work is included.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can stand up to a dominant group leader who is treating a teammate unfairly?",
-                "options": [
-                    {"text": "Not confident — challenging the leader might put my own project marks at risk.", "score": 0},
-                    {"text": "A bit hesitant — I would feel uncomfortable arguing with someone who is bossy.", "score": 1},
-                    {"text": "Fairly confident — I can show the document history and proof of {target_name}'s work to ensure fairness.", "score": 2},
-                    {"text": "Fully confident — I can speak up in the group, show proof to the teacher if needed, and defend {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you were on this project team?",
-                "options": [
-                    {"text": "Keep quiet, submit with the leader, and take my good grade.", "score": 0},
-                    {"text": "Feel uncomfortable, but avoid speaking up to prevent group conflict before the deadline.", "score": 1},
-                    {"text": "Tell {initiator_name} privately that dropping {target_name} is wrong and urge them to put their name back.", "score": 2},
-                    {"text": "Clearly tell the team that I will not submit unless {target_name}'s work is included, and inform the teacher if needed.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If {target_name} is in distress and panicking about failing the course, how will you support them?",
-                "options": [
-                    {"text": "Tell them that that's how university life is and to retake the course next semester.", "score": 0},
-                    {"text": "Feel sorry for them, but tell them I can't get involved because my own marks are on the line.", "score": 1},
-                    {"text": "Give them copies and timestamps of their work so they can prove their contributions to the professor.", "score": 2},
-                    {"text": "Go with them to the professor's office and confirm that they did their share of the project work.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe taking credit for a teammate's work or deleting their name is a form of cheating?",
-                "options": [
-                    {"text": "No — group work is about whatever team members agree to submit.", "score": 0},
-                    {"text": "Not cheating, just a messy group disagreement.", "score": 1},
-                    {"text": "Yes — taking credit for someone else's effort is dishonest and unfair.", "score": 2},
-                    {"text": "Definitely — academic honesty means giving full credit to everyone who contributed to the work.", "score": 3},
-                ],
-            },
+            make_q(
+                "When teammates secretly remove a student's name from a collaborative university submission without warning, how do you view that action?",
+                "Attitude",
+                [
+                    {"text": "Teams have the right to drop anyone whose performance does not meet their personal expectations.", "score": 0},
+                    {"text": "It might be tough, but protecting the group's grade is more important than interpersonal feelings.", "score": 1},
+                    {"text": "It is deeply unfair because cutting someone out without communication deprives them of earned credit.", "score": 2},
+                    {"text": "It is an act of academic sabotage that inflicts severe academic and psychological damage on a student.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you evaluate classmates who witness unfair project exclusion in the lab and choose not to say anything?",
+                "Attitude",
+                [
+                    {"text": "Minding your own business is the safest way to avoid unnecessary project conflict.", "score": 0},
+                    {"text": "It is understandable because getting involved in other teams' internal disputes is awkward.", "score": 1},
+                    {"text": "It is a disappointing lack of solidarity when someone is being visibly mistreated.", "score": 2},
+                    {"text": "Silence allows dishonest team leaders to manipulate grades and exploit vulnerable classmates without consequence.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would professors and fair-minded students expect teammates to do when there are disagreements about project workload?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect the stronger students to take full control and submit without slower members.", "score": 0},
+                    {"text": "They would expect teammates to quietly minimize the weaker member's section.", "score": 1},
+                    {"text": "They would expect teammates to address workload issues directly and divide tasks transparently.", "score": 2},
+                    {"text": "They would expect students to consult the instructor openly to resolve contribution concerns fairly.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do students with high academic integrity in your department treat collaborative group commitments?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They look out only for their own GPA and abandon struggling partners when needed.", "score": 0},
+                    {"text": "They tolerate uneven work but complain bitterly behind their teammates' backs.", "score": 1},
+                    {"text": "They communicate expectations clearly and document contributions honestly.", "score": 2},
+                    {"text": "They actively support every team member and ensure that everyone's legitimate effort is represented.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can advise an unfairly excluded classmate on how to present their contribution history to the professor?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because professors rarely listen to student complaints about group work.", "score": 0},
+                    {"text": "Hesitant because getting involved with faculty on someone else's behalf feels risky.", "score": 1},
+                    {"text": "Reasonably capable of helping them gather draft files and version history timestamps.", "score": 2},
+                    {"text": "Fully confident in helping them document their work clearly and accompanying them to explain the situation to the instructor.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If defending an excluded classmate creates tension with other students in the lab, how easily can you stand by what is right?",
+                "PBC",
+                [
+                    {"text": "Very difficult because preserving comfortable peer relationships in the lab is my priority.", "score": 0},
+                    {"text": "Somewhat hard because lab politics can make future group assignments uncomfortable.", "score": 1},
+                    {"text": "Manageable because I can state what I observed without being aggressive.", "score": 2},
+                    {"text": "Completely straightforward because defending academic honesty matters far more than lab popularity.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If you see a classmate facing unfair project exclusion in your department during the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Stay focused on my own group's deadlines and avoid other teams' issues.", "score": 0},
+                    {"text": "Feel bad for them but keep out of the conflict.", "score": 1},
+                    {"text": "Encourage the student to speak to the course instructor with their draft evidence.", "score": 2},
+                    {"text": "Help the student document their contributions and confirm their participation if the instructor asks.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for working with {target_name} on future academic assignments?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid choosing them as a partner because of the controversy surrounding their past group.", "score": 0},
+                    {"text": "Wait to see how they perform before deciding whether to partner with them.", "score": 1},
+                    {"text": "Be glad to work with them and establish clear, fair task divisions from day one.", "score": 2},
+                    {"text": "Actively invite them to partner on future projects and ensure a transparent, mutually supportive collaboration.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1273,86 +1534,106 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "university_community",
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["WhatsApp", "Discord", "Instagram"],
+        "platforms": ["WhatsApp", "Instagram", "Snapchat"],
         "departments": ["Any"],
         "livings": ["University hostel", "Shared apartment"],
-        "context_tags": ["hostel_life", "shared_living", "night_chat", "roommate_shaming", "cultural_prejudice"],
+        "context_tags": ["hostel_life", "living_situation", "mess_hall_ridicule", "roommate_harassment"],
         "personalization_tags": {
-            "media_type": "living_space_chat",
-            "social_habits": ["Group chats", "Residential life"],
+            "media_type": "hostel_community",
+            "social_habits": ["Hostel living", "Community dining"],
         },
         "narrative_variations": [
             (
-                "{target_name} is a university resident living in the on-campus hostel while completing their degree in {academic_task}. During midterms, {initiator_name} secretly took photos of {target_name}'s side of the dorm room and posted them to {platform}. They added mocking captions criticizing {target_name}'s personal belongings, laundry, and modest background. Other hostel residents jumped into the comment thread, posting laughing emojis and creating hurtful inside jokes. Several students on the same floor felt the post violated basic privacy, but avoided getting involved. {target_name} stopped using the hostel common room, took meals in their room alone, and asked the warden for a room transfer. A resident living across the hall heard the laughter echoing down the corridor while viewing the post."
+                "{target_name} lives in the university student hostel wing while pursuing their degree. One evening, roommates took photos of their personal closet and study desk, which were momentarily cluttered during midterm preparation for {academic_task}. {initiator_name} shared the pictures into the hostel floor WhatsApp group with derogatory captions questioning their cleanliness and upbringing. The post prompted dozens of sarcastic comments from hostel residents, with students laughing openly when {target_name} walked into the dining mess hall for dinner. Several residents felt the photos were an uncalled-for invasion of personal space, but laughed along to fit in with the floor leaders. {target_name} skipped hostel meals, avoided the common washrooms, and spent nights studying in the 24-hour campus library. A student living two doors down saw the pictures posted in the floor chat."
             ),
             (
-                "{target_name} had a private phone conversation with their family late in the evening from their hostel room balcony. {initiator_name} secretly recorded part of the emotional conversation and shared the audio file in the hostel {platform}. The clip was circulated among wing residents with mocking captions about {target_name} being homesick and immature. Dozens of residents listened and shared sarcastic comments, turning a private moment into hostel gossip. A few residents felt deeply uneasy about the recording, but stayed silent to maintain group harmony. {target_name} stopped spending time on the balcony, avoided speaking to hallmates, and stayed in the library until closing hours. A student whose room shared the same balcony wall had heard the recording being made."
+                "In a shared university student apartment, an argument over quiet study hours led roommates to record {target_name} having an emotional phone call with their parents about academic stress in {academic_task}. A short audio clip was posted in a local hostel community group on {platform} with sarcastic commentary mocking {target_name}'s emotional sensitivity. Over fifty hostel students listened to the clip, making inside jokes whenever {target_name} walked through the courtyard. While many residents knew that recording private family calls violated personal boundaries, no one told the posters to delete it. {target_name} packed their bags, stayed with a relative off-campus, and struggled to focus on upcoming exams. A neighbor who shared the same corridor heard about the audio leak."
             ),
             (
-                "{target_name} was studying late at night in the hostel common study hall for an upcoming exam in {academic_task}. Exhausted from revision, they fell asleep at the desk with their study notes scattered around them. {initiator_name} took pictures from multiple angles, drew insulting doodles over the photos, and posted them in the hostel chat on {platform}. Residents responded with laughing stickers and shared the photos into departmental channels by morning. Several students saw {target_name} sleeping peacefully and knew how hard they worked, yet did not intervene. {target_name} woke up to find classmates whispering, packed their books hurriedly, and left the study hall without breakfast. A resident who had been studying at the neighboring table saw the photos appear in their notifications."
+                "During late-night study hours in the hostel common room, {target_name} fell asleep over their textbooks for {academic_task}. A group of hostel residents placed humorous items around them, took videos from multiple angles, and circulated the footage in the hostel residents group chat on {platform}. Residents flooded the thread with mocking commentary, creating stickers that were used in general campus groups. Some students felt the prank crossed into public humiliation, but they kept silent to avoid becoming targets themselves. {target_name} woke up to the mockery, felt unsafe in their own living space, and stopped using the common study facilities. A resident studying in the corner had watched the recording take place."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about taking photos of a roommate sleeping and posting them in a hostel group chat?",
-                "options": [
-                    {"text": "It is normal hostel culture; everyone who lives in a dorm gets roasted.", "score": 0},
-                    {"text": "A bit invasive, but room teasing is part of shared student living.", "score": 1},
-                    {"text": "It is a serious violation of privacy that makes someone feel unsafe in their own room.", "score": 2},
-                    {"text": "It is completely unacceptable — everyone deserves to feel safe and respected where they sleep.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do sensible hostel residents expect when people start making fun of a roommate in the floor chat?",
-                "options": [
-                    {"text": "They expect people to laugh along so they don't get targeted next.", "score": 0},
-                    {"text": "They expect people to stay silent and mind their own business.", "score": 1},
-                    {"text": "Sensible residents quietly disapprove and respect peers who refuse to join in.", "score": 2},
-                    {"text": "They respect anyone who has the courage to say that targeting roommates crosses the line.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can speak up for a roommate without making your own hostel life difficult?",
-                "options": [
-                    {"text": "Not confident — creating friction on your own hostel floor makes people turn against you.", "score": 0},
-                    {"text": "Unsure — I would worry that residents would start teasing me instead.", "score": 1},
-                    {"text": "Fairly confident — I can calmly tell the group that taking photos of sleeping roommates is wrong.", "score": 2},
-                    {"text": "Very confident — I can speak up in the chat, support {target_name}, and report repeated harassment to the hostel warden.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do upon seeing these mocking late-night messages on {platform}?",
-                "options": [
-                    {"text": "Mute the chat and check the gossip in the morning with curiosity.", "score": 0},
-                    {"text": "Read the messages in silence and avoid taking any side.", "score": 1},
-                    {"text": "Send a brief message in the group: 'Taking photos of people sleeping is not okay, please delete.'", "score": 2},
-                    {"text": "Demand the photos be deleted immediately, tell {initiator_name} this is wrong, and check on {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If {target_name} learns about the chat the next morning and is visibly upset, how will you respond?",
-                "options": [
-                    {"text": "Avoid eye contact and pretend I know nothing about what happened.", "score": 0},
-                    {"text": "Tell them to ignore it because hostel guys always joke around like that.", "score": 1},
-                    {"text": "Talk with them privately, reassure them, and let them know not everyone agrees with the bullies.", "score": 2},
-                    {"text": "Stand by them, help them speak with the hostel warden if needed, and make sure they feel safe.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe a student's hostel room should be a safe space protected from online teasing?",
-                "options": [
-                    {"text": "No — once you share a room or dorm, you give up your right to privacy.", "score": 0},
-                    {"text": "It depends on how close you are with your roommates.", "score": 1},
-                    {"text": "Yes — everyone deserves a safe place where they can rest without fear of being filmed.", "score": 2},
-                    {"text": "Definitely — a student's living space must always be respected, and violating it is never acceptable.", "score": 3},
-                ],
-            },
+            make_q(
+                "When residents photograph or record a student's personal living space or private emotional calls to mock them in hostel chats, how do you see that?",
+                "Attitude",
+                [
+                    {"text": "Hostel life is informal and students who live in shared quarters should expect pranks.", "score": 0},
+                    {"text": "It might be slightly insensitive, but shared living naturally comes with lighthearted teasing.", "score": 1},
+                    {"text": "It is an uninvited invasion of personal dignity that destroys trust between roommates.", "score": 2},
+                    {"text": "It is severe harassment that deprives a student of safety in the very place where they live and sleep.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What do you think about hostel residents laughing and making inside jokes in the dining mess when the targeted student walks in?",
+                "Attitude",
+                [
+                    {"text": "It is just communal banter and everyone gets teased in the dining mess eventually.", "score": 0},
+                    {"text": "It is awkward, but students should learn not to pay attention to mess hall jokes.", "score": 1},
+                    {"text": "It creates an intimidating atmosphere that makes everyday tasks like eating meals stressful.", "score": 2},
+                    {"text": "It is public hostility that forces a student to skip meals and isolate themselves from their living community.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would mature hostel residents and senior students expect peers to do when someone's private space is mocked online?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect residents to enjoy the humor and add their own funny comments.", "score": 0},
+                    {"text": "They would expect students to stay out of roommate squabbles.", "score": 1},
+                    {"text": "They would expect peers to refuse to share or laugh at photos of private rooms.", "score": 2},
+                    {"text": "They would expect residents to demand that the photos be removed and ensure the student is treated with respect.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do respected hostel wardens or residential advisors view circulating candid photos of residents' personal spaces?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They consider informal floor chats outside their jurisdiction unless property is damaged.", "score": 0},
+                    {"text": "They advise students to work out personal disagreements quietly.", "score": 1},
+                    {"text": "They consider unauthorized photography inside hostel quarters a serious breach of resident rules.", "score": 2},
+                    {"text": "They strictly penalize digital harassment and protect every resident's right to privacy and security.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can tell floor mates that taking and sharing private photos of a resident crosses the line?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because the floor leaders would make fun of me for being overly sensitive.", "score": 0},
+                    {"text": "Hesitant because creating conflict on your own living floor makes daily life uncomfortable.", "score": 1},
+                    {"text": "Reasonably capable of sending a calm message saying we should respect each other's living space.", "score": 2},
+                    {"text": "Fully confident in speaking up clearly to demand that private room photos be deleted immediately.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If dominant seniors on the floor are leading the mockery in the hostel chat, how easily can you resist joining in?",
+                "PBC",
+                [
+                    {"text": "Very difficult because getting on the wrong side of senior hostel residents can make life miserable.", "score": 0},
+                    {"text": "Somewhat hard because going along with the floor leaders is the easiest way to fit in.", "score": 1},
+                    {"text": "Manageable because I can choose not to like, react, or comment on their posts.", "score": 2},
+                    {"text": "Completely straightforward because my integrity and respect for fellow residents come before floor popularity.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If private photos or recordings of a resident are shared in your living group in the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Look through the pictures and laugh privately with my roommates.", "score": 0},
+                    {"text": "Say nothing in the group and continue with my evening routine.", "score": 1},
+                    {"text": "Post a message asking peers to delete the photos and respect roommate privacy.", "score": 2},
+                    {"text": "Demand the removal of the post and privately check in with the affected resident to offer companionship.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan when you see {target_name} eating alone in the hostel dining hall after this incident?",
+                "BehavioralIntention",
+                [
+                    {"text": "Sit at another table with my regular group to avoid any awkwardness.", "score": 0},
+                    {"text": "Eat quickly and leave without saying anything.", "score": 1},
+                    {"text": "Give them a friendly nod and make sure they feel acknowledged.", "score": 2},
+                    {"text": "Carry my tray to their table, sit with them warmly, and share an enjoyable, normal meal together.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1360,173 +1641,213 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "university_community",
         "difficulty_level": 3,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["WhatsApp", "Instagram", "Discord", "University portals"],
+        "platforms": ["Instagram", "WhatsApp", "Facebook"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["student_society", "elections", "smear_campaign", "fabricated_rumors"],
+        "context_tags": ["student_society", "leadership_election", "character_assassination", "whisper_campaign"],
         "personalization_tags": {
-            "media_type": "community_election",
-            "social_habits": ["University communities", "Social interaction"],
+            "media_type": "society_campaign",
+            "social_habits": ["Student societies", "Campus leadership"],
         },
         "narrative_variations": [
             (
-                "{target_name} was elected as an executive member of a university student society related to {academic_task}. Unhappy with the election outcome, {initiator_name} launched an anonymous smear campaign on {platform}. They posted fabricated claims that {target_name} had mishandled society funds and engaged in favoritism during recruitment. The posts circulated quickly among society members, attracting suspicious comments and demands for an investigation. Senior society members knew the budget was thoroughly audited, but refrained from making a public statement. {target_name} resigned from their executive role, stopped attending society events, and became noticeably withdrawn on campus. A society treasurer who had verified all the financial receipts read the allegations online."
+                "During elections for the executive council of the university departmental society, {target_name} ran for the position of General Secretary against {initiator_name}. Two days before voting, an anonymous account on {platform} circulated fabricated rumors claiming {target_name} had mishandled student sponsorship funds during a past festival for {academic_task}. The rumor was forwarded across multiple student batch groups and student society chats, prompting intense suspicion and hostility from peers. Although {target_name} presented official bank receipts verifying their innocence, several students continued to share the accusations. Classmates saw the distress this caused {target_name}, but chose not to get involved in what they viewed as campus politics. {target_name} withdrew from the election, stepped down from all extracurricular activities, and felt disgraced among batchmates. A society member who had audited the accounts knew the financial claims were completely false."
             ),
             (
-                "{target_name} organized an annual academic workshop for {academic_task} that received praise from faculty members. {initiator_name} posted on {platform} claiming {target_name} took all the credit while forcing junior volunteers to do all the work. They tagged several faculty advisors and student leaders, inviting public criticism of {target_name}'s leadership. Classmates began debating the allegations publicly, with several people assuming the worst without verifying the facts. Junior volunteers who had enjoyed working with {target_name} hesitated to speak out against senior students. {target_name} cancelled their plans to organize the next symposium and declined further student leadership opportunities. A volunteer who worked directly alongside {target_name} throughout the event saw the post."
+                "In the campus debating and literary society, {target_name} was nominated to represent the university at an upcoming national inter-university tournament. {initiator_name}, who was not selected, launched a smear campaign on {platform} alleging that {target_name} was picked through favoritism rather than merit in {academic_task}. The post gathered dozens of comments from disgruntled society members, questioning {target_name}'s abilities and demanding a boycott of the delegation. While several senior debaters knew {target_name} had won the internal trials legitimately, they refrained from making public statements. {target_name} declined the nomination, stopped attending society meetings, and felt alienated from their passion. A teammate who competed in the trials knew {target_name}'s scores were the highest."
             ),
             (
-                "{target_name} was chosen to lead the university debate delegation for an intercollegiate championship in {academic_task}. {initiator_name} created an anonymous poll on {platform} asking whether {target_name} was the least qualified leader in university history. The poll attracted hundreds of votes from students who enjoyed campus drama, generating a stream of ridiculing comments. Debate team members saw the damage being done to team morale, but feared becoming the next target. A few faculty advisors heard about the poll but dismissed it as harmless student politics. {target_name} stepped down as delegation head, stopped attending debate practices, and kept a low profile. A team member who had prepared their opening arguments with {target_name} had the poll on their screen."
+                "A student volunteer organization was organizing a campus welfare drive, and {target_name} was selected as lead coordinator. An anonymous student who wanted the position began circulating malicious gossip on {platform} claiming {target_name} had acted condescendingly toward junior volunteers during preparations for {academic_task}. The rumors spread quickly through volunteer WhatsApp groups, leading some juniors to withdraw and whisper behind {target_name}'s back. Although several key volunteers knew {target_name} was exceptionally patient and supportive, no one spoke up in the main group. {target_name} resigned from the coordinator role, felt deeply discouraged, and avoided extracurricular campus involvement. A volunteer who worked closely with {target_name} observed the unfair whispering campaign."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about spreading fake rumors about a classmate during student society elections?",
-                "options": [
-                    {"text": "All is fair in elections — spreading rumors is just part of campus politics and competition.", "score": 0},
-                    {"text": "A dirty tactic, but anyone running for a post should expect personal attacks.", "score": 1},
-                    {"text": "It is dishonest and wrong — making up false rumors to win damages someone's character unfairly.", "score": 2},
-                    {"text": "It is completely unacceptable behavior that ruins student trust and deeply harms an innocent person.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do honest student leaders and teachers expect when rumors circulate during campus elections?",
-                "options": [
-                    {"text": "Most students forward the gossip to see who wins.", "score": 0},
-                    {"text": "People watch silently and wait for the election to pass.", "score": 1},
-                    {"text": "Responsible students ask for proof before believing or forwarding anonymous claims.", "score": 2},
-                    {"text": "Good student leaders expect peers to report fake rumors and reject negative campaigning.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can help stop false rumors spread in batch WhatsApp groups?",
-                "options": [
-                    {"text": "Not confident — once a rumor starts on WhatsApp, students believe it without questioning.", "score": 0},
-                    {"text": "Unsure — getting involved in campus politics might make people target me too.", "score": 1},
-                    {"text": "Fairly confident — I can ask the group for proof and point out that anonymous rumors shouldn't be trusted.", "score": 2},
-                    {"text": "Very confident — I can challenge the rumors openly, urge classmates not to spread them, and support {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do when you receive an unverified rumor attacking {target_name}?",
-                "options": [
-                    {"text": "Forward it to other friends to keep them updated on the drama.", "score": 0},
-                    {"text": "Read the message and stay quiet without checking if it's true.", "score": 1},
-                    {"text": "Refuse to forward it, and ask the sender if they have any actual proof.", "score": 2},
-                    {"text": "Tell the group that spreading unverified rumors is wrong, and let {target_name} know so they can clear their name.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If the teacher in charge is considering dropping {target_name} due to the rumors, what will you do?",
-                "options": [
-                    {"text": "Stay out of teacher matters entirely to protect my own position.", "score": 0},
-                    {"text": "Feel bad for {target_name}, but assume the truth will come out eventually.", "score": 1},
-                    {"text": "Encourage {target_name} to meet the teacher and explain the truth with facts.", "score": 2},
-                    {"text": "Go with {target_name} to the teacher to confirm that the rumors were fabricated by rivals.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe winning a student election is ever worth destroying a classmate's reputation?",
-                "options": [
-                    {"text": "Yes — winning is what matters most, and politics is always tough.", "score": 0},
-                    {"text": "Sometimes — if the other candidate is bad, any tactic is acceptable.", "score": 1},
-                    {"text": "No — no student society title is worth ruining a classmate's honor and peace of mind.", "score": 2},
-                    {"text": "Never — spreading lies to win an election corrupts the entire university community.", "score": 3},
-                ],
-            },
+            make_q(
+                "When someone circulates fabricated rumors online to damage a peer's reputation before a student election or selection, how do you view that?",
+                "Attitude",
+                [
+                    {"text": "It is part of competitive student politics and anyone running for office should expect tough tactics.", "score": 0},
+                    {"text": "It might be unethical, but rumors naturally emerge during heated campus contests.", "score": 1},
+                    {"text": "It is dishonest and unfair because spreading unverified claims ruins someone's integrity.", "score": 2},
+                    {"text": "It is malicious character assassination that inflicts severe personal trauma and corrupts student leadership.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you view classmates who continue to forward unverified accusations even after evidence of innocence has been shared?",
+                "Attitude",
+                [
+                    {"text": "People forward what they find interesting; verifying facts is not every student's job.", "score": 0},
+                    {"text": "It is careless, but campus gossip is hard to slow down once momentum starts.", "score": 1},
+                    {"text": "It is irresponsible behavior that actively spreads falsehoods and harms a classmate.", "score": 2},
+                    {"text": "It represents deliberate cruelty that chooses entertaining gossip over truth and justice.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would honest student leaders and faculty advisors expect students to do when defamatory campaign rumors appear?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect students to let the candidates fight it out in public.", "score": 0},
+                    {"text": "They would expect students to remain neutral and not get dragged into politics.", "score": 1},
+                    {"text": "They would expect students to demand verifiable evidence before believing accusations.", "score": 2},
+                    {"text": "They would expect students to publicly reject baseless smear campaigns and uphold clean election standards.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do respected student mentors handle whisper campaigns against fellow student candidates?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They take advantage of the drama to promote their own preferred candidates.", "score": 0},
+                    {"text": "They stay quiet to avoid damaging their own political alliances.", "score": 1},
+                    {"text": "They privately advise the candidate on how to issue a clarification.", "score": 2},
+                    {"text": "They firmly refute false claims across student networks and model integrity in campus leadership.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident do you feel posting verified facts or evidence in a student group to clear a falsely accused classmate's name?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because supporters of the rival candidate would attack me immediately.", "score": 0},
+                    {"text": "Hesitant because getting tagged into campus political arguments is exhausting.", "score": 1},
+                    {"text": "Reasonably capable of posting a calm clarification pointing to the verified facts.", "score": 2},
+                    {"text": "Fully confident in publicly correcting the false rumors and defending a peer's honest reputation.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If friends in your student circle urge you to forward a juicy campaign rumor about a peer, how easily can you refuse?",
+                "PBC",
+                [
+                    {"text": "Difficult because not participating makes me seem out of touch with our group's political interests.", "score": 0},
+                    {"text": "Somewhat hard because sharing campus gossip is how students bond.", "score": 1},
+                    {"text": "Quite easy because I can simply choose not to forward unverified posts.", "score": 2},
+                    {"text": "Completely natural because I have firm principles against spreading unsubstantiated claims about anyone.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If an anonymous smear campaign against a student surfaces in your batch chats in the coming two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Forward the claims to friends to discuss whether they think it could be true.", "score": 0},
+                    {"text": "Read the messages and stay out of the conversation.", "score": 1},
+                    {"text": "Ask peers in the group to provide proof before spreading damaging claims.", "score": 2},
+                    {"text": "Publicly challenge the baseless rumors and offer clear personal support to {target_name}.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan regarding {target_name} after seeing them withdraw from leadership activities in distress?",
+                "BehavioralIntention",
+                [
+                    {"text": "Avoid discussing society matters so they do not feel bitter.", "score": 0},
+                    {"text": "Wait for them to recover their confidence on their own schedule.", "score": 1},
+                    {"text": "Reach out privately to let them know that sensible students recognize their honesty.", "score": 2},
+                    {"text": "Meet with them warmly, encourage them not to give up on their extracurricular passions, and stand by their side.", "score": 3},
+                ]
+            ),
         ],
     },
     {
         "template_key": "TEMPL_UC_LMS_BRIGADE",
         "category": "university_community",
-        "difficulty_level": 1,
+        "difficulty_level": 3,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["University portals", "Discord", "WhatsApp"],
+        "platforms": ["University portals", "WhatsApp", "Discord"],
         "departments": ["Any"],
         "livings": ["Any"],
-        "context_tags": ["lms_forum", "discussion_board", "coordinated_downvoting", "public_ridicule"],
+        "context_tags": ["lms_forum", "academic_discussion", "comment_brigade", "public_ridicule"],
         "personalization_tags": {
-            "media_type": "lms_discussion_board",
-            "social_habits": ["Academic communication", "Course forums"],
+            "media_type": "lms_platform",
+            "social_habits": ["Academic communication", "University portals"],
         },
         "narrative_variations": [
             (
-                "{target_name} posted a detailed, thoughtful answer to an online discussion prompt on the university LMS for {academic_task}. They offered a unique interpretation of the assigned reading that challenged conventional assumptions. {initiator_name} posted a condescending reply, then rallied several friends in {platform} to flood the LMS thread with hostile critiques. Within an hour, ten students posted coordinated replies belittling {target_name}'s academic reasoning and writing style. Other students enrolled in the course noticed the aggressive brigading, but avoided contributing to the discussion. {target_name} deleted their original response, never posted on the LMS forum again, and refrained from answering questions in lectures. A classmate who found {target_name}'s perspective insightful was reading through the hostile replies."
+                "On the university's official Learning Management System (LMS) discussion portal for {academic_task}, students were required to post thoughtful responses to a weekly lecture topic. {target_name} posted an insightful but unconventional perspective that challenged common assumptions. In an external student WhatsApp group, {initiator_name} shared a link to the LMS thread, urging classmates to go and 'clown' the post. Within two hours, over fifteen students posted sarcastic and condescending replies on the formal university portal, ridiculing {target_name}'s reasoning. Although the professor had not yet reviewed the forum, the public pile-on left {target_name} feeling humiliated on an official academic platform. Classmates observing the thread realized the responses were coordinated, yet none posted a supportive argument. {target_name} deleted their original forum post, refrained from participating in subsequent discussions, and lost academic enthusiasm. A student who agreed with {target_name}'s original perspective saw the coordinated attack unfold."
             ),
             (
-                "{target_name} submitted a code review question on the official university learning portal for {academic_task}. They highlighted a bug they encountered in the sample code provided for an upcoming lab assignment. {initiator_name} took screenshots of the question and posted them on {platform}, calling {target_name} incompetent. They encouraged classmates to downvote the question on the portal and leave sarcastic comments under the post. The professor had not yet reviewed the thread, and peers watched the downvotes multiply in real time. {target_name} withdrew the question, struggled with the lab assignment alone, and submitted an incomplete project. A student who had encountered the exact same bug in their code saw the question being mocked."
+                "During an online LMS peer-review session for {academic_task}, students were assigned to leave constructive feedback on classmates' draft submissions. {initiator_name} coordinated with friends on {platform} to give {target_name}'s draft the lowest possible ratings, accompanying the scores with harsh and insulting public critiques. The coordinated negative reviews dragged down {target_name}'s composite score, visible to the entire tutorial group. Several students who reviewed {target_name}'s work knew it was of high quality, but refrained from correcting the biased scores. {target_name} received an unfairly depressed evaluation, felt completely demotivated, and doubted their own academic capabilities. A peer who read the draft recognized that the criticism was completely unfounded."
             ),
             (
-                "{target_name} shared a link to an open-source tutorial on the course discussion board for {academic_task} to help struggling peers. {initiator_name} commented that only lazy students need external tutorials and accused {target_name} of promoting shortcuts. They mobilized their friend circle on {platform} to spam the discussion board with sarcastic memes and dismissive remarks. The helpful tutorial thread was buried under negative comments, discouraging other students from using the resource. Several classmates who had bookmarked the link remained silent throughout the public mockery. {target_name} stopped participating in course forums, kept their study materials private, and worked in isolation. A student who was currently reading the tutorial to prepare for an exam saw the spam comments arrive."
+                "On the course portal forum for {academic_task}, {target_name} posted a question asking for clarification on an ambiguous exam topic. {initiator_name} took a screenshot and posted it in a Discord channel, prompting multiple students to post condescending comments on the LMS claiming the question was foolish. The public ridicule on the university's official platform caused {target_name} intense embarrassment in front of both classmates and faculty. While many students also found the exam topic unclear, they remained silent as the mocking comments mounted. {target_name} stopped using the course forum for help, struggled through revision alone, and felt alienated. A classmate who also didn't understand the topic watched the forum messages accumulate."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about leaving rude comments and mocking a classmate on official university LMS forums?",
-                "options": [
-                    {"text": "Students who post too much on LMS deserve pushback for trying to show off to teachers.", "score": 0},
-                    {"text": "A bit immature, but forum arguments happen in every university course.", "score": 1},
-                    {"text": "It is completely wrong — using official study portals to make fun of someone ruins the learning space.", "score": 2},
-                    {"text": "It is unacceptable bullying that discourages students from asking questions and participating in class.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do professors and serious university students expect when peers post on course discussion boards?",
-                "options": [
-                    {"text": "They expect people to stay silent and only post when forced to by grades.", "score": 0},
-                    {"text": "They expect sarcasm and jokes from students.", "score": 1},
-                    {"text": "They expect polite discussions, honest questions, and helpful answers.", "score": 2},
-                    {"text": "They expect mutual respect, encouraging replies, and serious academic teamwork.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can reply helpfully to support an LMS post that is being mocked?",
-                "options": [
-                    {"text": "Not confident — jumping into a hostile thread makes people start teasing me too.", "score": 0},
-                    {"text": "Unsure — I don't want to get involved in public arguments on the LMS.", "score": 1},
-                    {"text": "Fairly confident — I can leave a polite, well-thought-out reply answering {target_name}'s question.", "score": 2},
-                    {"text": "Very confident — I can answer {target_name}'s question nicely and email the professor if the harassment continues.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do upon seeing this hostile teasing on the LMS forum?",
-                "options": [
-                    {"text": "Read the drama and maybe give one of the sarcastic replies a thumbs up.", "score": 0},
-                    {"text": "Log off the LMS and avoid the thread.", "score": 1},
-                    {"text": "Leave a helpful, supportive reply on {target_name}'s post to restore normal discussion.", "score": 2},
-                    {"text": "Reply with a helpful answer, say that mocking queries is uncalled for, and inform the teacher if needed.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "In future online course discussions, how will you participate to keep discussions positive?",
-                "options": [
-                    {"text": "Post only the bare minimum required words and never talk to anyone.", "score": 0},
-                    {"text": "Reply only to my closest friends in the class.", "score": 1},
-                    {"text": "Reply to classmates with polite, encouraging, and helpful comments.", "score": 2},
-                    {"text": "Help create an open, welcoming atmosphere where every student feels comfortable asking questions.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe insulting classmates on official university platforms should have academic consequences?",
-                "options": [
-                    {"text": "No — online comments should never affect a student's real academic record.", "score": 0},
-                    {"text": "Only if very bad words are used, otherwise it's just student banter.", "score": 1},
-                    {"text": "Yes — bullying in official university spaces breaks student conduct rules.", "score": 2},
-                    {"text": "Definitely — official learning platforms require respect, and harassing classmates should not be allowed.", "score": 3},
-                ],
-            },
+            make_q(
+                "When students coordinate in private chats to pile on and leave mocking replies on a peer's official course portal post, how do you view that?",
+                "Attitude",
+                [
+                    {"text": "It is just spirited academic debate and posting publicly means expecting tough criticism.", "score": 0},
+                    {"text": "It might be a little harsh, but students will naturally critique ideas they disagree with.", "score": 1},
+                    {"text": "It is unfair gang behavior that corrupts academic discussions into personal mockery.", "score": 2},
+                    {"text": "It is abusive collective harassment that degrades official learning spaces and silences intellectual curiosity.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your view on classmates watching a coordinated comment attack on the LMS and leaving no supportive replies?",
+                "Attitude",
+                [
+                    {"text": "Not commenting is smart because drawing professors' attention to a controversial thread is unwise.", "score": 0},
+                    {"text": "It is understandable since students have their own assignment deadlines to worry about.", "score": 1},
+                    {"text": "It leaves the poster feeling completely isolated in an official university forum.", "score": 2},
+                    {"text": "It tacitly allows malicious groups to dictate who feels welcome to participate in course discussions.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would dedicated professors and mature students expect members of the class to do on an official discussion portal?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect students to let the debate play out naturally without interference.", "score": 0},
+                    {"text": "They would expect students to only post for mandatory grading points.", "score": 1},
+                    {"text": "They would expect students to maintain professional academic courtesy in all replies.", "score": 2},
+                    {"text": "They would expect students to post constructive, thoughtful contributions that validate diverse viewpoints.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do respected academic high-achievers in your program respond to unconventional student ideas on the LMS?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They join in pointing out flaws sarcastically to show off their own knowledge.", "score": 0},
+                    {"text": "They ignore unusual posts completely.", "score": 1},
+                    {"text": "They offer polite, reasoned feedback on the academic arguments.", "score": 2},
+                    {"text": "They engage deeply with the perspective and foster respectful, open-minded academic discourse.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident do you feel writing a constructive, supportive comment on the LMS thread to balance out the hostile replies?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because the coordinated group would likely mock my reply too.", "score": 0},
+                    {"text": "Uncertain because posting on the formal course portal where the instructor sees everything feels daunting.", "score": 1},
+                    {"text": "Reasonably capable of writing a respectful response engaging with {target_name}'s points.", "score": 2},
+                    {"text": "Fully confident in posting a thoughtful, professional reply that validates their ideas and models academic maturity.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If peers in an external chat group ask you to join their comment brigade on the LMS, how easily can you decline?",
+                "PBC",
+                [
+                    {"text": "Difficult because declining makes me look unsupportive of my friends' chat activities.", "score": 0},
+                    {"text": "Somewhat hard because joining in feels like an easy way to participate in group bonding.", "score": 1},
+                    {"text": "Quite easy because I can simply choose not to post on the LMS thread.", "score": 2},
+                    {"text": "Completely straightforward because I refuse to participate in coordinated attacks on a classmate.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a peer's post is being targeted by coordinated mockery on the course forum in the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Read the comments to see how the argument develops without participating.", "score": 0},
+                    {"text": "Avoid opening the thread to keep clear of forum drama.", "score": 1},
+                    {"text": "Post a calm, constructive reply on the forum supporting the discussion.", "score": 2},
+                    {"text": "Write a thoughtful, affirming response on the LMS and advise friends in private chats to stop the brigade.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for engaging with {target_name} during upcoming tutorial and discussion sessions?",
+                "BehavioralIntention",
+                [
+                    {"text": "Stay quiet during their turns to speak so as not to invite controversy.", "score": 0},
+                    {"text": "Wait for other classmates to respond before expressing any thoughts.", "score": 1},
+                    {"text": "Acknowledge their points positively during in-class discussions.", "score": 2},
+                    {"text": "Actively support their contributions in class, helping restore their confidence as a valued participant.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1535,85 +1856,105 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "difficulty_level": 2,
         "tpb_dimension": "Balanced TPB",
         "platforms": ["WhatsApp", "Discord", "University portals"],
-        "departments": ["Engineering", "Computer Science", "Medical / Health Sciences", "Medical Sciences", "Information Technology", "Any"],
+        "departments": ["Engineering", "Computer Science", "Medical Sciences", "Any"],
         "livings": ["Any"],
-        "context_tags": ["lab_practical", "partner_abandonment", "public_scapegoating", "workload_dumping"],
+        "context_tags": ["laboratory_work", "partner_dispute", "public_blame", "technical_failure"],
         "personalization_tags": {
-            "media_type": "lab_coordination",
-            "social_habits": ["Academic communication", "Practical sessions"],
+            "media_type": "lab_environment",
+            "social_habits": ["Practical laboratory", "Technical teamwork"],
         },
         "narrative_variations": [
             (
-                "{target_name} and {initiator_name} were paired as lab partners for an intensive practical component of {academic_task}. During a complex procedure, {target_name} accidentally dropped a test tube, causing a minor delay for the team. {initiator_name} took a photo of the shattered glass and posted it in the departmental {platform} with an insulting caption. They labeled {target_name} a clumsy liability and urged classmates never to partner with them in future semesters. Classmates reacted with laughing emojis, while others shared the photo into cross-departmental groups. {target_name} cleaned up the broken glass in tears, left the laboratory before the debrief, and skipped the following lab. A student working at the adjacent lab bench had watched the accident happen and saw the photo posted."
+                "During a mandatory practical laboratory session for {academic_task}, {target_name} and {initiator_name} were assigned as lab partners. While executing a sensitive procedure, a piece of equipment calibrated by both students malfunctioned, resulting in lost data for that day's session. Immediately upon leaving the lab, {initiator_name} posted in the section WhatsApp group blaming {target_name} entirely, using derogatory language and labeling them incompetent. Several classmates began echoing the criticism, making jokes about never wanting {target_name} as a lab partner. {target_name} tried to explain that the equipment had a pre-existing technical fault, but their explanation was drowned out by sarcastic memes. A few students working at the next workbench knew the machine had been acting up earlier, but they remained silent. {target_name} felt humiliated, dreaded attending future lab sessions, and asked the lab demonstrator for solo seating. A student who used the same bench in the morning session knew the equipment had issues."
             ),
             (
-                "{target_name} made an arithmetic error in the initial calculations for a group lab report in {academic_task}. The instructor caught the mistake during rounds and gently explained the correct formula to both partners. Instead of fixing it, {initiator_name} took a picture of the graded sheet, circled {target_name}'s handwriting, and posted it on {platform}. They added sarcastic commentary questioning how {target_name} managed to pass prerequisite courses. Peers chimed in with jokes about the error, ignoring that the final report still earned a decent mark. {target_name} refused to work with {initiator_name} again, requested an isolated lab station, and stopped speaking during practicals. A classmate who made a similar calculation error on their own sheet was looking at the post."
+                "In a semester coding lab for {academic_task}, {target_name} accidentally introduced a bug into the shared project repository an hour before the lab evaluation. {initiator_name} went into a rage, taking screenshots of the error log and posting them across departmental chat groups with captions insulting {target_name}'s intelligence. Classmates piled on with mocking comments, questioning how {target_name} passed previous semesters. While several peers understood that software bugs are a normal part of learning, no one stepped in to defuse the anger. {target_name} packed their laptop in tears, skipped the evaluation session, and felt incapable of continuing the course. A peer who had resolved the same bug earlier saw the hostile messages in the chat."
             ),
             (
-                "{target_name} struggled with operating a piece of unfamiliar machinery during a mandatory workshop in {academic_task}. They asked the lab technician for help three times to ensure they were using the equipment safely. {initiator_name} recorded a covert video of {target_name} asking for instructions and uploaded it to {platform}. The video was titled 'How not to do practicals' and gathered dozens of ridiculing comments from senior students. Several classmates recognized that asking for safety advice was responsible, yet said nothing to counter the video. {target_name} avoided attending open lab hours, fell behind on practical milestones, and appeared nervous around machinery. A technician who assisted {target_name} earlier in the day saw a group of students laughing at the video outside."
+                "During a collaborative clinical or science practical for {academic_task}, {target_name} hesitated while identifying a laboratory specimen, asking the instructor for guidance. Right after class, {initiator_name} ridiculed their hesitation in the section group on {platform}, asking how someone so slow could expect to graduate. Other group members joined in with laughing stickers, turning a normal learning moment into an ongoing joke. Several classmates felt {initiator_name}'s comments were harsh and unnecessary, but kept their opinions to themselves. {target_name} avoided speaking during practical demonstrations, sat at the furthest table, and lost confidence in their hands-on skills. Another student who also struggled with the identification felt anxious seeing the reaction."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about leaving all the lab work to your partner and then publicly blaming them in class chats?",
-                "options": [
-                    {"text": "Smart move — you have to defend your own grade before your partner blames you.", "score": 0},
-                    {"text": "Dishonest, but partner fights in university labs happen all the time.", "score": 1},
-                    {"text": "Unfair and cowardly — dumping work on someone and then blaming them publicly is wrong.", "score": 2},
-                    {"text": "It is completely unacceptable behavior that exploits a teammate and damages their reputation.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do teachers and honest classmates expect when partner disagreements happen in lab practicals?",
-                "options": [
-                    {"text": "Whoever complains louder in the group chat usually gets believed.", "score": 0},
-                    {"text": "People expect partners to argue it out privately without involving others.", "score": 1},
-                    {"text": "Honest classmates expect partners to communicate maturely and share work fairly.", "score": 2},
-                    {"text": "Teachers expect honest teamwork, fair division of tasks, and respectful communication.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can help explain what really happened if you saw the lab session?",
-                "options": [
-                    {"text": "Not confident — getting between lab partners is messy and will only bring trouble.", "score": 0},
-                    {"text": "Unsure — unless the lab teacher asks me directly, I would stay out of it.", "score": 1},
-                    {"text": "Fairly confident — I can confirm that {target_name} worked hard and that {initiator_name} did not help.", "score": 2},
-                    {"text": "Very confident — I can speak up in the group to stop false blame and confirm the truth to the lab instructor.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do upon seeing {initiator_name} blame {target_name} in the class chat?",
-                "options": [
-                    {"text": "Read the argument and post laughing emojis in the chat.", "score": 0},
-                    {"text": "Stay quiet and feel glad that I'm not in their lab group.", "score": 1},
-                    {"text": "Message {target_name} privately to say I saw them working hard in lab and support them.", "score": 2},
-                    {"text": "Post in the chat that {target_name} worked alone, and encourage them to show their work to the teacher.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "If you are partnered with someone who is struggling with lab tasks in the future, what will you do?",
-                "options": [
-                    {"text": "Do only my part and let them struggle with theirs.", "score": 0},
-                    {"text": "Complain to other friends about how slow my partner is.", "score": 1},
-                    {"text": "Patiently go through the steps together and divide the work fairly based on strengths.", "score": 2},
-                    {"text": "Work together patiently, help them understand the steps, and make sure both of us learn.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe being good at lab work gives any student the right to mistreat their partner?",
-                "options": [
-                    {"text": "Yes — top students have higher standards and shouldn't be slowed down by weaker partners.", "score": 0},
-                    {"text": "Somewhat — getting frustrated is natural when your grade depends on someone else.", "score": 1},
-                    {"text": "No — skill means nothing if you don't treat your partners with fairness and respect.", "score": 2},
-                    {"text": "Definitely not — true success in university means being both competent and a supportive teammate.", "score": 3},
-                ],
-            },
+            make_q(
+                "When someone publicly blames and insults their lab partner in a class chat over a shared technical mistake, how do you view that?",
+                "Attitude",
+                [
+                    {"text": "It is completely understandable because losing lab marks due to a partner's error is infuriating.", "score": 0},
+                    {"text": "It is a bit aggressive, but venting frustration publicly is how students deal with bad teamwork.", "score": 1},
+                    {"text": "It is unfair because laboratory errors and equipment faults happen to everyone in practical learning.", "score": 2},
+                    {"text": "It is abusive scapegoating that humiliates a partner publicly rather than solving problems cooperatively.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you view classmates chiming in with sarcastic memes about never wanting that student as a lab partner?",
+                "Attitude",
+                [
+                    {"text": "It is harmless humor that reflects realistic student preferences for good partners.", "score": 0},
+                    {"text": "It is somewhat mean, but students naturally make jokes about lab disasters.", "score": 1},
+                    {"text": "It reinforces unfair stigma against a classmate who was simply trying to learn.", "score": 2},
+                    {"text": "It creates an intimidating climate of shame where making a normal mistake invites collective humiliation.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would lab demonstrators and responsible students expect lab partners to do when an experiment fails?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect the more capable student to make it clear to everyone who made the error.", "score": 0},
+                    {"text": "They would expect partners to complain to the instructor about each other.", "score": 1},
+                    {"text": "They would expect partners to troubleshoot the mistake together professionally.", "score": 2},
+                    {"text": "They would expect partners to share responsibility maturely and seek instructor guidance collaboratively.", "score": 3},
+                ]
+            ),
+            make_q(
+                "In your academic department, how do students who are respected for practical skills handle partner mistakes in the lab?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They take over the entire apparatus and push their partner aside.", "score": 0},
+                    {"text": "They finish the work in silence and avoid working with that partner again.", "score": 1},
+                    {"text": "They explain how to correct the mistake patiently and maintain team morale.", "score": 2},
+                    {"text": "They embody true collaborative spirit by supporting their partner's learning without any condescension.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can speak up in the class chat to point out that technical faults happen and errors are part of lab learning?",
+                "PBC",
+                [
+                    {"text": "Not confident at all because the angry partner would likely direct their frustration at me.", "score": 0},
+                    {"text": "Hesitant because getting involved in someone else's lab drama feels uncomfortable.", "score": 1},
+                    {"text": "Reasonably capable of sending a brief note saying that equipment faults happen to all of us.", "score": 2},
+                    {"text": "Fully confident in stating firmly that publicly berating a lab partner is wrong and counterproductive.", "score": 3},
+                ]
+            ),
+            make_q(
+                "When other classmates are laughing at memes mocking {target_name}'s lab skills, how easily can you decline to join the mockery?",
+                "PBC",
+                [
+                    {"text": "Difficult because laughing along with the group's complaints is the natural response.", "score": 0},
+                    {"text": "Somewhat hard because expressing sympathy might make me look like I support poor lab work.", "score": 1},
+                    {"text": "Easy because I can choose not to like or forward the sarcastic memes.", "score": 2},
+                    {"text": "Completely straightforward because I value empathy and fairness over cheap group laughs.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If a classmate is publicly scapegoated over a lab failure in your class chat during the next two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Read the messages and make a mental note to avoid partnering with that student.", "score": 0},
+                    {"text": "Mute the chat and let the partners sort out their dispute.", "score": 1},
+                    {"text": "Post a message reminding everyone that technical mistakes happen in every lab.", "score": 2},
+                    {"text": "Intervene to defend the student publicly and offer to review the practical steps with {target_name} privately.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan if you have an opportunity to partner with {target_name} in an upcoming practical session?",
+                "BehavioralIntention",
+                [
+                    {"text": "Find another partner quickly to ensure my own lab marks are safe.", "score": 0},
+                    {"text": "Work with them only if no other partners are available.", "score": 1},
+                    {"text": "Gladly partner with them and ensure we support each other through the procedure.", "score": 2},
+                    {"text": "Actively invite them to partner, divide the tasks equitably, and build a productive, encouraging lab team.", "score": 3},
+                ]
+            ),
         ],
     },
     {
@@ -1621,86 +1962,106 @@ SCENARIO_TEMPLATES: List[Dict[str, Any]] = [
         "category": "university_community",
         "difficulty_level": 1,
         "tpb_dimension": "Balanced TPB",
-        "platforms": ["WhatsApp", "Instagram", "Discord"],
+        "platforms": ["WhatsApp", "Instagram", "Facebook"],
         "departments": ["Any"],
-        "livings": ["Home with family", "Shared apartment"],
-        "context_tags": ["commuter_students", "hostel_clique", "academic_exclusion", "social_isolation"],
+        "livings": ["Home with family", "Other"],
+        "context_tags": ["commuter_student", "point_bus", "social_exclusion", "rumor_mongering"],
         "personalization_tags": {
-            "media_type": "cohort_chat",
-            "social_habits": ["Group chats", "Off-campus living"],
+            "media_type": "commuter_network",
+            "social_habits": ["Campus commute", "Point bus travel"],
         },
         "narrative_variations": [
             (
-                "{target_name} is a commuter student who travels two hours daily by public point bus to attend university classes. Because of strict bus departure schedules, they had to leave a group project meeting for {academic_task} at five in the afternoon. {initiator_name} and hostel residents posted in {platform} stating that commuter students are lazy and should drop out. They scheduled all remaining meetings at midnight in the campus cafeteria, deliberately making it impossible for {target_name} to participate. Other commuter students in the section felt the unfairness keenly, but remained silent to avoid conflict. {target_name} was removed from the team credit list, had to plead with the course coordinator, and felt deeply alienated. A fellow commuter student who was on the same bus read the group messages while traveling home."
+                "{target_name} is a day-scholar student who commutes over ninety minutes each way on the university point bus while studying {academic_task}. Because of bus schedules, they must leave campus immediately after the final lecture, making it impossible to attend informal evening campus gatherings. {initiator_name} and several hostel-based classmates began posting sarcastic jokes on {platform} about commuter students who 'disappear' and don't care about the cohort. When {target_name} asked in the batch chat for details about an evening review session they missed, peers ignored the message or replied with dismissive comments. Classmates who also commute understood the travel constraints, but kept quiet to avoid being targeted themselves. {target_name} felt increasingly alienated from university social life, struggled with course updates, and spent commutes feeling isolated. A fellow commuter on the same route saw the dismissive chat responses."
             ),
             (
-                "{target_name} commutes from an outlying town each morning to study {academic_task} alongside urban peers. Due to severe road blockages, they arrived thirty minutes late to a collaborative group workshop. {initiator_name} took a photo of {target_name} entering the classroom breathless and posted it on {platform} with a humiliating caption. The post mocked their punctuality and questioned whether students from distant towns belonged at a top university. Classmates reacted with laughing emojis, treating the difficult daily commute as a running joke. {target_name} stopped sitting with the group, began skipping morning lectures, and studied alone at home. A classmate who also experienced transportation delays that morning saw the mocking post."
+                "On the university shuttle bus route, a dispute occurred over seat reservations between {target_name} and a friend of {initiator_name}. That evening, {initiator_name} posted a story on {platform} calling {target_name} rude and uncooperative, tagging several students who travel on the same bus route. The post prompted hurtful remarks in the route's unofficial WhatsApp group, leading other students to avoid sitting near {target_name} during daily commutes. Several commuters knew {target_name} was quiet and polite, but they avoided speaking to them on the bus to prevent tension. {target_name} spent two hours every day commuting in complete social isolation, dreading the ride to and from campus. A student who witnessed the original bus interaction knew {target_name} had not acted rudely."
             ),
             (
-                "{target_name} requested that a project team for {academic_task} conduct their weekend discussions online instead of on campus. They explained in {platform} that weekend transportation from their village was unavailable and costly. {initiator_name} mocked the request publicly, stating that students with financial or travel constraints should not choose difficult degrees. Several peers supported {initiator_name}'s dismissive attitude, refusing to accommodate virtual meetings. A few students recognized the insensitivity of the comments, but chose not to get involved. {target_name} paid for an expensive taxi to attend, sat quietly throughout the meeting, and did not speak to anyone. A student who had suggested online meetings earlier that week was reading the group discussion."
+                "{target_name} had to rush to catch the last departure of the university point bus, accidentally leaving behind a sweater on a bench outside the {academic_task} department. Someone photographed the sweater and posted it in a campus group with sarcastic remarks about commuter students rushing home to their parents. Members made fun of {target_name}'s daily routine and family-oriented lifestyle, circulating the photo across several batch chats. Although some students found the jokes petty and unfair, they laughed along in the comments. {target_name} felt self-conscious about their commuter status, avoided waiting near common pickup points, and kept to themselves. A classmate who also catches the same point bus recognized the sweater."
             ),
         ],
         "questions": [
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "What do you think about resident students excluding day-scholar commuter students and making fun of their schedule?",
-                "options": [
-                    {"text": "Commuters should make arrangements to stay late if they want the full university experience.", "score": 0},
-                    {"text": "A natural divide — hostel students naturally bond more, and it's inconvenient to adjust for commuters.", "score": 1},
-                    {"text": "It is unfair and exclusionary — making fun of someone because of their commute or bus schedule is wrong.", "score": 2},
-                    {"text": "It is completely unacceptable elitism that divides the batch and hurts students unfairly.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "SubjectiveNorm",
-                "question_text": "What do mature and fair university students expect regarding group meeting times?",
-                "options": [
-                    {"text": "They expect commuter students to adjust to whatever the majority resident group wants.", "score": 0},
-                    {"text": "They don't think about scheduling fairness.", "score": 1},
-                    {"text": "They expect groups to find daytime hours or use online tools so everyone can join.", "score": 2},
-                    {"text": "They expect genuine consideration that respects everyone's transport, family, and home constraints.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "PBC",
-                "question_text": "How confident are you that you can suggest meeting times that work for commuter classmates?",
-                "options": [
-                    {"text": "Not confident — hostel students outnumber commuters and will always insist on late nights.", "score": 0},
-                    {"text": "Unsure — I wouldn't want to argue with hostel friends over meeting times.", "score": 1},
-                    {"text": "Fairly confident — I can suggest daytime library hours or an online call so {target_name} can join.", "score": 2},
-                    {"text": "Very confident — I can propose fair meeting times and ensure that no classmate is left out due to the bus.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "What would you honestly do if you saw {target_name} being made fun of for needing to catch the point bus?",
-                "options": [
-                    {"text": "Agree with the residents that early departures make group work frustrating.", "score": 0},
-                    {"text": "Stay quiet and let them work out their transport issues.", "score": 1},
-                    {"text": "Suggest having meetings online or during free class slots so {target_name} can fully participate.", "score": 2},
-                    {"text": "Remind the group that commuting is a reality for many, insist on daytime meetings, and share all notes with {target_name}.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "BehavioralIntention",
-                "question_text": "How do you plan to promote inclusion between hostel and commuter students in your classes?",
-                "options": [
-                    {"text": "Stick to my own circle of friends and not worry about commuter vs hostelite divides.", "score": 0},
-                    {"text": "Be polite if asked, but make no special effort.", "score": 1},
-                    {"text": "Support sharing all notes and updates online so off-campus students are never left behind.", "score": 2},
-                    {"text": "Actively welcome diverse classmates into project groups and make sure everyone feels included.", "score": 3},
-                ],
-            },
-            {
-                "tpb_construct": "Attitude",
-                "question_text": "Do you believe every student deserves an equal chance to work on projects without being mocked for their living situation?",
-                "options": [
-                    {"text": "No — university teamwork is based on who you are friends with.", "score": 0},
-                    {"text": "Ideally yes, but hard to do in practice.", "score": 1},
-                    {"text": "Yes — every student deserves an equal chance to participate without facing mockery.", "score": 2},
-                    {"text": "Definitely — university life is better when every student, whether in hostel or commuting, is respected.", "score": 3},
-                ],
-            },
+            make_q(
+                "When hostel students mock commuter students for rushing to catch point buses or being unable to stay for evening hangouts, how do you view that?",
+                "Attitude",
+                [
+                    {"text": "It is lighthearted campus humor between hostel residents and day-scholars.", "score": 0},
+                    {"text": "It might be slightly dismissive, but commuters should expect to feel a bit out of the loop.", "score": 1},
+                    {"text": "It is unfair and inconsiderate because commuting hours are a real constraint beyond a student's control.", "score": 2},
+                    {"text": "It is exclusionary bullying that creates harmful divides and makes commuter students feel like second-class peers.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How do you evaluate peers ignoring a commuter student's polite questions in the batch chat about review sessions held after bus hours?",
+                "Attitude",
+                [
+                    {"text": "If students cannot attend evening sessions, they shouldn't expect others to catch them up.", "score": 0},
+                    {"text": "It is a bit unhelpful, but people in the group are usually busy with their own revision.", "score": 1},
+                    {"text": "It is selfish behavior that withholds academic support from a hardworking classmate.", "score": 2},
+                    {"text": "It is deliberate social exclusion that actively punishes someone for their family or living circumstances.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What would considerate classmates expect students who attend evening sessions to do for commuter peers?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They would expect commuters to ask the instructor directly rather than bothering classmates.", "score": 0},
+                    {"text": "They would expect members to only share notes if they happen to be close friends.", "score": 1},
+                    {"text": "They would expect peers to share brief summaries when asked in the group chat.", "score": 2},
+                    {"text": "They would expect students to proactively share session notes, recordings, and key takeaways with commuters.", "score": 3},
+                ]
+            ),
+            make_q(
+                "In your university batch, how do thoughtful students bridge the gap between hostel residents and day-scholars?",
+                "SubjectiveNorm",
+                [
+                    {"text": "They keep their social circles strictly divided between hostellers and commuters.", "score": 0},
+                    {"text": "They interact civilly during lectures but organize events without considering bus timings.", "score": 1},
+                    {"text": "They schedule group meetings during daytime campus hours so commuters can participate.", "score": 2},
+                    {"text": "They actively build an inclusive community where commute constraints are respected and accommodated.", "score": 3},
+                ]
+            ),
+            make_q(
+                "How confident are you that you can share lecture recordings, session summaries, or notes with a commuter classmate who had to catch the bus?",
+                "PBC",
+                [
+                    {"text": "Not confident because keeping track of others' schedules is not my responsibility.", "score": 0},
+                    {"text": "Hesitant because sharing notes takes extra time and effort after a long day.", "score": 1},
+                    {"text": "Reasonably capable of sending a quick photo of the meeting notes or whiteboard summary.", "score": 2},
+                    {"text": "Fully confident in ensuring {target_name} receives all study materials promptly so they never fall behind.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If friends in the chat are joking about commuter students rushing for the bus terminal, how easily can you decline to join the mockery?",
+                "PBC",
+                [
+                    {"text": "Difficult because laughing at point bus jokes is a staple of campus conversation.", "score": 0},
+                    {"text": "Somewhat hard because calling out simple jokes makes you look overly sensitive.", "score": 1},
+                    {"text": "Easy because I can choose not to send laughing stickers or comments.", "score": 2},
+                    {"text": "Completely straightforward because I respect my peers' daily commitments and travel efforts.", "score": 3},
+                ]
+            ),
+            make_q(
+                "If an evening study update is needed by a commuter student in your class group in the coming two weeks, what do you plan to do?",
+                "BehavioralIntention",
+                [
+                    {"text": "Leave the message unread and let someone else respond.", "score": 0},
+                    {"text": "Wait to see if the group leader posts an update before doing anything.", "score": 1},
+                    {"text": "Reply in the chat with a summary of key decisions made during the session.", "score": 2},
+                    {"text": "Send {target_name} comprehensive notes and ensure all their questions are thoroughly answered.", "score": 3},
+                ]
+            ),
+            make_q(
+                "What is your plan for greeting and interacting with {target_name} on the point bus or at the campus terminal?",
+                "BehavioralIntention",
+                [
+                    {"text": "Wear headphones and look out the window to avoid having to make conversation.", "score": 0},
+                    {"text": "Say a brief hello only if we happen to make direct eye contact.", "score": 1},
+                    {"text": "Smile, greet them pleasantly, and ask how their classes went today.", "score": 2},
+                    {"text": "Sit with them warmly, offer genuine companionship during the commute, and make sure they feel valued.", "score": 3},
+                ]
+            ),
         ],
-    },
+    }
 ]
