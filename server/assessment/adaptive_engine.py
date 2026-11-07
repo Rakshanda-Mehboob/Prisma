@@ -143,8 +143,100 @@ def normalize_construct(raw: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2. USER SCENARIO HISTORY & ANTI-REPETITION TRACKING
+# 2. STRICT VALIDATION ENGINE (CENTRALIZED)
 # ─────────────────────────────────────────────────────────────────────────────
+
+REQUIRED_CATEGORIES = {
+    "social_media": "Social Media Interaction",
+    "private_group": "Private Group Communication",
+    "university_community": "Campus Community Interaction",
+}
+
+VALID_CONSTRUCTS = {"Attitude", "SubjectiveNorm", "PBC", "BehavioralIntention"}
+
+
+def validate_assessment_structure(scenarios: List[Dict]) -> Tuple[bool, str]:
+    """
+    Strictly validate that generated assessment data satisfies all psychometric
+    and structural requirements before persistence:
+      1. Exactly 3 distinct scenarios.
+      2. Exactly 8 questions per scenario (total 24 questions).
+      3. Exactly 2 questions for each TPB construct per scenario:
+         - Attitude: 2
+         - SubjectiveNorm: 2
+         - PBC: 2
+         - BehavioralIntention: 2
+      4. Exactly 4 options per question with backend scores 0, 1, 2, 3.
+      5. Natural, simple English option text (not standard Likert labels).
+      6. No empty texts or duplicate questions.
+    """
+    if not isinstance(scenarios, list) or len(scenarios) != 3:
+        return False, f"Expected exactly 3 scenarios, got {len(scenarios) if isinstance(scenarios, list) else type(scenarios)}"
+
+    total_questions = 0
+    seen_question_texts: Set[str] = set()
+
+    for s_idx, s in enumerate(scenarios, 1):
+        if not isinstance(s, dict):
+            return False, f"Scenario {s_idx} is not a valid dictionary"
+        
+        scenario_text = (s.get("scenario_text") or "").strip()
+        if not scenario_text:
+            return False, f"Scenario {s_idx} has empty scenario_text"
+
+        questions = s.get("questions")
+        if not isinstance(questions, list) or len(questions) != 8:
+            return False, f"Scenario {s_idx} must have exactly 8 questions, got {len(questions) if isinstance(questions, list) else type(questions)}"
+
+        construct_counts: Dict[str, int] = {c: 0 for c in VALID_CONSTRUCTS}
+
+        for q_idx, q in enumerate(questions, 1):
+            total_questions += 1
+            if not isinstance(q, dict):
+                return False, f"Scenario {s_idx} Question {q_idx} is not a valid dictionary"
+
+            q_text = (q.get("question_text") or "").strip()
+            if not q_text:
+                return False, f"Scenario {s_idx} Question {q_idx} has empty question_text"
+
+            norm_text = q_text.lower()
+            if norm_text in seen_question_texts:
+                return False, f"Duplicate question detected: {q_text[:50]}"
+            seen_question_texts.add(norm_text)
+
+            construct = normalize_construct(q.get("tpb_construct", ""))
+            if construct not in VALID_CONSTRUCTS:
+                return False, f"Invalid TPB construct '{construct}' in Scenario {s_idx} Question {q_idx}"
+            construct_counts[construct] += 1
+
+            options = q.get("options")
+            if not isinstance(options, list) or len(options) != 4:
+                return False, f"Scenario {s_idx} Question {q_idx} must have exactly 4 options, got {len(options) if isinstance(options, list) else 0}"
+
+            scores_found = set()
+            for opt_idx, opt in enumerate(options):
+                if not isinstance(opt, dict):
+                    return False, f"Scenario {s_idx} Question {q_idx} Option {opt_idx} is invalid"
+                opt_text = (opt.get("text") or "").strip()
+                if not opt_text:
+                    return False, f"Scenario {s_idx} Question {q_idx} Option {opt_idx} has empty text"
+                score = opt.get("score")
+                if score not in (0, 1, 2, 3):
+                    return False, f"Scenario {s_idx} Question {q_idx} Option {opt_idx} has invalid score {score}"
+                scores_found.add(score)
+
+            if scores_found != {0, 1, 2, 3}:
+                return False, f"Scenario {s_idx} Question {q_idx} options must contain scores 0, 1, 2, 3 exactly once"
+
+        # Verify construct distribution: exactly 2 per construct per scenario
+        for c, count in construct_counts.items():
+            if count != 2:
+                return False, f"Scenario {s_idx} must contain exactly 2 questions for '{c}', got {count}"
+
+    if total_questions != 24:
+        return False, f"Assessment must contain exactly 24 questions, got {total_questions}"
+
+    return True, "Validation successful"
 
 def get_user_scenario_history(db: Session, user_id: int) -> Tuple[Set[str], List[str]]:
     """
@@ -314,25 +406,32 @@ NARRATIVE COHERENCE & DETAIL:
 
 REQUIRED STRUCTURE:
 Generate exactly 3 distinct scenarios:
-1. Scenario 1: A social media situation (e.g. on {primary_platform} — an anonymous confession post, a story poll, or comments mocking a peer).
-2. Scenario 2: A private group or chat situation (e.g. a university WhatsApp batch group, section chat, or Discord server).
-3. Scenario 3: A campus teamwork or community situation (e.g. group project partner dispute, hostel living, or student society).
+1. Scenario 1: A social media situation (category: "Social Media Interaction", e.g. on {primary_platform} — an anonymous confession post, a story poll, or comments mocking a peer).
+2. Scenario 2: A private group or chat situation (category: "Private Group Communication", e.g. a university WhatsApp batch group, section chat, or Discord server).
+3. Scenario 3: A campus teamwork or community situation (category: "Campus Community Interaction", e.g. group project partner dispute, hostel living, or student society).
 
-FOR EACH SCENARIO, GENERATE EXACTLY 6 QUESTIONS:
-Cover all 4 Theory of Planned Behavior (TPB) constructs:
-- 1-2 Attitude questions (How the student views the behavior — is it harmful, mean, or just harmless fun?)
-- 1-2 SubjectiveNorm questions (What close friends, batch mates, or respected peers would expect them to do)
-- 1-2 PBC questions (How confident and capable they feel about speaking up, helping, or reporting)
-- 1-2 BehavioralIntention questions (What they would realistically do in this situation)
+FOR EACH SCENARIO, GENERATE EXACTLY 8 QUESTIONS:
+Every scenario must cover all 4 Theory of Planned Behavior (TPB) constructs with EXACTLY TWO questions per construct:
+- Exactly 2 Attitude questions (student's personal evaluation: whether the action causes harm vs. harmless fun)
+- Exactly 2 SubjectiveNorm questions (perceived social pressure: what close friends, batch mates, or respected peers expect)
+- Exactly 2 PBC questions (perceived behavioral control: confidence and capability in speaking up, helping privately, or reporting)
+- Exactly 2 BehavioralIntention questions (intended future behavior: what they realistically plan to do in the next few weeks)
 
-EVERY QUESTION MUST HAVE EXACTLY 4 ANSWER OPTIONS (scored 0, 1, 2, 3):
-Write all options in EASY, EVERYDAY WORDS:
-- Score 0 = Strongly Disagree / Completely passive, ignores it, thinks it is not their problem
-- Score 1 = Disagree / Unsure, hesitating, low confidence
-- Score 2 = Agree / Supportive, helpful private support, checking in or encouraging others to stop
-- Score 3 = Strongly Agree / Active upstander, immediately speaks up, reports the behavior, and stands by the peer
+ANSWER OPTIONS (SIMPLE EVERYDAY ENGLISH — NO LIKERT LABELS):
+- Do NOT use standard Likert labels (NEVER use 'Strongly Agree', 'Agree', 'Disagree', 'Strongly Disagree').
+- For EACH question, generate 4 natural, conversational simple English answer options tailored specifically to that question.
+- Each option must reflect a realistic thought, feeling, or attitude of a university student.
+- Avoid obvious action ladders (do not just say 'ignore', 'laugh', 'help', 'report').
+- Avoid making one answer look obviously 'good' or 'correct'.
 
-For negatively worded statements, reverse the scoring (Strongly Disagree=3, Disagree=2, Agree=1, Strongly Agree=0) so higher scores always reflect healthier, prosocial behavior.
+BACKEND NUMERIC SCORING:
+- Each option must have a numeric score in the backend:
+  * 0 = Lowest score for the measured construct
+  * 1 = Low score
+  * 2 = Higher score
+  * 3 = Highest score for the measured construct
+- Higher scores (adjusted) must always represent the healthier/prosocial TPB direction.
+- The 4 scores (0, 1, 2, 3) must each appear exactly once per question.
 
 Output strictly valid JSON with this exact format:
 {{
@@ -343,13 +442,14 @@ Output strictly valid JSON with this exact format:
       "platform_context": "{primary_platform}",
       "questions": [
         {{
-          "question_text": "...",
+          "question_text": "When an anonymous confession page posts a picture of a student with a teasing caption, how do you view that situation?",
           "tpb_construct": "Attitude",
+          "is_reverse_scored": false,
           "options": [
-            {{"text": "...", "score": 0}},
-            {{"text": "...", "score": 1}},
-            {{"text": "...", "score": 2}},
-            {{"text": "...", "score": 3}}
+            {{"text": "It is just casual campus entertainment that people forget in a few days.", "score": 0}},
+            {{"text": "It might be slightly embarrassing, but public social spaces naturally come with occasional teasing.", "score": 1}},
+            {{"text": "It crosses personal boundaries because unsolicited public attention can cause genuine anxiety.", "score": 2}},
+            {{"text": "It is harmful and humiliating because public ridicule on large student pages deeply affects someone's emotional safety.", "score": 3}}
           ]
         }}
       ]
@@ -359,21 +459,18 @@ Output strictly valid JSON with this exact format:
 
     try:
         print(f"[Adaptive Engine] Calling OpenAI gpt-4o-mini for runtime scenario generation (Dept: {dept}, Stage: {stage})...")
-        client = OpenAI(api_key=OPENAI_API_KEY, timeout=25.0)
+        client = OpenAI(api_key=OPENAI_API_KEY, timeout=35.0)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "You are an educational counselor creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context. "
-                        "Generate scenarios using simple, clear, and student-friendly language. "
-                        "Do not reduce the length, number of lines, or amount of information. Keep scenarios detailed and explainable, not short summaries. "
-                        "Avoid complex vocabulary, technical terms, or confusing sentence structures. The scenario should be easy for a student to read once, understand, and visualize in their mind. "
-                        "Use natural storytelling language with clear emotional and social context based on everyday digital experiences. "
-                        "Keep situations thoughtful and realistic—not too obvious, nor overly difficult or ambiguous. "
-                        "Maintain the psychological assessment purpose measuring TPB constructs (Attitude, Subjective Norms, PBC, Behavioral Intention). "
-                        "Ensure scenarios and questions make total narrative sense for the student's department and student life. "
+                        "You are an expert psychometrician and educational researcher creating university cyberbullying assessment scenarios in a Pakistani/South Asian cultural context based on the Theory of Planned Behavior (TPB). "
+                        "You MUST generate exactly 3 scenarios with exactly 8 questions per scenario (total 24 questions). "
+                        "Each scenario must contain exactly 2 questions for each of the 4 TPB constructs: Attitude (2), SubjectiveNorm (2), PBC (2), and BehavioralIntention (2). "
+                        "Do NOT use standard Strongly Agree/Agree labels. Instead, write 4 natural, conversational simple English answer options for EACH question with backend scores 0, 1, 2, 3. "
+                        "Statements and options must be realistic, subtle, personality-sensitive, and avoid socially desirable giveaways. "
                         "Respond ONLY with valid JSON."
                     ),
                 },
@@ -390,21 +487,21 @@ Output strictly valid JSON with this exact format:
         if not isinstance(scenarios, list) or len(scenarios) < 3:
             return None
 
-        validated = []
+        validated_scenarios = []
         for s in scenarios[:3]:
-            scenario_text = s.get("scenario_text")
-            if not isinstance(scenario_text, str) or not scenario_text.strip():
+            scenario_text = (s.get("scenario_text") or "").strip()
+            if not scenario_text:
                 return None
             questions = s.get("questions")
-            if not isinstance(questions, list) or len(questions) < 4:
+            if not isinstance(questions, list) or len(questions) != 8:
                 return None
 
             cleaned_questions = []
             for q in questions:
                 if not isinstance(q, dict):
                     return None
-                q_text = q.get("question_text")
-                if not isinstance(q_text, str) or not q_text.strip():
+                q_text = (q.get("question_text") or "").strip()
+                if not q_text:
                     return None
                 opts = q.get("options")
                 if not isinstance(opts, list) or len(opts) != 4:
@@ -414,31 +511,38 @@ Output strictly valid JSON with this exact format:
                 for opt in opts:
                     if not isinstance(opt, dict):
                         return None
-                    opt_text = opt.get("text")
+                    opt_text = (opt.get("text") or "").strip()
                     opt_score = opt.get("score")
-                    if not isinstance(opt_text, str) or not opt_text.strip():
+                    if not opt_text or opt_score not in (0, 1, 2, 3):
                         return None
-                    if not isinstance(opt_score, int) or opt_score not in (0, 1, 2, 3):
-                        return None
-                    cleaned_opts.append({"text": opt_text.strip(), "score": opt_score})
+                    cleaned_opts.append({"text": opt_text, "score": opt_score})
 
                 c = normalize_construct(q.get("tpb_construct", "Attitude"))
                 cleaned_questions.append({
-                    "question_text": q_text.strip(),
+                    "question_text": q_text,
                     "tpb_construct": c,
+                    "is_reverse_scored": bool(q.get("is_reverse_scored", False)),
                     "options": cleaned_opts,
                 })
 
-            s["scenario_text"] = scenario_text.strip()
-            s["questions"] = cleaned_questions
-            validated.append(s)
+            s_clean = {
+                "scenario_text": scenario_text,
+                "category": s.get("category", "Social Media Interaction"),
+                "platform_context": s.get("platform_context", primary_platform),
+                "questions": cleaned_questions,
+            }
+            validated_scenarios.append(s_clean)
 
-        if len(validated) == 3:
-            print(f"[Adaptive Engine] Successfully generated 3 runtime scenarios via OpenAI with simple words and cultural relevance.")
-            return validated
-        return None
+        # Run strict central validator on the OpenAI generated payload
+        is_valid, reason = validate_assessment_structure(validated_scenarios)
+        if is_valid:
+            print(f"[Adaptive Engine] Successfully generated and strictly validated 3 runtime scenarios via OpenAI (24 items, 8/scenario).")
+            return validated_scenarios
+        else:
+            print(f"[Adaptive Engine] OpenAI output rejected by validator: {reason}. Falling back to template synthesizer.")
+            return None
     except Exception as e:
-        print(f"[Adaptive Engine] OpenAI runtime generation unavailable or failed: {e}. Falling back to easy-word local synthesizer.")
+        print(f"[Adaptive Engine] OpenAI runtime generation unavailable or failed: {e}. Falling back to template library synthesizer.")
 
     return None
 
@@ -600,7 +704,6 @@ def synthesize_scenario_assessment(
                 .replace("{academic_task}", academic_task)
             )
 
-            # Format and shuffle options
             opts = []
             for opt in q["options"]:
                 opt_text = (
@@ -612,17 +715,12 @@ def synthesize_scenario_assessment(
                 )
                 opts.append({"text": opt_text, "score": opt["score"]})
 
-            # Shuffle option order for psychometric fairness
-            random.shuffle(opts)
-
             processed_questions.append({
                 "question_text": q_text,
                 "tpb_construct": normalize_construct(q.get("tpb_construct", "Attitude")),
+                "is_reverse_scored": bool(q.get("is_reverse_scored", False)),
                 "options": opts,
             })
-
-        # Shuffle question order within the scenario so TPB order varies naturally
-        random.shuffle(processed_questions)
 
         result_scenarios.append({
             "template_key": tpl["template_key"],
@@ -632,6 +730,11 @@ def synthesize_scenario_assessment(
             "difficulty_level": tpl.get("difficulty_level", 1),
             "questions": processed_questions,
         })
+
+    # Validate synthesized scenarios
+    is_valid, reason = validate_assessment_structure(result_scenarios)
+    if not is_valid:
+        print(f"[Adaptive Engine] Warning: Synthesized scenario validation warning: {reason}")
 
     return result_scenarios
 
@@ -669,6 +772,11 @@ def generate_scenario_assessment(
         raw_scenarios = synthesize_scenario_assessment(
             db, profile_data, previously_used_keys, stage
         )
+
+    # 3. Final validation before persistence
+    is_valid, reason = validate_assessment_structure(raw_scenarios)
+    if not is_valid:
+        raise ValueError(f"Assessment validation failed: {reason}")
 
     # Context summary for internal auditing
     context_used = json.dumps({
@@ -713,15 +821,16 @@ def generate_scenario_assessment(
                 difficulty=scenario_data.get("difficulty_level", 1),
             )
 
-            # Create questions for this scenario
+            # Create questions for this scenario (exactly 8 questions per scenario)
             questions = scenario_data.get("questions", [])
-            for q_idx, q_data in enumerate(questions[:6]):
+            for q_idx, q_data in enumerate(questions[:8]):
                 question = models.AssessmentQuestion(
                     scenario_id=scenario.id,
                     order_index=q_idx,
                     question_text=q_data["question_text"],
                     options_json=json.dumps(q_data["options"]),
                     tpb_construct=normalize_construct(q_data.get("tpb_construct", "Attitude")),
+                    is_reverse_scored=bool(q_data.get("is_reverse_scored", False)),
                 )
                 db.add(question)
 
