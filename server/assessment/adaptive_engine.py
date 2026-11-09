@@ -434,18 +434,25 @@ BACKEND NUMERIC SCORING:
 - The 4 scores (0, 1, 2, 3) must each appear exactly once per question.
 
 VISUAL IMAGE PROMPT GENERATION (FOR EVERY SCENARIO):
-Additionally, create an image generation prompt that visually represents this scenario.
-The image prompt should:
-- Represent the real-life situation described in the scenario.
-- Make the assessment visually engaging.
-- Reduce dependency on text-only questions.
-- Help students understand the context before answering.
-- Use a professional educational illustration style.
-- Be suitable for a university cybersecurity awareness platform.
-- Avoid any text, labels, logos, or watermarks inside the image.
+For every assessment scenario, also generate an image generation prompt.
+The image prompt should describe a realistic visual representation of the scenario.
 
-Return the image prompt separately as "image_prompt".
-Also generate a short accessibility description as "image_alt_text".
+The generated image should:
+- Match the scenario context.
+- Represent the behaviour being assessed.
+- Help users understand the situation before answering questions.
+- Make the assessment interactive instead of text-heavy.
+- Follow Prisma's professional educational design style.
+
+Avoid:
+- Text inside images.
+- Logos.
+- Watermarks.
+- Unrealistic scenes.
+
+Return:
+1. scenario_image_prompt
+2. scenario_image_alt_text
 
 Output strictly valid JSON with this exact format:
 {{
@@ -455,8 +462,8 @@ Output strictly valid JSON with this exact format:
       "scenario_text": "...",
       "category": "Social Media Interaction",
       "platform_context": "{primary_platform}",
-      "image_prompt": "Create a modern educational illustration showing a university student sitting at a laptop receiving a suspicious phishing email notification. Show a university environment, warning symbols, and cybersecurity awareness elements. Professional clean style suitable for an academic assessment platform. No text inside the image.",
-      "image_alt_text": "University student reviewing a suspicious email on a laptop while considering cybersecurity actions.",
+      "scenario_image_prompt": "Create a modern educational illustration of a university student sitting at a laptop reviewing a suspicious email notification. Show a cybersecurity warning context, digital safety awareness, and a university environment. Professional clean style for an academic behavioural assessment platform. No text inside the image.",
+      "scenario_image_alt_text": "University student analyzing a suspicious email on a laptop while considering cybersecurity actions.",
       "questions": [
         {{
           "question_text": "When an anonymous confession page posts a picture of a student with a teasing caption, how do you view that situation?",
@@ -513,8 +520,8 @@ Output strictly valid JSON with this exact format:
             if not isinstance(questions, list) or len(questions) != 8:
                 return None
 
-            img_prompt = (s.get("image_prompt") or "").strip()
-            img_alt = (s.get("image_alt_text") or "").strip()
+            img_prompt = (s.get("scenario_image_prompt") or s.get("image_prompt") or "").strip()
+            img_alt = (s.get("scenario_image_alt_text") or s.get("image_alt_text") or "").strip()
             if not img_prompt:
                 img_prompt = (
                     f"Create a modern educational illustration showing a university student in an everyday cybersecurity scenario: {scenario_text[:140]}. "
@@ -931,6 +938,7 @@ def generate_scenario_assessment(
             scenario = models.AssessmentScenario(
                 instance_id=instance.id,
                 order_index=s_idx,
+                title=scenario_data.get("scenario_title") or scenario_data.get("title") or scenario_data.get("category", f"Situation {s_idx + 1}"),
                 scenario_text=scenario_data["scenario_text"],
                 category=scenario_data.get("category", "Digital Interaction"),
                 platform_context=scenario_data.get("platform_context"),

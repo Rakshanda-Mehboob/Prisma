@@ -1406,31 +1406,14 @@ export default function Assessment() {
           <div className="scenario-assessment-layout">
             {/* LEFT PANEL: Scenario Image & Context */}
             <div className="scenario-image-panel">
-              {/* Scenario Header with Badge */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    background: 'rgba(79, 70, 229, 0.1)',
-                    color: 'var(--color-primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <currentTheme.icon size={22} />
-                </div>
-                <div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block' }}>
-                    Situation {currentScenarioIdx + 1} of {scenarios.length}
-                  </span>
-                  <h3 style={{ fontSize: '1.18rem', fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>
-                    {currentTheme.title}
-                  </h3>
-                </div>
+              {/* Scenario Step Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Situation {currentScenarioIdx + 1} of {scenarios.length}
+                </span>
+                <Badge variant="primary">
+                  {currentScenario?.category || 'Scenario'}
+                </Badge>
               </div>
 
               {/* Scenario Visual Illustration (AI Generated Image with SVG Fallback) */}
@@ -1438,7 +1421,7 @@ export default function Assessment() {
                 {currentScenario?.image_url ? (
                   <img
                     src={currentScenario.image_url.startsWith('http') ? currentScenario.image_url : `http://127.0.0.1:8000${currentScenario.image_url}`}
-                    alt={currentScenario.image_alt_text || currentTheme.title}
+                    alt={currentScenario.image_alt_text || currentScenario?.title || currentTheme.title}
                     style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '10px' }}
                     onError={(e) => {
                       // Graceful fallback to SVG illustration if remote/cached image fails
@@ -1453,10 +1436,15 @@ export default function Assessment() {
                 </div>
               </div>
 
-              {/* Scenario Narrative Text */}
+              {/* Scenario Title */}
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--color-text-primary)', lineHeight: 1.35 }}>
+                {currentScenario?.title || currentTheme.title}
+              </h3>
+
+              {/* Scenario Narrative Description */}
               <div className="scenario-narrative-text">
                 <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                  Situation Context
+                  Scenario Description
                 </div>
                 <p style={{ fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--color-text-primary)', margin: 0, fontWeight: 500 }}>
                   {currentScenario.scenario_text}

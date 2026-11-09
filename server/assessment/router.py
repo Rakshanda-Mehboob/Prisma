@@ -111,9 +111,11 @@ def _format_instance_for_frontend(instance: AssessmentInstance) -> dict:
         scenarios.append({
             "id": scenario.id,
             "order_index": scenario.order_index,
+            "title": getattr(scenario, "title", None) or getattr(scenario, "category", None) or f"Situation {scenario.order_index + 1}",
             "scenario_text": scenario.text if hasattr(scenario, 'text') else scenario.scenario_text,
             "image_url": getattr(scenario, "image_url", None),
             "image_alt_text": getattr(scenario, "image_alt_text", None),
+            "image_prompt": getattr(scenario, "image_prompt", None),
             "questions": questions,
         })
 

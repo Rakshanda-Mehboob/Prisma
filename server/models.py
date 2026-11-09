@@ -394,6 +394,7 @@ class AssessmentScenario(Base):
         Integer, ForeignKey("assessment_instances.id"), nullable=False, index=True
     )
     order_index: Mapped[int] = mapped_column(Integer, nullable=False)  # 0, 1, 2
+    title: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     scenario_text: Mapped[str] = mapped_column(Text, nullable=False)
 
     # Internal metadata (NEVER exposed to the student frontend)
