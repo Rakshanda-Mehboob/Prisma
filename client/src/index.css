@@ -7326,3 +7326,71 @@ select.form-input option {
 .clickup-dropdown-header-link:hover {
   background: rgba(79, 70, 229, 0.05);
 }
+
+/* ── Interactive Scenario-Based Assessment Layout ────────────────────────── */
+.scenario-assessment-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.scenario-image-panel {
+  position: sticky;
+  top: 1.5rem;
+  background: var(--color-surface);
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  padding: 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.scenario-illustration-box {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.03) 0%, rgba(79, 70, 229, 0.07) 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.scenario-narrative-text {
+  background: var(--color-surface-2);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  padding: 1.15rem 1.25rem;
+}
+
+.scenario-questions-tracker {
+  background: var(--color-surface);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  padding: 1rem 1.15rem;
+}
+
+.scenario-option-button:hover {
+  background: rgba(79, 70, 229, 0.04) !important;
+  border-color: rgba(99, 102, 241, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.scenario-option-button.selected {
+  background: rgba(79, 70, 229, 0.08) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+@media (max-width: 992px) {
+  .scenario-assessment-layout {
+    grid-template-columns: 1fr;
+  }
+  .scenario-image-panel {
+    position: static;
+  }
+}
+
