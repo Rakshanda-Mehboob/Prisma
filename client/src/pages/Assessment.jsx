@@ -1433,9 +1433,24 @@ export default function Assessment() {
                 </div>
               </div>
 
-              {/* Scenario Visual Illustration */}
+              {/* Scenario Visual Illustration (AI Generated Image with SVG Fallback) */}
               <div className="scenario-illustration-box">
-                <ScenarioIllustration />
+                {currentScenario?.image_url ? (
+                  <img
+                    src={currentScenario.image_url.startsWith('http') ? currentScenario.image_url : `http://127.0.0.1:8000${currentScenario.image_url}`}
+                    alt={currentScenario.image_alt_text || currentTheme.title}
+                    style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '10px' }}
+                    onError={(e) => {
+                      // Graceful fallback to SVG illustration if remote/cached image fails
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling;
+                      if (fallback) fallback.style.display = 'block';
+                    }}
+                  />
+                ) : null}
+                <div style={{ display: currentScenario?.image_url ? 'none' : 'block', width: '100%' }}>
+                  <ScenarioIllustration />
+                </div>
               </div>
 
               {/* Scenario Narrative Text */}

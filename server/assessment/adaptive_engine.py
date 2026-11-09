@@ -433,13 +433,30 @@ BACKEND NUMERIC SCORING:
 - Higher scores (adjusted) must always represent the healthier/prosocial TPB direction.
 - The 4 scores (0, 1, 2, 3) must each appear exactly once per question.
 
+VISUAL IMAGE PROMPT GENERATION (FOR EVERY SCENARIO):
+Additionally, create an image generation prompt that visually represents this scenario.
+The image prompt should:
+- Represent the real-life situation described in the scenario.
+- Make the assessment visually engaging.
+- Reduce dependency on text-only questions.
+- Help students understand the context before answering.
+- Use a professional educational illustration style.
+- Be suitable for a university cybersecurity awareness platform.
+- Avoid any text, labels, logos, or watermarks inside the image.
+
+Return the image prompt separately as "image_prompt".
+Also generate a short accessibility description as "image_alt_text".
+
 Output strictly valid JSON with this exact format:
 {{
   "scenarios": [
     {{
+      "scenario_title": "Suspicious Email Challenge",
       "scenario_text": "...",
       "category": "Social Media Interaction",
       "platform_context": "{primary_platform}",
+      "image_prompt": "Create a modern educational illustration showing a university student sitting at a laptop receiving a suspicious phishing email notification. Show a university environment, warning symbols, and cybersecurity awareness elements. Professional clean style suitable for an academic assessment platform. No text inside the image.",
+      "image_alt_text": "University student reviewing a suspicious email on a laptop while considering cybersecurity actions.",
       "questions": [
         {{
           "question_text": "When an anonymous confession page posts a picture of a student with a teasing caption, how do you view that situation?",
@@ -489,12 +506,23 @@ Output strictly valid JSON with this exact format:
 
         validated_scenarios = []
         for s in scenarios[:3]:
-            scenario_text = (s.get("scenario_text") or "").strip()
+            scenario_text = (s.get("scenario_text") or s.get("scenario_description") or s.get("description") or "").strip()
             if not scenario_text:
                 return None
             questions = s.get("questions")
             if not isinstance(questions, list) or len(questions) != 8:
                 return None
+
+            img_prompt = (s.get("image_prompt") or "").strip()
+            img_alt = (s.get("image_alt_text") or "").strip()
+            if not img_prompt:
+                img_prompt = (
+                    f"Create a modern educational illustration showing a university student in an everyday cybersecurity scenario: {scenario_text[:140]}. "
+                    f"Show a university environment with digital communication on {primary_platform}, with cybersecurity awareness elements. "
+                    "Professional clean style suitable for an academic assessment platform. No text, logos, or watermarks inside the image."
+                )
+            if not img_alt:
+                img_alt = f"University student reviewing an online scenario on {primary_platform} while considering cybersecurity actions."
 
             cleaned_questions = []
             for q in questions:
@@ -526,9 +554,12 @@ Output strictly valid JSON with this exact format:
                 })
 
             s_clean = {
+                "scenario_title": s.get("scenario_title") or s.get("title") or s.get("category", "Cybersecurity Scenario"),
                 "scenario_text": scenario_text,
                 "category": s.get("category", "Social Media Interaction"),
                 "platform_context": s.get("platform_context", primary_platform),
+                "image_prompt": img_prompt,
+                "image_alt_text": img_alt,
                 "questions": cleaned_questions,
             }
             validated_scenarios.append(s_clean)
@@ -722,12 +753,22 @@ def synthesize_scenario_assessment(
                 "options": opts,
             })
 
+        img_prompt = (
+            f"Create a modern educational illustration showing a university student in an everyday cybersecurity scenario: {formatted_narrative[:140]}. "
+            f"Show a university environment, digital communication on {platform}, and cybersecurity awareness elements. "
+            "Professional clean style suitable for an academic assessment platform. No text inside the image."
+        )
+        img_alt = f"University student reviewing an online scenario on {platform} while considering cybersecurity actions."
+
         result_scenarios.append({
             "template_key": tpl["template_key"],
+            "scenario_title": category_display_map.get(tpl["category"], "Cybersecurity Scenario"),
             "scenario_text": formatted_narrative,
             "category": category_display_map.get(tpl["category"], "Digital Interaction"),
             "platform_context": platform,
             "difficulty_level": tpl.get("difficulty_level", 1),
+            "image_prompt": img_prompt,
+            "image_alt_text": img_alt,
             "questions": processed_questions,
         })
 
@@ -740,7 +781,87 @@ def synthesize_scenario_assessment(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 5. MAIN ENTRYPOINT: GENERATE & PERSIST ASSESSMENT INSTANCE
+# 5. VISUAL SCENARIO IMAGE GENERATION WORKFLOW
+# ─────────────────────────────────────────────────────────────────────────────
+
+def generate_scenario_image(
+    image_prompt: str,
+    scenario_order: int = 0,
+    user_id: Optional[int] = None,
+) -> Optional[str]:
+    """
+    Image Generation Workflow:
+    1. Receives the image_prompt generated by AI or template engine.
+    2. Calls OpenAI image generation model (DALL-E) to produce a visual educational illustration.
+    3. Downloads and caches the image in server/static/scenario_images so it does not expire.
+    4. Returns the accessible image URL path (e.g. '/static/scenario_images/scenario_...png').
+
+    Safety and Reliability Requirements:
+    - Never raises an unhandled exception or breaks assessment generation.
+    - If DALL-E is unavailable, key is invalid, or quota is reached, gracefully returns None.
+    - Assessment generation proceeds seamlessly with text & SVG fallback.
+    - Images never affect scoring, TPB evaluation, or assessment results.
+    """
+    if not is_openai_configured(OPENAI_API_KEY) or not OpenAI or not image_prompt:
+        return None
+
+    try:
+        print(f"[Adaptive Engine] Generating visual AI scenario illustration for situation {scenario_order + 1}...")
+        client = OpenAI(api_key=OPENAI_API_KEY, timeout=40.0)
+
+        remote_url = None
+        # Try DALL-E 3 first
+        try:
+            response = client.images.generate(
+                model="dall-e-3",
+                prompt=image_prompt[:1000],
+                size="1024x1024",
+                quality="standard",
+                n=1,
+            )
+            if response and response.data:
+                remote_url = response.data[0].url
+        except Exception as e_dalle3:
+            print(f"[Adaptive Engine] DALL-E 3 unavailable ({e_dalle3}), attempting DALL-E 2 fallback...")
+            try:
+                response = client.images.generate(
+                    model="dall-e-2",
+                    prompt=image_prompt[:950],
+                    size="512x512",
+                    n=1,
+                )
+                if response and response.data:
+                    remote_url = response.data[0].url
+            except Exception as e_dalle2:
+                print(f"[Adaptive Engine] DALL-E 2 also unavailable ({e_dalle2}).")
+
+        if not remote_url:
+            return None
+
+        # Download and cache locally under server/static/scenario_images
+        try:
+            import urllib.request
+            from pathlib import Path
+            import uuid
+
+            static_dir = Path(__file__).resolve().parent.parent / "static" / "scenario_images"
+            static_dir.mkdir(parents=True, exist_ok=True)
+            filename = f"sc_{user_id or 'anon'}_{scenario_order}_{uuid.uuid4().hex[:8]}.png"
+            dest = static_dir / filename
+            urllib.request.urlretrieve(remote_url, str(dest))
+            print(f"[Adaptive Engine] AI scenario image cached successfully: {dest.name}")
+            return f"/static/scenario_images/{filename}"
+        except Exception as cache_err:
+            print(f"[Adaptive Engine] Could not cache image locally ({cache_err}); using remote URL.")
+            return remote_url
+
+    except Exception as err:
+        print(f"[Adaptive Engine] OpenAI image generation skipped or failed: {err}. Continuing with text scenario.")
+        return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. MAIN ENTRYPOINT: GENERATE & PERSIST ASSESSMENT INSTANCE
 # ─────────────────────────────────────────────────────────────────────────────
 
 def generate_scenario_assessment(
@@ -799,6 +920,14 @@ def generate_scenario_assessment(
 
         # Create 3 scenarios with questions and record history
         for s_idx, scenario_data in enumerate(raw_scenarios[:3]):
+            img_prompt = scenario_data.get("image_prompt")
+            img_alt = scenario_data.get("image_alt_text")
+
+            # Execute visual image generation workflow (safe & non-blocking)
+            img_url = None
+            if img_prompt:
+                img_url = generate_scenario_image(img_prompt, scenario_order=s_idx, user_id=user_id)
+
             scenario = models.AssessmentScenario(
                 instance_id=instance.id,
                 order_index=s_idx,
@@ -806,6 +935,9 @@ def generate_scenario_assessment(
                 category=scenario_data.get("category", "Digital Interaction"),
                 platform_context=scenario_data.get("platform_context"),
                 user_context_used=context_used,
+                image_prompt=img_prompt,
+                image_url=img_url,
+                image_alt_text=img_alt,
             )
             db.add(scenario)
             db.flush()

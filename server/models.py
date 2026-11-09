@@ -401,6 +401,11 @@ class AssessmentScenario(Base):
     platform_context: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     user_context_used: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON summary of profile factors
 
+    # Visual scenario image metadata
+    image_prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    image_alt_text: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
     # Relationships
     instance: Mapped["AssessmentInstance"] = relationship("AssessmentInstance", back_populates="scenarios")
     questions: Mapped[list["AssessmentQuestion"]] = relationship(

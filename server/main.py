@@ -13,6 +13,8 @@ Execution:
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from database import engine
 import models  # noqa: F401 — registers all SQLAlchemy ORM models with Base metadata
@@ -52,6 +54,12 @@ app.add_middleware(
 )
 
 # ── Route Mounting ─────────────────────────────────────────────────────────────
+# Ensure static directory exists for AI-generated images
+_static_dir = Path(__file__).resolve().parent / "static"
+_static_dir.mkdir(parents=True, exist_ok=True)
+(_static_dir / "scenario_images").mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+
 app.include_router(auth_router)
 app.include_router(assessment_router)
 app.include_router(interventions_router)

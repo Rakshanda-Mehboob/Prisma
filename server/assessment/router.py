@@ -112,6 +112,8 @@ def _format_instance_for_frontend(instance: AssessmentInstance) -> dict:
             "id": scenario.id,
             "order_index": scenario.order_index,
             "scenario_text": scenario.text if hasattr(scenario, 'text') else scenario.scenario_text,
+            "image_url": getattr(scenario, "image_url", None),
+            "image_alt_text": getattr(scenario, "image_alt_text", None),
             "questions": questions,
         })
 
