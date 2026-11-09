@@ -706,15 +706,16 @@ export default function Interventions() {
       setLearningPath(res.data);
 
       // Determine initial active module: first unlocked incomplete module or query param
+      const modItems = res.data.modules || [];
       const paramMod = parseInt(searchParams.get('module'), 10);
-      if (paramMod && [1, 2, 3, 4].includes(paramMod)) {
+      if (paramMod && modItems.some((m) => m.module_number === paramMod)) {
         setActiveModuleNumber(paramMod);
       } else {
-        const firstActive = res.data.modules.find((m) => m.is_unlocked && m.status !== 'completed');
+        const firstActive = modItems.find((m) => m.is_unlocked && m.status !== 'completed');
         if (firstActive) {
           setActiveModuleNumber(firstActive.module_number);
-        } else if (res.data.modules.length > 0) {
-          setActiveModuleNumber(res.data.modules[0].module_number);
+        } else if (modItems.length > 0) {
+          setActiveModuleNumber(modItems[0].module_number);
         }
       }
     } catch (err) {
@@ -825,11 +826,12 @@ export default function Interventions() {
 
   const assignment = learningPath?.assignment;
   const modules = learningPath?.modules || [];
+  const allConstructsHigh = Boolean(assignment?.all_constructs_high || (modules.length === 0 && !assignment?.is_fallback));
   const requiredModules = modules.filter((m) => m.is_required);
   const completedRequiredCount = requiredModules.filter((m) => m.status === 'completed').length;
   const totalRequiredCount = requiredModules.length;
-  const overallProgressPercent = totalRequiredCount > 0 ? Math.round((completedRequiredCount / totalRequiredCount) * 100) : 0;
-  const allRequiredDone = learningPath?.all_required_completed;
+  const overallProgressPercent = totalRequiredCount > 0 ? Math.round((completedRequiredCount / totalRequiredCount) * 100) : (allConstructsHigh ? 100 : 0);
+  const allRequiredDone = learningPath?.all_required_completed || allConstructsHigh;
 
   const isViewingActivity = activeSectionIdx >= (activeModule?.sections?.length || 0);
 
@@ -854,14 +856,20 @@ export default function Interventions() {
                     gap: 5,
                     padding: '0.25rem 0.75rem',
                     borderRadius: 'var(--radius-full)',
-                    background: assignment?.is_reinforcement ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.1)',
-                    color: assignment?.is_reinforcement ? 'var(--color-success)' : 'var(--color-primary)',
+                    background: allConstructsHigh
+                      ? 'rgba(5, 150, 105, 0.1)'
+                      : (assignment?.is_reinforcement ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.1)'),
+                    color: allConstructsHigh
+                      ? 'var(--color-success)'
+                      : (assignment?.is_reinforcement ? 'var(--color-success)' : 'var(--color-primary)'),
                     fontWeight: 700,
                     fontSize: '0.8rem',
                   }}
                 >
                   <Target size={14} />
-                  {assignment?.is_reinforcement ? 'Reinforcement Learning Path' : 'Personalized Adaptive Path'}
+                  {allConstructsHigh
+                    ? 'High Readiness across All Constructs'
+                    : (assignment?.is_reinforcement ? 'Reinforcement Learning Path' : 'Personalized Adaptive Path')}
                 </span>
 
                 <span
@@ -875,124 +883,281 @@ export default function Interventions() {
                     border: '1px solid var(--color-border)',
                   }}
                 >
-                  Diagnostic Threshold: {assignment?.threshold_used?.toFixed(1) || '4.0'} / 5.0
+                  Diagnostic Threshold: {assignment?.threshold_used ? `${Math.round(assignment.threshold_used)}%` : '70%'}
                 </span>
               </div>
 
               <h1 className="coursera-title" style={{ fontSize: '1.75rem', fontWeight: 800 }}>
-                Cyberbullying Prevention Learning Modules
+                Recommended Learning Modules Based on Your Assessment
               </h1>
 
               {/* Recommended For You Explanation Box */}
-              <div
-                style={{
-                  marginTop: '0.85rem',
-                  padding: '1rem 1.25rem',
-                  background: 'var(--color-surface-2)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-md)',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.85rem',
-                }}
-              >
-                <Sparkles size={20} color="var(--color-primary)" style={{ marginTop: 2, flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)', marginBottom: 2 }}>
-                    Recommended For You:
+              {!allConstructsHigh && (
+                <div
+                  style={{
+                    marginTop: '0.85rem',
+                    padding: '1rem 1.25rem',
+                    background: 'var(--color-surface-2)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '0.85rem',
+                  }}
+                >
+                  <Sparkles size={20} color="var(--color-primary)" style={{ marginTop: 2, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)', marginBottom: 2 }}>
+                      Recommended For You:
+                    </div>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                      {assignment?.recommendation_reason}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                    {assignment?.recommendation_reason}
-                  </p>
                 </div>
-              </div>
+              )}
+
+              {/* Informational badge for constructs with Good Readiness */}
+              {!allConstructsHigh && assignment?.high_constructs?.length > 0 && (
+                <div
+                  style={{
+                    marginTop: '0.65rem',
+                    padding: '0.65rem 1rem',
+                    background: 'rgba(5, 150, 105, 0.06)',
+                    border: '1px solid rgba(5, 150, 105, 0.25)',
+                    borderRadius: 'var(--radius-md)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: '0.83rem',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                >
+                  <CheckCircle2 size={16} color="var(--color-success)" style={{ flexShrink: 0 }} />
+                  <span>
+                    <strong style={{ color: 'var(--color-success)' }}>Good Readiness (70–100%):</strong>{' '}
+                    {assignment.high_constructs.map((c) => {
+                      const name = {
+                        attitude: 'Attitude',
+                        subjective_norm: 'Subjective Norms',
+                        pbc: 'Perceived Behavioral Control',
+                        behavioral_intention: 'Behavioral Intention',
+                      }[c] || c;
+                      const score = assignment.mean_scores?.[c];
+                      return score !== undefined && score !== null ? `${name} (${score}%)` : name;
+                    }).join(', ')}. Interventions for these constructs are omitted.
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           {error && <div className="alert alert-danger" style={{ marginTop: '1rem' }}>{error}</div>}
 
-          {/* Progress Overview */}
-          <div className="coursera-progress-block">
-            <div className="coursera-progress-header">
-              <span className="coursera-progress-title">
-                <ShieldCheck size={16} color="var(--color-primary)" />
-                Required Modules Progress: {completedRequiredCount} of {totalRequiredCount} Completed
-              </span>
-              <span style={{ fontWeight: 800, color: allRequiredDone ? 'var(--color-success)' : 'var(--color-primary)', fontSize: '0.92rem' }}>
-                {overallProgressPercent}%
-              </span>
-            </div>
-
-            <div className="progress-bar" style={{ height: 7, borderRadius: 999, background: 'var(--color-surface-3)' }}>
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${overallProgressPercent}%`,
-                  background: allRequiredDone
-                    ? 'var(--color-success)'
-                    : 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)',
-                  borderRadius: 999,
-                  transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Post-Assessment Ready Alert Banner */}
-          {allRequiredDone && (
+          {/* If ALL constructs score 70-100: Show full congratulations block */}
+          {allConstructsHigh ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               style={{
                 marginTop: '1.25rem',
-                padding: '1rem 1.25rem',
-                background: 'rgba(5, 150, 105, 0.08)',
-                border: '1px solid rgba(5, 150, 105, 0.3)',
-                borderRadius: 'var(--radius-lg)',
+                padding: '1.75rem 2rem',
+                background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%)',
+                border: '1.5px solid rgba(5, 150, 105, 0.35)',
+                borderRadius: 'var(--radius-xl)',
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '1rem',
+                flexDirection: 'column',
+                gap: '1.25rem',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <CheckCircle2 size={24} color="var(--color-success)" />
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem' }}>
+                <div
+                  style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: '50%',
+                    background: 'rgba(5, 150, 105, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <CheckCircle2 size={32} color="var(--color-success)" />
+                </div>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.96rem', color: 'var(--color-success)' }}>
-                    All Required Modules Finished!
-                  </div>
-                  <div style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)' }}>
-                    You have satisfied all diagnostic requirements. You can now unlock and take the post-assessment.
-                  </div>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-success)', margin: 0, lineHeight: 1.4 }}>
+                    Congratulations! Your assessment indicates good readiness across all TPB constructs. No personalized learning interventions are required at this time.
+                  </h2>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', margin: '0.5rem 0 0', lineHeight: 1.6 }}>
+                    All of your individual TPB construct scores are in the High range (70–100%). You have already demonstrated strong digital safety awareness, constructive peer norms, and confident behavioral control.
+                  </p>
                 </div>
               </div>
 
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleStartPostAssessment}
-                iconRight={<ArrowRight size={14} />}
+              {/* Construct Score Cards */}
+              <div
                 style={{
-                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                  borderRadius: 999,
-                  fontWeight: 700,
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                  marginTop: '0.25rem',
                 }}
               >
-                Proceed to Post-Assessment
-              </Button>
+                {[
+                  { key: 'attitude', label: 'Attitude' },
+                  { key: 'subjective_norm', label: 'Subjective Norms' },
+                  { key: 'pbc', label: 'Perceived Behavioral Control' },
+                  { key: 'behavioral_intention', label: 'Behavioral Intention' },
+                ].map(({ key, label }) => {
+                  const score = assignment?.mean_scores?.[key];
+                  return (
+                    <div
+                      key={key}
+                      style={{
+                        padding: '1rem',
+                        background: 'var(--color-surface)',
+                        borderRadius: 'var(--radius-lg)',
+                        border: '1px solid rgba(5, 150, 105, 0.25)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 4,
+                      }}
+                    >
+                      <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>{label}</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-success)' }}>
+                          {score !== undefined && score !== null ? `${score}%` : 'N/A'}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            color: 'var(--color-success)',
+                            background: 'rgba(5, 150, 105, 0.1)',
+                            padding: '2px 8px',
+                            borderRadius: 999,
+                          }}
+                        >
+                          Good Readiness (70–100%)
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleStartPostAssessment}
+                  iconRight={<ArrowRight size={16} />}
+                  style={{
+                    background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                    borderRadius: 999,
+                    fontWeight: 700,
+                  }}
+                >
+                  Proceed to Post-Assessment
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => navigate('/dashboard')}
+                  style={{ borderRadius: 999 }}
+                >
+                  Return to Dashboard
+                </Button>
+              </div>
             </motion.div>
+          ) : (
+            <>
+              {/* Progress Overview for assigned low-construct modules */}
+              <div className="coursera-progress-block">
+                <div className="coursera-progress-header">
+                  <span className="coursera-progress-title">
+                    <ShieldCheck size={16} color="var(--color-primary)" />
+                    Required Modules Progress: {completedRequiredCount} of {totalRequiredCount} Completed
+                  </span>
+                  <span style={{ fontWeight: 800, color: allRequiredDone ? 'var(--color-success)' : 'var(--color-primary)', fontSize: '0.92rem' }}>
+                    {overallProgressPercent}%
+                  </span>
+                </div>
+
+                <div className="progress-bar" style={{ height: 7, borderRadius: 999, background: 'var(--color-surface-3)' }}>
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${overallProgressPercent}%`,
+                      background: allRequiredDone
+                        ? 'var(--color-success)'
+                        : 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)',
+                      borderRadius: 999,
+                      transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Post-Assessment Ready Alert Banner */}
+              {allRequiredDone && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={{
+                    marginTop: '1.25rem',
+                    padding: '1rem 1.25rem',
+                    background: 'rgba(5, 150, 105, 0.08)',
+                    border: '1px solid rgba(5, 150, 105, 0.3)',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <CheckCircle2 size={24} color="var(--color-success)" />
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '0.96rem', color: 'var(--color-success)' }}>
+                        All Required Modules Finished!
+                      </div>
+                      <div style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)' }}>
+                        You have satisfied all diagnostic requirements. You can now unlock and take the post-assessment.
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleStartPostAssessment}
+                    iconRight={<ArrowRight size={14} />}
+                    style={{
+                      background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                      borderRadius: 999,
+                      fontWeight: 700,
+                    }}
+                  >
+                    Proceed to Post-Assessment
+                  </Button>
+                </motion.div>
+              )}
+            </>
           )}
         </div>
 
-        {/* ─── 4-Module Card Overview Grid ─── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1rem',
-          margin: '1.25rem 0',
-        }}>
-          {modules.map((m) => {
+        {/* ─── Assigned Modules Card Overview Grid (Displayed ONLY for Low Constructs) ─── */}
+        {!allConstructsHigh && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1rem',
+            margin: '1.25rem 0',
+          }}>
+            {modules.map((m) => {
             const isSelected = activeModuleNumber === m.module_number;
             const theme = CONSTRUCT_THEMES[m.target_construct] || CONSTRUCT_THEMES['Attitude'];
             const isCompleted = m.status === 'completed';
@@ -1083,9 +1248,10 @@ export default function Interventions() {
             );
           })}
         </div>
+        )}
 
         {/* ─── Active Module Interactive Player Layout ─── */}
-        {activeModule && (
+        {!allConstructsHigh && activeModule && (
           <div className="coursera-course-layout">
             {/* Syllabus Navigation Sidebar */}
             <aside className="coursera-sidebar">

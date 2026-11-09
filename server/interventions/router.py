@@ -156,19 +156,17 @@ def _ensure_core_interventions_seeded(db: Session):
 def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssignment:
     """
     Fetch existing assignment for user, or compute and persist it based on pre-test scores.
+    Always aligns with the latest assessment results from the database.
     """
     _ensure_core_interventions_seeded(db)
 
-    assignment = db.query(UserAdaptiveAssignment).filter(UserAdaptiveAssignment.user_id == user.id).first()
-    if assignment:
-        return assignment
-
-    # Retrieve pre-assessment scores
+    # Retrieve latest pre-assessment scores
     pre_scores = None
     # Check AssessmentInstance (Personalized 3-scenario assessment)
     inst = (
         db.query(AssessmentInstance)
         .filter(AssessmentInstance.user_id == user.id, AssessmentInstance.stage == "pre")
+        .order_by(AssessmentInstance.submitted_at.desc().nullslast(), AssessmentInstance.id.desc())
         .first()
     )
     if inst and inst.attitude_score is not None:
@@ -183,7 +181,7 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
         legacy_asst = (
             db.query(Assessment)
             .filter(Assessment.user_id == user.id, Assessment.stage == "pre")
-            .order_by(Assessment.submitted_at.desc())
+            .order_by(Assessment.submitted_at.desc(), Assessment.id.desc())
             .first()
         )
         if legacy_asst and legacy_asst.attitude_score is not None:
@@ -194,42 +192,61 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
                 "behavioral_intention": legacy_asst.behavioral_intention_score,
             }
 
-    # Execute adaptive assignment algorithm
+    # Execute adaptive assignment algorithm with the consistent 70.0 threshold
     mean_scores = calculate_mean_item_scores(pre_scores=pre_scores)
     assign_result = determine_module_assignments(mean_scores, threshold=DEFAULT_ADAPTIVE_THRESHOLD)
 
-    assignment = UserAdaptiveAssignment(
-        user_id=user.id,
-        assigned_modules=json.dumps(assign_result["assigned_modules"]),
-        required_module_ids=json.dumps(assign_result["required_module_ids"]),
-        optional_module_ids=json.dumps(assign_result["optional_module_ids"]),
-        low_constructs=json.dumps(assign_result["low_constructs"]),
-        mean_scores=json.dumps(assign_result["mean_scores"]),
-        threshold_used=assign_result["threshold_used"],
-        is_reinforcement=assign_result["is_reinforcement"],
-        is_fallback=assign_result["is_fallback"],
-        recommendation_reason=assign_result["recommendation_reason"],
-    )
-    db.add(assignment)
-    db.commit()
-    db.refresh(assignment)
+    assignment = db.query(UserAdaptiveAssignment).filter(UserAdaptiveAssignment.user_id == user.id).first()
 
-    # Initialize per-module states
-    required_ids_set = set(assign_result["required_module_ids"])
-    for m_num in [1, 2, 3, 4]:
-        is_req = m_num in required_ids_set
-        db.add(UserModuleState(
-            user_id=user.id,
-            module_number=m_num,
-            is_required=is_req,
-            status="assigned",
-            activity_completed=False,
-            activity_data=None,
-        ))
+    should_recreate = False
+    if not assignment:
+        should_recreate = True
+    else:
+        # Check if threshold or scores have changed
+        current_scores = json.loads(assignment.mean_scores) if assignment.mean_scores else {}
+        if assignment.threshold_used != DEFAULT_ADAPTIVE_THRESHOLD or current_scores != mean_scores:
+            should_recreate = True
 
-        # Synchronize with UserInterventionProgress for required modules
-        if is_req:
-            existing_prog = (
+    if should_recreate:
+        if not assignment:
+            assignment = UserAdaptiveAssignment(user_id=user.id)
+            db.add(assignment)
+
+        assignment.assigned_modules = json.dumps(assign_result["assigned_modules"])
+        assignment.required_module_ids = json.dumps(assign_result["required_module_ids"])
+        assignment.optional_module_ids = json.dumps(assign_result["optional_module_ids"])
+        assignment.low_constructs = json.dumps(assign_result["low_constructs"])
+        assignment.mean_scores = json.dumps(assign_result["mean_scores"])
+        assignment.threshold_used = assign_result["threshold_used"]
+        assignment.is_reinforcement = assign_result["is_reinforcement"]
+        assignment.is_fallback = assign_result["is_fallback"]
+        assignment.recommendation_reason = assign_result["recommendation_reason"]
+        db.commit()
+        db.refresh(assignment)
+
+        # Synchronize per-module states and progress records
+        required_ids_set = set(assign_result["required_module_ids"])
+        for m_num in [1, 2, 3, 4]:
+            is_req = m_num in required_ids_set
+            state = (
+                db.query(UserModuleState)
+                .filter(UserModuleState.user_id == user.id, UserModuleState.module_number == m_num)
+                .first()
+            )
+            if not state:
+                db.add(UserModuleState(
+                    user_id=user.id,
+                    module_number=m_num,
+                    is_required=is_req,
+                    status="assigned" if is_req else "optional",
+                    activity_completed=False,
+                    activity_data=None,
+                ))
+            else:
+                state.is_required = is_req
+
+            # Synchronize with UserInterventionProgress for required modules
+            prog = (
                 db.query(UserInterventionProgress)
                 .filter(
                     UserInterventionProgress.user_id == user.id,
@@ -237,14 +254,20 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
                 )
                 .first()
             )
-            if not existing_prog:
-                db.add(UserInterventionProgress(
-                    user_id=user.id,
-                    intervention_id=m_num,
-                    status="assigned",
-                ))
+            if is_req:
+                if not prog:
+                    db.add(UserInterventionProgress(
+                        user_id=user.id,
+                        intervention_id=m_num,
+                        status="assigned",
+                    ))
+            else:
+                # If this module is no longer required and not completed, clean up progress record
+                if prog and prog.status != "completed":
+                    db.delete(prog)
 
-    db.commit()
+        db.commit()
+
     return assignment
 
 
@@ -258,16 +281,27 @@ def get_adaptive_learning_path(
     db: Session = Depends(get_db),
 ):
     """
-    Returns the student's complete adaptive learning journey:
-      - Assignment metadata (low constructs, mean item scores, threshold, why assigned)
-      - Complete 4 modules with target constructs, Required/Optional labels, sequential lock status,
-        rich curriculum, and interactive activities.
+    Returns the student's personalized adaptive learning journey:
+      - Assignment metadata (individual construct scores, low constructs, threshold 70%, recommendation reason)
+      - ONLY displays modules for TPB constructs scoring below 70%.
+      - High scoring constructs (>= 70%) are omitted / hidden.
+      - If all constructs score 70–100%, returns empty modules list with congratulatory message.
     """
     assignment = _get_or_create_user_assignment(db, current_user)
 
     assigned_module_order = json.loads(assignment.assigned_modules)
     required_ids = json.loads(assignment.required_module_ids)
     mean_scores = json.loads(assignment.mean_scores)
+    low_constructs = json.loads(assignment.low_constructs) if assignment.low_constructs else []
+
+    # Calculate high constructs
+    high_constructs = []
+    for c_key in ["attitude", "subjective_norm", "pbc", "behavioral_intention"]:
+        s = mean_scores.get(c_key)
+        if s is not None and s >= assignment.threshold_used:
+            high_constructs.append(c_key)
+
+    all_constructs_high = len(low_constructs) == 0 and not assignment.is_fallback and len(assigned_module_order) == 0
 
     # Query all module states for this student
     states = (
@@ -277,9 +311,9 @@ def get_adaptive_learning_path(
     )
     state_by_num = {s.module_number: s for s in states}
 
-    # Sequential unlocking among REQUIRED modules:
-    # First required module is unlocked. Each subsequent required module unlocks
-    # only after the preceding required module is completed.
+    # Sequential unlocking among assigned modules:
+    # First assigned module is unlocked. Each subsequent assigned module unlocks
+    # only after the preceding assigned module is completed.
     unlocked_status: Dict[int, bool] = {}
     prev_required_done = True
 
@@ -290,21 +324,10 @@ def get_adaptive_learning_path(
         if not is_done:
             prev_required_done = False
 
-    # Optional modules are always unlocked for free exploration
-    for m_num in [1, 2, 3, 4]:
-        if m_num not in required_ids:
-            unlocked_status[m_num] = True
-
-    # Assemble response modules
+    # Assemble response modules: ONLY assigned modules for constructs below threshold (< 70)
     modules_out: List[ModuleDetailOut] = []
 
-    # Display required modules in assigned order first, then optional in numeric order
-    display_order = list(assigned_module_order)
-    for m in [1, 2, 3, 4]:
-        if m not in display_order:
-            display_order.append(m)
-
-    for m_num in display_order:
+    for m_num in assigned_module_order:
         cur = MODULE_CURRICULUM[m_num]
         st = state_by_num.get(m_num)
         status_val = st.status if st else "assigned"
@@ -337,16 +360,21 @@ def get_adaptive_learning_path(
         ))
 
     # All required modules must be completed to unlock post-assessment
-    all_required_done = all(
-        state_by_num.get(m_id) and state_by_num[m_id].status == "completed"
-        for m_id in required_ids
+    all_required_done = (
+        len(required_ids) == 0
+        or all(
+            state_by_num.get(m_id) and state_by_num[m_id].status == "completed"
+            for m_id in required_ids
+        )
     )
 
     assignment_dict = {
         "assigned_modules": assigned_module_order,
         "required_module_ids": required_ids,
-        "optional_module_ids": json.loads(assignment.optional_module_ids),
-        "low_constructs": json.loads(assignment.low_constructs),
+        "optional_module_ids": json.loads(assignment.optional_module_ids) if assignment.optional_module_ids else [],
+        "low_constructs": low_constructs,
+        "high_constructs": high_constructs,
+        "all_constructs_high": all_constructs_high,
         "mean_scores": mean_scores,
         "threshold_used": assignment.threshold_used,
         "is_reinforcement": assignment.is_reinforcement,

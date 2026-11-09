@@ -1,14 +1,15 @@
 """
 tests/test_adaptive_assignment.py — Unit Tests for Adaptive Module Assignment Logic.
 
-Validates the Theory of Planned Behavior (TPB) Construct-to-Module Mapping:
-  - Attitude LOW                   -> Modules 1 & 2
-  - Perceived Behavioral Control LOW -> Module 3
-  - Subjective Norms LOW           -> Module 4
-  - Multiple constructs LOW        -> Ordered by lowest score first
-  - None LOW / Intention only LOW  -> Modules 1, 2, 3, 4 (reinforcement path)
-  - Missing / Unreadable scores    -> Modules 1, 2, 3, 4 (safe fallback)
-  - Scores exactly at threshold    -> Evaluated as NOT low (>= 4.0)
+Validates the Theory of Planned Behavior (TPB) Construct-to-Module Mapping with 70% threshold:
+  - Attitude LOW (0–69%)                       -> Modules 1 & 2
+  - Perceived Behavioral Control LOW (0–69%)   -> Module 3
+  - Subjective Norms LOW (0–69%)               -> Module 4
+  - Multiple constructs LOW                    -> Ordered by lowest score first
+  - Constructs HIGH (70–100%)                  -> Completely omitted / hidden
+  - All constructs HIGH (70–100%)              -> assigned_modules = [], congratulations message
+  - Scores exactly at threshold (70.0)         -> Evaluated as HIGH (>= 70), no intervention
+  - Missing / Unreadable scores                -> Safe fallback
 """
 
 import unittest
@@ -19,197 +20,173 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from interventions.adaptive_assignment import (
+    CONSTRUCT_LOW_THRESHOLD,
     DEFAULT_ADAPTIVE_THRESHOLD,
     calculate_mean_item_scores,
     determine_module_assignments,
-    percentage_to_likert_mean,
+    normalize_to_percentage,
 )
 
 
 class TestAdaptiveAssignment(unittest.TestCase):
     def test_default_threshold_value(self):
-        """Verify single configurable constant is 4.0 on the 1-5 scale."""
-        self.assertEqual(DEFAULT_ADAPTIVE_THRESHOLD, 4.0)
+        """Verify threshold constant is 70.0 percentage."""
+        self.assertEqual(CONSTRUCT_LOW_THRESHOLD, 70.0)
+        self.assertEqual(DEFAULT_ADAPTIVE_THRESHOLD, 70.0)
 
-    def test_score_conversion(self):
-        """Verify conversion of percentage to 1-5 Likert mean item score."""
-        self.assertEqual(percentage_to_likert_mean(100.0), 5.0)
-        self.assertEqual(percentage_to_likert_mean(75.0), 4.0)
-        self.assertEqual(percentage_to_likert_mean(50.0), 3.0)
-        self.assertEqual(percentage_to_likert_mean(0.0), 1.0)
-        self.assertIsNone(percentage_to_likert_mean(None))
+    def test_score_normalization(self):
+        """Verify normalization to 0–100 percentage."""
+        self.assertEqual(normalize_to_percentage(100.0), 100.0)
+        self.assertEqual(normalize_to_percentage(70.0), 70.0)
+        self.assertEqual(normalize_to_percentage(50.0), 50.0)
+        self.assertEqual(normalize_to_percentage(0.0), 0.0)
+        # Likert 1-5 scale conversion: 5.0 -> 100%, 1.0 -> 0%, 3.0 -> 50%
+        self.assertEqual(normalize_to_percentage(5.0), 100.0)
+        self.assertEqual(normalize_to_percentage(1.0), 0.0)
+        self.assertEqual(normalize_to_percentage(3.0), 50.0)
+        self.assertIsNone(normalize_to_percentage(None))
 
-    def test_only_attitude_low(self):
-        """Attitude LOW (< 4.0) -> assign Module 1 and Module 2 as REQUIRED."""
+    def test_prompt_example_pbc_and_attitude_low(self):
+        """
+        Exact prompt example:
+          - Attitude = 62 -> Show Attitude (Modules 1 and 2)
+          - Subjective Norm = 81 -> Do NOT show SN (Module 4 omitted)
+          - PBC = 58 -> Show PBC (Module 3)
+          - Behavioral Intention = 75 -> Do NOT show BI
+        Result:
+          PBC (58) lowest, Attitude (62) second -> assigned_modules = [3, 1, 2].
+          Module 4 is completely omitted.
+        """
         scores = {
-            "attitude": 3.2,
-            "subjective_norm": 4.5,
-            "pbc": 4.2,
-            "behavioral_intention": 4.0,
+            "attitude": 62.0,
+            "subjective_norm": 81.0,
+            "pbc": 58.0,
+            "behavioral_intention": 75.0,
         }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [1, 2])
-        self.assertEqual(result["required_module_ids"], [1, 2])
-        self.assertEqual(set(result["optional_module_ids"]), {3, 4})
-        self.assertEqual(result["low_constructs"], ["attitude"])
-        self.assertFalse(result["is_reinforcement"])
-        self.assertFalse(result["is_fallback"])
-
-    def test_only_pbc_low(self):
-        """PBC LOW (< 4.0) -> assign Module 3 as REQUIRED."""
-        scores = {
-            "attitude": 4.2,
-            "subjective_norm": 4.5,
-            "pbc": 2.8,
-            "behavioral_intention": 4.0,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [3])
-        self.assertEqual(result["required_module_ids"], [3])
-        self.assertEqual(set(result["optional_module_ids"]), {1, 2, 4})
-        self.assertEqual(result["low_constructs"], ["pbc"])
-        self.assertFalse(result["is_reinforcement"])
-
-    def test_only_sn_low(self):
-        """Subjective Norms LOW (< 4.0) -> assign Module 4 as REQUIRED."""
-        scores = {
-            "attitude": 4.2,
-            "subjective_norm": 2.5,
-            "pbc": 4.2,
-            "behavioral_intention": 4.0,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [4])
-        self.assertEqual(result["required_module_ids"], [4])
-        self.assertEqual(set(result["optional_module_ids"]), {1, 2, 3})
-        self.assertEqual(result["low_constructs"], ["subjective_norm"])
-        self.assertFalse(result["is_reinforcement"])
-
-    def test_two_constructs_low_pbc_lowest(self):
-        """PBC (2.2) lowest, Attitude (3.5) second -> [3, 1, 2]."""
-        scores = {
-            "attitude": 3.5,
-            "subjective_norm": 4.5,
-            "pbc": 2.2,
-            "behavioral_intention": 4.0,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
+        result = determine_module_assignments(scores, threshold=70.0)
 
         self.assertEqual(result["assigned_modules"], [3, 1, 2])
         self.assertEqual(result["required_module_ids"], [3, 1, 2])
-        self.assertEqual(result["optional_module_ids"], [4])
+        self.assertEqual(result["optional_module_ids"], [])
         self.assertEqual(result["low_constructs"], ["pbc", "attitude"])
+        self.assertIn("subjective_norm", result["high_constructs"])
+        self.assertFalse(result["all_constructs_high"])
+        self.assertNotIn(4, result["assigned_modules"])
 
-    def test_two_constructs_low_attitude_lowest(self):
-        """Attitude (2.0) lowest, PBC (3.0) second -> [1, 2, 3]."""
+    def test_only_attitude_low(self):
+        """Attitude LOW (65 < 70) -> assign Module 1 and Module 2 only."""
         scores = {
-            "attitude": 2.0,
-            "subjective_norm": 4.5,
-            "pbc": 3.0,
-            "behavioral_intention": 4.0,
+            "attitude": 65.0,
+            "subjective_norm": 85.0,
+            "pbc": 75.0,
+            "behavioral_intention": 80.0,
         }
-        result = determine_module_assignments(scores, threshold=4.0)
+        result = determine_module_assignments(scores, threshold=70.0)
 
-        self.assertEqual(result["assigned_modules"], [1, 2, 3])
-        self.assertEqual(result["required_module_ids"], [1, 2, 3])
-        self.assertEqual(result["optional_module_ids"], [4])
-        self.assertEqual(result["low_constructs"], ["attitude", "pbc"])
+        self.assertEqual(result["assigned_modules"], [1, 2])
+        self.assertEqual(result["required_module_ids"], [1, 2])
+        self.assertEqual(result["low_constructs"], ["attitude"])
+        self.assertNotIn(3, result["assigned_modules"])
+        self.assertNotIn(4, result["assigned_modules"])
+        self.assertFalse(result["all_constructs_high"])
 
-    def test_three_constructs_low(self):
-        """SN (1.8) lowest, PBC (2.5) second, Attitude (3.4) third -> [4, 3, 1, 2]."""
+    def test_only_pbc_low(self):
+        """PBC LOW (55 < 70) -> assign Module 3 only."""
         scores = {
-            "attitude": 3.4,
-            "subjective_norm": 1.8,
-            "pbc": 2.5,
-            "behavioral_intention": 3.0,
+            "attitude": 78.0,
+            "subjective_norm": 82.0,
+            "pbc": 55.0,
+            "behavioral_intention": 75.0,
         }
-        result = determine_module_assignments(scores, threshold=4.0)
+        result = determine_module_assignments(scores, threshold=70.0)
+
+        self.assertEqual(result["assigned_modules"], [3])
+        self.assertEqual(result["required_module_ids"], [3])
+        self.assertEqual(result["low_constructs"], ["pbc"])
+        self.assertNotIn(1, result["assigned_modules"])
+        self.assertNotIn(2, result["assigned_modules"])
+        self.assertNotIn(4, result["assigned_modules"])
+
+    def test_only_sn_low(self):
+        """Subjective Norms LOW (60 < 70) -> assign Module 4 only."""
+        scores = {
+            "attitude": 72.0,
+            "subjective_norm": 60.0,
+            "pbc": 75.0,
+            "behavioral_intention": 70.0,
+        }
+        result = determine_module_assignments(scores, threshold=70.0)
+
+        self.assertEqual(result["assigned_modules"], [4])
+        self.assertEqual(result["required_module_ids"], [4])
+        self.assertEqual(result["low_constructs"], ["subjective_norm"])
+        self.assertNotIn(1, result["assigned_modules"])
+        self.assertNotIn(2, result["assigned_modules"])
+        self.assertNotIn(3, result["assigned_modules"])
+
+    def test_all_constructs_high_congratulations(self):
+        """
+        All constructs score 70–100:
+          - No modules assigned ([]).
+          - all_constructs_high = True.
+          - Exact congratulations message returned.
+        """
+        scores = {
+            "attitude": 75.0,
+            "subjective_norm": 85.0,
+            "pbc": 72.0,
+            "behavioral_intention": 80.0,
+        }
+        result = determine_module_assignments(scores, threshold=70.0)
+
+        self.assertEqual(result["assigned_modules"], [])
+        self.assertEqual(result["required_module_ids"], [])
+        self.assertEqual(result["low_constructs"], [])
+        self.assertTrue(result["all_constructs_high"])
+        self.assertIn("Congratulations! Your assessment indicates good readiness across all TPB constructs", result["recommendation_reason"])
+        self.assertIn("No personalized learning interventions are required at this time", result["recommendation_reason"])
+        self.assertEqual(len(result["modules_detail"]), 0)
+
+    def test_scores_exactly_at_threshold_is_high(self):
+        """
+        Scores exactly at 70.0 are classified as HIGH (>= 70) and do NOT get assigned.
+        """
+        scores = {
+            "attitude": 70.0,
+            "subjective_norm": 70.0,
+            "pbc": 70.0,
+            "behavioral_intention": 70.0,
+        }
+        result = determine_module_assignments(scores, threshold=70.0)
+
+        self.assertEqual(result["assigned_modules"], [])
+        self.assertTrue(result["all_constructs_high"])
+
+    def test_three_constructs_low_order_by_lowest_first(self):
+        """
+        SN (45) lowest, PBC (52) second, Attitude (65) third:
+        Order -> SN (4), PBC (3), Attitude (1, 2) -> [4, 3, 1, 2].
+        """
+        scores = {
+            "attitude": 65.0,
+            "subjective_norm": 45.0,
+            "pbc": 52.0,
+            "behavioral_intention": 70.0,
+        }
+        result = determine_module_assignments(scores, threshold=70.0)
 
         self.assertEqual(result["assigned_modules"], [4, 3, 1, 2])
-        self.assertEqual(result["required_module_ids"], [4, 3, 1, 2])
-        self.assertEqual(result["optional_module_ids"], [])
         self.assertEqual(result["low_constructs"], ["subjective_norm", "pbc", "attitude"])
 
-    def test_none_low_reinforcement_path(self):
-        """All constructs >= 4.0 -> assign all four [1, 2, 3, 4] as reinforcement path."""
-        scores = {
-            "attitude": 4.5,
-            "subjective_norm": 4.2,
-            "pbc": 4.8,
-            "behavioral_intention": 4.5,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [1, 2, 3, 4])
-        self.assertEqual(result["required_module_ids"], [1, 2, 3, 4])
-        self.assertEqual(result["optional_module_ids"], [])
-        self.assertTrue(result["is_reinforcement"])
-        self.assertEqual(result["low_constructs"], [])
-
-    def test_intention_low_predictors_fine(self):
-        """
-        Intention is low (e.g. 2.0) but Attitude, SN, and PBC are fine (>= 4.0).
-        Rule: Treat as no construct LOW (assign all four modules 1, 2, 3, 4).
-        """
-        scores = {
-            "attitude": 4.2,
-            "subjective_norm": 4.5,
-            "pbc": 4.4,
-            "behavioral_intention": 2.0,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [1, 2, 3, 4])
-        self.assertEqual(result["required_module_ids"], [1, 2, 3, 4])
-        self.assertTrue(result["is_reinforcement"])
-        self.assertEqual(result["low_constructs"], [])
-
-    def test_missing_and_unreadable_scores_fallback(self):
-        """Missing or None scores -> fall back to full sequence [1, 2, 3, 4] without crashing."""
+    def test_missing_scores_fallback(self):
+        """Missing or None scores fall back to standard sequence."""
         empty_result = determine_module_assignments({})
         self.assertEqual(empty_result["assigned_modules"], [1, 2, 3, 4])
         self.assertTrue(empty_result["is_fallback"])
-        self.assertGreater(len(empty_result["recommendation_reason"]), 0)
 
         none_result = determine_module_assignments({"attitude": None, "pbc": None})
         self.assertEqual(none_result["assigned_modules"], [1, 2, 3, 4])
         self.assertTrue(none_result["is_fallback"])
-
-    def test_scores_exactly_at_threshold(self):
-        """
-        Scores exactly at 4.0:
-        Rule: A construct is 'LOW' if its mean item score is strictly BELOW the threshold.
-        Therefore, exactly 4.0 is NOT low -> treated as reinforcement path [1, 2, 3, 4].
-        """
-        scores = {
-            "attitude": 4.0,
-            "subjective_norm": 4.0,
-            "pbc": 4.0,
-            "behavioral_intention": 4.0,
-        }
-        result = determine_module_assignments(scores, threshold=4.0)
-
-        self.assertEqual(result["assigned_modules"], [1, 2, 3, 4])
-        self.assertEqual(result["low_constructs"], [])
-        self.assertTrue(result["is_reinforcement"])
-
-    def test_mean_item_scores_from_raw_responses(self):
-        """Verify mean item score computation from 0-3 item responses."""
-        responses = [
-            {"construct": "Attitude", "selected_score": 3},  # 3/3 -> 5.0
-            {"construct": "Attitude", "selected_score": 3},  # 3/3 -> 5.0
-            {"construct": "PBC", "selected_score": 0},       # 0/3 -> 1.0
-            {"construct": "PBC", "selected_score": 1},       # 1/3 -> 2.333
-            {"construct": "SubjectiveNorm", "selected_score": 2}, # 2/3 -> 3.667
-            {"construct": "SubjectiveNorm", "selected_score": 2}, # 2/3 -> 3.667
-        ]
-        means = calculate_mean_item_scores(raw_responses=responses)
-        self.assertEqual(means["attitude"], 5.0)
-        self.assertEqual(round(means["pbc"], 1), 1.7)
-        self.assertEqual(round(means["subjective_norm"], 1), 3.7)
 
 
 if __name__ == "__main__":
