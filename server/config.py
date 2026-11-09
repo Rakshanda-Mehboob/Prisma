@@ -43,7 +43,19 @@ ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 
 
 # ── Database ───────────────────────────────────────────────────────────────────
 _default_db = (Path(__file__).resolve().parent / "app.db").as_posix()
-DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{_default_db}")
+_raw_db = os.getenv("DATABASE_URL")
+if not _raw_db:
+    DATABASE_URL: str = f"sqlite:///{_default_db}"
+elif _raw_db.startswith("sqlite:///"):
+    _path_part = _raw_db[10:]
+    if not os.path.isabs(_path_part) and not (len(_path_part) > 1 and _path_part[1] == ":"):
+        _clean = _path_part.lstrip(".").lstrip("/\\")
+        _abs_path = (Path(__file__).resolve().parent / _clean).resolve().as_posix()
+        DATABASE_URL: str = f"sqlite:///{_abs_path}"
+    else:
+        DATABASE_URL: str = _raw_db
+else:
+    DATABASE_URL: str = _raw_db
 
 # ── CORS Settings ──────────────────────────────────────────────────────────────
 _cors_env = os.getenv("CORS_ORIGINS")

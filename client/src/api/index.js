@@ -78,6 +78,10 @@ export const interventionsApi = {
   getMyInterventions: () => api.get('/interventions/my'),
   startIntervention: (id) => api.post(`/interventions/${id}/start`),
   completeIntervention: (id) => api.post(`/interventions/${id}/complete`),
+  getModules: () => api.get('/interventions/modules'),
+  startModule: (id) => api.post(`/interventions/modules/${id}/start`),
+  submitActivity: (id, payload) => api.post(`/interventions/modules/${id}/activity`, payload),
+  completeModule: (id) => api.post(`/interventions/modules/${id}/complete`),
 };
 
 // ── Dashboard API ─────────────────────────────────────────────────────────────

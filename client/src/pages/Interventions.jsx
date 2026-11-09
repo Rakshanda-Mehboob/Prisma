@@ -1,127 +1,38 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { interventionsApi, dashboardApi } from '../api';
 import {
   BookOpen, PlayCircle, FileQuestion, BookMarked,
   Clock, CheckCircle2, ChevronRight, ChevronLeft,
   AlertCircle, Check, RotateCcw, Award, Lightbulb,
-  ArrowRight, ShieldCheck, Target, Compass, ExternalLink
+  ArrowRight, ShieldCheck, Target, Compass, Lock,
+  ExternalLink, Sparkles, HelpCircle, UserCheck, ShieldAlert
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Skeleton, { SkeletonCard } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import PageContainer from '../components/PageContainer';
 
-// ─── Construct Definitions & Metadata (TPB) ──────────────────────────────────
-const CONSTRUCT_CONFIG = {
+// ─── TPB Construct Colors & Badges ───────────────────────────────────────────
+const CONSTRUCT_THEMES = {
   'Attitude': {
-    name: 'Attitude',
-    key: 'attitude',
-    themeColor: '#4f46e5',
-    headline: 'Strengthening Your Attitude Toward Digital Empathy',
-    tagline: 'Deepen empathy and recognize the real human consequences of online interactions.',
-    whyAssigned: 'Identified as your top area for growth from your diagnostic assessment. This module focuses on building empathy, identifying subtle online harms, and understanding the emotional impact of cyberbullying.',
-    example: {
-      title: 'The Group Chat Meme',
-      scenario: 'In a class study group chat, someone posts an edited screenshot mocking a classmate who asked a simple question. Laugh emojis follow, but the student stops attending lectures.',
-      takeaway: 'Humor ceases to be harmless when it targets an individual. Intent does not erase emotional and academic impact on the victim.'
-    },
-    tips: [
-      'Pause before sending: If you would hesitate to say it face-to-face, do not post it online.',
-      'Differentiate banter from bullying: Persistent or targeted mockery is harm, not friendly humor.',
-      'Reach out privately: A brief direct message saying "I saw that and you did not deserve it" provides crucial emotional support.'
-    ],
-    reflectionPrompt: 'Think of an online interaction where someone was mocked. What made that exchange cross the line from humor into harm?'
+    color: '#4f46e5',
+    bg: 'rgba(79, 70, 229, 0.08)',
+    border: 'rgba(79, 70, 229, 0.25)',
+  },
+  'Perceived Behavioral Control': {
+    color: '#7c3aed',
+    bg: 'rgba(124, 58, 237, 0.08)',
+    border: 'rgba(124, 58, 237, 0.25)',
   },
   'Subjective Norms': {
-    name: 'Subjective Norms',
-    key: 'subjective_norm',
-    themeColor: '#0891b2',
-    headline: 'Fostering Positive Peer Influence and Community Standards',
-    tagline: 'Empower active peer intervention and establish a culture of digital respect.',
-    whyAssigned: 'Identified as your top area for growth from your diagnostic assessment. This module focuses on overcoming the bystander effect and setting constructive peer expectations in group chats and online forums.',
-    example: {
-      title: 'Breaking the Silence',
-      scenario: 'During group project work on Discord, hostile remarks were directed at one student. One member posted: "Let us keep this space respectful and focus on our slides." Three others immediately backed them up.',
-      takeaway: 'Silence is often mistaken for agreement. When a single student speaks up, it creates permission for everyone else to defend community standards.'
-    },
-    tips: [
-      'Break the bystander cycle: Inaction reinforces negative behaviour. Speaking up resets the social standard.',
-      'Publicly support peers: Upvoting or affirming respectful contributions shifts the group climate.',
-      'Establish group expectations: Agree on simple ground rules for respectful group chats early on.'
-    ],
-    reflectionPrompt: 'How do your peers typically react when someone is targeted online? What would make it easier for your group to speak up?'
+    color: '#0891b2',
+    bg: 'rgba(8, 145, 178, 0.08)',
+    border: 'rgba(8, 145, 178, 0.25)',
   },
-  'Perceived Behavioural Control': {
-    name: 'Perceived Behavioural Control',
-    key: 'pbc',
-    themeColor: '#7c3aed',
-    headline: 'Building Practical Response Skills and Digital Confidence',
-    tagline: 'Equip yourself with practical reporting, documentation, and de-escalation tools.',
-    whyAssigned: 'Identified as your top area for growth from your diagnostic assessment. This module focuses on practical strategies to respond confidently and safely when witnessing or facing cyberbullying.',
-    example: {
-      title: 'The 3-Step Response Plan',
-      scenario: 'When targeted with unverified rumors online, a student avoided public retaliation. Instead, they took dated screenshots, muted the offender, and reported through platform safety tools to a student advisor.',
-      takeaway: 'You do not have to fight hostility with retaliation. Taking measured, structured steps gives you full control.'
-    },
-    tips: [
-      'Document evidence first: Take clear screenshots with timestamps and handles before blocking or reporting.',
-      'Use platform tools effectively: Master the mute, restrict, block, and report functions on modern apps.',
-      'Support privately without escalating: Defuse public tension and offer private solidarity to protect well-being.'
-    ],
-    reflectionPrompt: 'Which response tool (screenshotting evidence, platform reporting, or contacting support) do you feel most confident using right now?'
-  },
-  'Behavioural Intention': {
-    name: 'Behavioural Intention',
-    key: 'behavioral_intention',
-    themeColor: '#059669',
-    headline: 'Turning Prosocial Intentions into Decisive Action',
-    tagline: 'Commit to proactive, decisive intervention whenever digital harm occurs.',
-    whyAssigned: 'Identified as your top area for growth from your diagnostic assessment. This module bridges the intention-behavior gap with concrete commitment strategies and decision-making scenarios.',
-    example: {
-      title: 'Decisive Allyship in High-Stakes Situations',
-      scenario: 'When an escalating harassment thread appeared on a campus forum, a student committed in advance to act as an ally by reporting the thread and checking in on the target within 10 minutes.',
-      takeaway: 'Pre-committing to a specific action plan eliminates hesitation when cyberbullying happens.'
-    },
-    tips: [
-      'Pre-commit to action: Decide now what specific steps you will take if you witness cyberbullying.',
-      'Prioritize victim well-being: Focus on supporting the person targeted rather than getting into public debates.',
-      'Sustain prosocial habits: Make proactive peer support a routine part of your online engagement.'
-    ],
-    reflectionPrompt: 'What is one concrete commitment you will make this week to support a respectful digital environment?'
-  }
 };
-
-const TYPE_CONFIG = {
-  reading: { icon: <BookOpen size={16} />, label: 'Reading Guide' },
-  video: { icon: <PlayCircle size={16} />, label: 'Video Lesson' },
-  quiz: { icon: <FileQuestion size={16} />, label: 'Interactive Check' },
-  'case-study': { icon: <BookMarked size={16} />, label: 'Practical Scenario' },
-};
-
-function normalizeConstruct(raw) {
-  if (!raw) return 'Attitude';
-  const str = String(raw).toLowerCase().replace(/[^a-z]/g, '');
-  if (str.includes('attitude')) return 'Attitude';
-  if (str.includes('norm')) return 'Subjective Norms';
-  if (str.includes('intention')) return 'Behavioural Intention';
-  if (str.includes('pbc') || str.includes('control') || str.includes('behavioral') || str.includes('behavioural')) return 'Perceived Behavioural Control';
-  return 'Attitude';
-}
-
-function sanitizeContent(rawText) {
-  if (!rawText) return '';
-  return rawText
-    .replace(/\*+(?:Sources|References):[^*]+\*+/gi, '')
-    .replace(/\([A-Z][a-zA-Z\s&]+,?\s*(?:19|20)\d{2}[a-z]?\)/g, '')
-    .replace(/In the Theory of Planned Behavior.*?,?\s*Subjective Norms refer to/gi, 'Subjective Norm refers to')
-    .replace(/In the Theory of Planned Behavior.*?,?\s*Perceived Behavioral Control \(PBC\) refers to/gi, 'Perceived Behavioral Control refers to')
-    .replace(/According to Icek Ajzen\'s Theory of Planned Behavior \(1991\),?/gi, '')
-    .replace(/\bPBC\b/g, 'Perceived Behavioral Control')
-    .trim();
-}
 
 const COURSERA_MD = {
   h1: ({ children }) => (
@@ -130,7 +41,7 @@ const COURSERA_MD = {
     </h2>
   ),
   h2: ({ children }) => (
-    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '1rem 0 0.4rem', color: 'var(--color-primary)' }}>
+    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '1.1rem 0 0.4rem', color: 'var(--color-primary)' }}>
       {children}
     </h3>
   ),
@@ -159,6 +70,20 @@ const COURSERA_MD = {
       {children}
     </li>
   ),
+  blockquote: ({ children }) => (
+    <blockquote style={{
+      margin: '1rem 0',
+      padding: '0.85rem 1.25rem',
+      borderRadius: 'var(--radius-md)',
+      background: 'rgba(217, 119, 6, 0.08)',
+      borderLeft: '4px solid #d97706',
+      color: 'var(--color-text-primary)',
+      fontSize: '0.92rem',
+      lineHeight: 1.65
+    }}>
+      {children}
+    </blockquote>
+  ),
   strong: ({ children }) => (
     <strong style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
       {children}
@@ -166,184 +91,133 @@ const COURSERA_MD = {
   ),
 };
 
-function CourseQuiz({ quizData, isCompleted, onCompleteQuiz, actionLoading }) {
-  const questions = quizData.questions || [];
-  const [selectedAnswers, setSelectedAnswers] = useState({});
+// ─── Interactive Activity: Module 1 ("Rida's Story" Categorization) ──────────
+function RidaStoryActivity({ activityData, savedData, onComplete, isCompleted, actionLoading }) {
+  const items = activityData.items || [];
+  const [answers, setAnswers] = useState(savedData?.categorizations || {});
+  const [submitted, setSubmitted] = useState(isCompleted);
 
-  const totalQuestions = questions.length;
-  const answeredCount = Object.keys(selectedAnswers).length;
-  const isAllAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
-
-  let correctCount = 0;
-  questions.forEach((q) => {
-    if (selectedAnswers[q.id] === q.correct_index) correctCount++;
-  });
-  const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-
-  const handleSelect = (qId, optIdx) => {
-    setSelectedAnswers((prev) => ({ ...prev, [qId]: optIdx }));
+  const handleSelect = (itemId, cat) => {
+    setAnswers((prev) => ({ ...prev, [itemId]: cat }));
   };
 
-  const handleReset = () => {
-    setSelectedAnswers({});
+  const isAllAnswered = items.length > 0 && items.every((it) => answers[it.id]);
+
+  const handleSubmit = () => {
+    if (!isAllAnswered) return;
+    setSubmitted(true);
+    onComplete({
+      activity_type: 'categorization',
+      responses: { categorizations: answers },
+    });
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          background: 'rgba(79, 70, 229, 0.04)',
-          border: '1px solid rgba(79, 70, 229, 0.15)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '1.25rem 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '0.96rem', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Award size={18} /> Interactive Knowledge Check
-          </div>
-          <div style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
-            {quizData.instructions || 'Review each practical dilemma and select the most constructive response.'}
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
+      <div style={{
+        background: 'rgba(79, 70, 229, 0.05)',
+        border: '1px solid rgba(79, 70, 229, 0.2)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '1.25rem 1.5rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, color: '#4f46e5', marginBottom: 6 }}>
+          <BookMarked size={18} />
+          <span>{activityData.title}</span>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Progress</div>
-            <div style={{ fontWeight: 800, fontSize: '1rem', color: isAllAnswered ? 'var(--color-success)' : 'var(--color-text-primary)' }}>
-              {answeredCount} of {totalQuestions} answered
-            </div>
-          </div>
-          {answeredCount > 0 && (
-            <div style={{ borderLeft: '1px solid var(--color-border)', paddingLeft: '1.25rem' }}>
-              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Score</div>
-              <div style={{ fontWeight: 800, fontSize: '1rem', color: scorePercent >= 75 ? 'var(--color-success)' : 'var(--color-warning)' }}>
-                {correctCount}/{answeredCount} ({scorePercent}%)
-              </div>
-            </div>
-          )}
+        <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
+          {activityData.instructions}
+        </p>
+        <div style={{
+          background: 'var(--color-surface)',
+          padding: '1rem 1.25rem',
+          borderRadius: 'var(--radius-md)',
+          borderLeft: '4px solid #4f46e5',
+          fontSize: '0.9rem',
+          lineHeight: 1.7,
+          color: 'var(--color-text-primary)',
+        }}>
+          <ReactMarkdown components={COURSERA_MD}>{activityData.story}</ReactMarkdown>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        {questions.map((q, idx) => {
-          const selected = selectedAnswers[q.id];
-          const hasAnswered = selected !== undefined;
-          const isCorrect = selected === q.correct_index;
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {items.map((it, idx) => {
+          const selected = answers[it.id];
+          const isCorrect = selected === it.correct_category;
 
           return (
             <div
-              key={q.id}
+              key={it.id}
               style={{
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '1.5rem',
+                borderRadius: 'var(--radius-md)',
+                padding: '1.25rem',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary)', background: 'rgba(79, 70, 229, 0.08)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)' }}>
-                  Question {idx + 1}
-                </span>
-                {hasAnswered && (
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: isCorrect ? 'var(--color-success)' : 'var(--color-danger)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {isCorrect ? <Check size={14} /> : <AlertCircle size={14} />}
-                    {isCorrect ? 'Correct choice' : 'Review suggested choice'}
-                  </span>
-                )}
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4f46e5', marginBottom: 4 }}>
+                Incident {idx + 1}
               </div>
+              <p style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.85rem' }}>
+                {it.text}
+              </p>
 
-              <h4 style={{ fontSize: '0.98rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '1rem', lineHeight: 1.5 }}>
-                {q.question}
-              </h4>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {q.options.map((opt, optIdx) => {
-                  const isThisSelected = selected === optIdx;
-                  const isThisCorrect = optIdx === q.correct_index;
-
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
+                {it.options.map((opt) => {
+                  const isThisSelected = selected === opt;
                   let border = '1px solid var(--color-border)';
                   let bg = 'var(--color-surface)';
-                  if (hasAnswered) {
-                    if (isThisCorrect) {
+                  if (submitted) {
+                    if (opt === it.correct_category) {
                       border = '1px solid rgba(5, 150, 105, 0.5)';
-                      bg = 'rgba(5, 150, 105, 0.06)';
-                    } else if (isThisSelected && !isThisCorrect) {
+                      bg = 'rgba(5, 150, 105, 0.08)';
+                    } else if (isThisSelected && !isCorrect) {
                       border = '1px solid rgba(220, 38, 38, 0.4)';
-                      bg = 'rgba(220, 38, 38, 0.05)';
+                      bg = 'rgba(220, 38, 38, 0.06)';
                     }
                   } else if (isThisSelected) {
-                    border = '1px solid var(--color-primary)';
-                    bg = 'rgba(79, 70, 229, 0.04)';
+                    border = '1px solid #4f46e5';
+                    bg = 'rgba(79, 70, 229, 0.08)';
                   }
 
                   return (
                     <button
-                      key={optIdx}
+                      key={opt}
                       type="button"
-                      onClick={() => handleSelect(q.id, optIdx)}
+                      disabled={submitted}
+                      onClick={() => handleSelect(it.id, opt)}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        textAlign: 'left',
-                        padding: '0.85rem 1rem',
+                        padding: '0.65rem 0.85rem',
                         borderRadius: 'var(--radius-md)',
                         border,
                         background: bg,
                         color: 'var(--color-text-primary)',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem',
+                        fontSize: '0.85rem',
+                        fontWeight: isThisSelected ? 600 : 400,
+                        textAlign: 'left',
+                        cursor: submitted ? 'default' : 'pointer',
                         transition: 'var(--transition)',
                       }}
                     >
-                      <span
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          background: isThisSelected
-                            ? isThisCorrect ? 'var(--color-success)' : 'var(--color-danger)'
-                            : 'var(--color-surface-2)',
-                          color: isThisSelected ? '#fff' : 'var(--color-text-secondary)',
-                        }}
-                      >
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      <span style={{ flex: 1, lineHeight: 1.4 }}>{opt}</span>
+                      {opt}
                     </button>
                   );
                 })}
               </div>
 
-              {hasAnswered && (
-                <div
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.85rem 1.15rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: isCorrect ? 'rgba(5, 150, 105, 0.06)' : 'rgba(217, 119, 6, 0.08)',
-                    borderLeft: `3px solid ${isCorrect ? 'var(--color-success)' : 'var(--color-warning)'}`,
-                    fontSize: '0.86rem',
-                    color: 'var(--color-text-secondary)',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  <strong style={{ color: isCorrect ? 'var(--color-success)' : 'var(--color-warning)', display: 'block', marginBottom: 2 }}>
-                    Practical Guidance:
+              {submitted && (
+                <div style={{
+                  marginTop: '0.75rem',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: isCorrect ? 'rgba(5, 150, 105, 0.08)' : 'rgba(217, 119, 6, 0.08)',
+                  fontSize: '0.84rem',
+                  color: 'var(--color-text-secondary)',
+                }}>
+                  <strong style={{ color: isCorrect ? 'var(--color-success)' : 'var(--color-warning)' }}>
+                    {isCorrect ? '✓ Correct! ' : '💡 Explanation: '}
                   </strong>
-                  {q.explanation}
+                  {it.explanation}
                 </div>
               )}
             </div>
@@ -351,274 +225,586 @@ function CourseQuiz({ quizData, isCompleted, onCompleteQuiz, actionLoading }) {
         })}
       </div>
 
-      {isAllAnswered && (
-        <div
-          style={{
-            background: 'rgba(5, 150, 105, 0.06)',
-            border: '1px solid rgba(5, 150, 105, 0.2)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.75rem',
-          }}
-        >
-          <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-success)' }}>
-            Knowledge Check Complete! Score: {correctCount} / {totalQuestions} ({scorePercent}%)
-          </h4>
-          <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', maxWidth: 480 }}>
-            You have answered all questions. Click below to register your completion and continue your learning path.
-          </p>
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem' }}>
-            <Button variant="secondary" size="sm" onClick={handleReset} icon={<RotateCcw size={14} />}>
-              Try Again
-            </Button>
-            {!isCompleted && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={onCompleteQuiz}
-                loading={actionLoading}
-                iconRight={<CheckCircle2 size={14} />}
-              >
-                Record Lesson Completion
-              </Button>
-            )}
-          </div>
+      {!isCompleted && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!isAllAnswered}
+            loading={actionLoading}
+            onClick={handleSubmit}
+            iconRight={<CheckCircle2 size={16} />}
+          >
+            Submit Incident Categorization
+          </Button>
+        </div>
+      )}
+      {isCompleted && (
+        <div style={{ padding: '0.75rem 1rem', background: 'rgba(5, 150, 105, 0.08)', borderRadius: 'var(--radius-md)', color: 'var(--color-success)', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CheckCircle2 size={16} /> Activity successfully completed. You may now complete this module.
         </div>
       )}
     </div>
   );
 }
 
+// ─── Interactive Activity: Module 2 ("Fatima's Story" Empathy Training) ─────
+function FatimaEmpathyActivity({ activityData, savedData, onComplete, isCompleted, actionLoading }) {
+  const prompts = activityData.prompts || [];
+  const [reflections, setReflections] = useState(savedData?.reflections || { prompt_1: '', prompt_2: '' });
+  const [submitted, setSubmitted] = useState(isCompleted);
+
+  const handleChange = (pId, text) => {
+    setReflections((prev) => ({ ...prev, [pId]: text }));
+  };
+
+  const isAllAnswered = prompts.every((p) => {
+    const txt = (reflections[p.id] || '').trim();
+    return txt.split(/\s+/).filter(Boolean).length >= (p.min_words || 10);
+  });
+
+  const handleSubmit = () => {
+    if (!isAllAnswered) return;
+    setSubmitted(true);
+    onComplete({
+      activity_type: 'empathy_training',
+      responses: { reflections },
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
+      <div style={{
+        background: 'rgba(79, 70, 229, 0.05)',
+        border: '1px solid rgba(79, 70, 229, 0.2)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '1.25rem 1.5rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, color: '#4f46e5', marginBottom: 6 }}>
+          <Lightbulb size={18} />
+          <span>{activityData.title}</span>
+        </div>
+        <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
+          {activityData.instructions}
+        </p>
+        <div style={{
+          background: 'var(--color-surface)',
+          padding: '1rem 1.25rem',
+          borderRadius: 'var(--radius-md)',
+          borderLeft: '4px solid #4f46e5',
+          fontSize: '0.9rem',
+          lineHeight: 1.7,
+          color: 'var(--color-text-primary)',
+        }}>
+          <ReactMarkdown components={COURSERA_MD}>{activityData.story}</ReactMarkdown>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {prompts.map((p, idx) => {
+          const text = reflections[p.id] || '';
+          const words = text.trim().split(/\s+/).filter(Boolean).length;
+          const meetsMin = words >= (p.min_words || 10);
+
+          return (
+            <div
+              key={p.id}
+              style={{
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1.25rem',
+              }}
+            >
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4f46e5', marginBottom: 4 }}>
+                Perspective Prompt {idx + 1}
+              </div>
+              <h4 style={{ fontSize: '0.96rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 6 }}>
+                {p.question}
+              </h4>
+              <p style={{ fontSize: '0.84rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+                {p.guidance}
+              </p>
+
+              <textarea
+                rows={3}
+                disabled={isCompleted}
+                value={text}
+                onChange={(e) => handleChange(p.id, e.target.value)}
+                placeholder="Write your reflection here (minimum 10-15 words)..."
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: meetsMin ? '1px solid var(--color-border)' : '1px solid rgba(217, 119, 6, 0.4)',
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text-primary)',
+                  fontSize: '0.88rem',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.5,
+                }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                <span style={{ fontSize: '0.76rem', color: meetsMin ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
+                  {words} words {!meetsMin && `(minimum ${p.min_words || 10})`}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {!isCompleted && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!isAllAnswered}
+            loading={actionLoading}
+            onClick={handleSubmit}
+            iconRight={<CheckCircle2 size={16} />}
+          >
+            Submit Empathy Reflections
+          </Button>
+        </div>
+      )}
+      {isCompleted && (
+        <div style={{ padding: '0.75rem 1rem', background: 'rgba(5, 150, 105, 0.08)', borderRadius: 'var(--radius-md)', color: 'var(--color-success)', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CheckCircle2 size={16} /> Reflections submitted and verified. You may now complete this module.
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Interactive Activity: Module 3 (Evidence Checklist & Simulation) ────────
+function EvidenceSimulationActivity({ activityData, savedData, onComplete, isCompleted, actionLoading }) {
+  const checklist = activityData.checklist || [];
+  const seqQ = activityData.response_sequence_question || {};
+  const [checkedIds, setCheckedIds] = useState(savedData?.checklist_verified || []);
+  const [selectedSeq, setSelectedSeq] = useState(savedData?.response_sequence ?? null);
+  const [submitted, setSubmitted] = useState(isCompleted);
+
+  const toggleCheck = (id) => {
+    if (isCompleted) return;
+    setCheckedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const isChecklistDone = checklist.length > 0 && checklist.every((c) => checkedIds.includes(c.id));
+  const isAllAnswered = isChecklistDone && selectedSeq !== null;
+
+  const handleSubmit = () => {
+    if (!isAllAnswered) return;
+    setSubmitted(true);
+    onComplete({
+      activity_type: 'practical_simulation',
+      responses: {
+        checklist_verified: checkedIds,
+        response_sequence: selectedSeq,
+      },
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
+      <div style={{
+        background: 'rgba(124, 58, 237, 0.05)',
+        border: '1px solid rgba(124, 58, 237, 0.2)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '1.25rem 1.5rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, color: '#7c3aed', marginBottom: 6 }}>
+          <ShieldCheck size={18} />
+          <span>{activityData.title}</span>
+        </div>
+        <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+          {activityData.instructions}
+        </p>
+      </div>
+
+      <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+        <h4 style={{ fontSize: '0.94rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.85rem' }}>
+          Part 1: Mandatory Evidence Preservation Checklist
+        </h4>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          {checklist.map((item) => {
+            const isChecked = checkedIds.includes(item.id);
+            return (
+              <label
+                key={item.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.75rem',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: isChecked ? 'rgba(124, 58, 237, 0.06)' : 'var(--color-surface-2)',
+                  border: isChecked ? '1px solid rgba(124, 58, 237, 0.3)' : '1px solid transparent',
+                  cursor: isCompleted ? 'default' : 'pointer',
+                  fontSize: '0.88rem',
+                  color: 'var(--color-text-primary)',
+                  lineHeight: 1.5,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  disabled={isCompleted}
+                  checked={isChecked}
+                  onChange={() => toggleCheck(item.id)}
+                  style={{ marginTop: 3, accentColor: '#7c3aed' }}
+                />
+                <span>{item.label}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {seqQ.question && (
+        <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1.25rem' }}>
+          <h4 style={{ fontSize: '0.94rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.85rem' }}>
+            Part 2: Incident Response Action Sequence
+          </h4>
+          <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+            {seqQ.question}
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {seqQ.options.map((opt, optIdx) => {
+              const isSelected = selectedSeq === optIdx;
+              const isCorrect = optIdx === seqQ.correct_index;
+              let border = '1px solid var(--color-border)';
+              let bg = 'var(--color-surface)';
+              if (submitted) {
+                if (isCorrect) {
+                  border = '1px solid rgba(5, 150, 105, 0.5)';
+                  bg = 'rgba(5, 150, 105, 0.08)';
+                } else if (isSelected && !isCorrect) {
+                  border = '1px solid rgba(220, 38, 38, 0.4)';
+                  bg = 'rgba(220, 38, 38, 0.06)';
+                }
+              } else if (isSelected) {
+                border = '1px solid #7c3aed';
+                bg = 'rgba(124, 58, 237, 0.08)';
+              }
+
+              return (
+                <button
+                  key={optIdx}
+                  type="button"
+                  disabled={isCompleted}
+                  onClick={() => setSelectedSeq(optIdx)}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderRadius: 'var(--radius-md)',
+                    border,
+                    background: bg,
+                    color: 'var(--color-text-primary)',
+                    textAlign: 'left',
+                    fontSize: '0.86rem',
+                    cursor: isCompleted ? 'default' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <span style={{
+                    width: 20, height: 20, borderRadius: '50%',
+                    background: isSelected ? '#7c3aed' : 'var(--color-surface-2)',
+                    color: isSelected ? '#fff' : 'var(--color-text-muted)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.75rem', fontWeight: 700, flexShrink: 0
+                  }}>
+                    {String.fromCharCode(65 + optIdx)}
+                  </span>
+                  <span>{opt}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {submitted && (
+            <div style={{
+              marginTop: '0.85rem',
+              padding: '0.75rem 1rem',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(5, 150, 105, 0.08)',
+              borderLeft: '3px solid var(--color-success)',
+              fontSize: '0.84rem',
+              color: 'var(--color-text-secondary)',
+            }}>
+              <strong>Guidance: </strong>{seqQ.explanation}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isCompleted && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!isAllAnswered}
+            loading={actionLoading}
+            onClick={handleSubmit}
+            iconRight={<CheckCircle2 size={16} />}
+          >
+            Verify Checklist & Submit Sequence
+          </Button>
+        </div>
+      )}
+      {isCompleted && (
+        <div style={{ padding: '0.75rem 1rem', background: 'rgba(5, 150, 105, 0.08)', borderRadius: 'var(--radius-md)', color: 'var(--color-success)', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CheckCircle2 size={16} /> Skill simulation completed. You may now complete this module.
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Interactive Activity: Module 4 (Role-Selection Scenario Simulation) ────
+function RoleScenarioActivity({ activityData, savedData, onComplete, isCompleted, actionLoading }) {
+  const roles = activityData.roles || [];
+  const [selectedRoleId, setSelectedRoleId] = useState(savedData?.selected_role || null);
+  const [submitted, setSubmitted] = useState(isCompleted);
+
+  const selectedRole = roles.find((r) => r.id === selectedRoleId);
+  const isUpstander = selectedRole?.is_upstander;
+
+  const handleSubmit = () => {
+    if (!selectedRoleId || !isUpstander) return;
+    setSubmitted(true);
+    onComplete({
+      activity_type: 'role_scenario',
+      responses: { selected_role: selectedRoleId },
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1.5rem' }}>
+      <div style={{
+        background: 'rgba(8, 145, 178, 0.05)',
+        border: '1px solid rgba(8, 145, 178, 0.2)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '1.25rem 1.5rem',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, color: '#0891b2', marginBottom: 6 }}>
+          <UserCheck size={18} />
+          <span>{activityData.title}</span>
+        </div>
+        <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
+          {activityData.instructions}
+        </p>
+        <div style={{
+          background: 'var(--color-surface)',
+          padding: '1rem 1.25rem',
+          borderRadius: 'var(--radius-md)',
+          borderLeft: '4px solid #0891b2',
+          fontSize: '0.9rem',
+          lineHeight: 1.7,
+          color: 'var(--color-text-primary)',
+        }}>
+          {activityData.scenario}
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+        {roles.map((r) => {
+          const isSelected = selectedRoleId === r.id;
+          return (
+            <div
+              key={r.id}
+              onClick={() => !isCompleted && setSelectedRoleId(r.id)}
+              style={{
+                background: isSelected ? 'rgba(8, 145, 178, 0.06)' : 'var(--color-surface)',
+                border: isSelected ? '2px solid #0891b2' : '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '1.15rem',
+                cursor: isCompleted ? 'default' : 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                transition: 'var(--transition)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 700, color: isSelected ? '#0891b2' : 'var(--color-text-primary)' }}>
+                  {r.role_title}
+                </span>
+                {isSelected && (
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0891b2', background: 'rgba(8, 145, 178, 0.15)', padding: '2px 8px', borderRadius: 999 }}>
+                    Selected
+                  </span>
+                )}
+              </div>
+              <p style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+                {r.action}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedRole && (
+        <div style={{
+          padding: '1rem 1.25rem',
+          borderRadius: 'var(--radius-md)',
+          background: isUpstander ? 'rgba(5, 150, 105, 0.08)' : 'rgba(217, 119, 6, 0.08)',
+          borderLeft: `4px solid ${isUpstander ? 'var(--color-success)' : 'var(--color-warning)'}`,
+          fontSize: '0.88rem',
+          lineHeight: 1.6,
+          color: 'var(--color-text-primary)',
+        }}>
+          <ReactMarkdown components={COURSERA_MD}>{selectedRole.outcome}</ReactMarkdown>
+        </div>
+      )}
+
+      {!isCompleted && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!isUpstander}
+            loading={actionLoading}
+            onClick={handleSubmit}
+            iconRight={<CheckCircle2 size={16} />}
+          >
+            Confirm Upstander Choice
+          </Button>
+        </div>
+      )}
+      {isCompleted && (
+        <div style={{ padding: '0.75rem 1rem', background: 'rgba(5, 150, 105, 0.08)', borderRadius: 'var(--radius-md)', color: 'var(--color-success)', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <CheckCircle2 size={16} /> Upstander role confirmed. You may now complete this module.
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ─── Main Interventions Page Component ───────────────────────────────────────
 export default function Interventions() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [records, setRecords] = useState([]);
-  const [dashboardData, setDashboardData] = useState(null);
+  const [learningPath, setLearningPath] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
 
-  const [userSelectedConstruct, setUserSelectedConstruct] = useState(null);
-  const [activeLessonIdx, setActiveLessonIdx] = useState(0);
-  const [reviewMode, setReviewMode] = useState(false);
+  // Active module and section state
+  const [activeModuleNumber, setActiveModuleNumber] = useState(1);
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
 
-  const [reflectionText, setReflectionText] = useState('');
-  const [reflectionSaved, setReflectionSaved] = useState(false);
-
-  const loadData = async () => {
+  const loadLearningData = async () => {
     try {
-      const [intRes, dashRes] = await Promise.allSettled([
-        interventionsApi.getMyInterventions(),
-        dashboardApi.getDashboard(),
-      ]);
+      const res = await interventionsApi.getModules();
+      setLearningPath(res.data);
 
-      const recordsData = intRes.status === 'fulfilled' ? intRes.value.data : [];
-      setRecords(recordsData);
-
-      if (dashRes.status === 'fulfilled' && dashRes.value.data) {
-        setDashboardData(dashRes.value.data);
+      // Determine initial active module: first unlocked incomplete module or query param
+      const paramMod = parseInt(searchParams.get('module'), 10);
+      if (paramMod && [1, 2, 3, 4].includes(paramMod)) {
+        setActiveModuleNumber(paramMod);
+      } else {
+        const firstActive = res.data.modules.find((m) => m.is_unlocked && m.status !== 'completed');
+        if (firstActive) {
+          setActiveModuleNumber(firstActive.module_number);
+        } else if (res.data.modules.length > 0) {
+          setActiveModuleNumber(res.data.modules[0].module_number);
+        }
       }
-    } catch {
-      setError('Unable to load your personalized learning module. Please refresh.');
+    } catch (err) {
+      setError('Unable to load your adaptive learning modules. Please refresh.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadLearningData();
   }, []);
 
-  const { priorityConstructName, nextConstructName, constructScore } = useMemo(() => {
-    const preScores = dashboardData?.pre_scores || dashboardData?.latest_scores;
+  const activeModule = useMemo(() => {
+    if (!learningPath?.modules) return null;
+    return learningPath.modules.find((m) => m.module_number === activeModuleNumber) || learningPath.modules[0];
+  }, [learningPath, activeModuleNumber]);
 
-    const recordsByConstruct = {};
-    records.forEach((r) => {
-      const cName = normalizeConstruct(r.intervention?.target_construct);
-      if (!recordsByConstruct[cName]) recordsByConstruct[cName] = [];
-      recordsByConstruct[cName].push(r);
-    });
+  const activeConstructTheme = activeModule ? CONSTRUCT_THEMES[activeModule.target_construct] || CONSTRUCT_THEMES['Attitude'] : CONSTRUCT_THEMES['Attitude'];
 
-    const constructsOrdered = Object.keys(CONSTRUCT_CONFIG).sort((a, b) => {
-      const keyA = CONSTRUCT_CONFIG[a].key;
-      const keyB = CONSTRUCT_CONFIG[b].key;
-      const scoreA = preScores?.[keyA] ?? 100;
-      const scoreB = preScores?.[keyB] ?? 100;
-      return scoreA - scoreB;
-    });
-
-    if (userSelectedConstruct && CONSTRUCT_CONFIG[userSelectedConstruct]) {
-      const sc = preScores?.[CONSTRUCT_CONFIG[userSelectedConstruct].key];
-      return {
-        priorityConstructName: userSelectedConstruct,
-        nextConstructName: null,
-        constructScore: sc != null ? Math.round(sc) : null,
-      };
+  const handleSelectModule = (modNum) => {
+    const target = learningPath?.modules?.find((m) => m.module_number === modNum);
+    if (!target) return;
+    if (!target.is_unlocked) {
+      return; // Locked sequentially
     }
+    setActiveModuleNumber(modNum);
+    setActiveSectionIdx(0);
+    setSearchParams({ module: modNum });
 
-    let weakestIncomplete = null;
-    let nextIncomplete = null;
-
-    for (const cName of constructsOrdered) {
-      const cRecords = recordsByConstruct[cName] || [];
-      if (cRecords.length > 0) {
-        const hasIncomplete = cRecords.some((r) => r.status !== 'completed');
-        if (hasIncomplete) {
-          if (!weakestIncomplete) {
-            weakestIncomplete = cName;
-          } else if (!nextIncomplete) {
-            nextIncomplete = cName;
-            break;
-          }
-        }
-      }
-    }
-
-    if (weakestIncomplete) {
-      const sc = preScores?.[CONSTRUCT_CONFIG[weakestIncomplete].key];
-      return {
-        priorityConstructName: weakestIncomplete,
-        nextConstructName: nextIncomplete,
-        constructScore: sc != null ? Math.round(sc) : null,
-      };
-    }
-
-    const hasAnyRecords = records.length > 0;
-    if (hasAnyRecords) {
-      const firstAssigned = constructsOrdered.find((c) => recordsByConstruct[c]?.length > 0) || constructsOrdered[0];
-      const sc = preScores?.[CONSTRUCT_CONFIG[firstAssigned].key];
-      return {
-        priorityConstructName: firstAssigned,
-        nextConstructName: null,
-        constructScore: sc != null ? Math.round(sc) : null,
-      };
-    }
-
-    const defaultWeakest = constructsOrdered[0] || 'Attitude';
-    const sc = preScores?.[CONSTRUCT_CONFIG[defaultWeakest].key];
-    return {
-      priorityConstructName: defaultWeakest,
-      nextConstructName: null,
-      constructScore: sc != null ? Math.round(sc) : null,
-    };
-  }, [dashboardData, records, userSelectedConstruct]);
-
-  const activeConstruct = CONSTRUCT_CONFIG[priorityConstructName] || CONSTRUCT_CONFIG['Attitude'];
-
-  const activeLessons = useMemo(() => {
-    const assigned = records.filter(
-      (r) => normalizeConstruct(r.intervention?.target_construct) === activeConstruct.name
-    );
-
-    if (assigned.length > 0) {
-      return assigned.map((r, idx) => ({
-        lessonNumber: idx + 1,
-        id: r.intervention.id,
-        progressId: r.progress_id,
-        title: r.intervention.title,
-        contentType: r.intervention.content_type || 'reading',
-        contentBody: r.intervention.content_body || '',
-        estimatedMinutes: r.intervention.estimated_minutes || 8,
-        status: r.status,
-        record: r,
-      }));
-    }
-
-    return [
-      {
-        lessonNumber: 1,
-        id: 'foundational-1',
-        progressId: null,
-        title: `${activeConstruct.name} Core Principles & Guidelines`,
-        contentType: 'reading',
-        contentBody: `### ${activeConstruct.headline}\n\n${activeConstruct.tagline}\n\n${activeConstruct.whyAssigned}\n\n### Key Focus Areas\n- Deepen understanding of digital peer culture\n- Practice empathetic and prosocial online behaviour\n- Recognize harm before sending or reacting to posts`,
-        estimatedMinutes: 6,
-        status: 'in-progress',
-        record: null,
-      },
-      {
-        lessonNumber: 2,
-        id: 'foundational-2',
-        progressId: null,
-        title: `Practical Scenario: ${activeConstruct.example.title}`,
-        contentType: 'case-study',
-        contentBody: activeConstruct.example.scenario,
-        estimatedMinutes: 8,
-        status: 'assigned',
-        record: null,
-      },
-      {
-        lessonNumber: 3,
-        id: 'foundational-3',
-        progressId: null,
-        title: `${activeConstruct.name} Response Toolkit`,
-        contentType: 'reading',
-        contentBody: activeConstruct.tips.map((t, i) => `${i + 1}. ${t}`).join('\n\n'),
-        estimatedMinutes: 7,
-        status: 'assigned',
-        record: null,
-      }
-    ];
-  }, [records, activeConstruct]);
-
-  const totalLessonsCount = activeLessons.length;
-  const completedLessonsCount = activeLessons.filter((l) => l.status === 'completed').length;
-  const progressPercent = totalLessonsCount > 0 ? Math.round((completedLessonsCount / totalLessonsCount) * 100) : 0;
-  const isConstructDone = totalLessonsCount > 0 && completedLessonsCount === totalLessonsCount;
-
-  const currentLesson = activeLessons[activeLessonIdx] || activeLessons[0];
-
-  useEffect(() => {
-    if (currentLesson?.record && currentLesson.status === 'assigned') {
-      interventionsApi.startIntervention(currentLesson.id).catch(() => {});
-      setRecords((rs) =>
-        rs.map((r) => (r.progress_id === currentLesson.progressId ? { ...r, status: 'in-progress' } : r))
-      );
-    }
-  }, [currentLesson]);
-
-  const handleCompleteCurrentLesson = async () => {
-    if (!currentLesson) return;
-    setActionLoading(true);
-
-    if (currentLesson.record && currentLesson.status !== 'completed') {
-      try {
-        await interventionsApi.completeIntervention(currentLesson.id);
-        setRecords((rs) =>
-          rs.map((r) => (r.progress_id === currentLesson.progressId ? { ...r, status: 'completed' } : r))
-        );
-      } catch {}
-    } else if (!currentLesson.record) {
-      currentLesson.status = 'completed';
-    }
-
-    setActionLoading(false);
-
-    if (activeLessonIdx < activeLessons.length - 1) {
-      setActiveLessonIdx((i) => i + 1);
+    // Mark as in-progress on start if currently assigned
+    if (target.status === 'assigned') {
+      interventionsApi.startModule(modNum).then(() => {
+        setLearningPath((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            modules: prev.modules.map((m) => (m.module_number === modNum ? { ...m, status: 'in-progress' } : m)),
+          };
+        });
+      }).catch(() => {});
     }
   };
 
-  const handleSaveReflection = () => {
-    if (reflectionText.trim()) {
-      setReflectionSaved(true);
-      setTimeout(() => setReflectionSaved(false), 3000);
-    }
-  };
-
-  const handleStartPostAssessment = async () => {
+  const handleCompleteActivity = async (payload) => {
+    if (!activeModule) return;
     setActionLoading(true);
     try {
-      const incomplete = records.filter((r) => r.status !== 'completed');
-      for (const r of incomplete) {
-        await interventionsApi.completeIntervention(r.intervention.id).catch(() => {});
+      await interventionsApi.submitActivity(activeModule.module_number, payload);
+      setLearningPath((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          modules: prev.modules.map((m) =>
+            m.module_number === activeModule.module_number
+              ? { ...m, activity_completed: true, activity_data: payload.responses }
+              : m
+          ),
+        };
+      });
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Activity submission failed.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCompleteModule = async () => {
+    if (!activeModule) return;
+    setActionLoading(true);
+    try {
+      await interventionsApi.completeModule(activeModule.module_number);
+      // Refresh learning path to get updated sequential unlocking
+      const refreshed = await interventionsApi.getModules();
+      setLearningPath(refreshed.data);
+
+      // Auto-advance to next required module if available
+      const nextRequired = refreshed.data.modules.find((m) => m.is_required && m.is_unlocked && m.status !== 'completed');
+      if (nextRequired) {
+        setActiveModuleNumber(nextRequired.module_number);
+        setActiveSectionIdx(0);
       }
-    } catch {}
-    setActionLoading(false);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Could not complete module.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleStartPostAssessment = () => {
     navigate('/assessment?stage=post&mode=take');
   };
 
@@ -626,634 +812,584 @@ export default function Interventions() {
     return (
       <PageContainer>
         <div className="coursera-container" style={{ padding: 0 }}>
-        <Skeleton height="80px" width="60%" borderRadius="var(--radius-lg)" />
-        <Skeleton height="100px" width="100%" borderRadius="var(--radius-lg)" style={{ margin: '1rem 0' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.5rem' }}>
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
+          <Skeleton height="90px" width="70%" borderRadius="var(--radius-lg)" />
+          <Skeleton height="140px" width="100%" borderRadius="var(--radius-lg)" style={{ margin: '1.25rem 0' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.5rem' }}>
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
         </div>
       </PageContainer>
     );
   }
 
-  const hasAssessment = dashboardData?.has_assessment || dashboardData?.pre_scores != null;
-  if (!hasAssessment && records.length === 0) {
-    return (
-      <PageContainer>
-        <EmptyState
-          icon={<Compass size={44} color="var(--color-primary)" />}
-          title="Diagnostic Assessment Required"
-          description="Your personalized learning module will be tailored specifically to your diagnostic assessment results across Attitude, Subjective Norms, Perceived Behavioural Control, and Behavioural Intention. Take the 10-minute assessment to unlock your personalized learning path."
-          actionLabel="Take Baseline Assessment"
-          onAction={() => navigate('/assessment?stage=pre')}
-        />
-      </PageContainer>
-    );
-  }
+  const assignment = learningPath?.assignment;
+  const modules = learningPath?.modules || [];
+  const requiredModules = modules.filter((m) => m.is_required);
+  const completedRequiredCount = requiredModules.filter((m) => m.status === 'completed').length;
+  const totalRequiredCount = requiredModules.length;
+  const overallProgressPercent = totalRequiredCount > 0 ? Math.round((completedRequiredCount / totalRequiredCount) * 100) : 0;
+  const allRequiredDone = learningPath?.all_required_completed;
 
-  const isQuiz = currentLesson?.contentType === 'quiz';
-  let quizData = null;
-  if (isQuiz && currentLesson?.contentBody) {
-    try {
-      quizData = JSON.parse(currentLesson.contentBody);
-    } catch {}
-  }
-
-  const isVideo = currentLesson?.contentType === 'video';
-  const videoUrl = isVideo ? currentLesson?.contentBody?.split('\n')[0]?.trim() : null;
+  const isViewingActivity = activeSectionIdx >= (activeModule?.sections?.length || 0);
 
   return (
     <PageContainer>
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className="coursera-container"
-      style={{ padding: 0 }}
-    >
-      <div className="coursera-header-card">
-        <div className="coursera-header-top">
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: 'var(--radius-full)',
-                  background: `${activeConstruct.themeColor}15`,
-                  color: activeConstruct.themeColor,
-                  fontWeight: 700,
-                  fontSize: '0.78rem',
-                  letterSpacing: '0.02em',
-                }}
-              >
-                <Target size={13} />
-                Priority Area: {activeConstruct.name}
-              </span>
-              {constructScore != null && (
-                <span
-                  style={{
-                    fontSize: '0.76rem',
-                    fontWeight: 600,
-                    color: 'var(--color-text-muted)',
-                    background: 'var(--color-surface-2)',
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: 'var(--radius-full)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  Diagnostic Score: {constructScore}%
-                </span>
-              )}
-            </div>
-
-            <h1 className="coursera-title" style={{ fontSize: '1.65rem', fontWeight: 800 }}>
-              {activeConstruct.headline}
-            </h1>
-            <p className="coursera-subtitle" style={{ maxWidth: 720 }}>
-              {activeConstruct.whyAssigned}
-            </p>
-          </div>
-        </div>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-
-        <div className="coursera-progress-block">
-          <div className="coursera-progress-header">
-            <span className="coursera-progress-title">
-              <ShieldCheck size={16} color={activeConstruct.themeColor} />
-              Module Progress: {completedLessonsCount} of {totalLessonsCount} Lessons Completed
-            </span>
-            <span style={{ fontWeight: 800, color: isConstructDone ? 'var(--color-success)' : activeConstruct.themeColor, fontSize: '0.92rem' }}>
-              {progressPercent}%
-            </span>
-          </div>
-
-          <div className="progress-bar" style={{ height: 7, borderRadius: 999, background: 'var(--color-surface-3)' }}>
-            <div
-              className="progress-fill"
-              style={{
-                width: `${progressPercent}%`,
-                background: isConstructDone
-                  ? 'var(--color-success)'
-                  : `linear-gradient(90deg, ${activeConstruct.themeColor}99, ${activeConstruct.themeColor})`,
-                borderRadius: 999,
-                transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              }}
-            />
-          </div>
-        </div>
-
-        {isConstructDone && reviewMode && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{
-              padding: '1rem 1.25rem',
-              background: 'rgba(5, 150, 105, 0.08)',
-              border: '1px solid rgba(5, 150, 105, 0.25)',
-              borderRadius: 'var(--radius-lg)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1rem',
-            }}
-          >
-            <div style={{ fontSize: '0.88rem', color: 'var(--color-text-primary)' }}>
-              <strong>Review Mode:</strong> You have completed this module and can review all lessons.
-            </div>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setReviewMode(false)}
-              >
-                Back to Completion Screen
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleStartPostAssessment}
-                loading={actionLoading}
-                iconRight={<ArrowRight size={14} />}
-              >
-                Start Post Assessment
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* ─── Dedicated Transition Screen: Learning Module Completed ─── */}
-      {isConstructDone && !reviewMode ? (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-          style={{ width: '100%', margin: 0, padding: 0 }}
-        >
-          <div
-            style={{
-              background: 'var(--color-surface, #ffffff)',
-              borderRadius: '24px',
-              border: '1px solid rgba(5, 150, 105, 0.25)',
-              boxShadow: '0 20px 48px -12px rgba(5, 150, 105, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04)',
-              padding: 'clamp(2.5rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem)',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '1.25rem',
-            }}
-          >
-            <div
-              style={{
-                width: 76,
-                height: 76,
-                borderRadius: '50%',
-                background: 'rgba(5, 150, 105, 0.12)',
-                color: 'var(--color-success)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px -4px rgba(5, 150, 105, 0.25)',
-              }}
-            >
-              <CheckCircle2 size={40} strokeWidth={2.2} />
-            </div>
-
-            <div>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '0.25rem 0.75rem',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'rgba(5, 150, 105, 0.1)',
-                  color: 'var(--color-success)',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  marginBottom: '0.85rem',
-                }}
-              >
-                <span>{activeConstruct.name} Module Completed</span>
-              </div>
-
-              <h2 style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '0.6rem' }}>
-                Learning Module Completed
-              </h2>
-
-              <p style={{ fontSize: '1.02rem', color: 'var(--color-text-secondary)', lineHeight: 1.65, maxWidth: '480px', margin: '0 auto' }}>
-                You have completed your personalized learning activity. You can now continue with the follow-up assessment.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%', maxWidth: '340px', marginTop: '0.5rem' }}>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleStartPostAssessment}
-                loading={actionLoading}
-                iconRight={<ArrowRight size={18} />}
-                style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  padding: '1rem 1.75rem',
-                  fontSize: '1.05rem',
-                  fontWeight: 700,
-                  borderRadius: '9999px',
-                  background: 'linear-gradient(135deg, var(--color-primary, #4f46e5) 0%, #6366f1 100%)',
-                  boxShadow: '0 8px 24px -4px rgba(79, 70, 229, 0.38)',
-                }}
-              >
-                Start Post Assessment
-              </Button>
-
-              <button
-                type="button"
-                onClick={() => setReviewMode(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--color-text-muted)',
-                  fontSize: '0.86rem',
-                  cursor: 'pointer',
-                  padding: '0.35rem',
-                  textDecoration: 'underline',
-                }}
-              >
-                Review completed lessons
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        <div className="coursera-course-layout">
-        <aside className="coursera-sidebar">
-          <div className="coursera-sidebar-header">
-            <span className="coursera-sidebar-title">Assigned Syllabus</span>
-            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
-              {activeConstruct.name} Focus Path
-            </div>
-          </div>
-
-          <div className="coursera-lesson-list" style={{ background: 'transparent', padding: '0.75rem' }}>
-            {activeLessons.map((l, idx) => {
-              const isSelected = activeLessonIdx === idx;
-              const isDone = l.status === 'completed';
-              const typeCfg = TYPE_CONFIG[l.contentType] || TYPE_CONFIG.reading;
-
-              return (
-                <button
-                  key={l.id}
-                  type="button"
-                  onClick={() => setActiveLessonIdx(idx)}
-                  className={`coursera-lesson-btn ${isSelected ? 'active' : ''}`}
-                  style={{
-                    position: 'relative',
-                    padding: '0.8rem 0.95rem',
-                    border: isSelected ? `1px solid ${activeConstruct.themeColor}55` : '1px solid transparent',
-                    background: isSelected ? `${activeConstruct.themeColor}0a` : 'transparent',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      background: isDone
-                        ? 'var(--color-success)'
-                        : isSelected
-                        ? activeConstruct.themeColor
-                        : 'var(--color-surface-2)',
-                      color: isDone || isSelected ? '#fff' : 'var(--color-text-muted)',
-                    }}
-                  >
-                    {isDone ? <Check size={12} strokeWidth={3} /> : idx + 1}
-                  </div>
-
-                  <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-                    <div
-                      style={{
-                        fontWeight: isSelected ? 700 : 500,
-                        fontSize: '0.85rem',
-                        color: isSelected ? activeConstruct.themeColor : 'var(--color-text-primary)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {l.title}
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
-                      {typeCfg.icon}
-                      <span>{typeCfg.label}</span>
-                      <span>•</span>
-                      <span>{l.estimatedMinutes} min</span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          <div
-            style={{
-              padding: '1.1rem 1.25rem',
-              borderTop: '1px solid var(--color-border)',
-              background: 'var(--color-surface-2)',
-              marginTop: 'auto',
-            }}
-          >
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
-              Why this was assigned
-            </div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginTop: 4, lineHeight: 1.5 }}>
-              {activeConstruct.tagline}
-            </div>
-          </div>
-        </aside>
-
-        <section className="coursera-player-card">
-          <div className="coursera-breadcrumbs">
-            <span>Personalized Learning</span>
-            <ChevronRight size={13} />
-            <span style={{ fontWeight: 600, color: activeConstruct.themeColor }}>{activeConstruct.name}</span>
-            <ChevronRight size={13} />
-            <span>Lesson {activeLessonIdx + 1} of {totalLessonsCount}</span>
-          </div>
-
-          <div className="coursera-lesson-meta-bar">
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="coursera-container"
+        style={{ padding: 0 }}
+      >
+        {/* ─── Header Card: Adaptive Recommendations & Overview ─── */}
+        <div className="coursera-header-card">
+          <div className="coursera-header-top">
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.65rem', flexWrap: 'wrap' }}>
                 <span
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 5,
-                    fontSize: '0.76rem',
-                    fontWeight: 700,
-                    color: activeConstruct.themeColor,
-                    background: `${activeConstruct.themeColor}12`,
-                    padding: '0.2rem 0.6rem',
+                    padding: '0.25rem 0.75rem',
                     borderRadius: 'var(--radius-full)',
+                    background: assignment?.is_reinforcement ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.1)',
+                    color: assignment?.is_reinforcement ? 'var(--color-success)' : 'var(--color-primary)',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
                   }}
                 >
-                  {(TYPE_CONFIG[currentLesson?.contentType] || TYPE_CONFIG.reading).icon}
-                  {(TYPE_CONFIG[currentLesson?.contentType] || TYPE_CONFIG.reading).label}
+                  <Target size={14} />
+                  {assignment?.is_reinforcement ? 'Reinforcement Learning Path' : 'Personalized Adaptive Path'}
                 </span>
 
-                <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Clock size={13} /> {currentLesson?.estimatedMinutes || 8} min read
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    color: 'var(--color-text-muted)',
+                    background: 'var(--color-surface-2)',
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: 'var(--radius-full)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
+                  Diagnostic Threshold: {assignment?.threshold_used?.toFixed(1) || '4.0'} / 5.0
                 </span>
               </div>
 
-              <h2 className="coursera-lesson-heading">{currentLesson?.title}</h2>
-            </div>
+              <h1 className="coursera-title" style={{ fontSize: '1.75rem', fontWeight: 800 }}>
+                Cyberbullying Prevention Learning Modules
+              </h1>
 
-            <div>
-              {currentLesson?.status === 'completed' ? (
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <CheckCircle2 size={16} /> Completed
-                </span>
-              ) : (
-                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-warning)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <Clock size={15} /> In Progress
-                </span>
-              )}
+              {/* Recommended For You Explanation Box */}
+              <div
+                style={{
+                  marginTop: '0.85rem',
+                  padding: '1rem 1.25rem',
+                  background: 'var(--color-surface-2)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-md)',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.85rem',
+                }}
+              >
+                <Sparkles size={20} color="var(--color-primary)" style={{ marginTop: 2, flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)', marginBottom: 2 }}>
+                    Recommended For You:
+                  </div>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                    {assignment?.recommendation_reason}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="coursera-content-body" style={{ minHeight: 280 }}>
-            {isQuiz && quizData ? (
-              <CourseQuiz
-                quizData={quizData}
-                isCompleted={currentLesson?.status === 'completed'}
-                onCompleteQuiz={handleCompleteCurrentLesson}
-                actionLoading={actionLoading}
-              />
-            ) : isVideo && videoUrl ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div
-                  style={{
-                    background: 'var(--color-surface-2)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: '3rem 2rem',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '1rem',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: '50%',
-                      background: activeConstruct.themeColor,
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <PlayCircle size={32} />
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                      Interactive Video Lesson
-                    </h3>
-                    <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', marginTop: 4, maxWidth: 440 }}>
-                      Watch this guided video case study to understand real-world peer dynamics and constructive intervention.
-                    </p>
-                  </div>
-                  <a
-                    href={videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '0.65rem 1.25rem',
-                      borderRadius: 'var(--radius-md)',
-                      background: activeConstruct.themeColor,
-                      color: '#fff',
-                      fontSize: '0.88rem',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                    }}
-                  >
-                    Open Video Resource <ExternalLink size={14} />
-                  </a>
-                </div>
+          {error && <div className="alert alert-danger" style={{ marginTop: '1rem' }}>{error}</div>}
 
-                <div className="coursera-callout-card">
-                  <div className="coursera-callout-header" style={{ color: activeConstruct.themeColor }}>
-                    <Lightbulb size={16} /> Key Takeaway to Look For
+          {/* Progress Overview */}
+          <div className="coursera-progress-block">
+            <div className="coursera-progress-header">
+              <span className="coursera-progress-title">
+                <ShieldCheck size={16} color="var(--color-primary)" />
+                Required Modules Progress: {completedRequiredCount} of {totalRequiredCount} Completed
+              </span>
+              <span style={{ fontWeight: 800, color: allRequiredDone ? 'var(--color-success)' : 'var(--color-primary)', fontSize: '0.92rem' }}>
+                {overallProgressPercent}%
+              </span>
+            </div>
+
+            <div className="progress-bar" style={{ height: 7, borderRadius: 999, background: 'var(--color-surface-3)' }}>
+              <div
+                className="progress-fill"
+                style={{
+                  width: `${overallProgressPercent}%`,
+                  background: allRequiredDone
+                    ? 'var(--color-success)'
+                    : 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)',
+                  borderRadius: 999,
+                  transition: 'width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Post-Assessment Ready Alert Banner */}
+          {allRequiredDone && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                marginTop: '1.25rem',
+                padding: '1rem 1.25rem',
+                background: 'rgba(5, 150, 105, 0.08)',
+                border: '1px solid rgba(5, 150, 105, 0.3)',
+                borderRadius: 'var(--radius-lg)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <CheckCircle2 size={24} color="var(--color-success)" />
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.96rem', color: 'var(--color-success)' }}>
+                    All Required Modules Finished!
                   </div>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                    Pay close attention to how the bystander paused before reacting, and how their measured response shifted the entire group dynamic without escalating conflict.
-                  </p>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)' }}>
+                    You have satisfied all diagnostic requirements. You can now unlock and take the post-assessment.
+                  </div>
                 </div>
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div className="markdown-content">
-                  <ReactMarkdown components={COURSERA_MD}>
-                    {sanitizeContent(currentLesson?.contentBody)}
-                  </ReactMarkdown>
-                </div>
 
-                <div className="coursera-callout-card">
-                  <div className="coursera-callout-header" style={{ color: activeConstruct.themeColor }}>
-                    <BookMarked size={16} /> Real-World Case Dilemma: {activeConstruct.example.title}
-                  </div>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-                    {activeConstruct.example.scenario}
-                  </p>
-                  <div
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleStartPostAssessment}
+                iconRight={<ArrowRight size={14} />}
+                style={{
+                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                  borderRadius: 999,
+                  fontWeight: 700,
+                }}
+              >
+                Proceed to Post-Assessment
+              </Button>
+            </motion.div>
+          )}
+        </div>
+
+        {/* ─── 4-Module Card Overview Grid ─── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1rem',
+          margin: '1.25rem 0',
+        }}>
+          {modules.map((m) => {
+            const isSelected = activeModuleNumber === m.module_number;
+            const theme = CONSTRUCT_THEMES[m.target_construct] || CONSTRUCT_THEMES['Attitude'];
+            const isCompleted = m.status === 'completed';
+            const isLocked = !m.is_unlocked;
+
+            return (
+              <div
+                key={m.module_number}
+                onClick={() => handleSelectModule(m.module_number)}
+                style={{
+                  background: isSelected ? 'var(--color-surface)' : 'var(--color-surface)',
+                  border: isSelected ? `2px solid ${theme.color}` : '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '1.15rem',
+                  cursor: isLocked ? 'not-allowed' : 'pointer',
+                  opacity: isLocked ? 0.6 : 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  position: 'relative',
+                  boxShadow: isSelected ? '0 8px 24px -4px rgba(79, 70, 229, 0.15)' : 'none',
+                  transition: 'var(--transition)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {/* Target Construct Badge */}
+                  <span
                     style={{
-                      marginTop: '0.5rem',
-                      padding: '0.75rem 1rem',
-                      borderRadius: 'var(--radius-md)',
-                      background: 'rgba(79, 70, 229, 0.05)',
-                      fontSize: '0.86rem',
-                      color: 'var(--color-text-primary)',
-                      lineHeight: 1.6,
-                      borderLeft: `3px solid ${activeConstruct.themeColor}`,
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: theme.color,
+                      background: theme.bg,
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: 'var(--radius-full)',
                     }}
                   >
-                    <strong>Practical Takeaway: </strong>
-                    {activeConstruct.example.takeaway}
-                  </div>
-                </div>
+                    Target: {m.target_construct}
+                  </span>
 
-                <div className="coursera-callout-card">
-                  <div className="coursera-callout-header" style={{ color: 'var(--color-success)' }}>
-                    <ShieldCheck size={16} /> Actionable Strategies You Can Use Right Away
-                  </div>
-                  <ul className="coursera-tips-list">
-                    {activeConstruct.tips.map((tip, idx) => (
-                      <li key={idx} className="coursera-tips-item">
-                        <span style={{ color: 'var(--color-success)', fontWeight: 700, marginTop: 1 }}>✓</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div
-                  style={{
-                    background: 'var(--color-surface-2)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-lg)',
-                    padding: '1.25rem 1.5rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Lightbulb size={16} color="var(--color-warning)" />
-                    Personal Reflection
-                  </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-                    {activeConstruct.reflectionPrompt}
-                  </p>
-                  <textarea
-                    rows={3}
-                    placeholder="Write a brief reflection on how you would handle this situation..."
-                    value={reflectionText}
-                    onChange={(e) => setReflectionText(e.target.value)}
+                  {/* Required vs Optional Tag */}
+                  <span
                     style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--color-border)',
-                      background: 'var(--color-surface)',
-                      color: 'var(--color-text-primary)',
-                      fontSize: '0.88rem',
-                      resize: 'vertical',
-                      fontFamily: 'inherit',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      padding: '0.15rem 0.5rem',
+                      borderRadius: 'var(--radius-sm)',
+                      background: m.is_required ? 'rgba(79, 70, 229, 0.12)' : 'var(--color-surface-2)',
+                      color: m.is_required ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
                     }}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.75rem' }}>
-                    {reflectionSaved && (
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-success)', fontWeight: 600 }}>
-                        ✓ Reflection saved
+                  >
+                    {m.is_required ? 'Required' : 'Optional'}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 2 }}>
+                    {m.title}
+                  </h4>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+                    {m.subtitle}
+                  </p>
+                </div>
+
+                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem', borderTop: '1px solid var(--color-border)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Clock size={12} /> {m.estimated_minutes} min
+                  </span>
+
+                  <div>
+                    {isCompleted ? (
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <CheckCircle2 size={13} /> Completed
+                      </span>
+                    ) : isLocked ? (
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Lock size={12} /> Locked
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: theme.color, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {m.status === 'in-progress' ? 'In Progress' : 'Start'} <ChevronRight size={12} />
                       </span>
                     )}
-                    <Button variant="secondary" size="sm" onClick={handleSaveReflection}>
-                      Save Reflection
-                    </Button>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="coursera-player-footer">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={activeLessonIdx === 0}
-              onClick={() => setActiveLessonIdx((i) => Math.max(0, i - 1))}
-              icon={<ChevronLeft size={14} />}
-            >
-              Previous Lesson
-            </Button>
+        {/* ─── Active Module Interactive Player Layout ─── */}
+        {activeModule && (
+          <div className="coursera-course-layout">
+            {/* Syllabus Navigation Sidebar */}
+            <aside className="coursera-sidebar">
+              <div className="coursera-sidebar-header">
+                <span className="coursera-sidebar-title">
+                  Module {activeModule.module_number} Outline
+                </span>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
+                  Target: {activeModule.target_construct}
+                </div>
+              </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              {currentLesson?.status !== 'completed' && !isQuiz ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleCompleteCurrentLesson}
-                  loading={actionLoading}
-                  iconRight={<CheckCircle2 size={14} />}
+              <div className="coursera-lesson-list" style={{ background: 'transparent', padding: '0.75rem' }}>
+                {activeModule.sections.map((sec, idx) => {
+                  const isSecSelected = activeSectionIdx === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveSectionIdx(idx)}
+                      className={`coursera-lesson-btn ${isSecSelected ? 'active' : ''}`}
+                      style={{
+                        padding: '0.75rem 0.9rem',
+                        border: isSecSelected ? `1px solid ${activeConstructTheme.color}55` : '1px solid transparent',
+                        background: isSecSelected ? `${activeConstructTheme.color}0a` : 'transparent',
+                        borderRadius: 'var(--radius-md)',
+                        marginBottom: 4,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 22, height: 22, borderRadius: '50%',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '0.75rem', fontWeight: 700, flexShrink: 0,
+                          background: isSecSelected ? activeConstructTheme.color : 'var(--color-surface-2)',
+                          color: isSecSelected ? '#fff' : 'var(--color-text-muted)',
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                      <span style={{
+                        fontSize: '0.84rem',
+                        fontWeight: isSecSelected ? 700 : 500,
+                        color: isSecSelected ? activeConstructTheme.color : 'var(--color-text-primary)',
+                        textAlign: 'left',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
+                        {sec.title}
+                      </span>
+                    </button>
+                  );
+                })}
+
+                {/* Interactive Activity Tab */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSectionIdx(activeModule.sections.length)}
+                  className={`coursera-lesson-btn ${isViewingActivity ? 'active' : ''}`}
+                  style={{
+                    padding: '0.75rem 0.9rem',
+                    border: isViewingActivity ? `1px solid ${activeConstructTheme.color}55` : '1px solid rgba(79, 70, 229, 0.15)',
+                    background: isViewingActivity ? `${activeConstructTheme.color}0a` : 'rgba(79, 70, 229, 0.04)',
+                    borderRadius: 'var(--radius-md)',
+                    marginTop: 6,
+                  }}
                 >
-                  {activeLessonIdx === activeLessons.length - 1 ? 'Complete Module' : 'Complete & Continue'}
-                </Button>
-              ) : activeLessonIdx < activeLessons.length - 1 ? (
+                  <div
+                    style={{
+                      width: 22, height: 22, borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.75rem', fontWeight: 700, flexShrink: 0,
+                      background: activeModule.activity_completed ? 'var(--color-success)' : activeConstructTheme.color,
+                      color: '#fff',
+                    }}
+                  >
+                    {activeModule.activity_completed ? <Check size={12} strokeWidth={3} /> : <Award size={12} />}
+                  </div>
+                  <div style={{ textAlign: 'left', minWidth: 0, flex: 1 }}>
+                    <div style={{
+                      fontSize: '0.84rem',
+                      fontWeight: 700,
+                      color: isViewingActivity ? activeConstructTheme.color : 'var(--color-text-primary)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}>
+                      Interactive Activity
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: activeModule.activity_completed ? 'var(--color-success)' : 'var(--color-warning)' }}>
+                      {activeModule.activity_completed ? 'Completed' : 'Required to finish'}
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div style={{
+                padding: '1.1rem 1.25rem',
+                borderTop: '1px solid var(--color-border)',
+                background: 'var(--color-surface-2)',
+                marginTop: 'auto',
+              }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
+                  Target TPB Construct
+                </div>
+                <div style={{ fontSize: '0.86rem', fontWeight: 700, color: activeConstructTheme.color, marginTop: 2 }}>
+                  {activeModule.target_construct}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: 4, lineHeight: 1.5 }}>
+                  {activeModule.why_recommended}
+                </div>
+              </div>
+            </aside>
+
+            {/* Reading and Activity Content Player */}
+            <section className="coursera-player-card">
+              <div className="coursera-breadcrumbs">
+                <span>Learning Modules</span>
+                <ChevronRight size={13} />
+                <span style={{ fontWeight: 600, color: activeConstructTheme.color }}>Module {activeModule.module_number}</span>
+                <ChevronRight size={13} />
+                <span>
+                  {isViewingActivity ? 'Interactive Activity' : `Section ${activeSectionIdx + 1} of ${activeModule.sections.length}`}
+                </span>
+              </div>
+
+              <div className="coursera-lesson-meta-bar">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        color: activeConstructTheme.color,
+                        background: activeConstructTheme.bg,
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: 'var(--radius-full)',
+                      }}
+                    >
+                      <Target size={12} /> {activeModule.target_construct}
+                    </span>
+
+                    <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Clock size={13} /> {activeModule.estimated_minutes} min read
+                    </span>
+                  </div>
+
+                  <h2 className="coursera-lesson-heading">{activeModule.title}</h2>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--color-text-muted)', marginTop: 2 }}>
+                    {activeModule.subtitle}
+                  </p>
+                </div>
+
+                <div>
+                  {activeModule.status === 'completed' ? (
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <CheckCircle2 size={16} /> Completed
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-warning)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <Clock size={15} /> In Progress
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="coursera-content-body" style={{ minHeight: 320 }}>
+                {!isViewingActivity ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    {/* Objectives on Section 1 */}
+                    {activeSectionIdx === 0 && (
+                      <div style={{
+                        background: 'rgba(79, 70, 229, 0.04)',
+                        border: '1px solid rgba(79, 70, 229, 0.15)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '1rem 1.25rem',
+                      }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--color-primary)', marginBottom: 6 }}>
+                          Learning Objectives:
+                        </div>
+                        <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.86rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                          {activeModule.learning_objectives.map((obj, i) => (
+                            <li key={i}>{obj}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="markdown-content">
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>
+                        {activeModule.sections[activeSectionIdx]?.title}
+                      </h3>
+                      <ReactMarkdown components={COURSERA_MD}>
+                        {activeModule.sections[activeSectionIdx]?.content}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                ) : (
+                  /* Interactive Activity View */
+                  <div>
+                    {activeModule.module_number === 1 && (
+                      <RidaStoryActivity
+                        activityData={activeModule.activity}
+                        savedData={activeModule.activity_data}
+                        isCompleted={activeModule.activity_completed}
+                        onComplete={handleCompleteActivity}
+                        actionLoading={actionLoading}
+                      />
+                    )}
+                    {activeModule.module_number === 2 && (
+                      <FatimaEmpathyActivity
+                        activityData={activeModule.activity}
+                        savedData={activeModule.activity_data}
+                        isCompleted={activeModule.activity_completed}
+                        onComplete={handleCompleteActivity}
+                        actionLoading={actionLoading}
+                      />
+                    )}
+                    {activeModule.module_number === 3 && (
+                      <EvidenceSimulationActivity
+                        activityData={activeModule.activity}
+                        savedData={activeModule.activity_data}
+                        isCompleted={activeModule.activity_completed}
+                        onComplete={handleCompleteActivity}
+                        actionLoading={actionLoading}
+                      />
+                    )}
+                    {activeModule.module_number === 4 && (
+                      <RoleScenarioActivity
+                        activityData={activeModule.activity}
+                        savedData={activeModule.activity_data}
+                        isCompleted={activeModule.activity_completed}
+                        onComplete={handleCompleteActivity}
+                        actionLoading={actionLoading}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Player Navigation & Completion Footer */}
+              <div className="coursera-player-footer">
                 <Button
-                  variant="primary"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => setActiveLessonIdx((i) => i + 1)}
-                  iconRight={<ChevronRight size={14} />}
+                  disabled={activeSectionIdx === 0}
+                  onClick={() => setActiveSectionIdx((i) => Math.max(0, i - 1))}
+                  icon={<ChevronLeft size={14} />}
                 >
-                  Next Lesson
+                  Previous
                 </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleStartPostAssessment}
-                  loading={actionLoading}
-                  iconRight={<ArrowRight size={14} />}
-                >
-                  Start Post Assessment
-                </Button>
-              )}
-            </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  {!isViewingActivity ? (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setActiveSectionIdx((i) => i + 1)}
+                      iconRight={<ChevronRight size={14} />}
+                    >
+                      {activeSectionIdx === activeModule.sections.length - 1 ? 'Go to Interactive Activity' : 'Next Section'}
+                    </Button>
+                  ) : (
+                    activeModule.status !== 'completed' ? (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        disabled={!activeModule.activity_completed}
+                        loading={actionLoading}
+                        onClick={handleCompleteModule}
+                        iconRight={<CheckCircle2 size={16} />}
+                        title={!activeModule.activity_completed ? 'You must complete the activity first' : ''}
+                      >
+                        Complete Module {activeModule.module_number}
+                      </Button>
+                    ) : (
+                      allRequiredDone ? (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={handleStartPostAssessment}
+                          iconRight={<ArrowRight size={14} />}
+                          style={{ background: 'var(--color-success)' }}
+                        >
+                          Proceed to Post-Assessment
+                        </Button>
+                      ) : (
+                        <span style={{ fontSize: '0.84rem', color: 'var(--color-success)', fontWeight: 600 }}>
+                          ✓ Module Completed
+                        </span>
+                      )
+                    )
+                  )}
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
-      )}
-    </motion.div>
+        )}
+      </motion.div>
     </PageContainer>
   );
 }
