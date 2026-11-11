@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import User, Assessment, UserInterventionProgress, Feedback, StudentProfile
+from models import User, Assessment, AssessmentInstance, UserInterventionProgress, Feedback, StudentProfile
 from schemas import (
     DashboardOut, ConstructScores, ConstructDelta,
     FeedbackSubmitRequest, FeedbackOut, UserOut
@@ -20,6 +20,58 @@ from auth.utils import get_current_user
 from assessment.scoring import generate_feedback_text, TPBScores
 
 router = APIRouter(tags=["Dashboard & Feedback"])
+
+
+def _get_pre_scores_for_dashboard(db: Session, user_id: int):
+    """
+    Return (pre_obj, pre_scores_obj) covering both legacy Assessment and
+    the newer AssessmentInstance model so dashboard always reflects the
+    most recent pre-assessment regardless of which model stored it.
+    Returns (legacy_assessment_or_None, ConstructScores_or_None).
+    """
+    # Prefer new scenario-based model if present and submitted
+    inst = (
+        db.query(AssessmentInstance)
+        .filter(
+            AssessmentInstance.user_id == user_id,
+            AssessmentInstance.stage == "pre",
+            AssessmentInstance.status == "submitted",
+        )
+        .order_by(AssessmentInstance.id.desc())
+        .first()
+    )
+    if inst and inst.attitude_score is not None:
+        scores = ConstructScores(
+            attitude=inst.attitude_score,
+            subjective_norm=inst.subjective_norm_score,
+            pbc=inst.pbc_score,
+            behavioral_intention=inst.behavioral_intention_score,
+        )
+        return "instance", scores
+    return None, None
+
+
+def _get_post_scores_for_dashboard(db: Session, user_id: int):
+    """Same logic for post-assessment."""
+    inst = (
+        db.query(AssessmentInstance)
+        .filter(
+            AssessmentInstance.user_id == user_id,
+            AssessmentInstance.stage == "post",
+            AssessmentInstance.status == "submitted",
+        )
+        .order_by(AssessmentInstance.id.desc())
+        .first()
+    )
+    if inst and inst.attitude_score is not None:
+        scores = ConstructScores(
+            attitude=inst.attitude_score,
+            subjective_norm=inst.subjective_norm_score,
+            pbc=inst.pbc_score,
+            behavioral_intention=inst.behavioral_intention_score,
+        )
+        return "instance", scores
+    return None, None
 
 
 def _make_user_out(user: User) -> UserOut:
@@ -51,75 +103,78 @@ def get_dashboard(
     - Intervention completion statistics
     - Personalized rule-based feedback messages
     - Whether post-assessment is unlocked
-    """
-    # Fetch assessments
-    pre = db.query(Assessment).filter(
-        Assessment.user_id == current_user.id, Assessment.stage == "pre"
-    ).first()
-    post = db.query(Assessment).filter(
-        Assessment.user_id == current_user.id, Assessment.stage == "post"
-    ).first()
 
-    # Build score objects (all 4 constructs)
-    pre_scores = None
-    if pre:
-        pre_scores = ConstructScores(
+    Supports both legacy Assessment table and new AssessmentInstance model.
+    """
+    uid = current_user.id
+
+    # ── Fetch pre-assessment scores (new model preferred, legacy fallback) ──
+    _pre_inst, inst_pre_scores = _get_pre_scores_for_dashboard(db, uid)
+    pre = db.query(Assessment).filter(Assessment.user_id == uid, Assessment.stage == "pre").first()
+
+    pre_scores: ConstructScores | None = inst_pre_scores or (
+        ConstructScores(
             attitude=pre.attitude_score,
             subjective_norm=pre.subjective_norm_score,
             pbc=pre.pbc_score,
             behavioral_intention=pre.behavioral_intention_score,
-        )
+        ) if pre else None
+    )
+    pre_exists = (_pre_inst is not None) or (pre is not None)
 
-    post_scores = None
-    if post:
-        post_scores = ConstructScores(
+    # ── Fetch post-assessment scores (new model preferred, legacy fallback) ──
+    _post_inst, inst_post_scores = _get_post_scores_for_dashboard(db, uid)
+    post = db.query(Assessment).filter(Assessment.user_id == uid, Assessment.stage == "post").first()
+
+    post_scores: ConstructScores | None = inst_post_scores or (
+        ConstructScores(
             attitude=post.attitude_score,
             subjective_norm=post.subjective_norm_score,
             pbc=post.pbc_score,
             behavioral_intention=post.behavioral_intention_score,
-        )
+        ) if post else None
+    )
+    post_exists = (_post_inst is not None) or (post is not None)
 
-    # Compute deltas
+    # ── Compute per-construct deltas (only when both exist) ──
     deltas = None
-    if pre and post:
+    if pre_scores and post_scores:
         deltas = ConstructDelta(
-            attitude=round((post.attitude_score or 0) - (pre.attitude_score or 0), 2),
-            subjective_norm=round(
-                (post.subjective_norm_score or 0) - (pre.subjective_norm_score or 0), 2
-            ),
-            pbc=round((post.pbc_score or 0) - (pre.pbc_score or 0), 2),
-            behavioral_intention=round(
-                (post.behavioral_intention_score or 0) - (pre.behavioral_intention_score or 0), 2
-            ),
+            attitude=round((post_scores.attitude or 0) - (pre_scores.attitude or 0), 2),
+            subjective_norm=round((post_scores.subjective_norm or 0) - (pre_scores.subjective_norm or 0), 2),
+            pbc=round((post_scores.pbc or 0) - (pre_scores.pbc or 0), 2),
+            behavioral_intention=round((post_scores.behavioral_intention or 0) - (pre_scores.behavioral_intention or 0), 2),
         )
 
-    # Intervention progress
+    # ── Intervention progress ──
     progress_records = (
         db.query(UserInterventionProgress)
-        .filter(UserInterventionProgress.user_id == current_user.id)
+        .filter(UserInterventionProgress.user_id == uid)
         .all()
     )
     total = len(progress_records)
     completed = sum(1 for p in progress_records if p.status == "completed")
     completion_pct = round((completed / total * 100) if total > 0 else 0.0, 1)
-    # Post-assessment is unlocked once pre-assessment is done and either no interventions
-    # were required (score >= 70%) or all assigned interventions are completed.
-    post_unlocked = (pre is not None) and (total == 0 or completed == total)
 
-    # Personalized feedback text (only if both assessments done)
+    # Post-assessment is unlocked once pre-assessment is done AND either:
+    #   • No interventions were required (all construct scores ≥ 70%)
+    #   • All assigned interventions are completed
+    post_unlocked = pre_exists and (total == 0 or completed == total)
+
+    # ── Personalized feedback text (only if both assessments done) ──
     feedback_messages: list[str] = []
-    if pre and post:
+    if pre_scores and post_scores:
         pre_t = TPBScores(
-            attitude=pre.attitude_score or 0,
-            subjective_norm=pre.subjective_norm_score or 0,
-            pbc=pre.pbc_score or 0,
-            behavioral_intention=pre.behavioral_intention_score or 0,
+            attitude=pre_scores.attitude or 0,
+            subjective_norm=pre_scores.subjective_norm or 0,
+            pbc=pre_scores.pbc or 0,
+            behavioral_intention=pre_scores.behavioral_intention or 0,
         )
         post_t = TPBScores(
-            attitude=post.attitude_score or 0,
-            subjective_norm=post.subjective_norm_score or 0,
-            pbc=post.pbc_score or 0,
-            behavioral_intention=post.behavioral_intention_score or 0,
+            attitude=post_scores.attitude or 0,
+            subjective_norm=post_scores.subjective_norm or 0,
+            pbc=post_scores.pbc or 0,
+            behavioral_intention=post_scores.behavioral_intention or 0,
         )
         feedback_messages = generate_feedback_text(pre_t, post_t)
 

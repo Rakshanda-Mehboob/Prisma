@@ -1,0 +1,31 @@
+<svg viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+  <rect width="400" height="250" rx="16" fill="#F8FAFC"/>
+  <!-- Ambient backdrop gradient -->
+  <rect x="20" y="20" width="360" height="210" rx="12" fill="#EEF2F6"/>
+  <!-- Smartphone frame -->
+  <rect x="70" y="35" width="110" height="180" rx="14" fill="#1E293B" stroke="#CBD5E1" stroke-width="2"/>
+  <rect x="76" y="45" width="98" height="160" rx="8" fill="#FFFFFF"/>
+  <!-- Parody video avatar & post simulation -->
+  <circle cx="125" cy="85" r="24" fill="#F43F5E" opacity="0.15"/>
+  <circle cx="125" cy="85" r="16" fill="#F43F5E" opacity="0.3"/>
+  <path d="M121 78 L133 85 L121 92 Z" fill="#E11D48"/>
+  <rect x="90" y="118" width="70" height="6" rx="3" fill="#E2E8F0"/>
+  <rect x="90" y="130" width="55" height="5" rx="2.5" fill="#CBD5E1"/>
+  <!-- Mocking comments stream -->
+  <rect x="85" y="145" width="80" height="16" rx="4" fill="#FFF1F2"/>
+  <rect x="92" y="150" width="50" height="5" rx="2.5" fill="#FB7185"/>
+  <rect x="85" y="167" width="80" height="16" rx="4" fill="#FFF1F2"/>
+  <rect x="92" y="172" width="60" height="5" rx="2.5" fill="#FB7185"/>
+  <!-- Discomforted student character silhouette -->
+  <circle cx="270" cy="95" r="30" fill="#64748B"/>
+  <path d="M225 210 C225 160 250 145 270 145 C290 145 315 160 315 210 Z" fill="#475569"/>
+  <!-- Tension aura / social isolation indicators -->
+  <path d="M220 85 C210 70 200 65 190 60" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <path d="M320 85 C330 70 340 65 350 60" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <!-- Speech bubbles from surrounding peers -->
+  <rect x="220" y="40" width="95" height="24" rx="8" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <circle cx="238" cy="52" r="3" fill="#94A3B8"/>
+  <circle cx="248" cy="52" r="3" fill="#94A3B8"/>
+  <circle cx="258" cy="52" r="3" fill="#94A3B8"/>
+</svg>
+

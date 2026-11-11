@@ -17,15 +17,19 @@ Architecture (v2.0):
 """
 
 import json
+import random
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from typing import Optional
 
 from database import get_db
+import models
 from models import (
     User, Assessment, AssessmentResponse, Intervention, UserInterventionProgress,
     AssessmentInstance, AssessmentScenario, AssessmentQuestion, Scenario,
+    UserScenarioImage,
 )
 from schemas import (
     AssessmentScores,
@@ -40,6 +44,10 @@ from schemas import (
 from auth.utils import get_current_user
 from assessment.scoring import calculate_scores, identify_weak_constructs, calculate_overall
 from assessment.adaptive_engine import generate_scenario_assessment
+from assessment.image_pipeline import (
+    generate_and_store_user_image,
+    SCENARIO_FALLBACK_IMAGES,
+)
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
@@ -91,30 +99,80 @@ def _is_stage_completed(db: Session, user_id: int, stage: str) -> bool:
     return legacy is not None
 
 
-def _format_instance_for_frontend(instance: AssessmentInstance) -> dict:
+def _shuffle_options(options: list, seed: int) -> list:
+    """
+    Fisher-Yates shuffle of options using a deterministic seed.
+    Returns a new list of options in shuffled order.
+    The seed is derived from (instance_id, question_id) so the same user
+    always sees the same shuffle for the same session, but different sessions
+    produce different orders.
+    """
+    rng = random.Random(seed)
+    shuffled = list(options)
+    for i in range(len(shuffled) - 1, 0, -1):
+        j = rng.randint(0, i)
+        shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+    return shuffled
+
+
+def _format_instance_for_frontend(instance: AssessmentInstance, db: Optional[Session] = None, user_id: Optional[int] = None) -> dict:
     """
     Format an AssessmentInstance for the frontend.
     Strips all internal metadata (TPB construct, platform, category).
-    Only exposes: scenario text, question text, answer options.
+    Only exposes: scenario text, question text, answer options, and per-user image metadata.
+    Options are shuffled per-question using a deterministic seed (instance_id × 10000 + question_id)
+    so the display order is randomized but reproducible within the same session for scoring.
     """
     scenarios = []
     for scenario in instance.scenarios:
         questions = []
         for q in scenario.questions:
             options = json.loads(q.options_json) if q.options_json else []
+            # Deterministic per-session, per-question shuffle seed
+            shuffle_seed = instance.id * 10000 + q.id
+            shuffled = _shuffle_options(options, shuffle_seed)
             questions.append({
                 "id": q.id,
                 "question_text": q.question_text,
-                "options": [{"index": i, "text": o["text"]} for i, o in enumerate(options)],
+                # Send shuffled display indices (0–3) with only the text; score is hidden
+                "options": [{"index": i, "text": opt["text"]} for i, opt in enumerate(shuffled)],
             })
+
+        # Check per-user image record
+        user_img = None
+        if db and user_id:
+            user_img = (
+                db.query(models.UserScenarioImage)
+                .filter_by(user_id=user_id, scenario_id=scenario.id, version=1)
+                .first()
+            )
+
+        resolved_image_url = None
+        resolved_alt = None
+        image_status = "ready"
+
+        if user_img:
+            resolved_image_url = user_img.image_url
+            resolved_alt = user_img.alt_text
+            image_status = user_img.status
+        elif scenario.image_url:
+            resolved_image_url = scenario.image_url
+            resolved_alt = scenario.image_alt_text
+            image_status = "ready"
+        else:
+            # Contextual scenario-specific fallback
+            resolved_image_url = SCENARIO_FALLBACK_IMAGES.get(scenario.order_index, SCENARIO_FALLBACK_IMAGES[0])
+            resolved_alt = f"Scenario {scenario.order_index + 1} illustration"
+            image_status = "ready"
 
         scenarios.append({
             "id": scenario.id,
             "order_index": scenario.order_index,
             "title": getattr(scenario, "title", None) or getattr(scenario, "category", None) or f"Situation {scenario.order_index + 1}",
             "scenario_text": scenario.text if hasattr(scenario, 'text') else scenario.scenario_text,
-            "image_url": getattr(scenario, "image_url", None),
-            "image_alt_text": getattr(scenario, "image_alt_text", None),
+            "image_url": resolved_image_url,
+            "image_alt_text": resolved_alt,
+            "image_status": image_status,
             "image_prompt": getattr(scenario, "image_prompt", None),
             "questions": questions,
         })
@@ -177,8 +235,28 @@ def get_assessment_status(
     )
 
 
+def _trigger_background_image_generation(user_id: int, instance: AssessmentInstance):
+    """Asynchronously generates scenario images for the user in the background."""
+    from database import SessionLocal
+    def _worker():
+        db = SessionLocal()
+        try:
+            for sc in instance.scenarios:
+                try:
+                    generate_and_store_user_image(db, user_id=user_id, scenario_id=sc.id, version=1)
+                except Exception as e:
+                    pass
+        finally:
+            db.close()
+    
+    import threading
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+
+
 @router.get("/pre")
 def get_pre_assessment(
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -203,7 +281,10 @@ def get_pre_assessment(
             db.rollback()
             instance = _get_instance(db, current_user.id, "pre")
 
-    return _format_instance_for_frontend(instance)
+    # Trigger async image generation in the background if images are not yet ready
+    _trigger_background_image_generation(current_user.id, instance)
+
+    return _format_instance_for_frontend(instance, db=db, user_id=current_user.id)
 
 
 @router.post("/pre", response_model=AssessmentScores, status_code=status.HTTP_201_CREATED)
@@ -273,7 +354,10 @@ def submit_pre_assessment(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"selected_option {answer.selected_option} is out of range for question {answer.question_id}.",
             )
-        resolved_score = options[answer.selected_option]["score"]
+        # Re-derive the same deterministic shuffle used during GET to map display index → original score
+        shuffle_seed = instance.id * 10000 + q.id
+        shuffled_options = _shuffle_options(options, shuffle_seed)
+        resolved_score = shuffled_options[answer.selected_option]["score"]
         q.selected_score = resolved_score
         enriched.append({
             "construct": q.tpb_construct,
@@ -365,6 +449,7 @@ def submit_pre_assessment(
 
 @router.get("/post")
 def get_post_assessment(
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -396,7 +481,9 @@ def get_post_assessment(
             db.rollback()
             instance = _get_instance(db, current_user.id, "post")
 
-    return _format_instance_for_frontend(instance)
+    _trigger_background_image_generation(current_user.id, instance)
+
+    return _format_instance_for_frontend(instance, db=db, user_id=current_user.id)
 
 
 @router.post("/post", response_model=AssessmentScores, status_code=status.HTTP_201_CREATED)
@@ -468,7 +555,10 @@ def submit_post_assessment(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"selected_option {answer.selected_option} is out of range for question {answer.question_id}.",
             )
-        resolved_score = options[answer.selected_option]["score"]
+        # Re-derive the same deterministic shuffle used during GET to map display index → original score
+        shuffle_seed = instance.id * 10000 + q.id
+        shuffled_options = _shuffle_options(options, shuffle_seed)
+        resolved_score = shuffled_options[answer.selected_option]["score"]
         q.selected_score = resolved_score
         enriched.append({
             "construct": q.tpb_construct,
@@ -525,6 +615,13 @@ def reset_assessment(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only administrators can reset assessments.",
         )
+
+    # Clean up user scenario images on reset
+    try:
+        db.query(models.UserScenarioImage).filter_by(user_id=current_user.id).delete()
+        db.commit()
+    except Exception:
+        db.rollback()
     stages_to_reset = ["pre", "post"] if stage in ("all", None, "") else [stage]
 
     # Reset new model

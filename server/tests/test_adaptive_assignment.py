@@ -143,13 +143,15 @@ class TestAdaptiveAssignment(unittest.TestCase):
         self.assertEqual(result["required_module_ids"], [])
         self.assertEqual(result["low_constructs"], [])
         self.assertTrue(result["all_constructs_high"])
-        self.assertIn("Congratulations! Your assessment indicates good readiness across all TPB constructs", result["recommendation_reason"])
-        self.assertIn("No personalized learning interventions are required at this time", result["recommendation_reason"])
-        self.assertEqual(len(result["modules_detail"]), 0)
+        self.assertEqual(result["optional_enhancement_module"], 3)  # PBC was lowest (72%)
+        self.assertEqual(result["optional_enhancement_construct"], "pbc")
+        self.assertIn("No mandatory learning is required", result["recommendation_reason"])
+        self.assertIn("optional enhancement module is available", result["recommendation_reason"])
 
     def test_scores_exactly_at_threshold_is_high(self):
         """
         Scores exactly at 70.0 are classified as HIGH (>= 70) and do NOT get assigned.
+        Since all are equal, Module 1 is recommended as enhancement.
         """
         scores = {
             "attitude": 70.0,
@@ -161,6 +163,25 @@ class TestAdaptiveAssignment(unittest.TestCase):
 
         self.assertEqual(result["assigned_modules"], [])
         self.assertTrue(result["all_constructs_high"])
+        self.assertEqual(result["optional_enhancement_module"], 1)
+
+    def test_all_scores_100_recommends_module_1(self):
+        """
+        If all construct scores are 100%, Module 1 is recommended.
+        """
+        scores = {
+            "attitude": 100.0,
+            "subjective_norm": 100.0,
+            "pbc": 100.0,
+            "behavioral_intention": 100.0,
+        }
+        result = determine_module_assignments(scores, threshold=70.0)
+
+        self.assertEqual(result["assigned_modules"], [])
+        self.assertTrue(result["all_constructs_high"])
+        self.assertEqual(result["optional_enhancement_module"], 1)
+        self.assertEqual(result["optional_enhancement_construct"], "attitude")
+        self.assertIn("Module 1", result["recommendation_reason"])
 
     def test_three_constructs_low_order_by_lowest_first(self):
         """

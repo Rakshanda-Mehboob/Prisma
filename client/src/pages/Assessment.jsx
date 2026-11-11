@@ -376,13 +376,13 @@ function AssessmentResultsView({
                 </div>
               ) : (
                 <div className="results-action-item">
-                  <div className="results-action-icon" style={{ background: 'rgba(5, 150, 105, 0.1)', color: 'var(--color-success)' }}>
-                    <CheckCircle2 size={17} />
+                  <div className="results-action-icon" style={{ background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)' }}>
+                    <BookOpen size={17} />
                   </div>
                   <div className="results-action-content">
-                    <span className="results-action-title">No Intervention Required</span>
+                    <span className="results-action-title">Personalized Enhancement Module</span>
                     <p className="results-action-desc">
-                      You scored 70% or higher across all constructs, demonstrating good readiness. No remedial modules are needed.
+                      All your scores are 70% or higher. Prisma has recommended a personalized enhancement module to strengthen your skills even further.
                     </p>
                   </div>
                 </div>
@@ -406,45 +406,57 @@ function AssessmentResultsView({
                 <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
                   {stage === 'post' || postAssessment || isPostDone
                     ? 'Ready to review your dashboard progress?'
-                    : !hasIntervention
-                    ? 'Great score! No intervention required.'
-                    : 'Ready to start your personalized modules?'}
+                    : 'Ready to start your personalized learning?'}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                   {stage === 'post' || postAssessment || isPostDone
                     ? 'Review your updated progress and badges on the dashboard.'
-                    : !hasIntervention
-                    ? 'You have demonstrated solid readiness across all areas (Score ≥ 70%). You can return to your dashboard.'
-                    : 'Modules are short, interactive, and self-paced.'}
+                    : hasIntervention
+                    ? 'Modules are short, interactive, and self-paced.'
+                    : 'Explore your recommended enhancement module to strengthen your cyberbullying response skills.'}
                 </div>
               </div>
 
-              <Button
-                variant="primary"
-                size="md"
-                iconRight={<ArrowRight size={16} />}
-                onClick={() => {
-                  if (stage === 'post' || postAssessment || isPostDone || !hasIntervention) {
-                    navigate('/dashboard');
-                  } else {
-                    onContinue();
-                  }
-                }}
-              >
-                {stage === 'post' || postAssessment || isPostDone || !hasIntervention
-                  ? 'Return to Dashboard'
-                  : 'Continue to Learning Module'}
-              </Button>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                {stage === 'post' || postAssessment || isPostDone ? (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    iconRight={<ArrowRight size={16} />}
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    Return to Dashboard
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      iconRight={<ArrowRight size={16} />}
+                      onClick={onContinue}
+                    >
+                      Continue to Learning Module
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      Return to Dashboard
+                    </Button>
+                  </>
+                )}
 
-              {onRetake && (
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={() => onRetake()}
-                >
-                  Retake Assessment
-                </Button>
-              )}
+                {onRetake && (
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={() => onRetake()}
+                  >
+                    Retake Assessment
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         );
@@ -675,6 +687,17 @@ export default function Assessment() {
           return;
         }
 
+        // If post-assessment is not yet unlocked (learning modules not finished)
+        if (!_isPostUnlocked) {
+          setError(
+            'Complete all assigned learning modules before taking the post-assessment. ' +
+            'Your personalized learning path must be finished first.'
+          );
+          setShowHub(false);
+          setLoading(false);
+          return;
+        }
+
         // Load POST scenarios
         const res = await assessmentApi.getPostScenarios();
         const instanceData = res.data;
@@ -887,9 +910,19 @@ export default function Assessment() {
         ? await assessmentApi.submitPre(answersPayload)
         : await assessmentApi.submitPost(answersPayload);
 
-      setResult(res.data);
+      const submittedResult = res.data;
+      setResult(submittedResult);
       setSubmitted(true);
       setReviewModalOpen(false);
+
+      // Refresh assessment status after submission so post_unlocked reflects new state
+      if (stage === 'pre') {
+        try {
+          const freshStatus = await assessmentApi.getStatus();
+          setAssessmentStatus(freshStatus.data);
+        } catch (_) {}
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError(err.response?.data?.detail || 'Submission failed. Please check your connection and try again.');
@@ -957,6 +990,8 @@ export default function Assessment() {
       : (assessmentStatus.pre_assessment || assessmentStatus.post_assessment);
 
     if (activeAssessment && (isPreDone || isPostDone)) {
+      const isPostUnlocked = Boolean(assessmentStatus.post_unlocked);
+
       return (
         <AssessmentResultsView
           stage={isViewingPost ? 'post' : 'pre'}
@@ -964,7 +999,7 @@ export default function Assessment() {
           preAssessment={assessmentStatus.pre_assessment}
           postAssessment={assessmentStatus.post_assessment}
           isPostDone={isPostDone}
-          isPostUnlocked={Boolean(assessmentStatus.post_unlocked)}
+          isPostUnlocked={isPostUnlocked}
           onContinue={() => navigate(isViewingPost ? '/dashboard' : '/interventions')}
           onRetake={user?.role === 'admin' ? (retakeStage) => handleRetake(retakeStage || (isViewingPost ? 'post' : 'pre')) : null}
           onStartPost={() => {
@@ -1211,51 +1246,22 @@ export default function Assessment() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-            <motion.button
-              type="button"
+            <Button
+              variant="primary"
+              size="xl"
               onClick={() => setHasStarted(true)}
-              whileHover={{ scale: 1.025, boxShadow: '0 14px 30px -4px rgba(79, 70, 229, 0.45)' }}
-              whileTap={{ scale: 0.98 }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
-                padding: '1.15rem 3.25rem',
-                borderRadius: '9999px',
-                background: 'linear-gradient(135deg, var(--color-primary, #4f46e5) 0%, #6366f1 100%)',
-                color: '#ffffff',
-                fontSize: '1.15rem',
-                fontWeight: 700,
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 8px 24px -4px rgba(79, 70, 229, 0.38), 0 2px 6px rgba(79, 70, 229, 0.2)',
-                transition: 'background 0.2s ease, box-shadow 0.2s ease',
-                letterSpacing: '0.01em',
-                width: '100%',
-                maxWidth: '360px',
-              }}
+              iconRight={<ArrowRight size={20} />}
             >
-              <span>Begin Assessment</span>
-              <ArrowRight size={20} />
-            </motion.button>
+              Begin Assessment
+            </Button>
 
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => navigate('/dashboard')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--color-text-muted)',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                padding: '0.5rem 1rem',
-                borderRadius: 'var(--radius-sm)',
-                transition: 'color 0.15s ease',
-              }}
             >
               Back to Dashboard
-            </button>
+            </Button>
           </div>
         </div>
       </motion.div>
@@ -1263,6 +1269,9 @@ export default function Assessment() {
   }
   // ── Submitted / Results Screen — uses the clean AssessmentResultsView ────────
   if (submitted && result) {
+    const weakConstructs = result?.weak_constructs ?? [];
+    const allScoresHigh = weakConstructs.length === 0;
+
     return (
       <AssessmentResultsView
         stage={stage}
@@ -1270,7 +1279,7 @@ export default function Assessment() {
         preAssessment={stage === 'post' ? assessmentStatus?.pre_assessment ?? null : null}
         postAssessment={stage === 'post' ? result : null}
         isPostDone={stage === 'post'}
-        isPostUnlocked={Boolean(assessmentStatus?.post_unlocked)}
+        isPostUnlocked={allScoresHigh || Boolean(assessmentStatus?.post_unlocked)}
         isJustSubmitted
         onContinue={() => navigate(stage === 'pre' ? '/interventions' : '/dashboard')}
         onRetake={user?.role === 'admin' ? (retakeStage) => handleRetake(retakeStage || stage) : null}
@@ -1416,23 +1425,35 @@ export default function Assessment() {
                 </Badge>
               </div>
 
-              {/* Scenario Visual Illustration (AI Generated Image with SVG Fallback) */}
-              <div className="scenario-illustration-box">
+              {/* Scenario Visual Illustration (AI Generated Image with Skeleton & Contextual Fallback) */}
+              <div className="scenario-illustration-box" style={{ minHeight: '190px', position: 'relative' }}>
+                {currentScenario?.image_status === 'pending' && !currentScenario?.image_url && (
+                  <div style={{ width: '100%', height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: 'var(--color-surface-2)', borderRadius: '10px' }}>
+                    <div className="skeleton-shimmer" style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)' }} />
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                      Generating customized visual illustration...
+                    </span>
+                  </div>
+                )}
                 {currentScenario?.image_url ? (
                   <img
                     src={currentScenario.image_url.startsWith('http') ? currentScenario.image_url : `http://127.0.0.1:8000${currentScenario.image_url}`}
-                    alt={currentScenario.image_alt_text || currentScenario?.title || currentTheme.title}
+                    alt={currentScenario.image_alt_text || currentScenario?.title || `Scenario ${currentScenarioIdx + 1} illustration`}
                     style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '10px' }}
                     onError={(e) => {
-                      // Graceful fallback to SVG illustration if remote/cached image fails
+                      // Graceful fallback to scenario-specific SVG illustration if loading fails
                       e.currentTarget.style.display = 'none';
                       const fallback = e.currentTarget.nextElementSibling;
                       if (fallback) fallback.style.display = 'block';
                     }}
                   />
                 ) : null}
-                <div style={{ display: currentScenario?.image_url ? 'none' : 'block', width: '100%' }}>
-                  <ScenarioIllustration />
+                <div style={{ display: currentScenario?.image_url ? 'none' : currentScenario?.image_status === 'pending' ? 'none' : 'block', width: '100%' }}>
+                  <img
+                    src={`http://127.0.0.1:8000/static/scenario_images/fallback_situation_${(currentScenarioIdx % 3) + 1}_${currentScenarioIdx === 0 ? 'social' : currentScenarioIdx === 1 ? 'chat' : 'academic'}.svg`}
+                    alt={currentScenario?.title || `Scenario ${currentScenarioIdx + 1}`}
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }}
+                  />
                 </div>
               </div>
 

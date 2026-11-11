@@ -7,13 +7,12 @@ Theory of Planned Behavior (TPB) Construct-to-Module Mapping:
   - Subjective Norms (0–69%)               -> Module 4 (Your Role)
   - Behavioral Intention                   -> Outcome variable.
 
-Required Logic:
-  - Uses individual TPB construct scores (0–100 percentage).
-  - Low (0–69)   -> Display intervention(s) for that construct.
-  - High (70–100) -> Do NOT display any intervention for that construct (hidden).
-  - If ALL constructs score 70–100:
-    "Congratulations! Your assessment indicates good readiness across all TPB constructs.
-     No personalized learning interventions are required at this time."
+Adaptive Logic (Two-Tier):
+  - Score < 70  -> MANDATORY intervention for that construct only.
+  - All scores >= 70 -> No mandatory intervention.
+                        Find the relatively lowest-scoring construct across all,
+                        and recommend ONE optional personalised enhancement module for it.
+  - Modules are NEVER shown for constructs that are not the lowest or not below threshold.
 """
 
 from typing import Dict, List, Optional, Tuple, Any
@@ -41,6 +40,11 @@ MODULE_DEFINITIONS = {
             "Your Attitude score fell below 70%, indicating an opportunity to strengthen awareness of "
             "subtle cyber harms, digital defamation, and peer impact. Module 1 provides foundational awareness."
         ),
+        "why_recommended_enhancement": (
+            "Your Attitude score is your relatively lowest-scoring construct compared to your other results. "
+            "Module 1 will sharpen your awareness of subtle cyber harms and digital defamation, "
+            "helping you reach even higher cybersecurity readiness."
+        ),
     },
     2: {
         "module_number": 2,
@@ -52,6 +56,11 @@ MODULE_DEFINITIONS = {
         "why_recommended": (
             "Your Attitude score fell below 70%. Module 2 deepens victim empathy and explores how "
             "academic jealousy and enmity drive online harassment."
+        ),
+        "why_recommended_enhancement": (
+            "Your Attitude score is your relatively lowest-scoring construct. "
+            "Module 2 deepens your empathy for victims and explores the motivations behind online harassment, "
+            "helping you close the gap between good and excellent readiness."
         ),
     },
     3: {
@@ -65,6 +74,11 @@ MODULE_DEFINITIONS = {
             "Your Perceived Behavioral Control score fell below 70%, suggesting you would benefit from building "
             "practical skills and confidence to secure accounts, preserve evidence, and report violations under PECA 2016."
         ),
+        "why_recommended_enhancement": (
+            "Your Perceived Behavioral Control score is your relatively lowest-scoring construct. "
+            "Module 3 will strengthen your practical digital hygiene skills, evidence preservation techniques, "
+            "and understanding of legal protections under PECA 2016 — pushing your readiness to its peak."
+        ),
     },
     4: {
         "module_number": 4,
@@ -76,6 +90,11 @@ MODULE_DEFINITIONS = {
         "why_recommended": (
             "Your Subjective Norms score fell below 70%. Module 4 empowers you to challenge passive bystander silence "
             "and establish constructive peer expectations in campus group chats."
+        ),
+        "why_recommended_enhancement": (
+            "Your Subjective Norms score is your relatively lowest-scoring construct. "
+            "Module 4 will help you go beyond passive awareness — challenging bystander silence and building "
+            "the peer-leadership skills that distinguish good from excellent digital citizenship."
         ),
     },
 }
@@ -236,25 +255,99 @@ def determine_module_assignments(
     low_construct_keys = [c[0] for c in low_constructs_with_scores]
 
     # ── CASE 1: ALL CONSTRUCTS SCORE 70–100 ───────────────────────────────────
-    # If no predictor construct is low (< 70) and intention is not low
+    # Find the weakest construct among the high ones for an optional enhancement
     if len(low_construct_keys) == 0:
+        # Identify the single weakest construct (lowest score) for optional recommendation
+        # Map construct keys to their module numbers
+        CONSTRUCT_TO_MODULE = {
+            "attitude": 1,          # Module 1 is the entry-level Attitude module
+            "pbc": 3,
+            "subjective_norm": 4,
+            "behavioral_intention": None,  # No dedicated module; fall back to nearest
+        }
+
+        # Sort all scored predictor constructs by score ascending to find the weakest
+        all_scored = sorted(
+            [(c, s) for c, s in valid_predictors.items() if s is not None],
+            key=lambda x: x[1],
+        )
+
+        # Check if all scored constructs have identical scores (e.g., all 100%)
+        unique_scores = set(s for _, s in all_scored)
+        all_scores_equal = len(unique_scores) <= 1 and len(all_scored) > 0
+
+        optional_module = None
+        optional_construct_key = None
+        weakest_key = None
+        weakest_score = None
+
+        if all_scores_equal:
+            # If all constructs have equal scores (e.g., all 100%), automatically recommend Module 1
+            optional_module = 1
+            optional_construct_key = "attitude"
+            weakest_key = "attitude"
+            weakest_score = all_scored[0][1] if all_scored else 100.0
+        else:
+            # Pick the construct with the lowest score
+            weakest_key = all_scored[0][0] if all_scored else None
+            weakest_score = all_scored[0][1] if all_scored else None
+
+            # Map to module; if behavioral_intention is weakest pick the next weakest predictor
+            optional_construct_key = weakest_key
+            if weakest_key and weakest_key in CONSTRUCT_TO_MODULE:
+                mod = CONSTRUCT_TO_MODULE[weakest_key]
+                if mod is None:
+                    # behavioral_intention has no dedicated module; use next weakest predictor
+                    for c, _s in all_scored[1:]:
+                        if CONSTRUCT_TO_MODULE.get(c) is not None:
+                            optional_module = CONSTRUCT_TO_MODULE[c]
+                            optional_construct_key = c
+                            break
+                else:
+                    optional_module = mod
+
+        optional_module_ids = [optional_module] if optional_module else []
+
+        # Build reason text
+        construct_display_names = {
+            "attitude": "Attitude",
+            "pbc": "Perceived Behavioral Control",
+            "subjective_norm": "Subjective Norms",
+            "behavioral_intention": "Behavioral Intention",
+        }
+        optional_name = construct_display_names.get(optional_construct_key, optional_construct_key) if optional_construct_key else "your strongest growth area"
+        optional_score_str = f" ({round(weakest_score)}%)" if weakest_score is not None else ""
+
+        if all_scores_equal:
+            reason_text = (
+                f"All your TPB construct scores are in the High range (70–100%) with equal readiness ({round(weakest_score)}%). "
+                f"No mandatory learning is required. "
+                f"Module 1 (Introduction to Cyberbullying Awareness) is recommended as a foundational enhancement module."
+            )
+        else:
+            reason_text = (
+                f"All your TPB construct scores are in the High range (70–100%). "
+                f"No mandatory learning is required. "
+                f"Your relatively lowest score is {optional_name}{optional_score_str} — "
+                f"an optional enhancement module is available to help you reach even higher."
+            )
+
         return {
             "assigned_modules": [],
             "required_module_ids": [],
-            "optional_module_ids": [],
+            "optional_module_ids": optional_module_ids,
             "low_constructs": [],
             "high_constructs": list(valid_predictors.keys()),
             "all_constructs_high": True,
+            "optional_enhancement_module": optional_module,
+            "optional_enhancement_construct": optional_construct_key,
             "is_reinforcement": False,
             "is_fallback": False,
             "threshold_used": threshold,
             "construct_scores": construct_scores,
             "mean_scores": construct_scores,
-            "recommendation_reason": (
-                "Congratulations! Your assessment indicates good readiness across all TPB constructs. "
-                "No personalized learning interventions are required at this time."
-            ),
-            "modules_detail": [],
+            "recommendation_reason": reason_text,
+            "modules_detail": _build_modules_detail(optional_module_ids, [], construct_scores),
         }
 
     # ── CASE 2: DISPLAY ONLY MODULES FOR LOW CONSTRUCTS (< 70) ────────────────
@@ -325,7 +418,7 @@ def _build_modules_detail(
             "target_construct": cfg["target_construct"],
             "target_construct_key": c_key,
             "construct_score": score,
-            "is_required": True,
+            "is_required": m_num in required_ids,
             "status": "assigned",
             "estimated_minutes": cfg["estimated_minutes"],
             "why_recommended": cfg["why_recommended"],

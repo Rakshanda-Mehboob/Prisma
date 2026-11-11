@@ -465,3 +465,47 @@ class PasswordResetToken(Base):
     # Relationship
     user: Mapped["User"] = relationship("User", back_populates="reset_tokens")
 
+
+class ScenarioVisualBrief(Base):
+    """
+    Cached semantic scene brief extracted from the scenario narrative by a text model.
+    Shared across all users who receive the same scenario.
+    """
+    __tablename__ = "scenario_visual_briefs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    scenario_id: Mapped[int] = mapped_column(Integer, ForeignKey("assessment_scenarios.id"), unique=True, index=True)
+    setting: Mapped[str] = mapped_column(Text, nullable=False)
+    characters: Mapped[str] = mapped_column(Text, nullable=False)
+    key_action: Mapped[str] = mapped_column(Text, nullable=False)
+    mood: Mapped[str] = mapped_column(String(200), nullable=False)
+    objects_on_screen: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class UserScenarioImage(Base):
+    """
+    Per-user, per-scenario visual image record with deterministic variation parameters.
+    Unique constraint on (user_id, scenario_id, version).
+    """
+    __tablename__ = "user_scenario_images"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    scenario_id: Mapped[int] = mapped_column(Integer, ForeignKey("assessment_scenarios.id"), nullable=False, index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+
+    status: Mapped[str] = mapped_column(String(20), default="pending", nullable=False)  # pending, ready, failed
+    image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    image_prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    alt_text: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    seed: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "scenario_id", "version", name="uq_user_scenario_version"),
+    )
+
+

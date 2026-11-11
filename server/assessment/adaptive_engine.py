@@ -348,7 +348,7 @@ def generate_with_openai(
     prompt = f"""You are generating an assessment for a university student.
 
 CRITICAL SCENARIO LANGUAGE & QUALITY RULES:
-- Generate scenarios using simple, clear, and student-friendly language.
+- Generate scenarios using simple, clear, easy and student-friendly language.
 - Do NOT reduce the length, number of lines, or amount of information in the scenarios. Keep scenarios detailed and explainable, NOT short summaries.
 - Avoid complex vocabulary, technical terms, academic phrases, or confusing sentence structures (NEVER use words like: "prosocial", "weaponize", "objectify", "normative", "disseminates", "derogatory", "subtle redirection", "affiliate", "dogpiling", "brigade", "sabotage", "acute distress", "human dignity violation", "repute", "cognitive", "dichotomy").
 - The scenario should be easy for a university student to read once and understand immediately.
@@ -356,7 +356,7 @@ CRITICAL SCENARIO LANGUAGE & QUALITY RULES:
 
 SCENARIO WRITING STYLE:
 - Write like a real-life situation a university student could experience in everyday life.
-- Use natural storytelling language.
+- Use natural easy wording storytelling language.
 - Include enough context: who is involved, where it happens, what action occurs, and why it matters.
 - Keep the emotional and social context clear (peer dynamics, group tension, hesitation to intervene).
 - Avoid academic wording; use everyday language throughout.

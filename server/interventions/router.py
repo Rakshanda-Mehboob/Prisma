@@ -29,6 +29,41 @@ from database import Base, engine, get_db
 from models import User, Assessment, AssessmentInstance, Intervention, UserInterventionProgress
 from schemas import UserInterventionOut
 from auth.utils import get_current_user
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# PRE-ASSESSMENT COMPLETION GUARD
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _is_pre_completed(db: Session, user_id: int) -> bool:
+    """
+    Returns True if the user has completed the pre-assessment (new or legacy model).
+    This is the gating condition for accessing the Learning Module.
+    """
+    # Check new scenario-based AssessmentInstance
+    inst = (
+        db.query(AssessmentInstance)
+        .filter(
+            AssessmentInstance.user_id == user_id,
+            AssessmentInstance.stage == "pre",
+        )
+        .first()
+    )
+    if inst and inst.status == "submitted":
+        return True
+    # Fall back to legacy Assessment table
+    legacy = (
+        db.query(Assessment)
+        .filter(Assessment.user_id == user_id, Assessment.stage == "pre")
+        .first()
+    )
+    return legacy is not None
+
+
+_PRE_ASSESSMENT_REQUIRED_DETAIL = (
+    "Complete your Pre-Assessment first to unlock your personalized learning modules. "
+    "Your assessment results determine which learning content is recommended specifically for you."
+)
 from interventions.adaptive_assignment import (
     DEFAULT_ADAPTIVE_THRESHOLD,
     MODULE_DEFINITIONS,
@@ -59,6 +94,9 @@ class UserAdaptiveAssignment(Base):
     is_reinforcement = Column(Boolean, default=False)
     is_fallback = Column(Boolean, default=False)
     recommendation_reason = Column(Text, nullable=False)
+    # Enhancement module for all-high users (optional, not required for post-assessment)
+    optional_enhancement_module = Column(Integer, nullable=True)
+    optional_enhancement_construct = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -80,6 +118,46 @@ class UserModuleState(Base):
 
 # Create tables if not existing
 Base.metadata.create_all(bind=engine)
+
+# ── Migrate: add optional enhancement columns and backfill existing rows ───────
+def _run_migrations():
+    """Add new nullable columns to existing tables without dropping data, and backfill existing rows."""
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        for col_def in [
+            "ALTER TABLE user_adaptive_assignments ADD COLUMN optional_enhancement_module INTEGER",
+            "ALTER TABLE user_adaptive_assignments ADD COLUMN optional_enhancement_construct VARCHAR(50)",
+        ]:
+            try:
+                conn.execute(text(col_def))
+                conn.commit()
+            except Exception:
+                pass  # Column already exists — safe to skip
+
+    # Backfill/update existing assignments so existing accounts receive the latest adaptive recommendations
+    try:
+        from database import SessionLocal
+        with SessionLocal() as db:
+            assignments = db.query(UserAdaptiveAssignment).all()
+            for asst in assignments:
+                if asst.mean_scores:
+                    try:
+                        scores = json.loads(asst.mean_scores)
+                        res = determine_module_assignments(scores, threshold=DEFAULT_ADAPTIVE_THRESHOLD)
+                        asst.assigned_modules = json.dumps(res["assigned_modules"])
+                        asst.required_module_ids = json.dumps(res["required_module_ids"])
+                        asst.optional_module_ids = json.dumps(res["optional_module_ids"])
+                        asst.low_constructs = json.dumps(res["low_constructs"])
+                        asst.recommendation_reason = res["recommendation_reason"]
+                        asst.optional_enhancement_module = res.get("optional_enhancement_module")
+                        asst.optional_enhancement_construct = res.get("optional_enhancement_construct")
+                    except Exception as err:
+                        print(f"[MIGRATION WARNING] Error updating assignment {asst.id}: {err}")
+            db.commit()
+    except Exception as e:
+        print(f"[MIGRATION WARNING] Failed to backfill assignments: {e}")
+
+_run_migrations()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -202,9 +280,20 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
     if not assignment:
         should_recreate = True
     else:
-        # Check if threshold or scores have changed
+        # Check if threshold, scores, or assignments have changed or if enhancement metadata is missing
         current_scores = json.loads(assignment.mean_scores) if assignment.mean_scores else {}
-        if assignment.threshold_used != DEFAULT_ADAPTIVE_THRESHOLD or current_scores != mean_scores:
+        is_all_high = assign_result.get("all_constructs_high", False)
+        if (
+            assignment.threshold_used != DEFAULT_ADAPTIVE_THRESHOLD
+            or current_scores != mean_scores
+            or assignment.assigned_modules != json.dumps(assign_result["assigned_modules"])
+            or assignment.required_module_ids != json.dumps(assign_result["required_module_ids"])
+            or assignment.optional_module_ids != json.dumps(assign_result["optional_module_ids"])
+            or assignment.optional_enhancement_module != assign_result.get("optional_enhancement_module")
+            or assignment.optional_enhancement_construct != assign_result.get("optional_enhancement_construct")
+            or (is_all_high and not assignment.optional_enhancement_module)
+            or (assignment.recommendation_reason != assign_result.get("recommendation_reason"))
+        ):
             should_recreate = True
 
     if should_recreate:
@@ -221,6 +310,9 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
         assignment.is_reinforcement = assign_result["is_reinforcement"]
         assignment.is_fallback = assign_result["is_fallback"]
         assignment.recommendation_reason = assign_result["recommendation_reason"]
+        # Enhancement module for all-high users
+        assignment.optional_enhancement_module = assign_result.get("optional_enhancement_module")
+        assignment.optional_enhancement_construct = assign_result.get("optional_enhancement_construct")
         db.commit()
         db.refresh(assignment)
 
@@ -244,6 +336,8 @@ def _get_or_create_user_assignment(db: Session, user: User) -> UserAdaptiveAssig
                 ))
             else:
                 state.is_required = is_req
+                if not is_req and state.status == "assigned":
+                    state.status = "optional"
 
             # Synchronize with UserInterventionProgress for required modules
             prog = (
@@ -287,6 +381,13 @@ def get_adaptive_learning_path(
       - High scoring constructs (>= 70%) are omitted / hidden.
       - If all constructs score 70–100%, returns empty modules list with congratulatory message.
     """
+    # ── Access guard: pre-assessment must be completed first ──────────────────
+    if not _is_pre_completed(db, current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=_PRE_ASSESSMENT_REQUIRED_DETAIL,
+        )
+
     assignment = _get_or_create_user_assignment(db, current_user)
 
     assigned_module_order = json.loads(assignment.assigned_modules)
@@ -325,8 +426,10 @@ def get_adaptive_learning_path(
             prev_required_done = False
 
     # Assemble response modules: ONLY assigned modules for constructs below threshold (< 70)
+    # PLUS, for all-high users, the single optional enhancement module (not required)
     modules_out: List[ModuleDetailOut] = []
 
+    # Required modules (low-construct interventions)
     for m_num in assigned_module_order:
         cur = MODULE_CURRICULUM[m_num]
         st = state_by_num.get(m_num)
@@ -359,6 +462,78 @@ def get_adaptive_learning_path(
             completed_at=completed_at,
         ))
 
+    # Optional enhancement module for all-high users
+    opt_enh_module_id = assignment.optional_enhancement_module
+    opt_enh_construct = assignment.optional_enhancement_construct
+    if all_constructs_high and not opt_enh_module_id:
+        # Fallback for existing or legacy rows: dynamically resolve enhancement module
+        calc = determine_module_assignments(mean_scores, threshold=assignment.threshold_used)
+        opt_enh_module_id = calc.get("optional_enhancement_module")
+        opt_enh_construct = calc.get("optional_enhancement_construct")
+        if opt_enh_module_id:
+            assignment.optional_enhancement_module = opt_enh_module_id
+            assignment.optional_enhancement_construct = opt_enh_construct
+            assignment.optional_module_ids = json.dumps(calc.get("optional_module_ids", []))
+            assignment.recommendation_reason = calc.get("recommendation_reason")
+            try:
+                db.commit()
+            except Exception:
+                pass
+
+    if all_constructs_high and opt_enh_module_id and opt_enh_module_id in MODULE_CURRICULUM:
+        cur = MODULE_CURRICULUM[opt_enh_module_id]
+        st = state_by_num.get(opt_enh_module_id)
+        status_val = st.status if st else "optional"
+        act_done = st.activity_completed if st else False
+        act_data = json.loads(st.activity_data) if st and st.activity_data else None
+        completed_at = st.completed_at if st else None
+
+        # Build context-aware enhancement why_recommended using the score
+        mod_def = MODULE_DEFINITIONS.get(opt_enh_module_id, {})
+        construct_names = {
+            "attitude": "Attitude",
+            "pbc": "Perceived Behavioral Control",
+            "subjective_norm": "Subjective Norms",
+            "behavioral_intention": "Behavioral Intention",
+        }
+        enh_construct_name = construct_names.get(
+            opt_enh_construct,
+            opt_enh_construct.replace("_", " ").title() if opt_enh_construct else "your weakest construct"
+        )
+        enh_score = mean_scores.get(opt_enh_construct) if opt_enh_construct else None
+        enh_score_str = f" ({round(enh_score)}%)" if enh_score is not None else ""
+
+        base_enh_text = mod_def.get("why_recommended_enhancement")
+        if base_enh_text:
+            why_enh = base_enh_text
+        else:
+            why_enh = (
+                f"Your {enh_construct_name}{enh_score_str} is your relatively lowest-scoring construct. "
+                f"This recommended module will help you close the gap and reach even higher readiness."
+            )
+
+        modules_out.append(ModuleDetailOut(
+            module_number=opt_enh_module_id,
+            id=opt_enh_module_id,
+            title=cur["title"],
+            subtitle=cur["subtitle"],
+            target_construct=cur.get("target_construct_display", cur["target_construct"]),
+            target_construct_key=cur["target_construct_key"],
+            construct_mean_score=mean_scores.get(cur["target_construct_key"]),
+            is_required=False,
+            is_unlocked=True,  # Always unlocked for optional modules
+            status=status_val,
+            activity_completed=act_done,
+            activity_data=act_data,
+            estimated_minutes=cur["estimated_minutes"],
+            why_recommended=why_enh,
+            overview=cur["overview"],
+            learning_objectives=cur["learning_objectives"],
+            sections=cur["sections"],
+            activity=cur["activity"],
+            completed_at=completed_at,
+        ))
+
     # All required modules must be completed to unlock post-assessment
     all_required_done = (
         len(required_ids) == 0
@@ -375,6 +550,9 @@ def get_adaptive_learning_path(
         "low_constructs": low_constructs,
         "high_constructs": high_constructs,
         "all_constructs_high": all_constructs_high,
+        # Enhancement module info for all-high users
+        "optional_enhancement_module": assignment.optional_enhancement_module,
+        "optional_enhancement_construct": assignment.optional_enhancement_construct,
         "mean_scores": mean_scores,
         "threshold_used": assignment.threshold_used,
         "is_reinforcement": assignment.is_reinforcement,
@@ -399,6 +577,12 @@ def start_module(
     """Marks a module as 'in-progress'."""
     if module_id not in [1, 2, 3, 4]:
         raise HTTPException(status_code=404, detail="Module not found.")
+
+    if not _is_pre_completed(db, current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=_PRE_ASSESSMENT_REQUIRED_DETAIL,
+        )
 
     _get_or_create_user_assignment(db, current_user)
     st = (
@@ -445,6 +629,12 @@ def submit_module_activity(
     """
     if module_id not in [1, 2, 3, 4]:
         raise HTTPException(status_code=404, detail="Module not found.")
+
+    if not _is_pre_completed(db, current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=_PRE_ASSESSMENT_REQUIRED_DETAIL,
+        )
 
     _get_or_create_user_assignment(db, current_user)
     st = (
@@ -510,6 +700,12 @@ def complete_module(
     """
     if module_id not in [1, 2, 3, 4]:
         raise HTTPException(status_code=404, detail="Module not found.")
+
+    if not _is_pre_completed(db, current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=_PRE_ASSESSMENT_REQUIRED_DETAIL,
+        )
 
     assignment = _get_or_create_user_assignment(db, current_user)
     st = (
@@ -587,6 +783,11 @@ def get_my_interventions(
     """
     Returns progress records for backwards-compatible API consumers.
     """
+    if not _is_pre_completed(db, current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=_PRE_ASSESSMENT_REQUIRED_DETAIL,
+        )
     _get_or_create_user_assignment(db, current_user)
     records = (
         db.query(UserInterventionProgress)

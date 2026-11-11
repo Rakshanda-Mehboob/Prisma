@@ -27,6 +27,7 @@ export default function Button({
     sm: 'btn-sm',
     md: '',
     lg: 'btn-lg',
+    xl: 'btn-xl',
   }[size] || '';
 
   return (
