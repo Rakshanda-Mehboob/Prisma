@@ -10,7 +10,7 @@ Routes:
   POST /assessment/reset    → reset assessment(s) for retake
 
 Architecture (v2.0):
-  - Each assessment = 3 narrative scenarios × 6 questions each = 18 items
+  - Each assessment = 3 narrative scenarios × 8 questions each = 24 items (2 per TPB construct × 4 constructs)
   - Scenarios generated once at start, questions are grouped under scenarios
   - No internal labels (TPB construct, platform, category) exposed to frontend
   - All 4 TPB constructs measured: Attitude, SubjectiveNorm, PBC, BehavioralIntention

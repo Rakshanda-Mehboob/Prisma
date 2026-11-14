@@ -509,3 +509,43 @@ class UserScenarioImage(Base):
     )
 
 
+
+
+class UserAdaptiveAssignment(Base):
+    """
+    Stores the student's adaptive assessment result and module assignment.
+    Defined here (models.py) so all ORM models share one Base.metadata;
+    interventions/router.py imports from here instead of re-declaring it.
+    """
+    __tablename__ = "user_adaptive_assignments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), unique=True, nullable=False, index=True)
+    assigned_modules: Mapped[str] = mapped_column(Text, nullable=False)        # JSON list of int [1, 2]
+    required_module_ids: Mapped[str] = mapped_column(Text, nullable=False)     # JSON list of int
+    optional_module_ids: Mapped[str] = mapped_column(Text, nullable=False)     # JSON list of int
+    low_constructs: Mapped[str] = mapped_column(Text, nullable=False)          # JSON list of str
+    mean_scores: Mapped[str] = mapped_column(Text, nullable=False)             # JSON dict
+    threshold_used: Mapped[float] = mapped_column(Float, default=70.0)
+    is_reinforcement: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_fallback: Mapped[bool] = mapped_column(Boolean, default=False)
+    recommendation_reason: Mapped[str] = mapped_column(Text, nullable=False)
+    optional_enhancement_module: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    optional_enhancement_construct: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class UserModuleState(Base):
+    """Tracks per-module progress, sequential state, and activity responses."""
+    __tablename__ = "user_module_states"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    module_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(20), default="assigned")  # assigned, in-progress, completed
+    activity_completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    activity_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)   # JSON response payload
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

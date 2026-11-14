@@ -4,7 +4,7 @@
  *
  * Implements:
  *   - Exactly 3 profile-tailored digital situations
- *   - Multiple questions grouped under each situation (~6 items per scenario)
+ *   - Multiple questions grouped under each situation (~8 items per scenario, 2 per TPB construct)
  *   - Zero internal research labels exposed to students (no TPB/construct/item codes)
  *   - Clean multi-situation flow with stepper, scenario context, and grouped questions
  *   - Full backward compatibility with the Dashboard scoring and Assessment Hub

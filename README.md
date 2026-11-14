@@ -14,8 +14,8 @@
 
 ## ✨ Key Features
 
-- **TPB Assessment:** Pre- and post-intervention evaluations measuring Attitude (AT), Subjective Norm (SN), and Perceived Behavioral Control (PBC) on a 0–100 scale.
-- **Automated Interventions:** Dynamic module assignment targeting weak constructs (scores < 60).
+- **TPB Assessment:** Pre- and post-intervention evaluations measuring all four Theory of Planned Behavior constructs — Attitude (AT), Subjective Norm (SN), Perceived Behavioral Control (PBC), and Behavioral Intention (BI) — on a 0–100 scale.
+- **Automated Interventions:** Dynamic module assignment targeting weak constructs (scores < 70%).
 - **Interactive Learning:** Formative micro-lessons, quizzes, and dilemma-based scenarios.
 - **Student Dashboard:** Real-time visual progress gauges, pre-vs-post deltas, and reflective feedback.
 - **Secure Authentication:** Role-based access with bcrypt password hashing and JWT sessions.

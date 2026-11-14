@@ -24,9 +24,22 @@ except ImportError:
 
 # ── Security & Authentication ──────────────────────────────────────────────────
 _DEFAULT_DEV_SECRET = "tpb-fyp-super-secret-key-change-in-prod-2024"
-SECRET_KEY: str = os.getenv("SECRET_KEY", _DEFAULT_DEV_SECRET)
 
-if SECRET_KEY == _DEFAULT_DEV_SECRET:
+# Determine runtime environment (production vs. development)
+ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development").strip().lower()
+_is_production: bool = ENVIRONMENT in ("production", "prod")
+
+SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+
+if not SECRET_KEY or SECRET_KEY == _DEFAULT_DEV_SECRET:
+    if _is_production:
+        raise RuntimeError(
+            "CRITICAL: SECRET_KEY environment variable must be set to a strong random value "
+            "in production. Refusing to start with the default development secret. "
+            "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+        )
+    # Development / test: fall back to the insecure dev secret and warn loudly
+    SECRET_KEY = _DEFAULT_DEV_SECRET
     print(
         "[WARNING] SECRET_KEY environment variable not set. "
         "Using development fallback key. "

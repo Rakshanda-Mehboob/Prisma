@@ -22,11 +22,13 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Session
 
-from database import Base, engine, get_db
-from models import User, Assessment, AssessmentInstance, Intervention, UserInterventionProgress
+from database import engine, get_db
+from models import (
+    User, Assessment, AssessmentInstance, Intervention, UserInterventionProgress,
+    UserAdaptiveAssignment, UserModuleState,
+)
 from schemas import UserInterventionOut
 from auth.utils import get_current_user
 
@@ -73,91 +75,6 @@ from interventions.adaptive_assignment import (
 from interventions.content import MODULE_CURRICULUM
 
 router = APIRouter(prefix="/interventions", tags=["Interventions"])
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# PERSISTENT MODULE MODELS (Inside interventions module)
-# ──────────────────────────────────────────────────────────────────────────────
-
-class UserAdaptiveAssignment(Base):
-    """Stores the student's adaptive assessment result and module assignment."""
-    __tablename__ = "user_adaptive_assignments"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False, index=True)
-    assigned_modules = Column(Text, nullable=False)       # JSON list of int [1, 2]
-    required_module_ids = Column(Text, nullable=False)    # JSON list of int
-    optional_module_ids = Column(Text, nullable=False)    # JSON list of int
-    low_constructs = Column(Text, nullable=False)         # JSON list of str
-    mean_scores = Column(Text, nullable=False)            # JSON dict
-    threshold_used = Column(Float, default=DEFAULT_ADAPTIVE_THRESHOLD)
-    is_reinforcement = Column(Boolean, default=False)
-    is_fallback = Column(Boolean, default=False)
-    recommendation_reason = Column(Text, nullable=False)
-    # Enhancement module for all-high users (optional, not required for post-assessment)
-    optional_enhancement_module = Column(Integer, nullable=True)
-    optional_enhancement_construct = Column(String(50), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-class UserModuleState(Base):
-    """Tracks per-module progress, sequential state, and activity responses."""
-    __tablename__ = "user_module_states"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    module_number = Column(Integer, nullable=False)
-    is_required = Column(Boolean, default=False)
-    status = Column(String(20), default="assigned")  # assigned, in-progress, completed
-    activity_completed = Column(Boolean, default=False)
-    activity_data = Column(Text, nullable=True)      # JSON response payload
-    completed_at = Column(DateTime, nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-# Create tables if not existing
-Base.metadata.create_all(bind=engine)
-
-# ── Migrate: add optional enhancement columns and backfill existing rows ───────
-def _run_migrations():
-    """Add new nullable columns to existing tables without dropping data, and backfill existing rows."""
-    from sqlalchemy import text
-    with engine.connect() as conn:
-        for col_def in [
-            "ALTER TABLE user_adaptive_assignments ADD COLUMN optional_enhancement_module INTEGER",
-            "ALTER TABLE user_adaptive_assignments ADD COLUMN optional_enhancement_construct VARCHAR(50)",
-        ]:
-            try:
-                conn.execute(text(col_def))
-                conn.commit()
-            except Exception:
-                pass  # Column already exists — safe to skip
-
-    # Backfill/update existing assignments so existing accounts receive the latest adaptive recommendations
-    try:
-        from database import SessionLocal
-        with SessionLocal() as db:
-            assignments = db.query(UserAdaptiveAssignment).all()
-            for asst in assignments:
-                if asst.mean_scores:
-                    try:
-                        scores = json.loads(asst.mean_scores)
-                        res = determine_module_assignments(scores, threshold=DEFAULT_ADAPTIVE_THRESHOLD)
-                        asst.assigned_modules = json.dumps(res["assigned_modules"])
-                        asst.required_module_ids = json.dumps(res["required_module_ids"])
-                        asst.optional_module_ids = json.dumps(res["optional_module_ids"])
-                        asst.low_constructs = json.dumps(res["low_constructs"])
-                        asst.recommendation_reason = res["recommendation_reason"]
-                        asst.optional_enhancement_module = res.get("optional_enhancement_module")
-                        asst.optional_enhancement_construct = res.get("optional_enhancement_construct")
-                    except Exception as err:
-                        print(f"[MIGRATION WARNING] Error updating assignment {asst.id}: {err}")
-            db.commit()
-    except Exception as e:
-        print(f"[MIGRATION WARNING] Failed to backfill assignments: {e}")
-
-_run_migrations()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
