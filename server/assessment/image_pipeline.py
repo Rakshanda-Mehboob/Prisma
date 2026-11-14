@@ -58,7 +58,7 @@ SCENARIO_FALLBACK_IMAGES = {
     2: "/static/scenario_images/fallback_situation_3_academic.svg",
 }
 
-# ── 7 Supported Cyberbullying Themes with >= 3 Unique Variants Each ───────────
+# ── 7 Supported Cyberbullying Themes with 6 Unique Visual Scenes Each ────────
 SUPPORTED_IMAGE_THEMES = [
     "mockery",
     "exclusion",
@@ -74,36 +74,57 @@ THEME_FALLBACK_IMAGES = {
         "/static/scenario_images/themes/mockery/variant_1.svg",
         "/static/scenario_images/themes/mockery/variant_2.svg",
         "/static/scenario_images/themes/mockery/variant_3.svg",
+        "/static/scenario_images/themes/mockery/variant_4.svg",
+        "/static/scenario_images/themes/mockery/variant_5.svg",
+        "/static/scenario_images/themes/mockery/variant_6.svg",
     ],
     "exclusion": [
         "/static/scenario_images/themes/exclusion/variant_1.svg",
         "/static/scenario_images/themes/exclusion/variant_2.svg",
         "/static/scenario_images/themes/exclusion/variant_3.svg",
+        "/static/scenario_images/themes/exclusion/variant_4.svg",
+        "/static/scenario_images/themes/exclusion/variant_5.svg",
+        "/static/scenario_images/themes/exclusion/variant_6.svg",
     ],
     "private_info_leak": [
         "/static/scenario_images/themes/private_info_leak/variant_1.svg",
         "/static/scenario_images/themes/private_info_leak/variant_2.svg",
         "/static/scenario_images/themes/private_info_leak/variant_3.svg",
+        "/static/scenario_images/themes/private_info_leak/variant_4.svg",
+        "/static/scenario_images/themes/private_info_leak/variant_5.svg",
+        "/static/scenario_images/themes/private_info_leak/variant_6.svg",
     ],
     "false_rumour": [
         "/static/scenario_images/themes/false_rumour/variant_1.svg",
         "/static/scenario_images/themes/false_rumour/variant_2.svg",
         "/static/scenario_images/themes/false_rumour/variant_3.svg",
+        "/static/scenario_images/themes/false_rumour/variant_4.svg",
+        "/static/scenario_images/themes/false_rumour/variant_5.svg",
+        "/static/scenario_images/themes/false_rumour/variant_6.svg",
     ],
     "threats": [
         "/static/scenario_images/themes/threats/variant_1.svg",
         "/static/scenario_images/themes/threats/variant_2.svg",
         "/static/scenario_images/themes/threats/variant_3.svg",
+        "/static/scenario_images/themes/threats/variant_4.svg",
+        "/static/scenario_images/themes/threats/variant_5.svg",
+        "/static/scenario_images/themes/threats/variant_6.svg",
     ],
     "humiliating_content": [
         "/static/scenario_images/themes/humiliating_content/variant_1.svg",
         "/static/scenario_images/themes/humiliating_content/variant_2.svg",
         "/static/scenario_images/themes/humiliating_content/variant_3.svg",
+        "/static/scenario_images/themes/humiliating_content/variant_4.svg",
+        "/static/scenario_images/themes/humiliating_content/variant_5.svg",
+        "/static/scenario_images/themes/humiliating_content/variant_6.svg",
     ],
     "general": [
         "/static/scenario_images/themes/general/variant_1.svg",
         "/static/scenario_images/themes/general/variant_2.svg",
         "/static/scenario_images/themes/general/variant_3.svg",
+        "/static/scenario_images/themes/general/variant_4.svg",
+        "/static/scenario_images/themes/general/variant_5.svg",
+        "/static/scenario_images/themes/general/variant_6.svg",
     ],
 }
 
@@ -185,41 +206,46 @@ def select_themed_fallback_image(
     """
     Deterministically selects a themed fallback illustration based on:
     - theme (one of 7 themes)
-    - hash of (stage, block_number, scenario_id)
-    - stage offset so pre- and post-assessments do not share identical fallback images
-    - local exclusion so scenarios within one stage never repeat an image
+    - stage (pre vs post partitioning to guarantee zero repetition between pre and post)
+    - block_number (0, 1, 2)
+    - scenario_id (for stable deterministic hashing)
+    - already_used (local exclusion so scenarios in the same assessment never share an image)
     """
     norm_theme = theme.lower().strip() if theme else "general"
     if norm_theme not in THEME_FALLBACK_IMAGES:
         norm_theme = "general"
 
-    pool = THEME_FALLBACK_IMAGES[norm_theme]
+    full_pool = THEME_FALLBACK_IMAGES[norm_theme]
     if already_used is None:
         already_used = set()
 
-    # Stage-based salt: ensure 'pre' and 'post' have distinct offsets
-    stage_salt = 1 if stage.lower() == "post" else 0
+    is_post = stage.lower() == "post"
+    # Pre gets first half (variants 1, 2, 3); Post gets second half (variants 4, 5, 6)
+    stage_partition = full_pool[3:6] if is_post else full_pool[0:3]
 
-    # Deterministic hash
-    key_str = f"{stage.lower()}:{block_number}:{scenario_id}:{norm_theme}:{stage_salt}"
+    # Deterministic hash to pick initial candidate inside the stage partition
+    key_str = f"{stage.lower()}:{block_number}:{scenario_id}:{norm_theme}"
     hash_val = int(hashlib.sha256(key_str.encode("utf-8")).hexdigest(), 16)
-    start_idx = (hash_val + stage_salt) % len(pool)
+    start_idx = (hash_val + block_number) % len(stage_partition)
 
-    # Pick from the matching theme pool avoiding collisions within the stage
-    for offset in range(len(pool)):
-        candidate = pool[(start_idx + offset) % len(pool)]
+    # Pick from the matching theme stage partition avoiding collisions within the stage
+    for offset in range(len(stage_partition)):
+        candidate = stage_partition[(start_idx + offset) % len(stage_partition)]
         if candidate not in already_used:
             already_used.add(candidate)
             return candidate
 
-    # If all variants of this theme are exhausted in this stage, borrow an unused one from another pool
-    for fallback_theme in ("general", "exclusion", "mockery"):
-        for candidate in THEME_FALLBACK_IMAGES[fallback_theme]:
+    # If all 3 variants in this theme's partition are already used within this stage,
+    # borrow an unused variant from another theme within the SAME stage partition
+    for fallback_theme in ("general", "exclusion", "mockery", "private_info_leak", "false_rumour"):
+        fallback_pool = THEME_FALLBACK_IMAGES[fallback_theme]
+        fallback_partition = fallback_pool[3:6] if is_post else fallback_pool[0:3]
+        for candidate in fallback_partition:
             if candidate not in already_used:
                 already_used.add(candidate)
                 return candidate
 
-    chosen = pool[start_idx]
+    chosen = stage_partition[start_idx]
     already_used.add(chosen)
     return chosen
 
