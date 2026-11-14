@@ -29,7 +29,7 @@ from dashboard.router import router as dashboard_router
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="TPB Cyberbullying Intervention System",
+    title="Prisma-TPB Cyberbullying Intervention System",
     description=(
         "A Theory of Planned Behavior (TPB)-grounded psychoeducational system for assessing "
         "and improving university student attitudes, subjective norms, and perceived "
