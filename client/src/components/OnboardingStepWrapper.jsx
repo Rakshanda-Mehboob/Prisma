@@ -89,7 +89,7 @@ export default function OnboardingStepWrapper({
               type="button"
               onClick={onNext}
               disabled={!canProceed || saving}
-              className="onb-btn-continue"
+              className="btn btn-primary onb-btn-continue"
             >
               <span>
                 {saving

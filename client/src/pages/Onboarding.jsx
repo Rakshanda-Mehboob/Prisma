@@ -663,7 +663,7 @@ export default function Onboarding() {
                 <button
                   type="button"
                   onClick={() => navigate('/assessment?stage=pre')}
-                  className="onb-btn-continue"
+                  className="btn btn-primary onb-btn-continue"
                   style={{ minWidth: '240px', flex: '1 1 auto' }}
                 >
                   <span>Start Baseline Assessment</span>
@@ -673,10 +673,10 @@ export default function Onboarding() {
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  className="onb-btn-secondary"
+                  className="btn btn-secondary onb-btn-secondary"
                   style={{ minWidth: '200px', flex: '1 1 auto' }}
                 >
-                  <LayoutDashboard size={18} style={{ color: '#4f46e5' }} />
+                  <LayoutDashboard size={18} style={{ color: 'var(--color-primary)' }} />
                   <span>Go to Dashboard</span>
                 </button>
               </div>

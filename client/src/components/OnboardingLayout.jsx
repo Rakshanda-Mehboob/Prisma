@@ -91,7 +91,7 @@ export default function OnboardingLayout({
             <div
               style={{
                 height: '100%',
-                background: '#4f46e5',
+                background: 'linear-gradient(90deg, #1e1b4b, #4f46e5)',
                 borderRadius: 999,
                 width: `${((step + 1) / totalSteps) * 100}%`,
                 transition: 'width 0.3s ease',

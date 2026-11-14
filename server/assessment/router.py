@@ -254,20 +254,43 @@ def get_assessment_status(
 
 
 def _trigger_background_image_generation(user_id: int, instance: AssessmentInstance):
-    """Asynchronously generates scenario images for the user in the background."""
+    """
+    Asynchronously generates scenario images for the user in the background.
+
+    Guards:
+    - Skips entirely if every scenario already has image_url set (SVG fallback or real image).
+    - Skips individual scenarios whose user_scenario_images record is already 'ready' or 'failed'
+      so a permanently broken DALL-E key never retries and never stalls the response.
+    """
+    # Fast pre-check: if every scenario already has an image_url, nothing to do.
+    if instance.scenarios and all(sc.image_url for sc in instance.scenarios):
+        return
+
     from database import SessionLocal
+    import threading
+
     def _worker():
         db = SessionLocal()
         try:
             for sc in instance.scenarios:
+                # Skip if the scenario already has a URL (assigned during generation)
+                if sc.image_url:
+                    continue
+                # Skip if a previous attempt already recorded ready or failed
+                existing = (
+                    db.query(UserScenarioImage)
+                    .filter_by(user_id=user_id, scenario_id=sc.id, version=1)
+                    .first()
+                )
+                if existing and existing.status in ("ready", "failed"):
+                    continue
                 try:
                     generate_and_store_user_image(db, user_id=user_id, scenario_id=sc.id, version=1)
-                except Exception as e:
+                except Exception:
                     pass
         finally:
             db.close()
-    
-    import threading
+
     t = threading.Thread(target=_worker, daemon=True)
     t.start()
 

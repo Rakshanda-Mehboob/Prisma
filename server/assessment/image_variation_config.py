@@ -6,15 +6,17 @@ Only the visual style, palette, angle, and lighting vary between users.
 The core narrative meaning, characters, and events remain identical.
 """
 
-# Feature flag to toggle dynamic image generation
-ENABLE_DYNAMIC_IMAGE_GENERATION = True
+# Feature flag to toggle dynamic image generation.
+# Set to False when DALL-E is unavailable/broken so the pipeline immediately
+# uses themed SVG fallbacks instead of timing out after 60+ seconds per assessment.
+ENABLE_DYNAMIC_IMAGE_GENERATION = False
 
 # OpenAI Image Model & Settings
 IMAGE_MODEL = "dall-e-3"
 IMAGE_SIZE = "1024x1024"
 IMAGE_QUALITY = "standard"
-IMAGE_TIMEOUT_SECONDS = 30.0
-MAX_IMAGE_RETRIES = 1
+IMAGE_TIMEOUT_SECONDS = 10.0   # Reduced: fail fast if re-enabled later
+MAX_IMAGE_RETRIES = 0           # No retries: BadRequestError won't self-heal
 
 # ── Fixed Variation Lists ────────────────────────────────────────────────────
 
