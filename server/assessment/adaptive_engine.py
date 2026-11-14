@@ -19,11 +19,14 @@ Implements the Personalized 3-Scenario Assessment Architecture:
 
 import json
 import hashlib
+import logging
 import random
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple, Set
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+
+logger = logging.getLogger(__name__)
 
 import models
 from config import OPENAI_API_KEY
@@ -34,6 +37,11 @@ from assessment.template_library import (
     ALL_STUDENT_NAMES,
     DEPARTMENT_ACADEMIC_TASKS,
     LIVING_SETTINGS,
+)
+from assessment.image_pipeline import (
+    detect_scenario_theme,
+    select_themed_fallback_image,
+    SUPPORTED_IMAGE_THEMES,
 )
 
 try:
@@ -560,10 +568,15 @@ Output strictly valid JSON with this exact format:
                     "options": cleaned_opts,
                 })
 
+            ai_theme = s.get("image_theme")
+            if not ai_theme or ai_theme.lower() not in SUPPORTED_IMAGE_THEMES:
+                ai_theme = detect_scenario_theme(text=scenario_text, category=s.get("category"))
+
             s_clean = {
                 "scenario_title": s.get("scenario_title") or s.get("title") or s.get("category", "Cybersecurity Scenario"),
                 "scenario_text": scenario_text,
                 "category": s.get("category", "Social Media Interaction"),
+                "image_theme": ai_theme,
                 "platform_context": s.get("platform_context", primary_platform),
                 "image_prompt": img_prompt,
                 "image_alt_text": img_alt,
@@ -767,11 +780,37 @@ def synthesize_scenario_assessment(
         )
         img_alt = f"University student reviewing an online scenario on {platform} while considering cybersecurity actions."
 
+        template_theme_map = {
+            "TEMPL_SM_CONFESSION": "false_rumour",
+            "TEMPL_SM_PRESENTATION_POLL": "mockery",
+            "TEMPL_SM_CAMPUS_VIDEO": "humiliating_content",
+            "TEMPL_SM_LINKEDIN_DOGPILE": "mockery",
+            "TEMPL_SM_CANDID_MEME": "humiliating_content",
+            "TEMPL_SM_PARODY_ACCOUNT": "mockery",
+            "TEMPL_PG_BATCH_MOCKERY": "mockery",
+            "TEMPL_PG_LEAKED_CHAT": "private_info_leak",
+            "TEMPL_PG_DISCORD_EXCLUSION": "exclusion",
+            "TEMPL_PG_BACKCHANNEL_GOSSIP": "false_rumour",
+            "TEMPL_PG_VOICE_NOTE_MOCKERY": "private_info_leak",
+            "TEMPL_PG_TAGGING_HARASSMENT": "threats",
+            "TEMPL_UC_PROJECT_EXCLUSION": "exclusion",
+            "TEMPL_UC_HOSTEL_SHAMING": "humiliating_content",
+            "TEMPL_UC_SOCIETY_SMEAR": "false_rumour",
+            "TEMPL_UC_LMS_BRIGADE": "mockery",
+            "TEMPL_UC_LAB_PARTNER_ABUSE": "threats",
+            "TEMPL_UC_COMMUTER_ISOLATION": "exclusion",
+        }
+        img_theme = template_theme_map.get(
+            tpl.get("template_key"),
+            detect_scenario_theme(text=formatted_narrative, category=tpl.get("category"))
+        )
+
         result_scenarios.append({
             "template_key": tpl["template_key"],
             "scenario_title": category_display_map.get(tpl["category"], "Cybersecurity Scenario"),
             "scenario_text": formatted_narrative,
             "category": category_display_map.get(tpl["category"], "Digital Interaction"),
+            "image_theme": img_theme,
             "platform_context": platform,
             "difficulty_level": tpl.get("difficulty_level", 1),
             "image_prompt": img_prompt,
@@ -810,6 +849,14 @@ def generate_scenario_image(
     - Images never affect scoring, TPB evaluation, or assessment results.
     """
     if not is_openai_configured(OPENAI_API_KEY) or not OpenAI or not image_prompt:
+        reason = (
+            "OPENAI_API_KEY is not configured or unset"
+            if not is_openai_configured(OPENAI_API_KEY)
+            else ("OpenAI library is not imported" if not OpenAI else "image_prompt is empty")
+        )
+        logger.warning(
+            f"[Adaptive Engine Image Fallback] Situation {scenario_order + 1} -> Image generation skipped. Reason: {reason}"
+        )
         return None
 
     try:
@@ -843,6 +890,9 @@ def generate_scenario_image(
                 print(f"[Adaptive Engine] DALL-E 2 also unavailable ({e_dalle2}).")
 
         if not remote_url:
+            logger.warning(
+                f"[Adaptive Engine Image Fallback] Situation {scenario_order + 1} -> DALL-E generation failed for both DALL-E 3 and DALL-E 2."
+            )
             return None
 
         # Download and cache locally under server/static/scenario_images
@@ -926,6 +976,7 @@ def generate_scenario_assessment(
         db.flush()
 
         # Create 3 scenarios with questions and record history
+        used_fallback_images: Set[str] = set()
         for s_idx, scenario_data in enumerate(raw_scenarios[:3]):
             img_prompt = scenario_data.get("image_prompt")
             img_alt = scenario_data.get("image_alt_text")
@@ -935,6 +986,38 @@ def generate_scenario_assessment(
             if img_prompt:
                 img_url = generate_scenario_image(img_prompt, scenario_order=s_idx, user_id=user_id)
 
+            img_theme = scenario_data.get("image_theme")
+            if not img_theme:
+                img_theme = detect_scenario_theme(
+                    scenario=scenario_data,
+                    text=scenario_data.get("scenario_text", ""),
+                    category=scenario_data.get("category", "")
+                )
+
+            # If AI image generation was unavailable, skipped, or failed, assign themed fallback
+            if not img_url:
+                fallback_url = select_themed_fallback_image(
+                    theme=img_theme,
+                    stage=stage,
+                    block_number=s_idx,
+                    scenario_id=s_idx + 1,
+                    already_used=used_fallback_images,
+                )
+                used_fallback_images.add(fallback_url)
+                img_url = fallback_url
+                logger.info(
+                    f"[Adaptive Engine Image Fallback] Assigned {fallback_url} (theme={img_theme}) to scenario {s_idx + 1} (stage={stage})"
+                )
+
+            scenario_context = {
+                "department": profile_data.get("department"),
+                "platforms": profile_data.get("social_media_platforms"),
+                "living": profile_data.get("living_situation"),
+                "communities": profile_data.get("online_communities"),
+                "stage": stage,
+                "image_theme": img_theme,
+            }
+
             scenario = models.AssessmentScenario(
                 instance_id=instance.id,
                 order_index=s_idx,
@@ -942,7 +1025,7 @@ def generate_scenario_assessment(
                 scenario_text=scenario_data["scenario_text"],
                 category=scenario_data.get("category", "Digital Interaction"),
                 platform_context=scenario_data.get("platform_context"),
-                user_context_used=context_used,
+                user_context_used=json.dumps(scenario_context),
                 image_prompt=img_prompt,
                 image_url=img_url,
                 image_alt_text=img_alt,

@@ -1,3 +1,4 @@
+
 /**
  * pages/Assessment.jsx — Scenario-Based Assessment Module (v2.0)
  *
@@ -175,293 +176,293 @@ function AssessmentResultsView({
 
   return (
     <PageContainer>
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="results-page-layout"
-    >
-      {/* ── TOP SECTION: Assessment Completed & Overall Score ── */}
-      <div className="results-hero-card">
-        <div className="results-hero-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-              <Badge variant="primary">
-                {stage === 'post' || postAssessment ? 'Post-Learning Review' : 'Baseline Assessment'}
-              </Badge>
-              <Badge variant="success">
-                <CheckCircle2 size={13} /> Assessment Completed
-              </Badge>
-              {isJustSubmitted && (
-                <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-                  Just now
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="results-page-layout"
+      >
+        {/* ── TOP SECTION: Assessment Completed & Overall Score ── */}
+        <div className="results-hero-card">
+          <div className="results-hero-header">
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+                <Badge variant="primary">
+                  {stage === 'post' || postAssessment ? 'Post-Learning Review' : 'Baseline Assessment'}
+                </Badge>
+                <Badge variant="success">
+                  <CheckCircle2 size={13} /> Assessment Completed
+                </Badge>
+                {isJustSubmitted && (
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
+                    Just now
+                  </span>
+                )}
+              </div>
+              <h1 className="results-hero-title">Your Assessment Summary</h1>
+              <p className="results-hero-subtitle">
+                Your assessment result shows your current awareness, confidence, and readiness to respond to cyberbullying situations. These results help Prisma understand your learning needs and provide personalized recommendations to improve your knowledge and response skills.
+              </p>
+            </div>
+
+
+          </div>
+
+          {/* Central Overall Score Display */}
+          <div className="results-hero-score-row">
+            <div className="results-hero-score-badge">
+              <span className="results-hero-score-num">{overall}%</span>
+              <span className="results-hero-score-label">Score</span>
+            </div>
+
+            <div className="results-hero-score-meta">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <h2 className="results-hero-readiness">{statusInfo.rating}</h2>
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.55rem',
+                    borderRadius: 'var(--radius-full)',
+                    background: overall >= 70 ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                    color: overall >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
+                  }}
+                >
+                  {statusInfo.risk}
                 </span>
-              )}
+              </div>
+              <p className="results-hero-interpretation">
+                {hasBothAssessments
+                  ? `You demonstrated an overall growth of ${growthDelta >= 0 ? `+${growthDelta}%` : `${growthDelta}%`} across your learning modules.`
+                  : statusInfo.simpleSummary}
+              </p>
             </div>
-            <h1 className="results-hero-title">Your Assessment Summary</h1>
-            <p className="results-hero-subtitle">
-              Your assessment result shows your current awareness, confidence, and readiness to respond to cyberbullying situations. These results help Prisma understand your learning needs and provide personalized recommendations to improve your knowledge and response skills.
-            </p>
           </div>
 
-
-        </div>
-
-        {/* Central Overall Score Display */}
-        <div className="results-hero-score-row">
-          <div className="results-hero-score-badge">
-            <span className="results-hero-score-num">{overall}%</span>
-            <span className="results-hero-score-label">Score</span>
-          </div>
-
-          <div className="results-hero-score-meta">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <h2 className="results-hero-readiness">{statusInfo.rating}</h2>
-              <span
-                style={{
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  padding: '0.15rem 0.55rem',
-                  borderRadius: 'var(--radius-full)',
-                  background: overall >= 70 ? 'rgba(5, 150, 105, 0.1)' : 'rgba(79, 70, 229, 0.08)',
-                  color: overall >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
-                }}
-              >
-                {statusInfo.risk}
-              </span>
-            </div>
-            <p className="results-hero-interpretation">
-              {hasBothAssessments
-                ? `You demonstrated an overall growth of ${growthDelta >= 0 ? `+${growthDelta}%` : `${growthDelta}%`} across your learning modules.`
-                : statusInfo.simpleSummary}
-            </p>
-          </div>
-        </div>
-
-        {/* Concise Key Takeaway Chips */}
-        <div className="results-hero-chips">
-          <div className="results-hero-chip">
-            <span style={{ color: 'var(--color-text-muted)' }}>Strongest:</span>
-            <strong style={{ color: 'var(--color-text-primary)' }}>{strongest.label} ({strongest.score}%)</strong>
-          </div>
-          <div className="results-hero-chip">
-            <span style={{ color: 'var(--color-text-muted)' }}>Focus Area:</span>
-            <strong style={{ color: 'var(--color-text-primary)' }}>{focusArea.label} ({focusArea.score}%)</strong>
-          </div>
-          {hasBothAssessments && (
+          {/* Concise Key Takeaway Chips */}
+          <div className="results-hero-chips">
             <div className="results-hero-chip">
-              <span style={{ color: 'var(--color-text-muted)' }}>Progress:</span>
-              <strong style={{ color: growthDelta >= 0 ? 'var(--color-success)' : 'var(--color-text-primary)' }}>
-                {growthDelta >= 0 ? `+${growthDelta}%` : `${growthDelta}%`}
-              </strong>
+              <span style={{ color: 'var(--color-text-muted)' }}>Strongest:</span>
+              <strong style={{ color: 'var(--color-text-primary)' }}>{strongest.label} ({strongest.score}%)</strong>
+            </div>
+            <div className="results-hero-chip">
+              <span style={{ color: 'var(--color-text-muted)' }}>Focus Area:</span>
+              <strong style={{ color: 'var(--color-text-primary)' }}>{focusArea.label} ({focusArea.score}%)</strong>
+            </div>
+            {hasBothAssessments && (
+              <div className="results-hero-chip">
+                <span style={{ color: 'var(--color-text-muted)' }}>Progress:</span>
+                <strong style={{ color: growthDelta >= 0 ? 'var(--color-success)' : 'var(--color-text-primary)' }}>
+                  {growthDelta >= 0 ? `+${growthDelta}%` : `${growthDelta}%`}
+                </strong>
+              </div>
+            )}
+          </div>
+
+          {/* Post-assessment unlocked notification banner */}
+          {isPostUnlocked && !isPostDone && (
+            <div
+              style={{
+                padding: '0.85rem 1.15rem',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+              }}
+            >
+              <div style={{ fontSize: '0.86rem', color: 'var(--color-text-primary)' }}>
+                <strong>Post-Assessment Unlocked:</strong> Test your skills after finishing your assigned modules.
+              </div>
+              <Button variant="primary" size="sm" onClick={onStartPost} iconRight={<ArrowRight size={14} />}>
+                Start Post-Assessment
+              </Button>
             </div>
           )}
         </div>
 
-        {/* Post-assessment unlocked notification banner */}
-        {isPostUnlocked && !isPostDone && (
-          <div
-            style={{
-              padding: '0.85rem 1.15rem',
-              background: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-            }}
-          >
-            <div style={{ fontSize: '0.86rem', color: 'var(--color-text-primary)' }}>
-              <strong>Post-Assessment Unlocked:</strong> Test your skills after finishing your assigned modules.
-            </div>
-            <Button variant="primary" size="sm" onClick={onStartPost} iconRight={<ArrowRight size={14} />}>
-              Start Post-Assessment
-            </Button>
+        {/* ── MIDDLE SECTION: 4 Key Insights in a Spacious 2x2 Grid ── */}
+        <div>
+          <div className="results-section-header">
+            <h3 className="results-section-title">Key Behavioral Insights</h3>
+            <p className="results-section-desc">
+              Your awareness and readiness across the four core cyberbullying assessment areas.
+            </p>
           </div>
-        )}
-      </div>
 
-      {/* ── MIDDLE SECTION: 4 Key Insights in a Spacious 2x2 Grid ── */}
-      <div>
-        <div className="results-section-header">
-          <h3 className="results-section-title">Key Behavioral Insights</h3>
-          <p className="results-section-desc">
-            Your awareness and readiness across the four core cyberbullying assessment areas.
-          </p>
-        </div>
+          <div className="results-tpb-grid">
+            {items.map((item) => {
+              const Icon = item.icon;
+              const isHighest = item.id === strongest.id;
+              const isLowest = item.id === focusArea.id && item.score < 75;
 
-        <div className="results-tpb-grid">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const isHighest = item.id === strongest.id;
-            const isLowest = item.id === focusArea.id && item.score < 75;
+              return (
+                <div key={item.id} className="results-tpb-card">
+                  <div>
+                    <div className="results-card-top">
+                      <div className="results-card-label-group">
+                        <span className="results-card-icon"><Icon size={16} /></span>
+                        <span className="results-card-title">{item.label}</span>
+                      </div>
 
-            return (
-              <div key={item.id} className="results-tpb-card">
-                <div>
-                  <div className="results-card-top">
-                    <div className="results-card-label-group">
-                      <span className="results-card-icon"><Icon size={16} /></span>
-                      <span className="results-card-title">{item.label}</span>
+                      {isHighest ? (
+                        <span className="results-card-status-badge strong">Top Strength</span>
+                      ) : isLowest ? (
+                        <span className="results-card-status-badge focus">Focus Area</span>
+                      ) : (
+                        <span className="results-card-status-badge neutral">
+                          {item.score >= 75 ? 'Strong' : 'Moderate'}
+                        </span>
+                      )}
                     </div>
 
-                    {isHighest ? (
-                      <span className="results-card-status-badge strong">Top Strength</span>
-                    ) : isLowest ? (
-                      <span className="results-card-status-badge focus">Focus Area</span>
-                    ) : (
-                      <span className="results-card-status-badge neutral">
-                        {item.score >= 75 ? 'Strong' : 'Moderate'}
+                    <div className="results-card-score-row">
+                      <span className="results-card-score">{item.score}%</span>
+                      <span className="results-card-level">
+                        {item.score >= 70 ? 'Good Readiness' : 'Needs Support'}
                       </span>
-                    )}
+                    </div>
+
+                    <div className="results-bar-track">
+                      <div
+                        className="results-bar-fill"
+                        style={{
+                          width: `${item.score}%`,
+                          background: item.score >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  <div className="results-card-score-row">
-                    <span className="results-card-score">{item.score}%</span>
-                    <span className="results-card-level">
-                      {item.score >= 70 ? 'Good Readiness' : 'Needs Support'}
-                    </span>
-                  </div>
-
-                  <div className="results-bar-track">
-                    <div
-                      className="results-bar-fill"
-                      style={{
-                        width: `${item.score}%`,
-                        background: item.score >= 70 ? 'var(--color-success)' : 'var(--color-primary)',
-                      }}
-                    />
-                  </div>
+                  <p className="results-card-summary">{item.summary}</p>
                 </div>
-
-                <p className="results-card-summary">{item.summary}</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* ── BOTTOM SECTION: Short Recommendations & Action CTA ── */}
-      {(() => {
-        const weakConstructs = activeScores.weak_constructs !== undefined
-          ? activeScores.weak_constructs
-          : items.filter((i) => i.score < 70).map((i) => i.id);
-        const hasIntervention = weakConstructs && weakConstructs.length > 0;
+        {/* ── BOTTOM SECTION: Short Recommendations & Action CTA ── */}
+        {(() => {
+          const weakConstructs = activeScores.weak_constructs !== undefined
+            ? activeScores.weak_constructs
+            : items.filter((i) => i.score < 70).map((i) => i.id);
+          const hasIntervention = weakConstructs && weakConstructs.length > 0;
 
-        return (
-          <div className="results-bottom-card">
-            <div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.2rem' }}>
-                Recommended Next Steps
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0 }}>
-                Simple, practical guidance based on your results.
-              </p>
-            </div>
+          return (
+            <div className="results-bottom-card">
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: '0 0 0.2rem' }}>
+                  Recommended Next Steps
+                </h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', margin: 0 }}>
+                  Simple, practical guidance based on your results.
+                </p>
+              </div>
 
-            <div className="results-actions-grid">
-              {hasIntervention ? (
+              <div className="results-actions-grid">
+                {hasIntervention ? (
+                  <div className="results-action-item">
+                    <div className="results-action-icon">
+                      <BookOpen size={17} />
+                    </div>
+                    <div className="results-action-content">
+                      <span className="results-action-title">Targeted Learning Module</span>
+                      <p className="results-action-desc">
+                        Start with your recommended <strong>{focusArea.label}</strong> module to build safe bystander skills.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="results-action-item">
+                    <div className="results-action-icon" style={{ background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)' }}>
+                      <BookOpen size={17} />
+                    </div>
+                    <div className="results-action-content">
+                      <span className="results-action-title">Personalized Enhancement Module</span>
+                      <p className="results-action-desc">
+                        All your scores are 70% or higher. Prisma has recommended a personalized enhancement module to strengthen your skills even further.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="results-action-item">
                   <div className="results-action-icon">
-                    <BookOpen size={17} />
+                    <Shield size={17} />
                   </div>
                   <div className="results-action-content">
-                    <span className="results-action-title">Targeted Learning Module</span>
+                    <span className="results-action-title">Everyday Peer Support</span>
                     <p className="results-action-desc">
-                      Start with your recommended <strong>{focusArea.label}</strong> module to build safe bystander skills.
+                      Pause before commenting and reach out privately to check on friends when negativity happens.
                     </p>
                   </div>
                 </div>
-              ) : (
-                <div className="results-action-item">
-                  <div className="results-action-icon" style={{ background: 'rgba(79, 70, 229, 0.1)', color: 'var(--color-primary)' }}>
-                    <BookOpen size={17} />
-                  </div>
-                  <div className="results-action-content">
-                    <span className="results-action-title">Personalized Enhancement Module</span>
-                    <p className="results-action-desc">
-                      All your scores are 70% or higher. Prisma has recommended a personalized enhancement module to strengthen your skills even further.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="results-action-item">
-                <div className="results-action-icon">
-                  <Shield size={17} />
-                </div>
-                <div className="results-action-content">
-                  <span className="results-action-title">Everyday Peer Support</span>
-                  <p className="results-action-desc">
-                    Pause before commenting and reach out privately to check on friends when negativity happens.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="results-cta-bar">
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
-                  {stage === 'post' || postAssessment || isPostDone
-                    ? 'Ready to review your dashboard progress?'
-                    : 'Ready to start your personalized learning?'}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                  {stage === 'post' || postAssessment || isPostDone
-                    ? 'Review your updated progress and badges on the dashboard.'
-                    : hasIntervention
-                    ? 'Modules are short, interactive, and self-paced.'
-                    : 'Explore your recommended enhancement module to strengthen your cyberbullying response skills.'}
-                </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                {stage === 'post' || postAssessment || isPostDone ? (
-                  <Button
-                    variant="primary"
-                    size="md"
-                    iconRight={<ArrowRight size={16} />}
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    Return to Dashboard
-                  </Button>
-                ) : (
-                  <>
+              <div className="results-cta-bar">
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
+                    {stage === 'post' || postAssessment || isPostDone
+                      ? 'Ready to review your dashboard progress?'
+                      : 'Ready to start your personalized learning?'}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                    {stage === 'post' || postAssessment || isPostDone
+                      ? 'Review your updated progress and badges on the dashboard.'
+                      : hasIntervention
+                        ? 'Modules are short, interactive, and self-paced.'
+                        : 'Explore your recommended enhancement module to strengthen your cyberbullying response skills.'}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {stage === 'post' || postAssessment || isPostDone ? (
                     <Button
                       variant="primary"
                       size="md"
                       iconRight={<ArrowRight size={16} />}
-                      onClick={onContinue}
-                    >
-                      Continue to Learning Module
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="md"
                       onClick={() => navigate('/dashboard')}
                     >
                       Return to Dashboard
                     </Button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        iconRight={<ArrowRight size={16} />}
+                        onClick={onContinue}
+                      >
+                        Continue to Learning Module
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => navigate('/dashboard')}
+                      >
+                        Return to Dashboard
+                      </Button>
+                    </>
+                  )}
 
-                {onRetake && (
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={() => onRetake()}
-                  >
-                    Retake Assessment
-                  </Button>
-                )}
+                  {onRetake && (
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => onRetake()}
+                    >
+                      Retake Assessment
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
-    </motion.div>
+          );
+        })()}
+      </motion.div>
     </PageContainer>
   );
 }
@@ -920,7 +921,7 @@ export default function Assessment() {
         try {
           const freshStatus = await assessmentApi.getStatus();
           setAssessmentStatus(freshStatus.data);
-        } catch (_) {}
+        } catch (_) { }
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -956,25 +957,25 @@ export default function Assessment() {
           className="assessment-page-root"
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}
         >
-        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-          <Lock size={32} />
-        </div>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
-          {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '580px', margin: '0 auto 2rem' }}>
-          {error}
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {stage === 'post' && (
-            <Button variant="primary" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
-              Go to Learning Modules
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+            <Lock size={32} />
+          </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
+            {stage === 'post' ? 'Post-Assessment Locked' : 'Assessment Unavailable'}
+          </h2>
+          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '580px', margin: '0 auto 2rem' }}>
+            {error}
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {stage === 'post' && (
+              <Button variant="primary" onClick={() => navigate('/interventions')} icon={<BookOpen size={16} />}>
+                Go to Learning Modules
+              </Button>
+            )}
+            <Button variant="secondary" onClick={() => navigate('/dashboard')}>
+              Back to Dashboard
             </Button>
-          )}
-          <Button variant="secondary" onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
-          </Button>
-        </div>
+          </div>
         </div>
       </PageContainer>
     );
@@ -1018,24 +1019,24 @@ export default function Assessment() {
           className="assessment-page-root"
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', flex: 1 }}
         >
-        <div style={{ maxWidth: '640px', width: '100%' }}>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
-            No Assessment Results Found
-          </h2>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.75rem', lineHeight: 1.6 }}>
-            Please complete your baseline assessment to view your results across the four Theory of Planned Behavior areas.
-          </p>
-          <Button
-            variant="primary"
-            onClick={() => {
-              setShowHub(false);
-              navigate('/assessment?stage=pre&mode=take');
-            }}
-            iconRight={<ArrowRight size={16} />}
-          >
-            Start Baseline Assessment
-          </Button>
-        </div>
+          <div style={{ maxWidth: '640px', width: '100%' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--color-text-primary)' }}>
+              No Assessment Results Found
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.75rem', lineHeight: 1.6 }}>
+              Please complete your baseline assessment to view your results across the four Theory of Planned Behavior areas.
+            </p>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setShowHub(false);
+                navigate('/assessment?stage=pre&mode=take');
+              }}
+              iconRight={<ArrowRight size={16} />}
+            >
+              Start Baseline Assessment
+            </Button>
+          </div>
         </div>
       </PageContainer>
     );
@@ -1291,593 +1292,593 @@ export default function Assessment() {
   // ── Active Assessment Flow: 3 Situations with Grouped Questions ─────────────
   return (
     <PageContainer>
-    <div className="assessment-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
-      {/* Top Header & Global Progress */}
-      <div style={{ marginBottom: '1.75rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-              <Badge variant="primary">
-                {stage === 'post' ? 'Post-Learning Reflection' : 'Baseline Assessment'}
-              </Badge>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-                Situation {currentScenarioIdx + 1} of {scenarios.length || 3}
+      <div className="assessment-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
+        {/* Top Header & Global Progress */}
+        <div style={{ marginBottom: '1.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                <Badge variant="primary">
+                  {stage === 'post' ? 'Post-Learning Reflection' : 'Baseline Assessment'}
+                </Badge>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                  Situation {currentScenarioIdx + 1} of {scenarios.length || 3}
+                </span>
+              </div>
+              <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
+                Online Interaction Reflection
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                {answeredQuestionsCount} of {totalQuestionsCount} Completed ({progressPercent}%)
               </span>
             </div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
-              Online Interaction Reflection
-            </h2>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
-              {answeredQuestionsCount} of {totalQuestionsCount} Completed ({progressPercent}%)
-            </span>
+          {/* Global Progress Bar */}
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
         </div>
 
-        {/* Global Progress Bar */}
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
-        </div>
-      </div>
+        {error && <div className="alert alert-danger" style={{ marginBottom: '1.25rem' }}>{error}</div>}
 
-      {error && <div className="alert alert-danger" style={{ marginBottom: '1.25rem' }}>{error}</div>}
+        {/* Situation Stepper Tabs */}
+        <div
+          className="assessment-stepper-grid"
+        >
+          {scenarios.map((sc, idx) => {
+            const isCurrent = idx === currentScenarioIdx;
+            const scQuestions = sc.questions || [];
+            const answeredInSc = scQuestions.filter((q) => answers[q.id] != null).length;
+            const isComplete = scQuestions.length > 0 && answeredInSc === scQuestions.length;
+            const theme = SCENARIO_THEMES[idx] || { label: `Situation ${idx + 1}`, title: 'Online Scenario' };
 
-      {/* Situation Stepper Tabs */}
-      <div
-        className="assessment-stepper-grid"
-      >
-        {scenarios.map((sc, idx) => {
-          const isCurrent = idx === currentScenarioIdx;
-          const scQuestions = sc.questions || [];
-          const answeredInSc = scQuestions.filter((q) => answers[q.id] != null).length;
-          const isComplete = scQuestions.length > 0 && answeredInSc === scQuestions.length;
-          const theme = SCENARIO_THEMES[idx] || { label: `Situation ${idx + 1}`, title: 'Online Scenario' };
-
-          return (
-            <button
-              key={sc.id || idx}
-              type="button"
-              onClick={() => {
-                setCurrentScenarioIdx(idx);
-                setCurrentQuestionIdx(0);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.85rem 1rem',
-                borderRadius: 'var(--radius-lg)',
-                border: isCurrent
-                  ? '2px solid var(--color-primary)'
-                  : isComplete
-                  ? '1px solid var(--color-success-light)'
-                  : '1px solid var(--color-border)',
-                background: isCurrent
-                  ? 'rgba(79, 70, 229, 0.08)'
-                  : isComplete
-                  ? 'rgba(5, 150, 105, 0.04)'
-                  : 'var(--color-surface)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'var(--transition)',
-              }}
-            >
-              <div
+            return (
+              <button
+                key={sc.id || idx}
+                type="button"
+                onClick={() => {
+                  setCurrentScenarioIdx(idx);
+                  setCurrentQuestionIdx(0);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: isComplete
-                    ? 'var(--color-success)'
-                    : isCurrent
-                    ? 'var(--color-primary)'
-                    : 'var(--color-surface-2)',
-                  color: isComplete || isCurrent ? '#ffffff' : 'var(--color-text-muted)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  flexShrink: 0,
+                  gap: '0.75rem',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 'var(--radius-lg)',
+                  border: isCurrent
+                    ? '2px solid var(--color-primary)'
+                    : isComplete
+                      ? '1px solid var(--color-success-light)'
+                      : '1px solid var(--color-border)',
+                  background: isCurrent
+                    ? 'rgba(79, 70, 229, 0.08)'
+                    : isComplete
+                      ? 'rgba(5, 150, 105, 0.04)'
+                      : 'var(--color-surface)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'var(--transition)',
                 }}
               >
-                {isComplete ? <Check size={16} /> : idx + 1}
-              </div>
-              <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isCurrent ? 'var(--color-primary)' : 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  {theme.label}
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: isComplete
+                      ? 'var(--color-success)'
+                      : isCurrent
+                        ? 'var(--color-primary)'
+                        : 'var(--color-surface-2)',
+                    color: isComplete || isCurrent ? '#ffffff' : 'var(--color-text-muted)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  {isComplete ? <Check size={16} /> : idx + 1}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  {answeredInSc} of {scQuestions.length} answered
+                <div style={{ overflow: 'hidden' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: isCurrent ? 'var(--color-primary)' : 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    {theme.label}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    {answeredInSc} of {scQuestions.length} answered
+                  </div>
                 </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            );
+          })}
+        </div>
 
-      {/* Active Situation: Dual-Panel Interactive Scenario Flow */}
-      {currentScenario && (() => {
-        const currentTheme = SCENARIO_THEMES[currentScenarioIdx] || SCENARIO_THEMES[0];
-        const ScenarioIllustration = currentTheme.Illustration || ScenarioIllustration1;
-        const currentQuestion = currentScenarioQuestions[currentQuestionIdx] || currentScenarioQuestions[0];
-        const selectedOption = currentQuestion ? answers[currentQuestion.id] : undefined;
-        const isCurrentQuestionAnswered = selectedOption != null;
-        const questionError = currentQuestion ? questionErrors[currentQuestion.id] : undefined;
-        const isLastQuestionInScenario = currentQuestionIdx === currentScenarioQuestions.length - 1;
-        const isLastScenario = currentScenarioIdx === scenarios.length - 1;
-        const isFirstQuestionOverall = currentScenarioIdx === 0 && currentQuestionIdx === 0;
+        {/* Active Situation: Dual-Panel Interactive Scenario Flow */}
+        {currentScenario && (() => {
+          const currentTheme = SCENARIO_THEMES[currentScenarioIdx] || SCENARIO_THEMES[0];
+          const ScenarioIllustration = currentTheme.Illustration || ScenarioIllustration1;
+          const currentQuestion = currentScenarioQuestions[currentQuestionIdx] || currentScenarioQuestions[0];
+          const selectedOption = currentQuestion ? answers[currentQuestion.id] : undefined;
+          const isCurrentQuestionAnswered = selectedOption != null;
+          const questionError = currentQuestion ? questionErrors[currentQuestion.id] : undefined;
+          const isLastQuestionInScenario = currentQuestionIdx === currentScenarioQuestions.length - 1;
+          const isLastScenario = currentScenarioIdx === scenarios.length - 1;
+          const isFirstQuestionOverall = currentScenarioIdx === 0 && currentQuestionIdx === 0;
 
-        return (
-          <div className="scenario-assessment-layout">
-            {/* LEFT PANEL: Scenario Image & Context */}
-            <div className="scenario-image-panel">
-              {/* Scenario Step Badge */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  Situation {currentScenarioIdx + 1} of {scenarios.length}
-                </span>
-                <Badge variant="primary">
-                  {currentScenario?.category || 'Scenario'}
-                </Badge>
-              </div>
+          return (
+            <div className="scenario-assessment-layout">
+              {/* LEFT PANEL: Scenario Image & Context */}
+              <div className="scenario-image-panel">
+                {/* Scenario Step Badge */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Situation {currentScenarioIdx + 1} of {scenarios.length}
+                  </span>
+                  <Badge variant="primary">
+                    {currentScenario?.category || 'Scenario'}
+                  </Badge>
+                </div>
 
-              {/* Scenario Visual Illustration (AI Generated Image with Skeleton & Contextual Fallback) */}
-              <div className="scenario-illustration-box" style={{ minHeight: '190px', position: 'relative' }}>
-                {currentScenario?.image_status === 'pending' && !currentScenario?.image_url && (
-                  <div style={{ width: '100%', height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: 'var(--color-surface-2)', borderRadius: '10px' }}>
-                    <div className="skeleton-shimmer" style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)' }} />
-                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
-                      Generating customized visual illustration...
+                {/* Scenario Visual Illustration (AI Generated Image with Skeleton & Contextual Fallback) */}
+                <div className="scenario-illustration-box" style={{ minHeight: '190px', position: 'relative' }}>
+                  {currentScenario?.image_status === 'pending' && !currentScenario?.image_url && (
+                    <div style={{ width: '100%', height: '190px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', background: 'var(--color-surface-2)', borderRadius: '10px' }}>
+                      <div className="skeleton-shimmer" style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)' }} />
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                        Generating customized visual illustration...
+                      </span>
+                    </div>
+                  )}
+                  {currentScenario?.image_url ? (
+                    <img
+                      src={currentScenario.image_url.startsWith('http') ? currentScenario.image_url : `http://127.0.0.1:8000${currentScenario.image_url}`}
+                      alt={currentScenario.image_alt_text || currentScenario?.title || `Scenario ${currentScenarioIdx + 1} illustration`}
+                      style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '10px' }}
+                      onError={(e) => {
+                        // Graceful fallback to scenario-specific SVG illustration if loading fails
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling;
+                        if (fallback) fallback.style.display = 'block';
+                      }}
+                    />
+                  ) : null}
+                  <div style={{ display: currentScenario?.image_url ? 'none' : currentScenario?.image_status === 'pending' ? 'none' : 'block', width: '100%' }}>
+                    <img
+                      src={`http://127.0.0.1:8000/static/scenario_images/fallback_situation_${(currentScenarioIdx % 3) + 1}_${currentScenarioIdx === 0 ? 'social' : currentScenarioIdx === 1 ? 'chat' : 'academic'}.svg`}
+                      alt={currentScenario?.title || `Scenario ${currentScenarioIdx + 1}`}
+                      style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Scenario Title */}
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--color-text-primary)', lineHeight: 1.35 }}>
+                  {currentScenario?.title || currentTheme.title}
+                </h3>
+
+                {/* Scenario Narrative Description */}
+                <div className="scenario-narrative-text">
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                    Scenario Description
+                  </div>
+                  <p style={{ fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--color-text-primary)', margin: 0, fontWeight: 500 }}>
+                    {currentScenario.scenario_text}
+                  </p>
+                </div>
+
+                {/* Scenario Questions Progress Tracker */}
+                <div className="scenario-questions-tracker">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
+                      Questions in this Situation
+                    </span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+                      {currentScenarioAnsweredCount} of {currentScenarioQuestions.length} completed
                     </span>
                   </div>
-                )}
-                {currentScenario?.image_url ? (
-                  <img
-                    src={currentScenario.image_url.startsWith('http') ? currentScenario.image_url : `http://127.0.0.1:8000${currentScenario.image_url}`}
-                    alt={currentScenario.image_alt_text || currentScenario?.title || `Scenario ${currentScenarioIdx + 1} illustration`}
-                    style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '10px' }}
-                    onError={(e) => {
-                      // Graceful fallback to scenario-specific SVG illustration if loading fails
-                      e.currentTarget.style.display = 'none';
-                      const fallback = e.currentTarget.nextElementSibling;
-                      if (fallback) fallback.style.display = 'block';
-                    }}
-                  />
-                ) : null}
-                <div style={{ display: currentScenario?.image_url ? 'none' : currentScenario?.image_status === 'pending' ? 'none' : 'block', width: '100%' }}>
-                  <img
-                    src={`http://127.0.0.1:8000/static/scenario_images/fallback_situation_${(currentScenarioIdx % 3) + 1}_${currentScenarioIdx === 0 ? 'social' : currentScenarioIdx === 1 ? 'chat' : 'academic'}.svg`}
-                    alt={currentScenario?.title || `Scenario ${currentScenarioIdx + 1}`}
-                    style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }}
-                  />
-                </div>
-              </div>
 
-              {/* Scenario Title */}
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--color-text-primary)', lineHeight: 1.35 }}>
-                {currentScenario?.title || currentTheme.title}
-              </h3>
+                  <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                    {currentScenarioQuestions.map((q, qIdx) => {
+                      const isQAnswered = answers[q.id] != null;
+                      const isQCurrent = qIdx === currentQuestionIdx;
+                      const hasQError = Boolean(questionErrors[q.id]);
 
-              {/* Scenario Narrative Description */}
-              <div className="scenario-narrative-text">
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                  Scenario Description
-                </div>
-                <p style={{ fontSize: '1.05rem', lineHeight: 1.75, color: 'var(--color-text-primary)', margin: 0, fontWeight: 500 }}>
-                  {currentScenario.scenario_text}
-                </p>
-              </div>
-
-              {/* Scenario Questions Progress Tracker */}
-              <div className="scenario-questions-tracker">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
-                    Questions in this Situation
-                  </span>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {currentScenarioAnsweredCount} of {currentScenarioQuestions.length} completed
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
-                  {currentScenarioQuestions.map((q, qIdx) => {
-                    const isQAnswered = answers[q.id] != null;
-                    const isQCurrent = qIdx === currentQuestionIdx;
-                    const hasQError = Boolean(questionErrors[q.id]);
-
-                    return (
-                      <button
-                        key={q.id || qIdx}
-                        type="button"
-                        onClick={() => {
-                          setCurrentQuestionIdx(qIdx);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        title={`Question ${qIdx + 1}${isQAnswered ? ' (Answered)' : ''}`}
-                        style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '8px',
-                          border: isQCurrent
-                            ? '2px solid var(--color-primary)'
-                            : hasQError
-                            ? '2px solid var(--color-danger)'
-                            : isQAnswered
-                            ? '1px solid var(--color-success)'
-                            : '1px solid var(--color-border)',
-                          background: isQCurrent
-                            ? 'rgba(79, 70, 229, 0.12)'
-                            : isQAnswered
-                            ? 'rgba(5, 150, 105, 0.08)'
-                            : 'var(--color-surface-2)',
-                          color: isQCurrent
-                            ? 'var(--color-primary)'
-                            : hasQError
-                            ? 'var(--color-danger)'
-                            : isQAnswered
-                            ? 'var(--color-success)'
-                            : 'var(--color-text-muted)',
-                          fontWeight: isQCurrent ? 800 : 600,
-                          fontSize: '0.86rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          transition: 'all 0.15s ease',
-                        }}
-                      >
-                        {isQAnswered && !isQCurrent ? <Check size={14} /> : qIdx + 1}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT PANEL: Single Question View with Animated Transitions */}
-            <div className="scenario-question-panel">
-              <AnimatePresence mode="wait">
-                {currentQuestion && (
-                  <motion.div
-                    key={`${currentScenarioIdx}-${currentQuestion.id || currentQuestionIdx}`}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.22, ease: 'easeOut' }}
-                    className={`assessment-question-card ${questionError ? 'has-error' : ''}`}
-                    role="group"
-                    aria-labelledby={`q-title-${currentQuestion.id}`}
-                    aria-invalid={Boolean(questionError)}
-                    aria-describedby={questionError ? `q-error-${currentQuestion.id}` : undefined}
-                    style={{
-                      background: 'var(--color-surface)',
-                      borderRadius: '20px',
-                      border: questionError
-                        ? '2px solid var(--color-danger)'
-                        : isCurrentQuestionAnswered
-                        ? '1px solid rgba(99, 102, 241, 0.25)'
-                        : '1px solid var(--color-border)',
-                      padding: '2rem 2.25rem',
-                      boxShadow: questionError
-                        ? '0 0 0 3px rgba(220, 38, 38, 0.12), 0 4px 16px rgba(220, 38, 38, 0.06)'
-                        : '0 4px 20px rgba(0, 0, 0, 0.04)',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '1.5rem',
-                    }}
-                  >
-                    {/* Question Header & Meta */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <span
+                      return (
+                        <button
+                          key={q.id || qIdx}
+                          type="button"
+                          onClick={() => {
+                            setCurrentQuestionIdx(qIdx);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          title={`Question ${qIdx + 1}${isQAnswered ? ' (Answered)' : ''}`}
                           style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            background: questionError
-                              ? 'rgba(220, 38, 38, 0.12)'
-                              : isCurrentQuestionAnswered
+                            width: '34px',
+                            height: '34px',
+                            borderRadius: '8px',
+                            border: isQCurrent
+                              ? '2px solid var(--color-primary)'
+                              : hasQError
+                                ? '2px solid var(--color-danger)'
+                                : isQAnswered
+                                  ? '1px solid var(--color-success)'
+                                  : '1px solid var(--color-border)',
+                            background: isQCurrent
                               ? 'rgba(79, 70, 229, 0.12)'
-                              : 'var(--color-surface-2)',
-                            color: questionError
-                              ? 'var(--color-danger)'
-                              : isCurrentQuestionAnswered
+                              : isQAnswered
+                                ? 'rgba(5, 150, 105, 0.08)'
+                                : 'var(--color-surface-2)',
+                            color: isQCurrent
                               ? 'var(--color-primary)'
-                              : 'var(--color-text-muted)',
+                              : hasQError
+                                ? 'var(--color-danger)'
+                                : isQAnswered
+                                  ? 'var(--color-success)'
+                                  : 'var(--color-text-muted)',
+                            fontWeight: isQCurrent ? 800 : 600,
+                            fontSize: '0.86rem',
+                            cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '0.9rem',
-                            fontWeight: 700,
-                            flexShrink: 0,
+                            transition: 'all 0.15s ease',
                           }}
                         >
-                          {currentQuestionIdx + 1}
-                        </span>
-                        <span style={{ fontSize: '0.94rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
-                          Question {currentQuestionIdx + 1} of {currentScenarioQuestions.length}
-                        </span>
-                      </div>
+                          {isQAnswered && !isQCurrent ? <Check size={14} /> : qIdx + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
-                      {isCurrentQuestionAnswered ? (
-                        <Badge variant="success" icon={<Check size={12} />}>
-                          Answered
-                        </Badge>
-                      ) : (
-                        <Badge variant="warning">
-                          Required
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Question Text */}
-                    <p
-                      id={`q-title-${currentQuestion.id}`}
+              {/* RIGHT PANEL: Single Question View with Animated Transitions */}
+              <div className="scenario-question-panel">
+                <AnimatePresence mode="wait">
+                  {currentQuestion && (
+                    <motion.div
+                      key={`${currentScenarioIdx}-${currentQuestion.id || currentQuestionIdx}`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.22, ease: 'easeOut' }}
+                      className={`assessment-question-card ${questionError ? 'has-error' : ''}`}
+                      role="group"
+                      aria-labelledby={`q-title-${currentQuestion.id}`}
+                      aria-invalid={Boolean(questionError)}
+                      aria-describedby={questionError ? `q-error-${currentQuestion.id}` : undefined}
                       style={{
-                        fontSize: '1.24rem',
-                        fontWeight: 700,
-                        color: 'var(--color-text-primary)',
-                        margin: 0,
-                        lineHeight: 1.6,
+                        background: 'var(--color-surface)',
+                        borderRadius: '20px',
+                        border: questionError
+                          ? '2px solid var(--color-danger)'
+                          : isCurrentQuestionAnswered
+                            ? '1px solid rgba(99, 102, 241, 0.25)'
+                            : '1px solid var(--color-border)',
+                        padding: '2rem 2.25rem',
+                        boxShadow: questionError
+                          ? '0 0 0 3px rgba(220, 38, 38, 0.12), 0 4px 16px rgba(220, 38, 38, 0.06)'
+                          : '0 4px 20px rgba(0, 0, 0, 0.04)',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.5rem',
                       }}
                     >
-                      {currentQuestion.question_text}
-                    </p>
-
-                    {/* Options Radiogroup */}
-                    <div
-                      className="assessment-options-group"
-                      role="radiogroup"
-                      aria-labelledby={`q-title-${currentQuestion.id}`}
-                      style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
-                    >
-                      {(currentQuestion.options || []).map((opt, optIdx) => {
-                        const isSelected = selectedOption === opt.index;
-                        const optionLetter = String.fromCharCode(65 + optIdx);
-
-                        return (
-                          <button
-                            key={opt.id || optIdx}
-                            type="button"
-                            role="radio"
-                            aria-checked={isSelected}
-                            onClick={() => handleSelectOption(currentQuestion.id, opt.index)}
-                            className={`scenario-option-button ${isSelected ? 'selected' : ''}`}
+                      {/* Question Header & Meta */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <span
                             style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '50%',
+                              background: questionError
+                                ? 'rgba(220, 38, 38, 0.12)'
+                                : isCurrentQuestionAnswered
+                                  ? 'rgba(79, 70, 229, 0.12)'
+                                  : 'var(--color-surface-2)',
+                              color: questionError
+                                ? 'var(--color-danger)'
+                                : isCurrentQuestionAnswered
+                                  ? 'var(--color-primary)'
+                                  : 'var(--color-text-muted)',
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '1rem',
-                              textAlign: 'left',
-                              padding: '1.15rem 1.4rem',
-                              borderRadius: '14px',
-                              border: isSelected
-                                ? '2px solid var(--color-primary)'
-                                : '1px solid var(--color-border)',
-                              background: isSelected
-                                ? 'rgba(79, 70, 229, 0.07)'
-                                : 'var(--color-surface-2)',
-                              cursor: 'pointer',
-                              transition: 'all 0.18s ease',
-                              outline: 'none',
+                              justifyContent: 'center',
+                              fontSize: '0.9rem',
+                              fontWeight: 700,
+                              flexShrink: 0,
                             }}
                           >
-                            <div
+                            {currentQuestionIdx + 1}
+                          </span>
+                          <span style={{ fontSize: '0.94rem', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
+                            Question {currentQuestionIdx + 1} of {currentScenarioQuestions.length}
+                          </span>
+                        </div>
+
+                        {isCurrentQuestionAnswered ? (
+                          <Badge variant="success" icon={<Check size={12} />}>
+                            Answered
+                          </Badge>
+                        ) : (
+                          <Badge variant="warning">
+                            Required
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Question Text */}
+                      <p
+                        id={`q-title-${currentQuestion.id}`}
+                        style={{
+                          fontSize: '1.24rem',
+                          fontWeight: 700,
+                          color: 'var(--color-text-primary)',
+                          margin: 0,
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {currentQuestion.question_text}
+                      </p>
+
+                      {/* Options Radiogroup */}
+                      <div
+                        className="assessment-options-group"
+                        role="radiogroup"
+                        aria-labelledby={`q-title-${currentQuestion.id}`}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+                      >
+                        {(currentQuestion.options || []).map((opt, optIdx) => {
+                          const isSelected = selectedOption === opt.index;
+                          const optionLetter = String.fromCharCode(65 + optIdx);
+
+                          return (
+                            <button
+                              key={opt.id || optIdx}
+                              type="button"
+                              role="radio"
+                              aria-checked={isSelected}
+                              onClick={() => handleSelectOption(currentQuestion.id, opt.index)}
+                              className={`scenario-option-button ${isSelected ? 'selected' : ''}`}
                               style={{
-                                width: '34px',
-                                height: '34px',
-                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '1rem',
+                                textAlign: 'left',
+                                padding: '1.15rem 1.4rem',
+                                borderRadius: '14px',
                                 border: isSelected
                                   ? '2px solid var(--color-primary)'
                                   : '1px solid var(--color-border)',
-                                background: isSelected ? 'var(--color-primary)' : '#ffffff',
-                                color: isSelected ? '#ffffff' : 'var(--color-text-secondary)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '0.92rem',
-                                fontWeight: 700,
-                                flexShrink: 0,
+                                background: isSelected
+                                  ? 'rgba(79, 70, 229, 0.07)'
+                                  : 'var(--color-surface-2)',
+                                cursor: 'pointer',
+                                transition: 'all 0.18s ease',
+                                outline: 'none',
                               }}
                             >
-                              {isSelected ? <Check size={16} strokeWidth={2.5} /> : optionLetter}
-                            </div>
-                            <span
-                              style={{
-                                flex: 1,
-                                fontSize: '1.08rem',
-                                color: isSelected ? 'var(--color-primary)' : 'var(--color-text-primary)',
-                                fontWeight: isSelected ? 650 : 450,
-                                lineHeight: 1.55,
-                              }}
-                            >
-                              {opt.text}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Inline Error Directly Beneath Options */}
-                    {questionError && (
-                      <div id={`q-error-${currentQuestion.id}`} className="question-inline-error" role="alert" style={{ margin: 0, fontSize: '0.92rem' }}>
-                        <AlertCircle size={16} />
-                        <span>{questionError}</span>
+                              <div
+                                style={{
+                                  width: '34px',
+                                  height: '34px',
+                                  borderRadius: '50%',
+                                  border: isSelected
+                                    ? '2px solid var(--color-primary)'
+                                    : '1px solid var(--color-border)',
+                                  background: isSelected ? 'var(--color-primary)' : '#ffffff',
+                                  color: isSelected ? '#ffffff' : 'var(--color-text-secondary)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '0.92rem',
+                                  fontWeight: 700,
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {isSelected ? <Check size={16} strokeWidth={2.5} /> : optionLetter}
+                              </div>
+                              <span
+                                style={{
+                                  flex: 1,
+                                  fontSize: '1.08rem',
+                                  color: isSelected ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                                  fontWeight: isSelected ? 650 : 450,
+                                  lineHeight: 1.55,
+                                }}
+                              >
+                                {opt.text}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
 
-                    {/* Question Card Bottom Navigation */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        flexWrap: 'wrap',
-                        marginTop: '0.75rem',
-                        paddingTop: '1.25rem',
-                        borderTop: '1px solid var(--color-border)',
-                      }}
-                    >
-                      <Button
-                        variant="secondary"
-                        onClick={handlePrevQuestion}
-                        disabled={isFirstQuestionOverall}
-                        icon={<ChevronLeft size={16} />}
-                      >
-                        Previous Question
-                      </Button>
+                      {/* Inline Error Directly Beneath Options */}
+                      {questionError && (
+                        <div id={`q-error-${currentQuestion.id}`} className="question-inline-error" role="alert" style={{ margin: 0, fontSize: '0.92rem' }}>
+                          <AlertCircle size={16} />
+                          <span>{questionError}</span>
+                        </div>
+                      )}
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setReviewModalOpen(true)}
-                        >
-                          Review All
-                        </Button>
-
-                        <Button
-                          variant="primary"
-                          onClick={handleNextQuestion}
-                          iconRight={isLastQuestionInScenario && isLastScenario ? <Send size={15} /> : <ChevronRight size={16} />}
-                        >
-                          {isLastQuestionInScenario
-                            ? isLastScenario
-                              ? 'Review & Submit'
-                              : `Next Situation (${currentScenarioIdx + 2} of ${scenarios.length})`
-                            : 'Next Question'}
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Review & Submit Modal */}
-      {reviewModalOpen && (
-        <div
-          className="content-viewer-overlay"
-          onClick={(e) => e.target === e.currentTarget && setReviewModalOpen(false)}
-        >
-          <div className="content-viewer" style={{ maxWidth: '720px' }}>
-            <div className="content-viewer-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle2 size={20} color="var(--color-primary)" />
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                  Review Your Responses
-                </h3>
-              </div>
-              <span className={`badge ${answeredQuestionsCount === totalQuestionsCount ? 'badge-success' : 'badge-warning'}`}>
-                {answeredQuestionsCount} of {totalQuestionsCount} Answered
-              </span>
-            </div>
-
-            <div className="content-viewer-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {scenarios.map((sc, scIdx) => {
-                  const scQuestions = sc.questions || [];
-                  const answeredCount = scQuestions.filter((q) => answers[q.id] != null).length;
-                  const isScDone = answeredCount === scQuestions.length;
-
-                  return (
-                    <div
-                      key={sc.id || scIdx}
-                      style={{
-                        background: 'var(--color-surface-2)',
-                        borderRadius: '12px',
-                        border: '1px solid var(--color-border)',
-                        padding: '1rem',
-                      }}
-                    >
+                      {/* Question Card Bottom Navigation */}
                       <div
                         style={{
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          marginBottom: '0.75rem',
+                          gap: '1rem',
+                          flexWrap: 'wrap',
+                          marginTop: '0.75rem',
+                          paddingTop: '1.25rem',
+                          borderTop: '1px solid var(--color-border)',
                         }}
                       >
-                        <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.95rem' }}>
-                          Situation {scIdx + 1}
-                        </div>
-                        <span className={`badge ${isScDone ? 'badge-success' : 'badge-warning'}`}>
-                          {answeredCount} of {scQuestions.length} answered
-                        </span>
-                      </div>
+                        <Button
+                          variant="secondary"
+                          onClick={handlePrevQuestion}
+                          disabled={isFirstQuestionOverall}
+                          icon={<ChevronLeft size={16} />}
+                        >
+                          Previous Question
+                        </Button>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        {scQuestions.map((q, qIdx) => {
-                          const isAnswered = answers[q.id] != null;
-                          return (
-                            <div
-                              key={q.id}
-                              onClick={() => {
-                                setCurrentScenarioIdx(scIdx);
-                                setCurrentQuestionIdx(qIdx);
-                                setReviewModalOpen(false);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '0.6rem 0.85rem',
-                                background: 'var(--color-surface)',
-                                borderRadius: '8px',
-                                border: isAnswered ? '1px solid var(--color-border)' : '1px solid rgba(239, 68, 68, 0.4)',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              <span style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', flex: 1, paddingRight: '0.75rem' }}>
-                                Q{qIdx + 1}: {q.question_text?.slice(0, 75)}...
-                              </span>
-                              {isAnswered ? (
-                                <span className="badge badge-success" style={{ fontSize: '0.78rem' }}>
-                                  <Check size={11} /> Complete
-                                </span>
-                              ) : (
-                                <span className="badge badge-danger" style={{ fontSize: '0.78rem' }}>
-                                  Missing
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setReviewModalOpen(true)}
+                          >
+                            Review All
+                          </Button>
+
+                          <Button
+                            variant="primary"
+                            onClick={handleNextQuestion}
+                            iconRight={isLastQuestionInScenario && isLastScenario ? <Send size={15} /> : <ChevronRight size={16} />}
+                          >
+                            {isLastQuestionInScenario
+                              ? isLastScenario
+                                ? 'Review & Submit'
+                                : `Next Situation (${currentScenarioIdx + 2} of ${scenarios.length})`
+                              : 'Next Question'}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
+          );
+        })()}
 
-            <div className="content-viewer-footer">
-              <Button variant="secondary" size="sm" onClick={() => setReviewModalOpen(false)}>
-                Back to Questions
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSubmit}
-                loading={submitting}
-                disabled={answeredQuestionsCount < totalQuestionsCount}
-                iconRight={<Send size={14} />}
-              >
-                Confirm & Submit Assessment
-              </Button>
+        {/* Review & Submit Modal */}
+        {reviewModalOpen && (
+          <div
+            className="content-viewer-overlay"
+            onClick={(e) => e.target === e.currentTarget && setReviewModalOpen(false)}
+          >
+            <div className="content-viewer" style={{ maxWidth: '720px' }}>
+              <div className="content-viewer-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={20} color="var(--color-primary)" />
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                    Review Your Responses
+                  </h3>
+                </div>
+                <span className={`badge ${answeredQuestionsCount === totalQuestionsCount ? 'badge-success' : 'badge-warning'}`}>
+                  {answeredQuestionsCount} of {totalQuestionsCount} Answered
+                </span>
+              </div>
+
+              <div className="content-viewer-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {scenarios.map((sc, scIdx) => {
+                    const scQuestions = sc.questions || [];
+                    const answeredCount = scQuestions.filter((q) => answers[q.id] != null).length;
+                    const isScDone = answeredCount === scQuestions.length;
+
+                    return (
+                      <div
+                        key={sc.id || scIdx}
+                        style={{
+                          background: 'var(--color-surface-2)',
+                          borderRadius: '12px',
+                          border: '1px solid var(--color-border)',
+                          padding: '1rem',
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '0.75rem',
+                          }}
+                        >
+                          <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.95rem' }}>
+                            Situation {scIdx + 1}
+                          </div>
+                          <span className={`badge ${isScDone ? 'badge-success' : 'badge-warning'}`}>
+                            {answeredCount} of {scQuestions.length} answered
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          {scQuestions.map((q, qIdx) => {
+                            const isAnswered = answers[q.id] != null;
+                            return (
+                              <div
+                                key={q.id}
+                                onClick={() => {
+                                  setCurrentScenarioIdx(scIdx);
+                                  setCurrentQuestionIdx(qIdx);
+                                  setReviewModalOpen(false);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  padding: '0.6rem 0.85rem',
+                                  background: 'var(--color-surface)',
+                                  borderRadius: '8px',
+                                  border: isAnswered ? '1px solid var(--color-border)' : '1px solid rgba(239, 68, 68, 0.4)',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <span style={{ fontSize: '0.95rem', color: 'var(--color-text-primary)', flex: 1, paddingRight: '0.75rem' }}>
+                                  Q{qIdx + 1}: {q.question_text?.slice(0, 75)}...
+                                </span>
+                                {isAnswered ? (
+                                  <span className="badge badge-success" style={{ fontSize: '0.78rem' }}>
+                                    <Check size={11} /> Complete
+                                  </span>
+                                ) : (
+                                  <span className="badge badge-danger" style={{ fontSize: '0.78rem' }}>
+                                    Missing
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="content-viewer-footer">
+                <Button variant="secondary" size="sm" onClick={() => setReviewModalOpen(false)}>
+                  Back to Questions
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSubmit}
+                  loading={submitting}
+                  disabled={answeredQuestionsCount < totalQuestionsCount}
+                  iconRight={<Send size={14} />}
+                >
+                  Confirm & Submit Assessment
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </PageContainer>
   );
 }

@@ -17,8 +17,11 @@ Architecture (v2.0):
 """
 
 import json
+import logging
 import random
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -47,6 +50,8 @@ from assessment.adaptive_engine import generate_scenario_assessment
 from assessment.image_pipeline import (
     generate_and_store_user_image,
     SCENARIO_FALLBACK_IMAGES,
+    select_themed_fallback_image,
+    detect_scenario_theme,
 )
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
@@ -124,6 +129,7 @@ def _format_instance_for_frontend(instance: AssessmentInstance, db: Optional[Ses
     so the display order is randomized but reproducible within the same session for scoring.
     """
     scenarios = []
+    already_used_in_stage = set()
     for scenario in instance.scenarios:
         questions = []
         for q in scenario.questions:
@@ -151,19 +157,31 @@ def _format_instance_for_frontend(instance: AssessmentInstance, db: Optional[Ses
         resolved_alt = None
         image_status = "ready"
 
-        if user_img:
+        if user_img and user_img.image_url:
             resolved_image_url = user_img.image_url
             resolved_alt = user_img.alt_text
             image_status = user_img.status
+            already_used_in_stage.add(resolved_image_url)
         elif scenario.image_url:
             resolved_image_url = scenario.image_url
             resolved_alt = scenario.image_alt_text
             image_status = "ready"
+            already_used_in_stage.add(resolved_image_url)
         else:
-            # Contextual scenario-specific fallback
-            resolved_image_url = SCENARIO_FALLBACK_IMAGES.get(scenario.order_index, SCENARIO_FALLBACK_IMAGES[0])
-            resolved_alt = f"Scenario {scenario.order_index + 1} illustration"
+            # Contextual themed fallback selection avoiding repetition within stage
+            theme = detect_scenario_theme(scenario)
+            resolved_image_url = select_themed_fallback_image(
+                theme=theme,
+                stage=instance.stage,
+                block_number=scenario.order_index,
+                scenario_id=scenario.id,
+                already_used=already_used_in_stage,
+            )
+            resolved_alt = f"{theme.replace('_', ' ').title()} illustration"
             image_status = "ready"
+            logger.warning(
+                f"[Assessment Router Fallback] Scenario {scenario.id} (stage={instance.stage}, order={scenario.order_index}, theme={theme}) -> Selected themed fallback: {resolved_image_url}"
+            )
 
         scenarios.append({
             "id": scenario.id,

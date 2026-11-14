@@ -51,15 +51,177 @@ except ImportError:
 
 
 # ── Curated Scenario-Specific Fallback Vector Assets ──────────────────────────
-# Distinct per situation type, never a generic "suspicious link" laptop icon!
+# Distinct per situation type, preserved for backward compatibility
 SCENARIO_FALLBACK_IMAGES = {
-    # Situation 1: Social Media/TikTok/Instagram harassment, parody profile or viral post
     0: "/static/scenario_images/fallback_situation_1_social.svg",
-    # Situation 2: Private Backchannel/WhatsApp/Discord exclusion and side-chat mocking
     1: "/static/scenario_images/fallback_situation_2_chat.svg",
-    # Situation 3: Campus/LMS/Forum academic dispute, public portal ridicule
     2: "/static/scenario_images/fallback_situation_3_academic.svg",
 }
+
+# ── 7 Supported Cyberbullying Themes with >= 3 Unique Variants Each ───────────
+SUPPORTED_IMAGE_THEMES = [
+    "mockery",
+    "exclusion",
+    "private_info_leak",
+    "false_rumour",
+    "threats",
+    "humiliating_content",
+    "general",
+]
+
+THEME_FALLBACK_IMAGES = {
+    "mockery": [
+        "/static/scenario_images/themes/mockery/variant_1.svg",
+        "/static/scenario_images/themes/mockery/variant_2.svg",
+        "/static/scenario_images/themes/mockery/variant_3.svg",
+    ],
+    "exclusion": [
+        "/static/scenario_images/themes/exclusion/variant_1.svg",
+        "/static/scenario_images/themes/exclusion/variant_2.svg",
+        "/static/scenario_images/themes/exclusion/variant_3.svg",
+    ],
+    "private_info_leak": [
+        "/static/scenario_images/themes/private_info_leak/variant_1.svg",
+        "/static/scenario_images/themes/private_info_leak/variant_2.svg",
+        "/static/scenario_images/themes/private_info_leak/variant_3.svg",
+    ],
+    "false_rumour": [
+        "/static/scenario_images/themes/false_rumour/variant_1.svg",
+        "/static/scenario_images/themes/false_rumour/variant_2.svg",
+        "/static/scenario_images/themes/false_rumour/variant_3.svg",
+    ],
+    "threats": [
+        "/static/scenario_images/themes/threats/variant_1.svg",
+        "/static/scenario_images/themes/threats/variant_2.svg",
+        "/static/scenario_images/themes/threats/variant_3.svg",
+    ],
+    "humiliating_content": [
+        "/static/scenario_images/themes/humiliating_content/variant_1.svg",
+        "/static/scenario_images/themes/humiliating_content/variant_2.svg",
+        "/static/scenario_images/themes/humiliating_content/variant_3.svg",
+    ],
+    "general": [
+        "/static/scenario_images/themes/general/variant_1.svg",
+        "/static/scenario_images/themes/general/variant_2.svg",
+        "/static/scenario_images/themes/general/variant_3.svg",
+    ],
+}
+
+
+def detect_scenario_theme(scenario: Optional[object] = None, text: Optional[str] = None, category: Optional[str] = None) -> str:
+    """
+    Detects or maps a scenario's theme to one of the 7 supported themes.
+    Checks explicit attributes, context metadata, categories, and keyword markers.
+    """
+    # 1. Direct attribute on scenario object or dict
+    if scenario is not None:
+        if isinstance(scenario, dict):
+            direct = scenario.get("image_theme") or scenario.get("image_key")
+            if direct and direct.lower() in SUPPORTED_IMAGE_THEMES:
+                return direct.lower()
+            text = text or scenario.get("scenario_text") or scenario.get("text")
+            category = category or scenario.get("category")
+        else:
+            direct = getattr(scenario, "image_key", None) or getattr(scenario, "image_theme", None)
+            if direct and str(direct).lower() in SUPPORTED_IMAGE_THEMES:
+                return str(direct).lower()
+            # Check user_context_used JSON
+            ctx_str = getattr(scenario, "user_context_used", None)
+            if ctx_str:
+                try:
+                    ctx_dict = json.loads(ctx_str) if isinstance(ctx_str, str) else ctx_str
+                    ctx_theme = ctx_dict.get("image_theme")
+                    if ctx_theme and ctx_theme.lower() in SUPPORTED_IMAGE_THEMES:
+                        return ctx_theme.lower()
+                except Exception:
+                    pass
+            text = text or getattr(scenario, "scenario_text", None) or getattr(scenario, "text", None)
+            category = category or getattr(scenario, "category", None)
+
+    # 2. Check category mapping
+    if category:
+        cat_lower = str(category).lower()
+        if cat_lower in SUPPORTED_IMAGE_THEMES:
+            return cat_lower
+        if "mock" in cat_lower or "derogatory" in cat_lower or "comment" in cat_lower:
+            return "mockery"
+        if "exclu" in cat_lower or "bystander" in cat_lower or "isolate" in cat_lower:
+            return "exclusion"
+        if "leak" in cat_lower or "private" in cat_lower or "secret" in cat_lower:
+            return "private_info_leak"
+        if "rumo" in cat_lower or "poll" in cat_lower or "smear" in cat_lower or "slander" in cat_lower:
+            return "false_rumour"
+        if "threat" in cat_lower or "intimidat" in cat_lower or "aggressive" in cat_lower:
+            return "threats"
+        if "humiliat" in cat_lower or "meme" in cat_lower or "photo" in cat_lower or "candid" in cat_lower:
+            return "humiliating_content"
+
+    # 3. Text heuristic detection
+    if text:
+        t_lower = str(text).lower()
+        if "screenshot" in t_lower and ("private" in t_lower or "confidential" in t_lower or "medical" in t_lower):
+            return "private_info_leak"
+        if "threat" in t_lower or "warning them" in t_lower or "aggressive" in t_lower or "intimidat" in t_lower:
+            return "threats"
+        if "meme" in t_lower or "candid" in t_lower or "photo without permission" in t_lower or "humiliat" in t_lower:
+            return "humiliating_content"
+        if "rumor" in t_lower or "rumour" in t_lower or "cheating" in t_lower or "copied" in t_lower or "poll" in t_lower:
+            return "false_rumour"
+        if "exclud" in t_lower or "removed" in t_lower or "dropped from" in t_lower or "silent" in t_lower:
+            return "exclusion"
+        if "mock" in t_lower or "laughing emoji" in t_lower or "sloppy" in t_lower or "ridicul" in t_lower:
+            return "mockery"
+
+    return "general"
+
+
+def select_themed_fallback_image(
+    theme: str,
+    stage: str = "pre",
+    block_number: int = 0,
+    scenario_id: int = 0,
+    already_used: Optional[set] = None,
+) -> str:
+    """
+    Deterministically selects a themed fallback illustration based on:
+    - theme (one of 7 themes)
+    - hash of (stage, block_number, scenario_id)
+    - stage offset so pre- and post-assessments do not share identical fallback images
+    - local exclusion so scenarios within one stage never repeat an image
+    """
+    norm_theme = theme.lower().strip() if theme else "general"
+    if norm_theme not in THEME_FALLBACK_IMAGES:
+        norm_theme = "general"
+
+    pool = THEME_FALLBACK_IMAGES[norm_theme]
+    if already_used is None:
+        already_used = set()
+
+    # Stage-based salt: ensure 'pre' and 'post' have distinct offsets
+    stage_salt = 1 if stage.lower() == "post" else 0
+
+    # Deterministic hash
+    key_str = f"{stage.lower()}:{block_number}:{scenario_id}:{norm_theme}:{stage_salt}"
+    hash_val = int(hashlib.sha256(key_str.encode("utf-8")).hexdigest(), 16)
+    start_idx = (hash_val + stage_salt) % len(pool)
+
+    # Pick from the matching theme pool avoiding collisions within the stage
+    for offset in range(len(pool)):
+        candidate = pool[(start_idx + offset) % len(pool)]
+        if candidate not in already_used:
+            already_used.add(candidate)
+            return candidate
+
+    # If all variants of this theme are exhausted in this stage, borrow an unused one from another pool
+    for fallback_theme in ("general", "exclusion", "mockery"):
+        for candidate in THEME_FALLBACK_IMAGES[fallback_theme]:
+            if candidate not in already_used:
+                already_used.add(candidate)
+                return candidate
+
+    chosen = pool[start_idx]
+    already_used.add(chosen)
+    return chosen
 
 
 def compute_user_scenario_seed(user_id: int, scenario_id: int, version: int = 1) -> str:
@@ -265,7 +427,22 @@ def generate_and_store_user_image(
 
     # If dynamic generation is disabled by configuration, immediately route to scenario-specific fallback
     if not ENABLE_DYNAMIC_IMAGE_GENERATION or not OPENAI_API_KEY or not OpenAI:
-        fallback_url = SCENARIO_FALLBACK_IMAGES.get(scenario.order_index, SCENARIO_FALLBACK_IMAGES[0])
+        reason = (
+            "ENABLE_DYNAMIC_IMAGE_GENERATION is False"
+            if not ENABLE_DYNAMIC_IMAGE_GENERATION
+            else ("OPENAI_API_KEY is not set or empty" if not OPENAI_API_KEY else "OpenAI library not installed")
+        )
+        stage = getattr(getattr(scenario, "instance", None), "stage", "pre")
+        theme = detect_scenario_theme(scenario)
+        fallback_url = select_themed_fallback_image(
+            theme=theme,
+            stage=stage,
+            block_number=scenario.order_index,
+            scenario_id=scenario.id,
+        )
+        logger.warning(
+            f"[Image Pipeline Fallback] Scenario {scenario_id} (stage={stage}, order={scenario.order_index}, theme={theme}) -> Themed fallback assigned: {fallback_url}. Reason: {reason}"
+        )
         record.status = "ready"
         record.image_url = fallback_url
         db.commit()
@@ -308,8 +485,18 @@ def generate_and_store_user_image(
             record.image_url = remote_url
             record.status = "ready"
     else:
-        # Fallback to scenario-specific vector graphic
-        fallback_url = SCENARIO_FALLBACK_IMAGES.get(scenario.order_index, SCENARIO_FALLBACK_IMAGES[0])
+        # Fallback to theme-specific vector graphic
+        stage = getattr(getattr(scenario, "instance", None), "stage", "pre")
+        theme = detect_scenario_theme(scenario)
+        fallback_url = select_themed_fallback_image(
+            theme=theme,
+            stage=stage,
+            block_number=scenario.order_index,
+            scenario_id=scenario.id,
+        )
+        logger.warning(
+            f"[Image Pipeline Fallback] Scenario {scenario_id} (stage={stage}, order={scenario.order_index}, theme={theme}) -> Themed fallback assigned: {fallback_url}. Reason: OpenAI image generation failed after retries: {error_msg}"
+        )
         record.image_url = fallback_url
         record.status = "failed"
         record.error_message = error_msg

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#ecfdf5"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#2563eb" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="800" height="500" rx="20" fill="url(#bgGrad)"/>
+
+  <!-- Decorative Background Grid Lines -->
+  <g stroke="#cbd5e1" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4,6">
+    <line x1="60" y1="0" x2="60" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="500"/>
+    <line x1="600" y1="0" x2="600" y2="500"/>
+    <line x1="740" y1="0" x2="740" y2="500"/>
+    <line x1="0" y1="80" x2="800" y2="800"/>
+    <line x1="0" y1="420" x2="800" y2="420"/>
+  </g>
+
+  <!-- Top Theme Header Pill -->
+  <g transform="translate(50, 32)">
+    <rect x="0" y="0" width="310" height="42" rx="21" fill="#ffffff" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+    <circle cx="22" cy="21" r="14" fill="#2563eb" fill-opacity="0.12"/>
+    <text x="22" y="26" font-family="system-ui, sans-serif" font-size="14" text-anchor="middle">🛡️</text>
+    <text x="46" y="26" font-family="system-ui, sans-serif" font-size="13" font-weight="800" fill="#2563eb">Cyberbullying Awareness & Safety</text>
+  </g>
+
+  <!-- Top Right Scenario Context Tag -->
+  <g transform="translate(580, 36)">
+    <rect x="0" y="0" width="170" height="34" rx="17" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <circle cx="16" cy="17" r="6" fill="#059669"/>
+    <text x="32" y="22" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#334155">Variant 2 of 3</text>
+  </g>
+
+  <!-- Central Visual Scene Art -->
+  
+        <!-- Laptop Device -->
+        <rect x="230" y="140" width="340" height="210" rx="14" fill="#ffffff" stroke="#2563eb" stroke-width="4" filter="url(#shadow)"/>
+        <rect x="245" y="155" width="310" height="180" rx="8" fill="#eff6ff"/>
+        <!-- Laptop Base -->
+        <path d="M190 350 L610 350 L585 368 L215 368 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+        <rect x="365" y="352" width="70" height="5" rx="2.5" fill="#94a3b8"/>
+
+        <!-- Laptop Screen Header Bar -->
+        <rect x="245" y="155" width="310" height="28" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+        <circle cx="260" cy="169" r="4" fill="#ef4444"/>
+        <circle cx="272" cy="169" r="4" fill="#f59e0b"/>
+        <circle cx="284" cy="169" r="4" fill="#10b981"/>
+        <rect x="305" y="163" width="190" height="12" rx="6" fill="#f1f5f9"/>
+
+        <!-- Forum / Portal Thread Cards -->
+        <rect x="260" y="195" width="280" height="42" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+        <circle cx="278" cy="216" r="10" fill="#2563eb" fill-opacity="0.2"/>
+        <rect x="296" y="208" width="130" height="7" rx="3.5" fill="#2563eb"/>
+        <rect x="296" y="220" width="200" height="5" rx="2.5" fill="#94a3b8"/>
+
+        <rect x="260" y="246" width="280" height="42" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+        <circle cx="278" cy="267" r="10" fill="#059669" fill-opacity="0.2"/>
+        <rect x="296" y="259" width="150" height="7" rx="3.5" fill="#059669"/>
+        <rect x="296" y="271" width="180" height="5" rx="2.5" fill="#94a3b8"/>
+
+        <rect x="260" y="297" width="280" height="30" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+        <rect x="278" y="309" width="180" height="6" rx="3" fill="#cbd5e1"/>
+
+        <!-- Side Emblems -->
+        <g filter="url(#glow)">
+          <circle cx="150" cy="240" r="34" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+          <text x="150" y="250" font-family="system-ui, sans-serif" font-size="24" text-anchor="middle">🛡️</text>
+
+          <circle cx="650" cy="240" r="34" fill="#ffffff" stroke="#059669" stroke-width="2.5"/>
+          <text x="650" y="249" font-family="system-ui, sans-serif" font-size="22" text-anchor="middle">💻</text>
+        </g>
+        
+
+  <!-- Bottom Educational Insight Caption Bar -->
+  <g transform="translate(100, 435)">
+    <rect x="0" y="0" width="600" height="38" rx="12" fill="#ffffff" fill-opacity="0.9" stroke="#e2e8f0" stroke-width="1" filter="url(#shadow)"/>
+    <rect x="12" y="10" width="5" height="18" rx="2.5" fill="url(#accentGrad)"/>
+    <text x="28" y="24" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600" fill="#475569">
+      Theme Focus: Promoting peer support, empathy, and active upstanding
+    </text>
+  </g>
+</svg>

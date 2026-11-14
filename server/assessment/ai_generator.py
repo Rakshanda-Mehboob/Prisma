@@ -658,6 +658,11 @@ SCENARIO_BLOCK_JSON_SCHEMA = {
                 "type": "string",
                 "description": "A realistic cyberbullying incident in a university student context, 90-130 words, 5-7 sentences, each sentence under 20 words. Must include: setting, trigger, one harmful act, spread and reactions, impact on the target (shown through behavior), and an open bystander moment."
             },
+            "image_theme": {
+                "type": "string",
+                "description": "The primary cyberbullying harm type in this scenario. Must be exactly one of the allowed enum values.",
+                "enum": ["mockery", "exclusion", "private_info_leak", "false_rumour", "threats", "humiliating_content", "general"]
+            },
             "questions": {
                 "type": "array",
                 "description": "Exactly 8 TPB questions (2 per construct: Attitude, SubjectiveNorm, PBC, BehavioralIntention).",
@@ -685,7 +690,7 @@ SCENARIO_BLOCK_JSON_SCHEMA = {
                 }
             }
         },
-        "required": ["scenario_text", "questions"],
+        "required": ["scenario_text", "image_theme", "questions"],
         "additionalProperties": False
     }
 }
@@ -863,6 +868,17 @@ Choose ONE harm type from: mockery of a person, exclusion from a group, leaked p
 Do not repeat the setting, platform, harm type, or ending of these earlier scenarios:
 {avoid}
 
+IMAGE THEME (field: image_theme)
+Classify the scenario into exactly one visual theme matching the chosen harm:
+- mockery: making fun of someone, derogatory comments, cruel jokes
+- exclusion: leaving someone out, removing from groups, ignoring deliberately
+- private_info_leak: sharing private chats, photos, grades, or personal details
+- false_rumour: spreading unverified claims, slander, smears
+- threats: intimidation, aggressive warnings, ultimatums
+- humiliating_content: edited memes, embarrassing clips, candid photos
+- general: campus conflicts that span multiple or general categories
+Must be one of: "mockery", "exclusion", "private_info_leak", "false_rumour", "threats", "humiliating_content", "general".
+
 SCENARIO (field: scenario_text)
 - 90 to 130 words (aim for about 110), 5 to 7 sentences, every sentence under 20 words.
 - Simple everyday English at grade 6-8 level. No academic or technical words. Concrete, easy to picture.
@@ -1006,17 +1022,26 @@ def _validate_openai_block(data: dict) -> bool:
     """
     Validates a full scenario block: scenario text plus exactly 8 questions,
     2 per TPB construct, each with 4 valid options (scores 0 to 3).
+    Also validates or defaults image_theme.
     """
     if not isinstance(data, dict):
         return False
 
     scenario_text = data.get("scenario_text")
     questions = data.get("questions")
+    image_theme = data.get("image_theme")
 
     if not isinstance(scenario_text, str) or len(scenario_text.strip()) < 20:
         return False
     if not isinstance(questions, list) or len(questions) != 8:
         return False
+
+    supported_themes = {"mockery", "exclusion", "private_info_leak", "false_rumour", "threats", "humiliating_content", "general"}
+    if not isinstance(image_theme, str) or image_theme.strip().lower() not in supported_themes:
+        # Normalize or fallback rather than failing the whole generation
+        data["image_theme"] = "general"
+    else:
+        data["image_theme"] = image_theme.strip().lower()
 
     construct_counts = {c: 0 for c in CONSTRUCTS}
     seen_questions = set()
@@ -1179,6 +1204,52 @@ Return only JSON that matches the schema."""
     return None
 
 
+def _map_situation_to_image_theme(situation: dict) -> str:
+    """Map a local situation template to one of the 7 supported image themes."""
+    sit_id = situation.get("id", "")
+    id_map = {
+        "cs_github_conflict": "mockery",
+        "cs_discord_gaming_flame": "exclusion",
+        "psych_mental_health_leak": "private_info_leak",
+        "psych_peer_gaslighting": "false_rumour",
+        "med_clinical_rotation_leak": "false_rumour",
+        "med_ward_duty_blame": "private_info_leak",
+        "biz_startup_pitch_smear": "false_rumour",
+        "biz_team_presentation_conflict": "exclusion",
+        "eng_cad_hardware_mock": "mockery",
+        "law_moot_court_attack": "false_rumour",
+        "hostel_hall_shaming": "humiliating_content",
+        "hostel_roommate_recording": "private_info_leak",
+        "commuter_schedule_exclusion": "exclusion",
+        "home_privacy_leak": "private_info_leak",
+        "flatmate_utility_slander": "false_rumour",
+        "presentation_mock": "mockery",
+        "grade_rumor": "false_rumour",
+        "group_exclusion": "exclusion",
+        "meme_harassment": "humiliating_content",
+        "derogatory_poll": "mockery",
+        "private_screenshot": "private_info_leak",
+        "threatening_messages": "threats",
+        "group_project_blame": "mockery",
+        "bystander_situation": "exclusion",
+        "clinical_mistake": "humiliating_content",
+    }
+    if sit_id in id_map:
+        return id_map[sit_id]
+
+    cat = situation.get("category", "").lower()
+    cat_map = {
+        "threats": "threats",
+        "sharing_private_info": "private_info_leak",
+        "online_exclusion": "exclusion",
+        "rumor_spreading": "false_rumour",
+        "humiliating_content": "humiliating_content",
+        "harmful_comments": "mockery",
+        "bystander": "exclusion",
+    }
+    return cat_map.get(cat, "general")
+
+
 # ── Local Synthesizer for Full Scenario Blocks ────────────────────────────────
 
 def _local_synthesize_scenario_block(
@@ -1257,8 +1328,11 @@ def _local_synthesize_scenario_block(
                 "options": options,
             })
 
+    image_theme = _map_situation_to_image_theme(situation)
+
     return {
         "scenario_text": scenario_text,
+        "image_theme": image_theme,
         "questions": questions,
     }
 
@@ -1398,6 +1472,7 @@ def generate_personalized_scenario_blocks(
 
         scenario_text = block_data["scenario_text"].strip()
         questions = block_data["questions"]
+        image_theme = block_data.get("image_theme") or "general"
         previous_summaries.append(_summarize_scenario(scenario_text))
 
         # ── Persist each question as a Scenario row ──
@@ -1411,6 +1486,7 @@ def generate_personalized_scenario_blocks(
                 stage=stage,
                 scenario_text=scenario_text,
                 question_text=question_text,
+                category=image_theme,
             )
             db.add(scenario)
             db.flush()
