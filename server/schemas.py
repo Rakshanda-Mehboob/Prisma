@@ -8,18 +8,119 @@ v1.1 additions:
   - AssessmentScores extended with behavioral_intention_score
   - AssessmentOut extended with behavioral_intention_score
   - ConstructScores / DashboardOut extended with behavioral_intention
+
+v1.2 (profile hardening):
+  - Input sanitizer strips control chars, < > ` { } [ ], collapses whitespace
+  - Literal types for fields with fixed frontend values (living_situation,
+    platforms_used, social_media_platforms, main_interaction_with)
+  - max_length on every str field in *In / ProfileUpdateRequest
+  - max_length=10 / item max_length=50 on every list[str] field in *In
+  - *Out models remain plain str / list[str] so old DB rows always load
 """
 
+import re
 import warnings
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from typing import Annotated, Any, Literal, Optional
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 warnings.filterwarnings(
     "ignore",
     message='Field name "construct" in "ScenarioOut" shadows an attribute in parent "BaseModel"',
     category=UserWarning,
 )
+
+
+# ──────────────────────────────────────────────
+# SHARED: INPUT SANITIZER
+# ──────────────────────────────────────────────
+
+def _sanitize_profile_value(v: Any) -> Any:
+    """
+    Reusable 'before' sanitizer for all free-text profile fields.
+    - Strips C0/C1 control characters (keeps \\t converted via whitespace collapse).
+    - Removes the characters  < > ` { } [ ]  which are injection-risk chars.
+    - Collapses runs of whitespace (including newlines) into a single space.
+    - Trims leading/trailing whitespace.
+    - Returns None when the cleaned result is empty.
+    Applied to both str values and each str item inside list values.
+    """
+    if v is None:
+        return None
+    if isinstance(v, str):
+        cleaned = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]", "", v)
+        cleaned = re.sub(r"[<>`{}\[\]]", "", cleaned)
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        return cleaned if cleaned else None
+    if isinstance(v, list):
+        result = []
+        for item in v:
+            if isinstance(item, str):
+                ci = _sanitize_profile_value(item)
+                if ci is not None:
+                    result.append(ci)
+            else:
+                result.append(item)
+        return result
+    return v
+
+
+# ──────────────────────────────────────────────
+# SHARED: LITERAL TYPES (fixed frontend enums)
+# ──────────────────────────────────────────────
+# Only fields where BOTH Onboarding.jsx and Profile.jsx send identical fixed
+# values are constrained with Literal.  All others remain free text + sanitizer.
+
+LivingSituationLiteral = Literal[
+    "University hostel",
+    "Home with family",
+    "Private accommodation",
+    "Shared apartment",
+    "Other",
+]
+"""
+Onboarding.jsx LIVING_SITUATIONS ids:
+  'University hostel' | 'Home with family' | 'Private accommodation'
+  | 'Shared apartment' | 'Other'
+Profile.jsx passes user?.living_situation (stored value) — same set.
+"""
+
+PlatformLiteral = Literal[
+    "WhatsApp",
+    "Instagram",
+    "Facebook",
+    "TikTok",
+    "Discord",
+    "LinkedIn",
+    "Gaming communities",
+    "University portals",
+    "Other",
+    "None",
+]
+"""
+Onboarding.jsx PLATFORMS ids (+ 'None' for the "none selected" option):
+  'WhatsApp' | 'Instagram' | 'Facebook' | 'TikTok' | 'Discord'
+  | 'LinkedIn' | 'Gaming communities' | 'University portals' | 'Other' | 'None'
+Profile.jsx does not have a platforms editor — only reads/stores the same values.
+"""
+
+MainInteractionLiteral = Literal[
+    "Classmates",
+    "Friends",
+    "Teachers",
+    "Professional groups",
+    "Online communities",
+    "Gaming communities",
+    "None",
+]
+"""
+Onboarding.jsx INTERACTION_PARTNERS ids:
+  'Classmates' | 'Friends' | 'Teachers' | 'Professional groups'
+  | 'Online communities' | 'Gaming communities' | 'None'
+"""
+
+# Convenience Annotated type for a sanitised, length-capped list item
+_ListItem50 = Annotated[str, Field(max_length=50)]
 
 
 # ──────────────────────────────────────────────
@@ -116,9 +217,14 @@ class UserOut(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     """Payload for PATCH /auth/profile."""
-    department: Optional[str] = Field(None, max_length=100)
-    living_situation: Optional[str] = Field(None, max_length=100)
-    university: Optional[str] = Field(None, max_length=150)
+    department:       Optional[str]                    = Field(None, max_length=150)
+    living_situation: Optional[LivingSituationLiteral] = None
+    university:       Optional[str]                    = Field(None, max_length=150)
+
+    @field_validator("department", "living_situation", "university", mode="before")
+    @classmethod
+    def _sanitize(cls, v: Any) -> Any:
+        return _sanitize_profile_value(v)
 
 
 # ──────────────────────────────────────────────
@@ -126,33 +232,58 @@ class ProfileUpdateRequest(BaseModel):
 # ──────────────────────────────────────────────
 
 class StudentProfileIn(BaseModel):
-    """Full behavioral profile submitted during onboarding."""
+    """
+    Full behavioral profile submitted during onboarding.
+
+    Hardening rules (v1.2):
+    - Every str field has max_length.
+    - Every list[str] field has max_length=10 items, each item max 50 chars.
+    - living_situation and main_interaction_with are Literal-restricted to the
+      exact values Onboarding.jsx sends.
+    - platforms_used items are Literal-restricted to Onboarding.jsx PLATFORMS ids.
+    - All other str fields / list items pass through the injection sanitizer.
+    """
     # Academic
-    university: Optional[str] = None
-    degree_program: Optional[str] = None
-    academic_level: Optional[str] = None
-    academic_year: Optional[str] = None
-    faculty_department: Optional[str] = None
-    living_situation: Optional[str] = None
-    learning_environment: Optional[str] = None
-    class_size: Optional[str] = None
+    university:        Optional[str]                    = Field(None, max_length=150)
+    degree_program:    Optional[str]                    = Field(None, max_length=150)
+    academic_level:    Optional[str]                    = Field(None, max_length=100)
+    academic_year:     Optional[str]                    = Field(None, max_length=100)
+    faculty_department: Optional[str]                   = Field(None, max_length=150)
+    living_situation:  Optional[LivingSituationLiteral] = None
+    learning_environment: Optional[str]                 = Field(None, max_length=100)
+    class_size:        Optional[str]                    = Field(None, max_length=100)
 
     # Digital
-    platforms_used: Optional[list[str]] = None          # multi-select
-    online_activity_level: Optional[str] = None
-    main_online_activities: Optional[list[str]] = None  # multi-select
+    platforms_used: Optional[list[PlatformLiteral]] = Field(None, max_length=10)
+    online_activity_level: Optional[str]            = Field(None, max_length=100)
+    main_online_activities: Optional[list[_ListItem50]] = Field(None, max_length=10)
 
     # Social & Academic Context
-    main_interaction_with: Optional[str] = None
-    university_groups_participation: Optional[str] = None
-    university_activity_level: Optional[str] = None
-    participation_types: Optional[list[str]] = None     # multi-select
-    social_role: Optional[str] = None
+    main_interaction_with: Optional[MainInteractionLiteral] = None
+    university_groups_participation: Optional[str]  = Field(None, max_length=100)
+    university_activity_level: Optional[str]        = Field(None, max_length=100)
+    participation_types: Optional[list[_ListItem50]] = Field(None, max_length=10)
+    social_role: Optional[str]                       = Field(None, max_length=100)
 
     # Cyberbullying Experience (sensitive — all optional)
-    encounter_frequency: Optional[str] = None
-    experience_types: Optional[list[str]] = None        # multi-select
-    experience_role: Optional[str] = None
+    encounter_frequency: Optional[str]               = Field(None, max_length=100)
+    experience_types: Optional[list[_ListItem50]]    = Field(None, max_length=10)
+    experience_role: Optional[str]                   = Field(None, max_length=100)
+
+    @field_validator(
+        "university", "degree_program", "academic_level", "academic_year",
+        "faculty_department", "living_situation",
+        "learning_environment", "class_size",
+        "online_activity_level", "main_online_activities",
+        "main_interaction_with",
+        "university_groups_participation", "university_activity_level",
+        "participation_types", "social_role",
+        "encounter_frequency", "experience_types", "experience_role",
+        mode="before",
+    )
+    @classmethod
+    def _sanitize(cls, v: Any) -> Any:
+        return _sanitize_profile_value(v)
 
 
 class StudentProfileOut(BaseModel):
@@ -185,17 +316,37 @@ class StudentProfileOut(BaseModel):
 
 
 class UserProfileIn(BaseModel):
-    """Personalized profile information collected during registration."""
-    age_group: Optional[str] = None
-    gender: Optional[str] = None
-    department: Optional[str] = None
-    academic_level: Optional[str] = None
-    academic_year: Optional[str] = None
-    living_situation: Optional[str] = None
-    social_media_platforms: Optional[list[str]] = None
-    social_media_frequency: Optional[str] = None
-    online_communities: Optional[list[str]] = None
-    digital_usage_patterns: Optional[list[str]] = None
+    """
+    Personalized profile information collected during registration.
+
+    Hardening rules (v1.2):
+    - Every str field has max_length.
+    - Every list[str] field has max_length=10 items, each item max 50 chars.
+    - living_situation is Literal-restricted.
+    - social_media_platforms items are Literal-restricted to PlatformLiteral.
+    - All other str / list-item fields go through the injection sanitizer.
+    """
+    age_group:              Optional[str]                    = Field(None, max_length=100)
+    gender:                 Optional[str]                    = Field(None, max_length=100)
+    department:             Optional[str]                    = Field(None, max_length=150)
+    academic_level:         Optional[str]                    = Field(None, max_length=100)
+    academic_year:          Optional[str]                    = Field(None, max_length=100)
+    living_situation:       Optional[LivingSituationLiteral] = None
+    social_media_platforms: Optional[list[PlatformLiteral]] = Field(None, max_length=10)
+    social_media_frequency: Optional[str]                   = Field(None, max_length=100)
+    online_communities:     Optional[list[_ListItem50]]      = Field(None, max_length=10)
+    digital_usage_patterns: Optional[list[_ListItem50]]     = Field(None, max_length=10)
+
+    @field_validator(
+        "age_group", "gender", "department", "academic_level", "academic_year",
+        "living_situation",
+        "social_media_frequency",
+        "online_communities", "digital_usage_patterns",
+        mode="before",
+    )
+    @classmethod
+    def _sanitize(cls, v: Any) -> Any:
+        return _sanitize_profile_value(v)
 
 
 class UserProfileOut(BaseModel):
