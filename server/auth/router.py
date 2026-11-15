@@ -17,7 +17,14 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from auth.rate_limiter import check_forgot_password_rate_limit
+from auth.rate_limiter import (
+    check_forgot_password_rate_limit,
+    check_verify_otp_rate_limit,
+    check_reset_password_rate_limit,
+    record_wrong_otp_attempt,
+    get_wrong_otp_attempts,
+    reset_wrong_otp_attempts,
+)
 
 from database import get_db
 from models import User, StudentProfile, UserProfile, PasswordResetToken
@@ -45,7 +52,11 @@ from auth.utils import (
     create_access_token,
     get_current_user,
 )
-from auth.email_service import send_password_reset_email
+from auth.email_service import (
+    send_password_reset_email,
+    send_password_reset_otp_email,
+    is_smtp_configured,
+)
 from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL, DEBUG, SMTP_HOST
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -422,6 +433,9 @@ def _hash_token(token: str) -> str:
 
 # ── Password Recovery Endpoints (In-App OTP Verification Flow) ─────────────
 
+GENERIC_OTP_ERROR = "Invalid or expired verification code."
+
+
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
 def forgot_password(
     payload: ForgotPasswordRequest,
@@ -429,86 +443,118 @@ def forgot_password(
     db: Session = Depends(get_db),
 ):
     """
-    Initiates the in-app password recovery flow:
-      1. Verifies that the email exists in the database.
-         If not registered, returns 404: "No account found with this email address."
-      2. Enforces rate limiting on repeated requests.
-      3. Generates a secure 6-digit numeric OTP.
-      4. Invalidates any previous unused OTP/tokens for this user.
-      5. Stores only the SHA-256 hash of the OTP in the database with a 10-minute expiry.
-      6. Returns the OTP directly in the response for in-app demonstration (FYP mode).
+    Initiates the password recovery flow:
+      1. Enforces rate limiting (1 request per 60 seconds per email, plus hourly limits).
+      2. If the email belongs to a registered user:
+         - Resets wrong OTP attempt tracking for this email.
+         - Invalidates previous unused OTP tokens for this user.
+         - Generates a secure 6-digit numeric OTP and stores its SHA-256 hash (10-minute expiry).
+         - Sends the OTP via email using SMTP settings (or fallback console log).
+      3. Unknown and known emails return the exact same 200 response and message (preventing email enumeration).
+      4. Never returns the OTP in the HTTP response, UNLESS DEBUG=true AND SMTP is not configured (demo mode).
     """
     email_clean = payload.email.strip().lower()
 
-    # Rate limit check (prevents rapid-fire brute forcing)
+    # Rate limit check (prevents rapid-fire brute forcing & enforces 60s cooldown per email)
     check_forgot_password_rate_limit(request=request, email=email_clean)
 
     user = db.query(User).filter(func.lower(User.email) == email_clean).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No account found with this email address.",
+    otp_to_return = None
+
+    if user:
+        # Reset wrong OTP attempts for this email
+        reset_wrong_otp_attempts(email_clean)
+
+        # Invalidate previous unused OTP tokens for this user (only 1 active OTP allowed)
+        db.query(PasswordResetToken).filter(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.used == False,
+        ).update({"used": True})
+
+        # Generate cryptographically secure 6-digit OTP
+        otp_code = _generate_otp()
+        otp_hash = _hash_otp(email_clean, otp_code)
+        expires_at = datetime.utcnow() + timedelta(minutes=10)
+
+        token_record = PasswordResetToken(
+            user_id=user.id,
+            email=user.email,
+            token=otp_hash,
+            expires_at=expires_at,
+            used=False,
+            attempts=0,
         )
+        db.add(token_record)
+        db.commit()
 
-    # Invalidate previous unused OTP tokens for this user (only 1 active OTP allowed)
-    db.query(PasswordResetToken).filter(
-        PasswordResetToken.user_id == user.id,
-        PasswordResetToken.used == False,
-    ).update({"used": True})
+        # Send OTP code via email service
+        send_password_reset_otp_email(email=user.email, otp=otp_code, username=user.full_name)
 
-    # Generate cryptographically secure 6-digit OTP
-    otp_code = _generate_otp()
-    otp_hash = _hash_otp(email_clean, otp_code)
-    # OTP is valid for 10 minutes
-    expires_at = datetime.utcnow() + timedelta(minutes=10)
+        # Demo exception: if DEBUG=true AND SMTP is not configured, return OTP in response
+        import config
+        if config.DEBUG and not is_smtp_configured():
+            otp_to_return = otp_code
 
-    token_record = PasswordResetToken(
-        user_id=user.id,
-        token=otp_hash,
-        expires_at=expires_at,
-        used=False,
-    )
-    db.add(token_record)
-    db.commit()
-
-    print(f"\n========================================================")
-    print(f"  [PRISMA PASSWORD RESET OTP]")
-    print(f"  User:   {user.full_name} ({user.email})")
-    print(f"  OTP:    {otp_code}")
-    print(f"  Valid:  10 minutes")
-    print(f"========================================================\n")
-
+    # Both unknown and known emails receive identical 200 response and message
     return ForgotPasswordResponse(
-        message=f"Verification OTP generated for {user.email}.",
-        otp=otp_code,
+        message="If an account with that email exists, a verification code has been sent.",
+        otp=otp_to_return,
     )
 
 
 @router.post("/verify-otp", response_model=VerifyOTPResponse)
 def verify_otp(
     payload: VerifyOTPRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     """
     Validates the 6-digit OTP entered by the user.
-    If valid and unexpired:
-      - Marks the OTP as used.
-      - Issues a single-use session reset token valid for 15 minutes.
+    Enforces:
+      - Rate limiting per IP and per email.
+      - One generic 400 error message for wrong, expired, or used codes.
+      - Max 5 wrong OTP attempts, then that OTP is permanently invalidated.
+      - If valid and unexpired: marks OTP as used and issues single-use session reset token (15-min expiry).
     """
     email_clean = payload.email.strip().lower()
     otp_clean = payload.otp.strip()
 
+    # Rate limit check per IP and per email
+    check_verify_otp_rate_limit(request=request, email=email_clean)
+
+    # Validate 6-digit format
     if len(otp_clean) != 6 or not otp_clean.isdigit():
+        attempts = record_wrong_otp_attempt(email_clean)
+        user = db.query(User).filter(func.lower(User.email) == email_clean).first()
+        if user and attempts >= 5:
+            db.query(PasswordResetToken).filter(
+                PasswordResetToken.user_id == user.id,
+                PasswordResetToken.used == False,
+            ).update({"used": True})
+            db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Please enter a valid 6-digit numeric OTP code.",
+            detail=GENERIC_OTP_ERROR,
         )
 
     user = db.query(User).filter(func.lower(User.email) == email_clean).first()
     if not user:
+        record_wrong_otp_attempt(email_clean)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No account found with this email address.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=GENERIC_OTP_ERROR,
+        )
+
+    # Check if already locked out after 5 wrong attempts
+    if get_wrong_otp_attempts(email_clean) >= 5:
+        db.query(PasswordResetToken).filter(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.used == False,
+        ).update({"used": True})
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=GENERIC_OTP_ERROR,
         )
 
     otp_hash = _hash_otp(email_clean, otp_clean)
@@ -521,26 +567,39 @@ def verify_otp(
         .first()
     )
 
-    if not token_record:
+    if not token_record or token_record.used or token_record.expires_at < datetime.utcnow():
+        attempts = record_wrong_otp_attempt(email_clean)
+        # Update attempt counter on active unexpired token in database
+        active_rec = (
+            db.query(PasswordResetToken)
+            .filter(
+                PasswordResetToken.user_id == user.id,
+                PasswordResetToken.used == False,
+            )
+            .order_by(PasswordResetToken.id.desc())
+            .first()
+        )
+        if active_rec:
+            active_rec.attempts += 1
+            if active_rec.attempts >= 5 or attempts >= 5:
+                active_rec.used = True
+            db.commit()
+        elif attempts >= 5:
+            # 5-attempt lockout: invalidate all active OTP tokens for this user
+            db.query(PasswordResetToken).filter(
+                PasswordResetToken.user_id == user.id,
+                PasswordResetToken.used == False,
+            ).update({"used": True})
+            db.commit()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect OTP code. Please check the code and try again.",
+            detail=GENERIC_OTP_ERROR,
         )
 
-    if token_record.used:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This OTP has already been used. Please request a new code.",
-        )
-
-    if token_record.expires_at < datetime.utcnow():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This OTP has expired. Please request a new verification code.",
-        )
-
-    # Invalidate the OTP token immediately
+    # OTP verified successfully!
+    # Invalidate the OTP token immediately so it cannot be reused
     token_record.used = True
+    reset_wrong_otp_attempts(email_clean)
 
     # Generate a secure session reset token so the user can submit their new password
     reset_session_raw = secrets.token_urlsafe(32)
@@ -549,9 +608,11 @@ def verify_otp(
 
     session_record = PasswordResetToken(
         user_id=user.id,
+        email=user.email,
         token=reset_session_hash,
         expires_at=reset_expires,
         used=False,
+        attempts=0,
     )
     db.add(session_record)
     db.commit()
@@ -559,7 +620,7 @@ def verify_otp(
     return VerifyOTPResponse(
         valid=True,
         reset_token=reset_session_raw,
-        message="OTP verified successfully. You may now create your new password.",
+        message="OTP verified successfully",
     )
 
 
@@ -616,95 +677,71 @@ def verify_reset_token(
 @router.post("/reset-password", response_model=ResetPasswordResponse)
 def reset_password(
     payload: ResetPasswordRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ):
     """
-    Consumes a valid reset token (or direct OTP) and updates user password with newly hashed bcrypt string.
+    Consumes a valid reset token from /verify-otp and updates user password with newly hashed bcrypt string.
+    Enforces minimum 8-character password length and rate limits.
     Invalidates any remaining tokens for this user.
+    Direct email+OTP submission is removed for security (only verified reset_token accepted).
     """
+    # Rate limit check per IP and per email
+    check_reset_password_rate_limit(request=request, email=payload.email)
+
     if payload.confirm_password and payload.new_password != payload.confirm_password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Passwords do not match.",
         )
 
-    if len(payload.new_password) < 6:
+    if len(payload.new_password) < 8:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Password must be at least 6 characters long.",
+            detail="Password must be at least 8 characters long.",
         )
 
     active_token = (payload.reset_token or payload.token or "").strip()
-    user = None
-    token_record = None
-
-    if active_token:
-        token_hash = _hash_token(active_token)
-        token_record = (
-            db.query(PasswordResetToken)
-            .filter(PasswordResetToken.token == token_hash)
-            .first()
-        )
-        if not token_record:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid password reset token. Please request a new code.",
-            )
-        if token_record.used:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="This reset session has already been used. Please request a new code.",
-            )
-        if token_record.expires_at < datetime.utcnow():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="This reset session has expired. Please request a new code.",
-            )
-        user = db.query(User).filter(User.id == token_record.user_id).first()
-
-    elif payload.email and payload.otp:
-        # Direct OTP fallback
-        email_clean = payload.email.strip().lower()
-        otp_hash = _hash_otp(email_clean, payload.otp.strip())
-        user = db.query(User).filter(func.lower(User.email) == email_clean).first()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found.",
-            )
-        token_record = (
-            db.query(PasswordResetToken)
-            .filter(
-                PasswordResetToken.user_id == user.id,
-                PasswordResetToken.token == otp_hash,
-            )
-            .first()
-        )
-        if not token_record or token_record.used or token_record.expires_at < datetime.utcnow():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid or expired OTP code.",
-            )
-
-    else:
+    if not active_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Missing reset token or verification code.",
+            detail="A valid reset token is required. Please verify your OTP code first.",
         )
 
+    token_hash = _hash_token(active_token)
+    token_record = (
+        db.query(PasswordResetToken)
+        .filter(PasswordResetToken.token == token_hash)
+        .first()
+    )
+    if not token_record:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid password reset token. Please request a new code.",
+        )
+    if token_record.used:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This reset session has already been used. Please request a new code.",
+        )
+    if token_record.expires_at < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This reset session has expired. Please request a new code.",
+        )
+
+    user = db.query(User).filter(User.id == token_record.user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The user account associated with this request could not be found.",
         )
 
-    # Hash new password
+    # Hash new password with bcrypt
     user.password_hash = hash_password(payload.new_password)
 
-    # Invalidate all tokens for this user
-    if token_record:
-        token_record.used = True
-
+    # Invalidate token and all remaining reset tokens for this user
+    token_record.used = True
     db.query(PasswordResetToken).filter(
         PasswordResetToken.user_id == user.id,
         PasswordResetToken.used == False,

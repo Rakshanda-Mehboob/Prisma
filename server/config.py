@@ -14,11 +14,11 @@ try:
     from dotenv import load_dotenv
     _server_env = Path(__file__).resolve().parent / ".env"
     if _server_env.exists():
-        load_dotenv(dotenv_path=_server_env)
+        load_dotenv(dotenv_path=_server_env, override=True)
     _root_env = Path(__file__).resolve().parent.parent / ".env"
     if _root_env.exists():
-        load_dotenv(dotenv_path=_root_env)
-    load_dotenv()
+        load_dotenv(dotenv_path=_root_env, override=True)
+    load_dotenv(override=True)
 except ImportError:
     pass
 
@@ -94,9 +94,17 @@ PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("PASSWORD_RESET_TOKEN_E
 FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 
 SMTP_HOST: str | None = os.getenv("SMTP_HOST")
+if SMTP_HOST:
+    SMTP_HOST = SMTP_HOST.strip().strip('"').strip("'")
 SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER: str | None = os.getenv("SMTP_USER")
+if SMTP_USER:
+    SMTP_USER = SMTP_USER.strip().strip('"').strip("'")
 SMTP_PASSWORD: str | None = os.getenv("SMTP_PASSWORD")
-EMAIL_FROM: str = os.getenv("EMAIL_FROM") or os.getenv("SMTP_FROM_EMAIL") or "noreply@prisma-defense.edu.pk"
+if SMTP_PASSWORD:
+    SMTP_PASSWORD = SMTP_PASSWORD.strip().strip('"').strip("'")
+EMAIL_FROM: str = os.getenv("EMAIL_FROM") or os.getenv("SMTP_FROM_EMAIL") or "noreply@prisma.com"
+if EMAIL_FROM:
+    EMAIL_FROM = EMAIL_FROM.strip().strip('"').strip("'")
 SMTP_FROM_EMAIL: str = EMAIL_FROM
 SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("true", "1", "yes")

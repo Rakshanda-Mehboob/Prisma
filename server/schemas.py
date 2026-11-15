@@ -191,7 +191,7 @@ class ResetPasswordRequest(BaseModel):
     reset_token: Optional[str] = None
     email: Optional[EmailStr] = None
     otp: Optional[str] = None
-    new_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=8)
     confirm_password: Optional[str] = None
 
 

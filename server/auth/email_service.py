@@ -24,6 +24,195 @@ from config import (
 logger = logging.getLogger("auth.email_service")
 
 
+def is_smtp_configured() -> bool:
+    """Returns True if SMTP server host and username are configured in settings."""
+    import config
+    return bool(config.SMTP_HOST and str(config.SMTP_HOST).strip() and config.SMTP_USER and str(config.SMTP_USER).strip())
+
+
+def send_password_reset_otp_email(
+    email: str = None,
+    otp: str = None,
+    username: str = "Student",
+    to_email: str = None,
+    user_name: str = None,
+) -> bool:
+    """
+    Sends a 6-digit verification OTP email to the user for secure password reset.
+    If SMTP server details are configured in .env, sends via real SMTP.
+    When DEBUG=true, logs to console for local testing.
+    """
+    import config
+    target_email = email or to_email
+    target_username = username if username != "Student" else (user_name or "Student")
+    from_address = config.EMAIL_FROM or config.SMTP_FROM_EMAIL or "noreply@prisma.com"
+
+    plain_text = f"""Hello {target_username},
+
+We received a request to reset the password for your Prisma account.
+
+Your 6-digit verification code is:
+{otp}
+
+This code is valid for 10 minutes and can only be used once.
+
+If you did not request this, please ignore this email. Your password will remain unchanged.
+
+Best regards,
+Prisma Team
+Faculty of Computing, Riphah International University
+"""
+
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #F8FAFC;
+      margin: 0;
+      padding: 24px;
+      color: #1E293B;
+    }}
+    .email-container {{
+      max-width: 520px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      border: 1px solid #E2E8F0;
+    }}
+    .header {{
+      background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 35%, #2e1065 75%, #3b1368 100%);
+      padding: 32px 28px;
+      text-align: center;
+      color: #ffffff;
+    }}
+    .header h1 {{
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }}
+    .header p {{
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: rgba(248, 250, 252, 0.7);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }}
+    .content {{
+      padding: 32px 28px;
+      line-height: 1.6;
+    }}
+    .otp-box {{
+      text-align: center;
+      margin: 28px 0;
+      background: #F8FAFC;
+      border: 1.5px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 20px;
+    }}
+    .otp-code {{
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 10px;
+      color: #4F46E5;
+    }}
+    .notice {{
+      background-color: #F1F5F9;
+      border-left: 4px solid #4F46E5;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #475569;
+      margin-top: 20px;
+    }}
+    .footer {{
+      padding: 20px 28px;
+      background-color: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      text-align: center;
+      font-size: 12px;
+      color: #94A3B8;
+    }}
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Prisma</h1>
+      <p>Cognitive Cyber Defense</p>
+    </div>
+    <div class="content">
+      <h2 style="font-size: 19px; margin-top: 0; color: #0F172A;">Password Reset Verification</h2>
+      <p>Hello {user_name},</p>
+      <p>We received a request to reset your Prisma account password. Use the verification code below to proceed:</p>
+      
+      <div class="otp-box">
+        <div style="font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Your 6-Digit Code</div>
+        <div class="otp-code">{otp}</div>
+      </div>
+
+      <div class="notice">
+        This code will expire in <strong>10 minutes</strong>. For your security, never share this code with anyone.
+      </div>
+
+      <p style="font-size: 13px; color: #64748B; margin-top: 24px;">
+        If you didn't request this, ignore this email. Your password will remain unchanged.
+      </p>
+    </div>
+    <div class="footer">
+      Prisma — AI-Powered Cyberbullying Prevention & Intervention System<br>
+      Faculty of Computing, Riphah International University
+    </div>
+  </div>
+</body>
+</html>
+"""
+
+    if is_smtp_configured():
+        try:
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = "Your Prisma Password Reset Verification Code"
+            msg["From"] = from_address
+            msg["To"] = target_email
+
+            part1 = MIMEText(plain_text, "plain")
+            part2 = MIMEText(html_content, "html")
+            msg.attach(part1)
+            msg.attach(part2)
+
+            with smtplib.SMTP(config.SMTP_HOST, config.SMTP_PORT, timeout=10) as server:
+                if config.SMTP_USE_TLS:
+                    server.starttls()
+                if config.SMTP_PASSWORD:
+                    server.login(config.SMTP_USER, config.SMTP_PASSWORD)
+                server.sendmail(from_address, target_email, msg.as_string())
+
+            logger.info("Password reset OTP email successfully dispatched via SMTP to %s", target_email)
+            print(f"[EMAIL SERVICE] Successfully dispatched password reset OTP email to {target_email}")
+            return True
+        except Exception as e:
+            logger.warning("SMTP OTP email sending failed (%s). Falling back to console log.", e)
+            print(f"[EMAIL SERVICE ERROR] SMTP OTP dispatch to {target_email} failed: {e}")
+
+    # Development fallback: print OTP in server console only if DEBUG is enabled
+    if config.DEBUG:
+        separator = "=" * 60
+        print(f"\n{separator}")
+        print("  [PRISMA PASSWORD RESET OTP — DEVELOPMENT FALLBACK]")
+        print(f"  To:         {target_email} ({target_username})")
+        print(f"  OTP:        {otp}")
+        print(f"  Expires in: 10 minutes")
+        print(f"{separator}\n")
+
+    return False
+
+
 def send_password_reset_email(to_email: str, reset_url: str, user_name: str = "Student") -> bool:
     """
     Sends a password reset email to the user.

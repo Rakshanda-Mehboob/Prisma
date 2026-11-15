@@ -20,7 +20,6 @@ export default function ForgotPassword() {
   // Form states
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState('');
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,19 +46,14 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const res = await authApi.forgotPassword(cleanEmail);
-      if (res.data?.otp) {
-        setGeneratedOtp(res.data.otp);
-      }
+      await authApi.forgotPassword(cleanEmail);
       setStep(2);
-      setSuccessMessage('A 6-digit verification OTP has been generated for your account.');
+      setSuccessMessage('Check your email. We have sent a 6-digit verification code.');
     } catch (err) {
       const status = err.response?.status;
       const detail = err.response?.data?.detail;
 
-      if (status === 404) {
-        setError('No account found with this email address.');
-      } else if (typeof detail === 'string') {
+      if (typeof detail === 'string') {
         setError(detail);
       } else if (!err.response) {
         setError('Cannot connect to backend server. Please verify the backend is running.');
@@ -87,12 +81,14 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const res = await authApi.verifyOTP(email.trim().toLowerCase(), cleanOtp);
-      if (res.data?.reset_token) {
-        setResetToken(res.data.reset_token);
+      const token = res.data?.reset_token;
+      if (token) {
+        navigate(`/reset-password?reset_token=${encodeURIComponent(token)}`, {
+          state: { reset_token: token },
+        });
+      } else {
+        setError('Verification succeeded, but no reset token was received. Please try again.');
       }
-      setStep(3);
-      setError('');
-      setSuccessMessage('Verification successful. Please create your new password.');
     } catch (err) {
       const detail = err.response?.data?.detail;
       if (typeof detail === 'string') {
@@ -112,8 +108,8 @@ export default function ForgotPassword() {
     e.preventDefault();
     setError('');
 
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -126,8 +122,6 @@ export default function ForgotPassword() {
     try {
       await authApi.resetPassword({
         reset_token: resetToken,
-        email: email.trim().toLowerCase(),
-        otp: otp.trim(),
         new_password: newPassword,
         confirm_password: confirmPassword,
       });
@@ -150,17 +144,14 @@ export default function ForgotPassword() {
     }
   };
 
-  // Quick helper to re-generate OTP
+  // Quick helper to re-send OTP
   const handleResendOtp = async () => {
     setError('');
     setLoading(true);
     try {
-      const res = await authApi.forgotPassword(email.trim().toLowerCase());
-      if (res.data?.otp) {
-        setGeneratedOtp(res.data.otp);
-      }
+      await authApi.forgotPassword(email.trim().toLowerCase());
       setOtp('');
-      setSuccessMessage('A new verification OTP has been generated.');
+      setSuccessMessage('Check your email. We have sent a 6-digit verification code.');
     } catch (err) {
       const detail = err.response?.data?.detail;
       setError(typeof detail === 'string' ? detail : 'Failed to generate new OTP.');
@@ -170,7 +161,7 @@ export default function ForgotPassword() {
   };
 
   // Password validation checks for Step 3
-  const hasMinLength = newPassword.length >= 6;
+  const hasMinLength = newPassword.length >= 8;
   const passwordsMatch = newPassword && confirmPassword && newPassword === confirmPassword;
 
   return (
@@ -453,55 +444,9 @@ export default function ForgotPassword() {
                     Enter Verification Code
                   </h1>
                   <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                    Enter the 6-digit verification OTP generated for <strong style={{ color: 'var(--color-text-primary)' }}>{email}</strong>.
+                    Check your email. We have sent a 6-digit verification code to <strong style={{ color: 'var(--color-text-primary)' }}>{email}</strong>.
                   </p>
                 </div>
-
-                {/* Demonstration OTP Information Card */}
-                {generatedOtp && (
-                  <div
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%)',
-                      border: '1.5px solid rgba(79, 70, 229, 0.3)',
-                      borderRadius: 'var(--radius-lg)',
-                      padding: '1.25rem',
-                      marginBottom: '1.5rem',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontSize: '0.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
-                      <Info size={14} />
-                      <span>Demonstration Verification Code</span>
-                    </div>
-
-                    <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>
-                      Your verification OTP:
-                    </div>
-
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-mono, monospace)',
-                        fontSize: '2rem',
-                        fontWeight: 800,
-                        letterSpacing: '0.25em',
-                        color: 'var(--color-primary)',
-                        padding: '0.5rem 1rem',
-                        background: '#ffffff',
-                        border: '1px solid rgba(79, 70, 229, 0.2)',
-                        borderRadius: 'var(--radius-md)',
-                        display: 'inline-block',
-                        margin: '0 auto 0.75rem auto',
-                        boxShadow: '0 2px 8px rgba(79, 70, 229, 0.08)',
-                      }}
-                    >
-                      {generatedOtp}
-                    </div>
-
-                    <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', margin: 0, fontStyle: 'italic', lineHeight: 1.5 }}>
-                      "This OTP is displayed for demonstration purposes and would normally be sent via email in a production system."
-                    </p>
-                  </div>
-                )}
 
                 {error && (
                   <div className="alert alert-danger" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
@@ -722,7 +667,7 @@ export default function ForgotPassword() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: hasMinLength ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
                       <CheckCircle2 size={13} />
-                      <span>Minimum 6 characters long</span>
+                      <span>Minimum 8 characters long</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: passwordsMatch ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
                       <CheckCircle2 size={13} />

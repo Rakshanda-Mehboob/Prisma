@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { authApi } from '../api';
 import {
@@ -12,7 +12,8 @@ import PrismaLogo from '../components/PrismaLogo';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token') || '';
+  const location = useLocation();
+  const token = searchParams.get('reset_token') || searchParams.get('token') || location.state?.reset_token || '';
   const navigate = useNavigate();
 
   const [verifying, setVerifying] = useState(true);
@@ -73,7 +74,7 @@ export default function ResetPassword() {
   }, [token]);
 
   // Real-time password requirement metrics
-  const hasMinLength = newPassword.length >= 6;
+  const hasMinLength = newPassword.length >= 8;
   const hasMixedChars = /[A-Za-z]/.test(newPassword) && /[0-9]/.test(newPassword);
   const passwordsMatch = newPassword && confirmPassword && newPassword === confirmPassword;
 
@@ -82,7 +83,7 @@ export default function ResetPassword() {
     setError('');
 
     if (!hasMinLength) {
-      setError('Password must be at least 6 characters long.');
+      setError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -94,7 +95,8 @@ export default function ResetPassword() {
     setLoading(true);
     try {
       await authApi.resetPassword({
-        token,
+        reset_token: token,
+        token: token,
         new_password: newPassword,
         confirm_password: confirmPassword,
       });
@@ -339,7 +341,7 @@ export default function ResetPassword() {
                       id="new-password"
                       type={showPass ? 'text' : 'password'}
                       className="form-input"
-                      placeholder="At least 6 characters"
+                      placeholder="At least 8 characters"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
@@ -442,7 +444,7 @@ export default function ResetPassword() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: hasMinLength ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
                     <CheckCircle2 size={13} />
-                    <span>Minimum 6 characters long</span>
+                    <span>Minimum 8 characters long</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: passwordsMatch ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
                     <CheckCircle2 size={13} />
