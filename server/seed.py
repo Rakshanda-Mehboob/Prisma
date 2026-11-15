@@ -1,7 +1,12 @@
 """
 seed.py — Populate the database with:
-  - 48 TPB scenario questions (8 per construct × 3 constructs × 2 stages)
-  - 12 intervention modules (4 per construct: video, reading, quiz, case-study)
+  - 48 TPB scenario questions across 4 core constructs:
+      1. Attitude (AT)
+      2. Subjective Norm (SN)
+      3. Perceived Behavioral Control (PBC)
+      4. Behavioral Intention (BI)
+  - 12 baseline intervention resources (video, reading, quiz, case-study)
+  - 4 comprehensive adaptive learning modules (Modules 1–4)
   - 1 demo user account (email: demo@riphah.edu.pk / password: Demo1234!)
 
 Run ONCE from the server/ directory:

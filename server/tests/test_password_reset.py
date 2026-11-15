@@ -394,3 +394,30 @@ def test_successful_otp_verification_creates_reset_token():
     assert updated.used is True
     db.close()
 
+
+# ─── 14. HttpOnly Cookie Authentication & Logout (XSS Protection) ────────────
+
+def test_httponly_cookie_authentication_and_logout():
+    email = "zainab.tariq@riphah.edu.pk"
+    # Login sets HttpOnly access_token cookie
+    res = client.post("/auth/login", json={"email": email, "password": "OldPassword123"})
+    assert res.status_code == 200
+    assert "access_token" in res.cookies
+    token_in_cookie = res.cookies["access_token"]
+    assert token_in_cookie is not None
+
+    # Authenticated request without Authorization header (using cookie only)
+    client.headers.clear()
+    me_res = client.get("/auth/me")
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == email
+
+    # Logout clears the cookie
+    logout_res = client.post("/auth/logout")
+    assert logout_res.status_code == 200
+
+    # Subsequent request fails
+    client.cookies.clear()
+    unauth_res = client.get("/auth/me")
+    assert unauth_res.status_code == 401
+

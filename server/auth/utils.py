@@ -8,7 +8,7 @@ used to protect endpoints and identify student sessions across the platform.
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
@@ -19,8 +19,8 @@ from models import User
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 # ── OAuth2 Scheme ──────────────────────────────────────────────────────────────
-# Reads "Authorization: Bearer <token>" from incoming HTTP request headers
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+# Reads "Authorization: Bearer <token>" from incoming HTTP request headers (optional for cookie fallback)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
 
 # ── Password Hashing & Verification ────────────────────────────────────────────
@@ -63,12 +63,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    request: Request = None,
+    token: Optional[str] = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
     """
-    FastAPI dependency that extracts, decodes, and validates the bearer JWT.
+    FastAPI dependency that extracts, decodes, and validates the JWT.
     Retrieves the corresponding `User` record from the database.
+    Extracts token from either:
+      1. Authorization: Bearer <token> header (API clients / pytest TestClient)
+      2. HttpOnly access_token cookie (browsers protected against XSS)
     Raises HTTP 401 Unauthorized if the token is missing, expired, or invalid.
     """
     credentials_exception = HTTPException(
@@ -76,8 +80,18 @@ def get_current_user(
         detail="Could not validate credentials.",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    # 1. Check Bearer token from Authorization header
+    raw_token = token
+    # 2. Fall back to secure HttpOnly cookie if header is not present
+    if not raw_token and request and hasattr(request, "cookies"):
+        raw_token = request.cookies.get("access_token") or request.cookies.get("tpb_token")
+
+    if not raw_token:
+        raise credentials_exception
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(raw_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: Optional[str] = payload.get("sub")
         if user_id is None:
             raise credentials_exception

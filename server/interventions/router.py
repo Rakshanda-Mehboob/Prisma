@@ -8,9 +8,10 @@ Theory of Planned Behavior (TPB) Module Assignment Architecture:
   - Module 4: Your Role – Peer Dynamics and Social Norms (Subjective Norms)
 
 Adaptive Features:
-  - Computes mean item score per construct on 1–5 scale.
-  - Automatically identifies low constructs below configurable threshold (default 4.0).
+  - Computes normalized score per construct on 0–100 percentage scale.
+  - Automatically identifies low constructs below the 70.0% readiness threshold (0–69% = Low / Mandatory).
   - Assigns required modules ordered by lowest score first.
+  - If all scores >= 70%, recommends one optional personalized enhancement module for the relatively lowest construct.
   - Sequentially unlocks required modules; keeps non-assigned modules open as optional.
   - Strictly enforces activity completion before marking any module complete.
   - Persists student assignment and progress across sessions.

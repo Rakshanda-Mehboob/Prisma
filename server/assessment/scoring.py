@@ -165,26 +165,26 @@ def calculate_overall_percentage(total_adjusted_score: int) -> float:
 
 def identify_weak_constructs(scores: TPBScores) -> list[str]:
     """
-    Return a list of TPB construct names that fall below WEAK_THRESHOLD (70.0%).
+    Return a list of TPB construct names that fall below WEAK_THRESHOLD (70.0%),
+    ordered by lowest score first so index 0 is always the most critical/lowest-scoring construct.
     These constructs will have interventions assigned to the student.
     Constructs with score >= 70.0% receive NO intervention.
 
     Example:
         scores = TPBScores(attitude=45.0, subjective_norm=72.0, pbc=38.0, behavioral_intention=55.0)
-        → ["Attitude", "PBC", "BehavioralIntention"]
+        → ["PBC", "Attitude", "BehavioralIntention"]
     """
-    weak = []
     construct_map = {
         "Attitude": scores.attitude,
         "SubjectiveNorm": scores.subjective_norm,
         "PBC": scores.pbc,
         "BehavioralIntention": scores.behavioral_intention,
     }
-    for name, score in construct_map.items():
-        if score < WEAK_THRESHOLD:
-            weak.append(name)
-
-    return weak
+    # Sort ascending by score so weak[0] is the true weakest/lowest-scoring construct
+    return sorted(
+        [name for name, score in construct_map.items() if score < WEAK_THRESHOLD],
+        key=lambda name: construct_map[name],
+    )
 
 
 def get_intervention_type(construct: str) -> dict:

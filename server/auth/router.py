@@ -14,7 +14,7 @@ import json
 import secrets
 import hashlib
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response, BackgroundTasks
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from auth.rate_limiter import (
@@ -57,7 +57,7 @@ from auth.email_service import (
     send_password_reset_otp_email,
     is_smtp_configured,
 )
-from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL, DEBUG, SMTP_HOST
+from config import PASSWORD_RESET_TOKEN_EXPIRE_MINUTES, FRONTEND_URL, DEBUG, SMTP_HOST, ENVIRONMENT, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -195,10 +195,11 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)):
     """
     Validate email and password, issuing a signed JWT access bearer token upon success.
-    Frontend persists this token in localStorage and includes it in Authorization headers.
+    Sets a secure HttpOnly cookie to protect against XSS token exfiltration, while also
+    returning the access token in the response body for backward compatibility.
     """
     clean_email = payload.email.strip().lower()
     user = db.query(User).filter(func.lower(User.email) == clean_email).first()
@@ -212,7 +213,28 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     db.commit()
 
     token = create_access_token(data={"sub": str(user.id)})
+
+    # Set secure HttpOnly cookie to mitigate XSS exposure
+    is_prod = str(ENVIRONMENT).lower() in ("production", "prod")
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        secure=is_prod,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+    )
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/logout")
+def logout(response: Response):
+    """
+    Logs out the user and clears the HttpOnly access_token cookie.
+    """
+    response.delete_cookie(key="access_token", path="/")
+    return {"message": "Logged out successfully."}
 
 
 @router.get("/me", response_model=UserOut)

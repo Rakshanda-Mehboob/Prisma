@@ -10,6 +10,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const api = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
 // Attach JWT token to every request
@@ -48,6 +49,7 @@ export default api;
 export const authApi = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
+  logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
   updateProfile: (data) => api.patch('/auth/profile', data),
   checkAvailability: (field, value) => api.get('/auth/check-availability', { params: { field, value } }),

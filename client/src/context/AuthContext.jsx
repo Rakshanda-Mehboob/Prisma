@@ -24,32 +24,33 @@ export function AuthProvider({ children }) {
   });
   const [loading, setLoading] = useState(true);
 
-  // Verify token on app load
+  // Verify session on app load (via HttpOnly cookie or bearer token)
   useEffect(() => {
-    const token = localStorage.getItem('tpb_token');
-    if (token) {
-      authApi.me()
-        .then((res) => {
-          const savedAvatar = localStorage.getItem(`tpb_avatar_${res.data.id}`);
-          const savedUni = localStorage.getItem(`tpb_university_${res.data.id}`);
-          const merged = {
-            ...res.data,
-            avatar_url: savedAvatar || null,
-            university: savedUni || res.data.university || '',
-          };
-          setUser(merged);
-          localStorage.setItem('tpb_user', JSON.stringify(merged));
-        })
-        .catch(() => { localStorage.removeItem('tpb_token'); localStorage.removeItem('tpb_user'); setUser(null); })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    authApi.me()
+      .then((res) => {
+        const savedAvatar = localStorage.getItem(`tpb_avatar_${res.data.id}`);
+        const savedUni = localStorage.getItem(`tpb_university_${res.data.id}`);
+        const merged = {
+          ...res.data,
+          avatar_url: savedAvatar || null,
+          university: savedUni || res.data.university || '',
+        };
+        setUser(merged);
+        localStorage.setItem('tpb_user', JSON.stringify(merged));
+      })
+      .catch(() => {
+        localStorage.removeItem('tpb_token');
+        localStorage.removeItem('tpb_user');
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {
     const { data } = await authApi.login({ email, password });
-    localStorage.setItem('tpb_token', data.access_token);
+    if (data?.access_token) {
+      localStorage.setItem('tpb_token', data.access_token);
+    }
     const me = await authApi.me();
     const savedAvatar = localStorage.getItem(`tpb_avatar_${me.data.id}`);
     const savedUni = localStorage.getItem(`tpb_university_${me.data.id}`);
@@ -64,6 +65,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    authApi.logout().catch(() => {});
     localStorage.removeItem('tpb_token');
     localStorage.removeItem('tpb_user');
     setUser(null);
