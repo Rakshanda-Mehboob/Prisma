@@ -1,12 +1,12 @@
 CSS DUPLICATE SELECTOR AUDIT
-Generated: 2026-11-16T17:50:54.405Z
-File: client/src/index.css  (7884 lines)
+Generated: 2026-11-16T18:20:32.118Z
+File: client/src/index.css  (7931 lines)
 
 TOTAL duplicate selectors: 0
 Total extra (redundant) blocks: 0
 
 ────────────────────────────────────────────────────────────────────────────────
-SECTION MARKERS (66 found)
+SECTION MARKERS (67 found)
 ────────────────────────────────────────────────────────────────────────────────
   L    3: /* ── Prisma Design Tokens — Modern Indigo Theme ──────────────────────────── */
   L    5: /* ── Surfaces ── */
@@ -54,26 +54,27 @@ SECTION MARKERS (66 found)
   L 3452: /* ── Top Hero / Summary Card ── */
   L 3574: /* ── Middle Section: Four TPB Cards Grid (2x2) ── */
   L 3617: /* ── Situation Tab Cards (Compact ~56px) ─────────────────────────────────── */
-  L 3787: /* ── Bottom Section: Actionable Next Steps & CTA ── */
-  L 3859: /* ── Responsive Results ── */
-  L 3900: /* ── Navbar Scrolled & Landing State ── */
-  L 4021: /* ── Landing Page Root ── */
-  L 4030: /* ── Hero Section ── */
-  L 4240: /* ── Hero Visual & Floating Layered Cards ── */
-  L 4411: /* ── Stats Strip Section ── */
-  L 4469: /* ── Common Landing Section Layout ── */
-  L 4505: /* ── How It Works Section ── */
-  L 4595: /* ── Features Section ── */
-  L 4671: /* ── CTA Banner Section ── */
-  L 4951: /* ── Compact Single-Line Footer ── */
-  L 5027: /* ── Responsive Scaling & Media Queries ── */
-  L 5109: /* ── Visual Feature Grid Styles ── */
-  L 5299: /* ── Sidebar Layout ─────────────────────────────────────────────────────────── */
-  L 5704: /* ── Student Hero Illustration ── */
-  L 7082: /* ── Assessment Page Header Banner ────────────────────────────────────────── */
-  L 7178: /* ── Interactive Scenario-Based Assessment Layout (Modernized & Compact) ── */
-  L 7775: /* ── Sticky Bottom Footer Navigation ────────────── */
-  L 7835: /* ── Responsive breakpoints ─────────────────────── */
+  L 3788: /* ── Bottom Section: Actionable Next Steps & CTA ── */
+  L 3860: /* ── Responsive Results ── */
+  L 3901: /* ── Navbar Scrolled & Landing State ── */
+  L 4022: /* ── Landing Page Root ── */
+  L 4031: /* ── Hero Section ── */
+  L 4241: /* ── Hero Visual & Floating Layered Cards ── */
+  L 4412: /* ── Stats Strip Section ── */
+  L 4470: /* ── Common Landing Section Layout ── */
+  L 4506: /* ── How It Works Section ── */
+  L 4596: /* ── Features Section ── */
+  L 4672: /* ── CTA Banner Section ── */
+  L 4952: /* ── Compact Single-Line Footer ── */
+  L 5028: /* ── Responsive Scaling & Media Queries ── */
+  L 5110: /* ── Visual Feature Grid Styles ── */
+  L 5300: /* ── Sidebar Layout ─────────────────────────────────────────────────────────── */
+  L 5705: /* ── Student Hero Illustration ── */
+  L 7083: /* ── Assessment Page Header Banner ────────────────────────────────────────── */
+  L 7179: /* ── Interactive Scenario-Based Assessment Layout (Modernized & Compact) ── */
+  L 7792: /* ── Sticky Bottom Footer Navigation ────────────── */
+  L 7852: /* ── Universal: Everywhere an image sits beside text ── */
+  L 7869: /* ── Responsive breakpoints ─────────────────────── */
 
 ────────────────────────────────────────────────────────────────────────────────
 DUPLICATE SELECTORS (each defined 2+ times)

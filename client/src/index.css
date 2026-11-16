@@ -3619,9 +3619,10 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 58px;
-  height: auto;
-  padding: 0.6rem 0.95rem;
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
+  padding: 0.45rem 0.85rem;
   border-radius: 12px;
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
@@ -6746,7 +6747,7 @@ select.form-input option {
   }
 
   .about-title {
-    font-size: 1.7rem;
+    font-size: var(--fs-xl);
   }
 
   .about-subtitle {
@@ -7195,14 +7196,14 @@ select.form-input option {
 /* 1. Merged Compact Sticky Top Assessment Header */
 .assessment-sticky-header {
   position: sticky;
-  top: 8px;
+  top: 6px;
   z-index: 50;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 0.65rem 1.15rem;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
   box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.05);
 }
 
@@ -7458,40 +7459,39 @@ select.form-input option {
   background: var(--color-success);
 }
 
-/* 3. Split Scenario Card (Compact Side-by-Side) */
+/* 3. Split Scenario Card (Side-by-Side: Image height matches text height) */
 .assessment-split-scenario-card {
   background: var(--color-surface);
   border-radius: 16px;
   border: 1px solid var(--color-border);
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-  padding: 1.2rem 1.4rem;
+  padding: 1.15rem 1.35rem;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  gap: 1.35rem;
-  align-items: start;
+  gap: 1.25rem;
+  align-items: stretch;
 }
 
 .scenario-left-illustration-pane {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  padding: 8px;
+  padding: 6px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   overflow: hidden;
-  align-self: start;
   width: 280px;
+  height: 100%;
+  min-height: 180px;
   box-sizing: border-box;
 }
 
 .scenario-left-illustration-pane img {
   width: 100%;
-  height: auto;
-  max-height: 230px;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  margin: 0 auto;
   border-radius: 8px;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -7508,16 +7508,19 @@ select.form-input option {
     padding: 0.5rem 0.95rem;
   }
   .assessment-split-scenario-card {
-    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: stretch;
     gap: 0.9rem;
     padding: 0.8rem 1rem;
   }
   .scenario-left-illustration-pane {
-    width: 200px;
+    width: 220px;
+    height: 100%;
     padding: 6px;
   }
   .scenario-left-illustration-pane img {
-    max-height: 155px;
+    height: 100%;
+    object-fit: cover;
   }
   .assessment-question-card-elevated {
     padding: 0.9rem 1.15rem;
@@ -7846,8 +7849,35 @@ select.form-input option {
   opacity: 0.85;
 }
 
+/* ── Universal: Everywhere an image sits beside text ── */
+.image-beside-text-grid,
+.image-text-split {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(0, 1.5fr);
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+.image-beside-text-grid img,
+.image-text-split img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* ── Responsive breakpoints ─────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 800px) {
+  .image-beside-text-grid,
+  .image-text-split {
+    grid-template-columns: 1fr;
+  }
+  .image-beside-text-grid img,
+  .image-text-split img {
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+  }
   .assessment-split-scenario-card {
     grid-template-columns: 1fr;
     gap: 0.75rem;
@@ -7856,10 +7886,13 @@ select.form-input option {
     order: -1;
     width: 100%;
     max-width: 300px;
+    height: auto;
     margin: 0 auto;
   }
   .scenario-left-illustration-pane img {
-    max-height: 150px;
+    height: auto;
+    max-height: 180px;
+    object-fit: contain;
   }
   .scenario-right-content-pane {
     order: 1;
