@@ -7478,17 +7478,15 @@ select.form-input option {
   justify-content: center;
   overflow: hidden;
   width: 100%;
-  height: 100%;
-  min-height: 200px;
+  aspect-ratio: 800 / 500;
+  align-self: flex-start;
   box-sizing: border-box;
 }
 
 .scenario-left-illustration-pane img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
@@ -7500,7 +7498,8 @@ select.form-input option {
     padding: 1.25rem 1.35rem;
   }
   .scenario-left-illustration-pane {
-    min-height: 190px;
+    aspect-ratio: 800 / 500;
+    align-self: flex-start;
     padding: 0;
   }
 }
@@ -7866,17 +7865,17 @@ select.form-input option {
   .scenario-left-illustration-pane {
     order: -1;
     width: 100%;
-    max-width: 300px;
-    height: 180px;
+    max-width: 340px;
+    aspect-ratio: 800 / 500;
     margin: 0 auto;
     padding: 0;
+    align-self: center;
   }
   .scenario-left-illustration-pane img {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    display: block;
   }
   .scenario-right-content-pane {
     order: 1;
