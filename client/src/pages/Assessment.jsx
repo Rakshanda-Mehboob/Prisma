@@ -1523,15 +1523,29 @@ export default function Assessment() {
                       </span>
                     </div>
                   ) : (
-                    <img
-                      src={displayedImgSrc}
-                      alt={currentScenario.image_alt_text || scenarioTitle || `Scenario ${currentScenarioIdx + 1} illustration`}
-                      onError={(e) => {
-                        if (e.currentTarget.src !== fallbackImgUrl) {
-                          e.currentTarget.src = fallbackImgUrl;
-                        }
-                      }}
-                    />
+                    <>
+                      <img
+                        src={displayedImgSrc}
+                        alt=""
+                        aria-hidden="true"
+                        className="scenario-illustration-bg-blur"
+                        onError={(e) => {
+                          if (e.currentTarget.src !== fallbackImgUrl) {
+                            e.currentTarget.src = fallbackImgUrl;
+                          }
+                        }}
+                      />
+                      <img
+                        src={displayedImgSrc}
+                        alt={currentScenario.image_alt_text || scenarioTitle || `Scenario ${currentScenarioIdx + 1} illustration`}
+                        className="scenario-illustration-fg"
+                        onError={(e) => {
+                          if (e.currentTarget.src !== fallbackImgUrl) {
+                            e.currentTarget.src = fallbackImgUrl;
+                          }
+                        }}
+                      />
+                    </>
                   )}
                 </div>
 
