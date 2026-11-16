@@ -27,6 +27,9 @@ const viewports = [
 ];
 
 const pages = [
+  { name: 'Landing', path: '/', auth: null },
+  { name: 'Login', path: '/login', auth: null },
+  { name: 'Register', path: '/register', auth: null },
   { name: 'Dashboard', path: '/dashboard', auth: authUser15 },
   { name: 'Assessment', path: '/assessment?stage=pre&mode=take', auth: authUser1 },
   { name: 'Learning', path: '/interventions', auth: authUser15 },
@@ -50,11 +53,18 @@ async function run() {
 
     for (const p of pages) {
       // Set auth for the page user
-      await page.goto('http://localhost:5173/login', { waitUntil: 'domcontentloaded' });
-      await page.evaluate((auth) => {
-        localStorage.setItem('tpb_token', auth.token);
-        localStorage.setItem('tpb_user', JSON.stringify(auth.user));
-      }, p.auth);
+      if (p.auth) {
+        await page.goto('http://localhost:5173/login', { waitUntil: 'domcontentloaded' });
+        await page.evaluate((auth) => {
+          localStorage.setItem('tpb_token', auth.token);
+          localStorage.setItem('tpb_user', JSON.stringify(auth.user));
+        }, p.auth);
+      } else {
+        await page.goto('http://localhost:5173/login', { waitUntil: 'domcontentloaded' });
+        await page.evaluate(() => {
+          localStorage.clear();
+        });
+      }
 
       const url = `http://localhost:5173${p.path}`;
       console.log(`  Capturing ${p.name} at ${vp.name}...`);

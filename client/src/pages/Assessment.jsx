@@ -1535,7 +1535,7 @@ export default function Assessment() {
                 <div className="scenario-right-content-pane">
                   <div className="scenario-meta-row">
                     <Badge variant="primary">{currentScenario?.category || 'Scenario'}</Badge>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
                       Situation {currentScenarioIdx + 1} of {scenarios.length}
                     </span>
                   </div>
@@ -1702,7 +1702,7 @@ export default function Assessment() {
                 </Button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
                     Question {currentQuestionIdx + 1} of {currentScenarioQuestions.length}
                   </span>
                   <button
