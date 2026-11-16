@@ -38,7 +38,7 @@ export default function Hero({ user }) {
           {/* Badge */}
           <div className="hero-badge">
             <span className="hero-badge-icon">
-              <Shield size={14} />
+              <Shield size={16} />
             </span>
             <span>Cyberbullying Awareness Program</span>
           </div>
@@ -80,7 +80,7 @@ export default function Hero({ user }) {
             {TRUST_POINTS.map((point) => (
               <div key={point} className="hero-trust-item">
                 <span className="hero-trust-icon">
-                  <CheckCircle2 size={16} />
+                  <CheckCircle2 size={20} />
                 </span>
                 <span>{point}</span>
               </div>
