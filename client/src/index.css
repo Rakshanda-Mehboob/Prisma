@@ -7317,22 +7317,6 @@ select.form-input option {
   white-space: nowrap;
 }
 
-.assessment-user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.2);
-  border: 1.5px solid #ffffff;
-  flex-shrink: 0;
-}
-
 /* 2. Situation Stepper Styles (Matching Dashboard Stat Cards) */
 .situation-tab-left {
   display: flex;

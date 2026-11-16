@@ -1381,12 +1381,6 @@ export default function Assessment() {
                   <Clock size={13} style={{ color: 'var(--color-primary)' }} />
                   <span>~{estRemainingMinutes} min{estRemainingMinutes === 1 ? '' : 's'} left</span>
                 </div>
-                <div
-                  className="assessment-user-avatar"
-                  title={user?.full_name || user?.username || 'Student'}
-                >
-                  {userInitial}
-                </div>
               </div>
             </div>
 
