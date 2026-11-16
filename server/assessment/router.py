@@ -140,6 +140,7 @@ def _format_instance_for_frontend(instance: AssessmentInstance, db: Optional[Ses
             questions.append({
                 "id": q.id,
                 "question_text": q.question_text,
+                "tpb_construct": getattr(q, "tpb_construct", None),
                 # Send shuffled display indices (0–3) with only the text; score is hidden
                 "options": [{"index": i, "text": opt["text"]} for i, opt in enumerate(shuffled)],
             })

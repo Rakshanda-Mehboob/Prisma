@@ -28,17 +28,17 @@ function ConstructScoreRow({ label, score, color, preScore, postScore }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.86rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</span>
+        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{label}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {delta != null && (
             <span style={{
-              fontSize: '0.78rem', fontWeight: 700, padding: '0.1rem 0.4rem',
+              fontSize: '0.75rem', fontWeight: 700, padding: '0.1rem 0.4rem',
               borderRadius: 'var(--radius-full)',
               background: delta >= 0 ? 'rgba(5,150,105,0.1)' : 'rgba(220,38,38,0.08)',
               color: delta >= 0 ? 'var(--color-success)' : 'var(--color-danger)',
             }}>{delta >= 0 ? '+' : ''}{delta}</span>
           )}
-          <span style={{ fontSize: '0.88rem', fontWeight: 800, color, fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color, fontFamily: 'var(--font-mono)' }}>
             {Math.round(displayScore)}%
           </span>
         </div>
@@ -77,10 +77,10 @@ function JourneyStep({ label, icon, done, active, route, navigate }) {
       }}>{done ? <Check size={16} /> : icon}</span>
       <div style={{ flex: 1 }}>
         <div style={{
-          fontSize: '0.86rem', fontWeight: 600,
+          fontSize: '0.875rem', fontWeight: 600,
           color: done ? 'var(--color-success)' : active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
         }}>{label}</div>
-        <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
+        <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.1rem' }}>
           {done ? 'Completed' : active ? 'Up next' : 'Locked'}
         </div>
       </div>
@@ -178,10 +178,10 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <Badge variant="primary" icon={<Sparkles size={12} />}>Active Session</Badge>
           </div>
-          <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>
             {isNew ? <>👋 Welcome, {welcomeName}!</> : <>👋 Welcome back, {welcomeName}</>}
           </h1>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.92rem', maxWidth: '560px', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', maxWidth: '560px', lineHeight: 1.5 }}>
             {!pre ? "Let's get started — take the Pre-Assessment to discover your personalised learning path."
               : intervDone < intervTotal ? 'Keep going! Complete your learning modules to unlock the Post-Assessment.'
               : post ? 'You have completed the full program. Review your progress below.'

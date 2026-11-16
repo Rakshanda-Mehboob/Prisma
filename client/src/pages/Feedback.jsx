@@ -201,7 +201,7 @@ export default function Feedback() {
                       <label className="form-label" style={{ marginBottom: 0 }}>
                         Your Rating
                       </label>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-accent)', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 600 }}>
                         {RATING_LABELS[hoverRating || rating]}
                       </span>
                     </div>
@@ -298,7 +298,7 @@ export default function Feedback() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem', gap: '0.5rem' }}>
-                        <span style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--color-text-primary)' }}>
+                        <span style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
                           {interv?.title || `Module #${f.intervention_id}`}
                         </span>
                         <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
@@ -315,12 +315,12 @@ export default function Feedback() {
                       </div>
 
                       {f.comments && (
-                        <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', margin: '0.4rem 0', fontStyle: 'italic' }}>
+                        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', margin: '0.4rem 0', fontStyle: 'italic', lineHeight: 1.5 }}>
                           "{f.comments}"
                         </p>
                       )}
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem', fontFamily: 'var(--font-mono)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.45rem', fontFamily: 'var(--font-mono)' }}>
                         <span>Target: {interv?.target_construct || 'TPB'}</span>
                         <span>{f.submitted_at ? new Date(f.submitted_at).toLocaleDateString() : 'Archived'}</span>
                       </div>

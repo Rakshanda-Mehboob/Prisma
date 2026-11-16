@@ -76,37 +76,37 @@ const CONSTRUCT_THEMES = {
 
 const COURSERA_MD = {
   h1: ({ children }) => (
-    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '1.25rem 0 0.5rem', color: 'var(--color-text-primary)' }}>
+    <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '1.25rem 0 0.5rem', color: 'var(--color-text-primary)' }}>
       {children}
     </h2>
   ),
   h2: ({ children }) => (
-    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '1.1rem 0 0.4rem', color: 'var(--color-primary)' }}>
+    <h3 style={{ fontSize: '1.125rem', fontWeight: 600, margin: '1.1rem 0 0.4rem', color: 'var(--color-primary)' }}>
       {children}
     </h3>
   ),
   h3: ({ children }) => (
-    <h4 style={{ fontSize: '0.98rem', fontWeight: 600, margin: '0.85rem 0 0.35rem', color: 'var(--color-text-primary)' }}>
+    <h4 style={{ fontSize: '1rem', fontWeight: 600, margin: '0.85rem 0 0.35rem', color: 'var(--color-text-primary)' }}>
       {children}
     </h4>
   ),
   p: ({ children }) => (
-    <p style={{ marginBottom: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.75, fontSize: '0.94rem' }}>
+    <p style={{ marginBottom: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, fontSize: '1rem' }}>
       {children}
     </p>
   ),
   ul: ({ children }) => (
-    <ul style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'disc', color: 'var(--color-text-secondary)', fontSize: '0.94rem' }}>
+    <ul style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'disc', color: 'var(--color-text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'decimal', color: 'var(--color-text-secondary)', fontSize: '0.94rem' }}>
+    <ol style={{ margin: '0.5rem 0 1rem', paddingLeft: '1.25rem', listStyleType: 'decimal', color: 'var(--color-text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
       {children}
     </ol>
   ),
   li: ({ children }) => (
-    <li style={{ marginBottom: '0.4rem', lineHeight: 1.65 }}>
+    <li style={{ marginBottom: '0.4rem', lineHeight: 1.55 }}>
       {children}
     </li>
   ),
@@ -118,8 +118,8 @@ const COURSERA_MD = {
       background: 'rgba(217, 119, 6, 0.08)',
       borderLeft: '4px solid #d97706',
       color: 'var(--color-text-primary)',
-      fontSize: '0.92rem',
-      lineHeight: 1.65
+      fontSize: '0.95rem',
+      lineHeight: 1.6
     }}>
       {children}
     </blockquote>
@@ -862,7 +862,7 @@ export default function Interventions() {
             modules: prev.modules.map((m) => (m.module_number === modNum ? { ...m, status: 'in-progress' } : m)),
           };
         });
-      }).catch(() => {});
+      }).catch(() => { });
     }
   };
 
@@ -1079,11 +1079,11 @@ export default function Interventions() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <span
                           style={{
-                            fontSize: '0.76rem',
+                            fontSize: '0.75rem',
                             fontWeight: 700,
                             color: theme.color,
                             background: theme.bg,
-                            padding: '0.25rem 0.75rem',
+                            padding: '0.2rem 0.65rem',
                             borderRadius: 'var(--radius-full)',
                             border: `1px solid ${theme.border}`,
                           }}
@@ -1093,11 +1093,11 @@ export default function Interventions() {
 
                         <span
                           style={{
-                            fontSize: '0.74rem',
-                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
                             color: 'var(--color-primary)',
                             background: 'rgba(79, 70, 229, 0.08)',
-                            padding: '0.25rem 0.65rem',
+                            padding: '0.2rem 0.6rem',
                             borderRadius: 'var(--radius-full)',
                           }}
                         >
@@ -1105,23 +1105,23 @@ export default function Interventions() {
                         </span>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                         <Clock size={14} />
                         <span>{optionalEnhModule.estimated_minutes} min</span>
                       </div>
                     </div>
 
                     <div>
-                      <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.3 }}>
+                      <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.3 }}>
                         {optionalEnhModule.title}
                       </h2>
-                      <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)', margin: '0.45rem 0 0', lineHeight: 1.6 }}>
+                      <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)', margin: '0.4rem 0 0', lineHeight: 1.5 }}>
                         {optionalEnhModule.subtitle}
                       </p>
                     </div>
 
                     {optionalEnhModule.why_recommended && (
-                      <p style={{ fontSize: '0.86rem', color: 'var(--color-text-muted)', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0 }}>
                         {optionalEnhModule.why_recommended}
                       </p>
                     )}
@@ -1129,15 +1129,15 @@ export default function Interventions() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
                       <div>
                         {isCompleted ? (
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-success)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-success)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                             <CheckCircle2 size={16} /> Completed
                           </span>
                         ) : isInProgress ? (
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-warning)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-warning)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                             In Progress
                           </span>
                         ) : (
-                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>
                             Not Started
                           </span>
                         )}
@@ -1152,8 +1152,8 @@ export default function Interventions() {
                         {isCompleted
                           ? 'Review Enhancement Module'
                           : isInProgress
-                          ? 'Continue Enhancement Module'
-                          : 'Start Enhancement Module'}
+                            ? 'Continue Enhancement Module'
+                            : 'Start Enhancement Module'}
                       </Button>
                     </div>
                   </div>
@@ -1182,12 +1182,12 @@ export default function Interventions() {
                         background: 'var(--color-surface)',
                         border: '1px solid var(--color-border)',
                         borderRadius: 'var(--radius-xl)',
-                        padding: '1.4rem',
+                        padding: '1.35rem',
                         cursor: isLocked ? 'not-allowed' : 'pointer',
                         opacity: isLocked ? 0.6 : 1,
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '1rem',
+                        gap: '0.85rem',
                         boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                         transition: 'var(--transition)',
                       }}
@@ -1195,7 +1195,7 @@ export default function Interventions() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span
                           style={{
-                            fontSize: '0.74rem',
+                            fontSize: '0.75rem',
                             fontWeight: 700,
                             color: theme.color,
                             background: theme.bg,
@@ -1213,10 +1213,10 @@ export default function Interventions() {
                       </div>
 
                       <div>
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.35 }}>
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.35 }}>
                           {m.title}
                         </h3>
-                        <p style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', margin: '0.4rem 0 0', lineHeight: 1.5 }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', margin: '0.35rem 0 0', lineHeight: 1.5 }}>
                           {m.subtitle}
                         </p>
                       </div>
@@ -1233,26 +1233,26 @@ export default function Interventions() {
                       >
                         <div>
                           {isCompleted ? (
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: 4 }}>
                               <CheckCircle2 size={14} /> Completed
                             </span>
                           ) : isLocked ? (
-                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
                               <Lock size={13} /> Locked
                             </span>
                           ) : isInProgress ? (
-                            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-warning)' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-warning)' }}>
                               In Progress
                             </span>
                           ) : (
-                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-muted)' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>
                               Not Started
                             </span>
                           )}
                         </div>
 
                         {!isLocked && (
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: theme.color, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: theme.color, display: 'flex', alignItems: 'center', gap: 4 }}>
                             {isCompleted ? 'Review' : isInProgress ? 'Continue' : 'Start'} <ChevronRight size={14} />
                           </span>
                         )}

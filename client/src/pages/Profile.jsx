@@ -424,7 +424,7 @@ export default function Profile() {
             {/* Profile Identity Text */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
                   {user?.full_name || 'Enrolled Student'}
                 </h1>
                 <Badge variant="primary">{user?.role === 'admin' ? 'Campus Admin' : 'Student'}</Badge>
@@ -433,7 +433,7 @@ export default function Profile() {
                 )}
               </div>
 
-              <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.86rem', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>
+              <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.875rem', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <Mail size={14} color="var(--color-primary)" />
                   {user?.email}
@@ -523,8 +523,8 @@ export default function Profile() {
             border: 'none',
             background: activeTab === 'personal' ? 'var(--color-surface)' : 'transparent',
             color: activeTab === 'personal' ? 'var(--color-primary)' : 'var(--color-text-muted)',
-            fontWeight: activeTab === 'personal' ? 700 : 500,
-            fontSize: '0.92rem',
+            fontWeight: activeTab === 'personal' ? 600 : 500,
+            fontSize: '0.875rem',
             cursor: 'pointer',
             borderBottom: activeTab === 'personal' ? '2px solid var(--color-primary)' : '2px solid transparent',
             transition: 'all 0.18s ease',
@@ -547,8 +547,8 @@ export default function Profile() {
             border: 'none',
             background: activeTab === 'academic' ? 'var(--color-surface)' : 'transparent',
             color: activeTab === 'academic' ? 'var(--color-primary)' : 'var(--color-text-muted)',
-            fontWeight: activeTab === 'academic' ? 700 : 500,
-            fontSize: '0.92rem',
+            fontWeight: activeTab === 'academic' ? 600 : 500,
+            fontSize: '0.875rem',
             cursor: 'pointer',
             borderBottom: activeTab === 'academic' ? '2px solid var(--color-primary)' : '2px solid transparent',
             transition: 'all 0.18s ease',
@@ -571,8 +571,8 @@ export default function Profile() {
             border: 'none',
             background: activeTab === 'security' ? 'var(--color-surface)' : 'transparent',
             color: activeTab === 'security' ? 'var(--color-primary)' : 'var(--color-text-muted)',
-            fontWeight: activeTab === 'security' ? 700 : 500,
-            fontSize: '0.92rem',
+            fontWeight: activeTab === 'security' ? 600 : 500,
+            fontSize: '0.875rem',
             cursor: 'pointer',
             borderBottom: activeTab === 'security' ? '2px solid var(--color-primary)' : '2px solid transparent',
             transition: 'all 0.18s ease',
@@ -699,7 +699,7 @@ export default function Profile() {
                         Full Name
                       </span>
                     </div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       {user?.full_name || 'Not provided'}
                     </div>
                   </div>
@@ -709,7 +709,7 @@ export default function Profile() {
                     <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, marginBottom: '0.4rem' }}>
                       Student CMS Number
                     </div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>
                       {user?.cms_number || 'N/A'}
                     </div>
                   </div>
@@ -752,8 +752,8 @@ export default function Profile() {
                     </div>
                     <div
                       style={{
-                        fontSize: '1.02rem',
-                        fontWeight: 600,
+                        fontSize: '1rem',
+                        fontWeight: 500,
                         color: 'var(--color-text-primary)',
                         wordBreak: 'break-word',
                         overflowWrap: 'anywhere',

@@ -53,6 +53,22 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
+  /* ── Fluid Typography Scale ── */
+  --fs-xs: clamp(0.7rem, 0.2vw + 0.65rem, 0.75rem);       /* ~11px - 12px */
+  --fs-sm: clamp(0.8rem, 0.25vw + 0.75rem, 0.875rem);    /* ~13px - 14px */
+  --fs-base: clamp(0.9rem, 0.3vw + 0.825rem, 1rem);      /* ~14.5px - 16px */
+  --fs-lg: clamp(1.05rem, 0.35vw + 0.95rem, 1.15rem);   /* ~17px - 18.5px */
+  --fs-xl: clamp(1.2rem, 0.45vw + 1.1rem, 1.35rem);     /* ~19px - 21.5px */
+  --fs-2xl: clamp(1.35rem, 0.6vw + 1.2rem, 1.6rem);     /* ~21.5px - 25.5px */
+
+  /* ── Fluid Spacing Scale ── */
+  --space-xs: clamp(0.25rem, 0.15vw + 0.2rem, 0.375rem);
+  --space-sm: clamp(0.5rem, 0.25vw + 0.45rem, 0.75rem);
+  --space-md: clamp(0.75rem, 0.5vw + 0.65rem, 1rem);
+  --space-lg: clamp(1rem, 0.75vw + 0.85rem, 1.5rem);
+  --space-xl: clamp(1.25rem, 1vw + 1rem, 2rem);
+  --space-2xl: clamp(1.5rem, 1.5vw + 1.25rem, 2.5rem);
+
   /* ── Geometry ── */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -81,6 +97,43 @@
   padding: 0;
 }
 
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+/* Ensure flex/grid children containing text can shrink properly without overflowing */
+.card,
+.stat-card,
+.chart-card,
+.intervention-card,
+.assessment-card,
+.scenario-card,
+.assessment-split-scenario-card,
+.scenario-right-content-pane,
+.scenario-left-illustration-pane,
+.scenario-text-column,
+.scenario-content,
+.assessment-header,
+.assessment-header-content,
+.assessment-sticky-header,
+.assessment-sticky-header-inner,
+.question-card,
+.assessment-question-card-elevated,
+.question-content,
+.page-content,
+.sidebar-main,
+.dashboard-header,
+.stats-grid > *,
+.charts-grid > *,
+.intervention-grid > *,
+.results-tpb-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
 html,
 body,
 #root {
@@ -93,19 +146,11 @@ body,
 
 html {
   scroll-behavior: smooth;
-  font-size: 80%; /* 12.8px base (~20% global reduction across all rem units) */
+  font-size: clamp(14px, 0.55vw + 10.5px, 16px);
 }
 
-@media (min-width: 1600px) {
-  html {
-    font-size: 85%;
-  }
-}
-
-@media (max-width: 480px) {
-  html {
-    font-size: 78%;
-  }
+h1 {
+  font-size: var(--fs-2xl);
 }
 
 body {
@@ -113,8 +158,8 @@ body {
   background-color: #ffffff;
   color: var(--color-text);
   min-height: 100vh;
-  line-height: 1.55;
-  font-size: 0.95rem;
+  line-height: 1.5;
+  font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -173,13 +218,13 @@ body {
   animation: fadeInPage 0.25s ease-out;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1280px) {
   .page-content {
     padding: 1.5rem;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1536px) {
   .page-content {
     padding: 2rem;
   }
@@ -364,6 +409,11 @@ h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+p {
+  overflow-wrap: anywhere;
 }
 
 .dashboard-header {
@@ -372,7 +422,7 @@ h6 {
 }
 
 .dashboard-greeting {
-  font-size: 1.85rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   letter-spacing: -0.03em;
   display: flex;
@@ -450,6 +500,7 @@ h6 {
 }
 
 /* ── Button System ─────────────────────────────────────────────────────────── */
+button,
 .btn {
   display: inline-flex;
   align-items: center;
@@ -464,7 +515,9 @@ h6 {
   cursor: pointer;
   border: 1px solid transparent;
   transition: var(--transition);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .btn:disabled {
@@ -554,7 +607,8 @@ h6 {
   font-weight: 700;
   letter-spacing: 0.01em;
   border-radius: var(--radius-lg);
-  min-width: 260px;
+  min-width: min(100%, 260px);
+  max-width: 100%;
 }
 
 /* ── Badges ────────────────────────────────────────────────────────────────── */
@@ -567,6 +621,8 @@ h6 {
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .badge-primary {
@@ -662,7 +718,7 @@ h6 {
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -830,7 +886,7 @@ h6 {
 /* ── Charts Grid ───────────────────────────────────────────────────────────── */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -1221,7 +1277,7 @@ select.form-input option {
 /* ── Learning Modules (Interventions) ──────────────────────────────────────── */
 .intervention-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
 }
 
@@ -1904,7 +1960,7 @@ select.form-input option {
 
 .auth-hero-title {
   font-family: var(--auth-font-heading);
-  font-size: clamp(1.75rem, 3vw, 2.3rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.03em;
@@ -2391,7 +2447,7 @@ select.form-input option {
   }
 
   .auth-hero-title {
-    font-size: 2.1rem;
+    font-size: var(--fs-xl);
   }
 }
 
@@ -2839,7 +2895,7 @@ select.form-input option {
 
 /* Typography Inside Card */
 .onb-heading {
-  font-size: clamp(2.1rem, 3.2vw, 2.75rem); /* text-4xl/5xl */
+  font-size: var(--fs-2xl);
   font-weight: 800;
   line-height: 1.2;
   color: var(--color-text-primary);
@@ -3578,6 +3634,14 @@ select.form-input option {
   min-width: 0;
 }
 
+@media (max-width: 1280px) {
+  .results-page-layout,
+  .assessment-page-root,
+  .assessment-page-container {
+    gap: 1rem;
+  }
+}
+
 .w-full {
   width: 100%;
 }
@@ -3615,7 +3679,7 @@ select.form-input option {
 }
 
 .results-hero-title {
-  font-size: clamp(1.4rem, 2.8vw, 1.85rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--color-text-primary);
   margin: 0.35rem 0 0.25rem;
@@ -3624,7 +3688,7 @@ select.form-input option {
 }
 
 .results-hero-subtitle {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0;
@@ -3658,7 +3722,7 @@ select.form-input option {
 }
 
 .results-hero-score-num {
-  font-size: 1.85rem;
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--color-primary);
   font-family: var(--font-mono);
@@ -3667,7 +3731,7 @@ select.form-input option {
 }
 
 .results-hero-score-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -3685,13 +3749,13 @@ select.form-input option {
 
 .results-hero-readiness {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
 }
 
 .results-hero-interpretation {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0;
@@ -3707,9 +3771,9 @@ select.form-input option {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.4rem 0.85rem;
+  padding: 0.35rem 0.75rem;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -3722,14 +3786,14 @@ select.form-input option {
 }
 
 .results-section-title {
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 600;
   color: var(--color-text-primary);
   margin: 0 0 0.2rem;
 }
 
 .results-section-desc {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -3755,8 +3819,52 @@ select.form-input option {
 .assessment-stepper-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 0.65rem;
+  margin-bottom: 0;
+}
+
+/* ── Situation Tab Cards (Compact ~56px) ─────────────────────────────────── */
+.situation-tab-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  min-height: 56px;
+  max-height: 56px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  outline: none;
+  gap: 0.65rem;
+  box-sizing: border-box;
+}
+
+.situation-tab-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transform: translateY(-1px);
+}
+
+.situation-tab-card.active {
+  border-color: var(--color-primary);
+  border-width: 2px;
+  background: rgba(79, 70, 229, 0.05);
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.12);
+}
+
+.situation-tab-card.complete {
+  border-color: rgba(5, 150, 105, 0.5);
+  background: rgba(5, 150, 105, 0.03);
+}
+
+.situation-tab-card.active.complete {
+  border-color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.05);
 }
 
 @media (max-width: 768px) {
@@ -3808,7 +3916,7 @@ select.form-input option {
 
 .results-card-title {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -3816,8 +3924,8 @@ select.form-input option {
 }
 
 .results-card-status-badge {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   padding: 0.18rem 0.55rem;
   border-radius: var(--radius-full);
   white-space: nowrap;
@@ -3859,7 +3967,7 @@ select.form-input option {
 }
 
 .results-card-level {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   font-weight: 600;
 }
@@ -3880,9 +3988,9 @@ select.form-input option {
 }
 
 .results-card-summary {
-  font-size: 0.83rem;
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
-  line-height: 1.45;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -4254,7 +4362,7 @@ select.form-input option {
 }
 
 .hero-title {
-  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   line-height: 1.18;
   letter-spacing: -0.03em;
@@ -4755,7 +4863,7 @@ select.form-input option {
 }
 
 .section-title {
-  font-size: clamp(1.65rem, 2.6vw, 2.15rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: var(--color-text-primary);
   letter-spacing: -0.025em;
@@ -5001,7 +5109,7 @@ select.form-input option {
 }
 
 .cta-headline {
-  font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.025em;
@@ -5355,7 +5463,7 @@ select.form-input option {
 
 @media (max-width: 640px) {
   .hero-title {
-    font-size: 2rem;
+    font-size: var(--fs-xl);
     line-height: 1.22;
   }
 
@@ -5583,13 +5691,13 @@ select.form-input option {
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1280px) {
   .page-content.sidebar-main {
     padding: 1.5rem;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1536px) {
   .page-content.sidebar-main {
     padding: 2rem;
   }
@@ -5963,7 +6071,7 @@ select.form-input option {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   :root {
     --sidebar-width: 200px;
   }
@@ -6334,7 +6442,7 @@ select.form-input option {
 }
 
 .digital-values-title {
-  font-size: clamp(1.65rem, 2.8vw, 2.2rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--color-text-primary);
@@ -6631,7 +6739,7 @@ select.form-input option {
 /* Arabic Verse (Lavender/Cyan Blue glow, Generous Line-Height) */
 .cybermirror-arabic-text {
   font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Noto Naskh Arabic', serif;
-  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+  font-size: var(--fs-2xl);
   line-height: 1.85;
   color: #e0e7ff;
   margin-bottom: 0.85rem;
@@ -6641,7 +6749,7 @@ select.form-input option {
 
 /* English Translation (Large Bold Text, Ice White / Light Indigo, ~2rem) */
 .cybermirror-english-quote {
-  font-size: clamp(1.35rem, 2.7vw, 2.1rem);
+  font-size: var(--fs-xl);
   font-weight: 700;
   line-height: 1.42;
   color: #ffffff;
@@ -6911,7 +7019,7 @@ select.form-input option {
 }
 
 .about-title {
-  font-size: clamp(1.75rem, 3vw, 2.2rem);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   color: #0f172a;
   line-height: 1.2;
@@ -7081,7 +7189,7 @@ select.form-input option {
   align-items: center;
   gap: 0.55rem;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-primary, #0f172a);
 }
 
@@ -7115,7 +7223,7 @@ select.form-input option {
   color: var(--color-text-secondary);
   background: rgba(241, 245, 249, 0.85);
   border: 1px solid rgba(226, 232, 240, 0.9);
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-full);
 }
 
@@ -7187,8 +7295,8 @@ select.form-input option {
 }
 
 .top-header-user-name {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--color-text-primary);
   line-height: 1.2;
 }
@@ -7256,8 +7364,8 @@ select.form-input option {
 }
 
 .clickup-dropdown-name {
-  font-size: 0.92rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
@@ -7265,7 +7373,7 @@ select.form-input option {
 }
 
 .clickup-dropdown-email {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: #64748b;
   white-space: nowrap;
   overflow: hidden;
@@ -7351,70 +7459,886 @@ select.form-input option {
   background: rgba(79, 70, 229, 0.05);
 }
 
-/* ── Interactive Scenario-Based Assessment Layout ────────────────────────── */
-.scenario-assessment-layout {
+/* ── Assessment Page Header Banner ────────────────────────────────────────── */
+.assessment-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.4rem 1.75rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle left accent stripe */
+.assessment-header-banner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--color-primary) 0%, rgba(99,102,241,0.3) 100%);
+  border-radius: 4px 0 0 4px;
+}
+
+.assessment-header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.assessment-header-title {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 0.3rem 0;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.assessment-header-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.55;
+  max-width: 560px;
+  font-weight: 400;
+}
+
+.assessment-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.assessment-progress-ring-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(79,70,229,0.08);
+  border: 3px solid rgba(79,70,229,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assessment-progress-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.assessment-progress-num {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  font-family: var(--font-mono, monospace);
+}
+
+.assessment-progress-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .assessment-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .assessment-header-right {
+    flex-direction: row;
+    gap: 0.75rem;
+    align-items: center;
+  }
+}
+
+/* ── Interactive Scenario-Based Assessment Layout (Modernized & Compact) ── */
+.assessment-modern-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-bottom: 3.5rem;
+}
+
+.assessment-active-situation-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* 1. Merged Compact Sticky Top Assessment Header */
+.assessment-sticky-header {
+  position: sticky;
+  top: 6px;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.4rem 0.95rem;
+  box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.05);
+}
+
+.assessment-header-content-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.assessment-header-title-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.assessment-header-heading-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.assessment-main-page-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.assessment-situation-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+  padding: 0.12rem 0.5rem;
+  border-radius: 99px;
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.assessment-page-subtitle {
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--color-text-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 580px;
+}
+
+.assessment-header-progress-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 220px;
+  max-width: 250px;
+  flex-shrink: 0;
+}
+
+.assessment-progress-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.assessment-progress-label {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.assessment-progress-label strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.assessment-header-progress-track {
+  height: 5px;
+  width: 100%;
+  background: var(--color-surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.assessment-header-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 99px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.assessment-time-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.assessment-user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.2);
+  border: 1.5px solid #ffffff;
+  flex-shrink: 0;
+}
+
+/* 2. Situation Stepper Styles (single row, 56px tall, inline progress) */
+.situation-tab-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.situation-tab-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.situation-tab-card .situation-tab-number {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.situation-tab-card.active .situation-tab-number {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.situation-tab-card.complete .situation-tab-number {
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.situation-tab-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.situation-tab-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.situation-tab-card.active .situation-tab-title {
+  color: var(--color-primary);
+}
+
+.situation-tab-subtitle {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.situation-tab-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.situation-badge-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-success);
+  background: rgba(5, 150, 105, 0.1);
+  border-radius: 99px;
+  padding: 0.1rem 0.45rem;
+}
+
+.situation-badge-active {
+  display: inline-flex;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 99px;
+  padding: 0.1rem 0.45rem;
+}
+
+.situation-badge-pending {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.situation-tab-progress-track {
+  width: 58px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.situation-tab-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.situation-tab-card.complete .situation-tab-progress-fill {
+  background: var(--color-success);
+}
+
+/* 3. Split Scenario Card (Compact Side-by-Side) */
+.assessment-split-scenario-card {
+  background: var(--color-surface);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 3px 14px -2px rgba(15, 23, 42, 0.04);
+  padding: 0.65rem 0.95rem;
   display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 1.75rem;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1rem;
   align-items: start;
 }
 
-.scenario-image-panel {
-  position: sticky;
-  top: 1.5rem;
-  background: var(--color-surface);
-  border-radius: 20px;
-  border: 1px solid rgba(99, 102, 241, 0.16);
-  padding: 1.75rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.scenario-illustration-box {
-  background: linear-gradient(180deg, rgba(79, 70, 229, 0.03) 0%, rgba(79, 70, 229, 0.07) 100%);
-  border-radius: 14px;
-  border: 1px solid rgba(99, 102, 241, 0.12);
-  padding: 1rem;
+.scenario-left-illustration-pane {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  align-self: start;
+  width: 240px;
+  box-sizing: border-box;
 }
 
-.scenario-narrative-text {
-  background: var(--color-surface-2);
-  border-radius: 14px;
-  border: 1px solid var(--color-border);
-  padding: 1.15rem 1.25rem;
+.scenario-left-illustration-pane img {
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
-.scenario-questions-tracker {
+@media (max-width: 1280px) {
+  .assessment-split-scenario-card {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  .scenario-left-illustration-pane {
+    width: 190px;
+  }
+  .scenario-left-illustration-pane img {
+    max-height: 145px;
+  }
+}
+
+.scenario-right-content-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scenario-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.scenario-content-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.scenario-description-container {
+  max-width: 82ch;
+}
+
+.scenario-description-para {
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.scenario-description-para:last-child {
+  margin-bottom: 0;
+}
+
+/* 4. Question Area Elevated Card */
+.assessment-question-card-elevated {
   background: var(--color-surface);
   border-radius: 14px;
   border: 1px solid var(--color-border);
-  padding: 1rem 1.15rem;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.05);
+  padding: 0.75rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.scenario-option-button:hover {
-  background: rgba(79, 70, 229, 0.04) !important;
-  border-color: rgba(99, 102, 241, 0.35) !important;
+.question-card-top-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.question-card-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.question-num-indicator {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.question-construct-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.question-card-meta-right {
+  display: flex;
+  align-items: center;
+}
+
+.assessment-question-text-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* Compact Question Connected Timeline Nodes inside card */
+.question-timeline-track-wrap.compact {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.15rem 0.35rem;
+  max-width: 280px;
+  flex: 1;
+}
+
+.question-timeline-track-wrap.compact .question-timeline-line-base {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: var(--color-border);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.question-timeline-track-wrap.compact .question-timeline-line-active {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+  transform: translateY(-50%);
+  z-index: 2;
+  transition: width 0.3s ease;
+}
+
+.question-timeline-track-wrap.compact .question-timeline-node-btn {
+  position: relative;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  outline: none;
+  padding: 0;
+}
+
+.question-timeline-track-wrap.compact .question-timeline-node-btn.completed {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.question-timeline-track-wrap.compact .question-timeline-node-btn.current {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+  transform: scale(1.1);
+}
+
+.question-timeline-track-wrap.compact .question-timeline-node-btn.has-error {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* 5. Compact Premium Answer Options */
+.assessment-options-vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.assessment-option-card-premium {
+  min-height: 40px;
+  padding: 0.42rem 0.85rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: left;
+  width: 100%;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.assessment-option-card-premium:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.02);
   transform: translateY(-1px);
+  box-shadow: 0 3px 10px -2px rgba(15, 23, 42, 0.05);
 }
 
-.scenario-option-button.selected {
-  background: rgba(79, 70, 229, 0.08) !important;
+.assessment-option-card-premium.selected {
   border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 1px var(--color-primary);
+  border-width: 2px !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
 }
 
-@media (max-width: 992px) {
-  .scenario-assessment-layout {
+.assessment-radio-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.assessment-option-card-premium.selected .assessment-radio-circle {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.assessment-option-letter-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.assessment-option-card-premium.selected .assessment-option-letter-badge {
+  background: rgba(99, 102, 241, 0.16);
+  color: var(--color-primary);
+}
+
+.assessment-option-text-body {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.assessment-option-card-premium.selected .assessment-option-text-body {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ── Sticky Bottom Footer Navigation ────────────── */
+.assessment-sticky-footer-bar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 45;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 0.9rem 1.6rem;
+  box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.assessment-next-btn-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0.75rem 1.65rem;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.32);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.assessment-next-btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.assessment-next-btn-gradient:active {
+  transform: translateY(0);
+}
+
+.assessment-review-link {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+}
+
+.assessment-review-link:hover {
+  opacity: 0.85;
+}
+
+/* Lightbox Modal */
+.scenario-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  cursor: zoom-out;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.scenario-lightbox-content {
+  position: relative;
+  max-width: 1150px;
+  width: 100%;
+  max-height: 92vh;
+  background: var(--color-surface);
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: default;
+}
+
+.scenario-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.scenario-lightbox-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.scenario-lightbox-close:hover {
+  background: var(--color-border);
+  color: var(--color-primary);
+}
+
+.scenario-lightbox-body {
+  padding: 1.25rem;
+  background: #0b0f19;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  min-height: 260px;
+}
+
+.scenario-lightbox-body img {
+  max-width: 100%;
+  max-height: calc(88vh - 75px);
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* ── Responsive breakpoints ─────────────────────── */
+@media (max-width: 900px) {
+  .assessment-split-scenario-card {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
-  .scenario-image-panel {
-    position: static;
+  .scenario-left-illustration-pane {
+    order: -1;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .scenario-left-illustration-pane img {
+    max-height: 150px;
+  }
+  .scenario-right-content-pane {
+    order: 1;
+  }
+  .assessment-header-content-wrap {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .assessment-modern-container {
+    gap: 1.25rem;
+  }
+  .assessment-main-page-title {
+    font-size: var(--fs-xl);
+  }
+  .scenario-content-title {
+    font-size: 20px;
+  }
+  .assessment-question-text-title {
+    font-size: 19px;
+  }
+  .assessment-sticky-footer-bar {
+    padding: 0.75rem 1rem;
+  }
+  .assessment-next-btn-gradient {
+    padding: 0.65rem 1.2rem;
+    font-size: 14px;
+  }
+  .question-timeline-track-wrap {
+    overflow-x: auto;
   }
 }
 

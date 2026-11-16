@@ -24,7 +24,7 @@ def build_svg_document(theme_title: str, scene_title: str, variant_num: int, p_c
     escaped_theme = escape_xml_text(theme_title)
     escaped_scene = escape_xml_text(scene_title)
     
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="{bg1}"/>
@@ -35,13 +35,13 @@ def build_svg_document(theme_title: str, scene_title: str, variant_num: int, p_c
       <stop offset="100%" stop-color="{s_color}"/>
     </linearGradient>
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
-      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.08"/>
     </filter>
     <filter id="cardShadow" x="-8%" y="-8%" width="116%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.12"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.10"/>
     </filter>
     <filter id="softGlow" x="-15%" y="-15%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="{p_color}" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="{p_color}" flood-opacity="0.18"/>
     </filter>
   </defs>
 
@@ -49,28 +49,28 @@ def build_svg_document(theme_title: str, scene_title: str, variant_num: int, p_c
   <rect width="800" height="500" rx="16" fill="url(#bgGrad)"/>
 
   <!-- Top Header Scene Pill -->
-  <g transform="translate(40, 24)">
-    <rect x="0" y="0" width="360" height="38" rx="19" fill="#ffffff" stroke="{p_color}" stroke-width="1.5" filter="url(#shadow)"/>
-    <circle cx="20" cy="19" r="11" fill="{p_color}" fill-opacity="0.14"/>
-    <circle cx="20" cy="19" r="4.5" fill="{p_color}"/>
-    <text x="40" y="24" font-family="system-ui, -apple-system, sans-serif" font-size="12.5" font-weight="800" fill="{p_color}">{escaped_theme}</text>
+  <g transform="translate(35, 18)">
+    <rect x="0" y="0" width="380" height="42" rx="21" fill="#ffffff" stroke="{p_color}" stroke-width="1.8" filter="url(#shadow)"/>
+    <circle cx="21" cy="21" r="12" fill="{p_color}" fill-opacity="0.14"/>
+    <circle cx="21" cy="21" r="5" fill="{p_color}"/>
+    <text x="42" y="27" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="{p_color}">{escaped_theme}</text>
   </g>
 
   <!-- Top Right Variant Counter Badge -->
-  <g transform="translate(630, 26)">
-    <rect x="0" y="0" width="130" height="34" rx="17" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#shadow)"/>
-    <circle cx="18" cy="17" r="5" fill="{s_color}"/>
-    <text x="32" y="22" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="700" fill="#475569">Scene {variant_num} of 6</text>
+  <g transform="translate(615, 20)">
+    <rect x="0" y="0" width="150" height="38" rx="19" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)"/>
+    <circle cx="20" cy="19" r="6" fill="{s_color}"/>
+    <text x="35" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="14.5" font-weight="700" fill="#334155">Scene {variant_num} of 6</text>
   </g>
 
   <!-- Core Scene Illustration Graphics -->
   {scene_elements}
 
   <!-- Bottom Context Banner -->
-  <g transform="translate(50, 440)">
-    <rect x="0" y="0" width="700" height="36" rx="10" fill="#ffffff" fill-opacity="0.95" stroke="#e2e8f0" stroke-width="1.2" filter="url(#shadow)"/>
-    <rect x="12" y="9" width="4.5" height="18" rx="2" fill="url(#accentGrad)"/>
-    <text x="26" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#334155">
+  <g transform="translate(40, 435)">
+    <rect x="0" y="0" width="720" height="44" rx="12" fill="#ffffff" fill-opacity="0.95" stroke="#cbd5e1" stroke-width="1.5" filter="url(#shadow)"/>
+    <rect x="14" y="12" width="5" height="20" rx="2.5" fill="url(#accentGrad)"/>
+    <text x="30" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#1e293b">
       Scenario Illustration: {escaped_scene}
     </text>
   </g>
@@ -259,7 +259,7 @@ def get_mockery_scene(variant: int) -> tuple:
         <circle cx="360" cy="247" r="4" fill="#ef4444"/>
         <circle cx="390" cy="247" r="4" fill="#3b82f6"/>
         <path d="M355 230 Q350 200 365 180 Q355 160 370 140" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,3"/>
-        <text x="390" y="195" font-family="sans-serif" font-size="11" font-weight="700" fill="#ef4444">BURNED OUT!</text>
+        <text x="370" y="195" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#ef4444">BURNED OUT!</text>
 
         <!-- Mocking Partner 1 Pointing & Laughing -->
         <g transform="translate(480, 140)">
@@ -270,8 +270,8 @@ def get_mockery_scene(variant: int) -> tuple:
           <line x1="10" y1="70" x2="-35" y2="90" stroke="#fed7aa" stroke-width="8" stroke-linecap="round"/>
           <circle cx="-37" cy="90" r="4" fill="#fed7aa"/>
           <!-- Laughing face text bubble -->
-          <rect x="35" y="-10" width="75" height="30" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-          <text x="72" y="10" font-family="sans-serif" font-size="11" text-anchor="middle" font-weight="700" fill="{s}">"Clueless! 😂"</text>
+          <rect x="30" y="-12" width="95" height="34" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="77" y="11" font-family="system-ui, -apple-system, sans-serif" font-size="13.5" text-anchor="middle" font-weight="700" fill="{s}">"Clueless! 😂"</text>
         </g>
 
         <!-- Humiliated Target Student Looking Away -->
