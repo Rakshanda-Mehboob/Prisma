@@ -7794,33 +7794,6 @@ select.form-input option {
   justify-content: space-between;
   gap: 1rem;
 }
-
-.assessment-next-btn-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  color: #ffffff;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 0.75rem 1.65rem;
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.32);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  outline: none;
-}
-
-.assessment-next-btn-gradient:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-}
-
-.assessment-next-btn-gradient:active {
-  transform: translateY(0);
-}
-
 .assessment-review-link {
   background: transparent;
   border: none;
@@ -7910,10 +7883,6 @@ select.form-input option {
   }
   .assessment-sticky-footer-bar {
     padding: 0.75rem 1rem;
-  }
-  .assessment-next-btn-gradient {
-    padding: 0.65rem 1.2rem;
-    font-size: 0.9rem;
   }
   .question-timeline-track-wrap {
     overflow-x: auto;

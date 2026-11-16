@@ -1726,20 +1726,17 @@ export default function Assessment() {
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  className="assessment-next-btn-gradient"
+                <Button
+                  variant="primary"
                   onClick={handleNextQuestion}
+                  iconRight={isLastQuestionInScenario && isLastScenario ? <Send size={15} /> : <ChevronRight size={16} />}
                 >
-                  <span>
-                    {isLastQuestionInScenario
-                      ? isLastScenario
-                        ? 'Review & Submit'
-                        : `Next Situation (${currentScenarioIdx + 2} of ${scenarios.length})`
-                      : 'Next Question'}
-                  </span>
-                  {isLastQuestionInScenario && isLastScenario ? <Send size={15} /> : <ChevronRight size={16} />}
-                </button>
+                  {isLastQuestionInScenario
+                    ? isLastScenario
+                      ? 'Review & Submit'
+                      : `Next Situation (${currentScenarioIdx + 2} of ${scenarios.length})`
+                    : 'Next Question'}
+                </Button>
               </div>
 
             </div>
