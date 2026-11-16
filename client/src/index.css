@@ -86,6 +86,10 @@
 
   --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Sidebar dimensions ── */
+  --sidebar-width: 210px;
+  --sidebar-collapsed-width: 58px;
 }
 
 /* ── Reset & Base ──────────────────────────────────────────────────────────── */
@@ -1159,201 +1163,6 @@ select.form-input option {
   color: var(--color-warning);
 }
 
-/* ── Assessment Scenario Flow ──────────────────────────────────────────────── */
-.assessment-container {
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.scenario-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  margin-bottom: 1.75rem;
-  position: relative;
-}
-
-.scenario-top {
-  background: var(--color-surface-2);
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.scenario-construct-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-full);
-  font-size: 0.74rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: var(--font-mono);
-}
-
-.scenario-text {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--color-text);
-  line-height: 1.65;
-}
-
-.scenario-bottom {
-  padding: 1.35rem 1.5rem;
-}
-
-.scenario-question {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-bottom: 1.15rem;
-  line-height: 1.5;
-}
-
-.options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.option-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.95rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
-  text-align: left;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  transition: var(--transition);
-  outline: none;
-}
-
-.option-btn:hover {
-  border-color: rgba(79, 70, 229, 0.28);
-  background: rgba(79, 70, 229, 0.03);
-  transform: translateX(3px);
-}
-
-.option-btn.selected {
-  border-color: var(--color-primary);
-  background: rgba(79, 70, 229, 0.05);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.10);
-}
-
-.option-radio {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--color-text-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: var(--transition);
-}
-
-.option-btn.selected .option-radio {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-}
-
-.option-btn.selected .option-radio::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-/* ── Learning Modules (Interventions) ──────────────────────────────────────── */
-.intervention-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 1.5rem;
-}
-
-.intervention-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.intervention-card:hover {
-  border-color: var(--color-border-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
-}
-
-.intervention-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.intervention-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--color-text);
-}
-
-.intervention-type-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.intervention-body {
-  flex: 1;
-  margin-bottom: 1.25rem;
-}
-
-.intervention-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.8rem;
-  color: var(--color-text-subtle);
-}
-
-.intervention-preview {
-  font-size: 0.86rem;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-}
-
-.intervention-footer {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-}
-
 /* Shared Page Container: full-width next to sidebar, left-aligned, no centering */
 .page-container {
   width: 100%;
@@ -1879,6 +1688,7 @@ select.form-input option {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   font-family: var(--font-sans);
 }
 
@@ -3270,15 +3080,6 @@ select.form-input option {
   cursor: not-allowed;
 }
 
-/* Fallback centered auth card */
-.auth-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 180px);
-  padding: 2rem 1rem;
-}
-
 .auth-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -3548,11 +3349,6 @@ select.form-input option {
 }
 
 /* ── Digital Values Reflection Carousel ───────────────────────────────────── */
-.digital-values-section {
-  position: relative;
-  width: 100%;
-}
-
 .digital-values-card {
   position: relative;
   background: var(--color-surface);
@@ -3565,11 +3361,6 @@ select.form-input option {
 .digital-values-card:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
-}
-
-.digital-values-tab-btn {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: var(--font-sans);
 }
 
 .digital-values-tab-btn:hover:not([aria-selected="true"]) {
@@ -3828,10 +3619,9 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
-  min-height: 56px;
-  max-height: 56px;
-  padding: 0.45rem 0.85rem;
+  min-height: 58px;
+  height: auto;
+  padding: 0.6rem 0.95rem;
   border-radius: 12px;
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
@@ -3840,7 +3630,7 @@ select.form-input option {
   transition: all 0.18s ease;
   box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   outline: none;
-  gap: 0.65rem;
+  gap: 0.75rem;
   box-sizing: border-box;
 }
 
@@ -4082,10 +3872,6 @@ select.form-input option {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
-  }
-
-  .results-tpb-grid {
-    grid-template-columns: 1fr;
   }
 
   .results-actions-grid {
@@ -4471,168 +4257,6 @@ select.form-input option {
   border-radius: var(--radius-xl);
   box-shadow: 0 20px 45px -15px rgba(24, 24, 38, 0.12), 0 0 0 1px rgba(99, 102, 241, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Layer A: Scenario Card */
-.scenario-card {
-  padding: 1.45rem;
-  border: 1px solid rgba(99, 102, 241, 0.16);
-  animation: heroFloat 8s ease-in-out infinite;
-}
-
-@keyframes heroFloat {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.scenario-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.scenario-header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.scenario-live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-success);
-  box-shadow: 0 0 8px rgba(5, 150, 105, 0.6);
-  animation: pulseDot 2s infinite;
-}
-
-@keyframes pulseDot {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.4;
-    transform: scale(0.85);
-  }
-}
-
-.scenario-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.scenario-module-tag {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  background: var(--color-surface-2);
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-sm);
-}
-
-.scenario-question-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  background: rgba(99, 102, 241, 0.04);
-  border: 1px solid rgba(99, 102, 241, 0.12);
-  border-radius: var(--radius-md);
-  padding: 0.95rem;
-  margin-bottom: 1.15rem;
-}
-
-.scenario-prompt-icon {
-  color: var(--color-primary);
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.scenario-question {
-  font-size: 0.86rem;
-  color: var(--color-text-primary);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.scenario-quote {
-  font-weight: 600;
-  color: var(--color-primary);
-  font-style: italic;
-  display: inline-block;
-  margin: 0.2rem 0;
-}
-
-.scenario-options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.scenario-option {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-size: 0.82rem;
-  color: var(--color-text-secondary);
-  transition: var(--transition);
-}
-
-.scenario-option.active {
-  border-color: rgba(99, 102, 241, 0.35);
-  background: rgba(99, 102, 241, 0.06);
-  color: var(--color-text-primary);
-  font-weight: 500;
-}
-
-.option-radio {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-border);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.option-radio.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-.option-text {
-  flex: 1;
-}
-
-.option-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-success);
-  background: rgba(5, 150, 105, 0.1);
-  padding: 0.15rem 0.45rem;
-  border-radius: var(--radius-full);
 }
 
 /* Layer B: Floating Score Ring Card */
@@ -5673,11 +5297,6 @@ select.form-input option {
 }
 
 /* ── Sidebar Layout ─────────────────────────────────────────────────────────── */
-:root {
-  --sidebar-width: 210px;
-  --sidebar-collapsed-width: 58px;
-}
-
 .page-content.sidebar-main {
   max-width: none;
   margin: 0;
@@ -6473,6 +6092,7 @@ select.form-input option {
   padding: 0.45rem 0.95rem;
   font-size: 0.82rem;
   font-weight: 600;
+  font-family: var(--font-sans);
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
@@ -7542,14 +7162,6 @@ select.form-input option {
   font-family: var(--font-mono, monospace);
 }
 
-.assessment-progress-label {
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-}
-
 @media (max-width: 640px) {
   .assessment-header-banner {
     flex-direction: column;
@@ -7570,27 +7182,27 @@ select.form-input option {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  padding-bottom: 3.5rem;
+  gap: 1.15rem;
+  padding-bottom: 2.5rem;
 }
 
 .assessment-active-situation-wrap {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 1.15rem;
 }
 
 /* 1. Merged Compact Sticky Top Assessment Header */
 .assessment-sticky-header {
   position: sticky;
-  top: 6px;
+  top: 8px;
   z-index: 50;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 0.4rem 0.95rem;
+  border-radius: 14px;
+  padding: 0.65rem 1.15rem;
   box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.05);
 }
 
@@ -7605,7 +7217,7 @@ select.form-input option {
 .assessment-header-title-pane {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.15rem;
   min-width: 0;
   flex: 1;
 }
@@ -7619,12 +7231,12 @@ select.form-input option {
 }
 
 .assessment-main-page-title {
-  font-size: 1.02rem;
+  font-size: 1.12rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
   white-space: nowrap;
 }
 
@@ -7641,8 +7253,8 @@ select.form-input option {
 }
 
 .assessment-page-subtitle {
-  font-size: 11.5px;
-  line-height: 1.3;
+  font-size: 12.5px;
+  line-height: 1.35;
   color: var(--color-text-muted);
   margin: 0;
   white-space: nowrap;
@@ -7669,6 +7281,9 @@ select.form-input option {
 
 .assessment-progress-label {
   font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
@@ -7846,76 +7461,90 @@ select.form-input option {
 /* 3. Split Scenario Card (Compact Side-by-Side) */
 .assessment-split-scenario-card {
   background: var(--color-surface);
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid var(--color-border);
-  box-shadow: 0 3px 14px -2px rgba(15, 23, 42, 0.04);
-  padding: 0.65rem 0.95rem;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  padding: 1.2rem 1.4rem;
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 1.35rem;
   align-items: start;
 }
 
 .scenario-left-illustration-pane {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 4px;
+  border-radius: 12px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   align-self: start;
-  width: 240px;
+  width: 280px;
   box-sizing: border-box;
 }
 
 .scenario-left-illustration-pane img {
   width: 100%;
   height: auto;
-  max-height: 180px;
+  max-height: 230px;
   object-fit: contain;
   display: block;
   margin: 0 auto;
-  border-radius: 6px;
+  border-radius: 8px;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
 @media (max-width: 1280px) {
+  .assessment-modern-container {
+    gap: 0.8rem;
+  }
+  .assessment-active-situation-wrap {
+    gap: 0.8rem;
+  }
+  .assessment-sticky-header {
+    padding: 0.5rem 0.95rem;
+  }
   .assessment-split-scenario-card {
-    grid-template-columns: 190px minmax(0, 1fr);
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 0.9rem;
+    padding: 0.8rem 1rem;
   }
   .scenario-left-illustration-pane {
-    width: 190px;
+    width: 200px;
+    padding: 6px;
   }
   .scenario-left-illustration-pane img {
-    max-height: 145px;
+    max-height: 155px;
+  }
+  .assessment-question-card-elevated {
+    padding: 0.9rem 1.15rem;
+    gap: 0.75rem;
   }
 }
 
 .scenario-right-content-pane {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.45rem;
 }
 
 .scenario-meta-row {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .scenario-content-title {
-  font-size: 1.05rem;
+  font-size: 1.18rem;
   font-weight: 700;
   letter-spacing: -0.015em;
-  color: var(--color-text-primary);
+  color: var(--color-text);
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
 .scenario-description-container {
@@ -7923,10 +7552,10 @@ select.form-input option {
 }
 
 .scenario-description-para {
-  font-size: 0.84rem;
-  line-height: 1.45;
-  color: var(--color-text-primary);
-  margin: 0 0 0.3rem 0;
+  font-size: 0.94rem;
+  line-height: 1.62;
+  color: var(--color-text);
+  margin: 0 0 0.55rem 0;
 }
 
 .scenario-description-para:last-child {
@@ -7936,13 +7565,13 @@ select.form-input option {
 /* 4. Question Area Elevated Card */
 .assessment-question-card-elevated {
   background: var(--color-surface);
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid var(--color-border);
-  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.05);
-  padding: 0.75rem 1.15rem;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  padding: 1.2rem 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1rem;
 }
 
 .question-card-top-nav-row {
@@ -7950,7 +7579,7 @@ select.form-input option {
   align-items: center;
   justify-content: space-between;
   gap: 0.65rem;
-  padding-bottom: 0.4rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border);
   flex-wrap: wrap;
 }
@@ -7987,11 +7616,11 @@ select.form-input option {
 }
 
 .assessment-question-text-title {
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-  line-height: 1.35;
+  color: var(--color-text);
+  margin: 0.15rem 0 0.35rem 0;
+  line-height: 1.45;
   letter-spacing: -0.01em;
 }
 
@@ -8071,19 +7700,19 @@ select.form-input option {
 .assessment-options-vertical-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.55rem;
   width: 100%;
 }
 
 .assessment-option-card-premium {
-  min-height: 40px;
-  padding: 0.42rem 0.85rem;
+  min-height: 54px;
+  padding: 0.65rem 1rem;
   border-radius: 10px;
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
   cursor: pointer;
   transition: all 0.16s ease;
   text-align: left;
@@ -8146,9 +7775,9 @@ select.form-input option {
 }
 
 .assessment-option-text-body {
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--color-text-primary);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--color-text);
   flex: 1;
 }
 
@@ -8215,82 +7844,6 @@ select.form-input option {
 
 .assessment-review-link:hover {
   opacity: 0.85;
-}
-
-/* Lightbox Modal */
-.scenario-lightbox-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  cursor: zoom-out;
-  animation: fadeIn 0.15s ease-out;
-}
-
-.scenario-lightbox-content {
-  position: relative;
-  max-width: 1150px;
-  width: 100%;
-  max-height: 92vh;
-  background: var(--color-surface);
-  border-radius: 16px;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  cursor: default;
-}
-
-.scenario-lightbox-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.9rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
-}
-
-.scenario-lightbox-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.scenario-lightbox-close:hover {
-  background: var(--color-border);
-  color: var(--color-primary);
-}
-
-.scenario-lightbox-body {
-  padding: 1.25rem;
-  background: #0b0f19;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
-  min-height: 260px;
-}
-
-.scenario-lightbox-body img {
-  max-width: 100%;
-  max-height: calc(88vh - 75px);
-  object-fit: contain;
-  border-radius: 6px;
 }
 
 /* ── Responsive breakpoints ─────────────────────── */

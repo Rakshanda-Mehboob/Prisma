@@ -1,0 +1,80 @@
+CSS DUPLICATE SELECTOR AUDIT
+Generated: 2026-11-16T17:50:54.405Z
+File: client/src/index.css  (7884 lines)
+
+TOTAL duplicate selectors: 0
+Total extra (redundant) blocks: 0
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION MARKERS (66 found)
+────────────────────────────────────────────────────────────────────────────────
+  L    3: /* ── Prisma Design Tokens — Modern Indigo Theme ──────────────────────────── */
+  L    5: /* ── Surfaces ── */
+  L   16: /* ── Primary: Indigo (Linear / Stripe feel) ── */
+  L   22: /* ── Secondary: Teal ── */
+  L   27: /* ── Accent: Violet (highlights, badges) ── */
+  L   32: /* ── Status Colors ── */
+  L   45: /* ── Text Hierarchy ── */
+  L   56: /* ── Fluid Typography Scale ── */
+  L   64: /* ── Fluid Spacing Scale ── */
+  L   72: /* ── Geometry ── */
+  L   79: /* ── Elevation ── */
+  L   90: /* ── Sidebar dimensions ── */
+  L   95: /* ── Reset & Base ──────────────────────────────────────────────────────────── */
+  L  173: /* ── Scrollbars ────────────────────────────────────────────────────────────── */
+  L  193: /* ── Layout & Wrapper ──────────────────────────────────────────────────────── */
+  L  265: /* ── Navbar ────────────────────────────────────────────────────────────────── */
+  L  405: /* ── Typography & Headers ──────────────────────────────────────────────────── */
+  L  445: /* ── Card System ──────────────────────────────────────────────────────────── */
+  L  506: /* ── Button System ─────────────────────────────────────────────────────────── */
+  L  618: /* ── Badges ────────────────────────────────────────────────────────────────── */
+  L  668: /* ── Stats Grid ────────────────────────────────────────────────────────────── */
+  L  746: /* ── Stage Progress Pipeline (4 Steps) ─────────────────────────────────────── */
+  L  814: /* ── Progress Bar ──────────────────────────────────────────────────────────── */
+  L  853: /* ── Score Bar (Construct Detail) ──────────────────────────────────────────── */
+  L  890: /* ── Charts Grid ───────────────────────────────────────────────────────────── */
+  L  898: /* ── Forms & Inputs ────────────────────────────────────────────────────────── */
+  L  948: /* ── Inline Field Validation & Accessibility ───────────────────────────────── */
+  L 1130: /* ── Alerts ────────────────────────────────────────────────────────────────── */
+  L 1582: /* ── Content Viewer Modal ──────────────────────────────────────────────────── */
+  L 1648: /* ── Layout Override for Auth Pages ── */
+  L 1662: /* ── Prisma Authentication System (Consistent Brand Theme) ─────────────────── */
+  L 2131: /* ── Specific Overrides for Multi-Step Register Wizard inside .auth-page ── */
+  L 2242: /* ── Responsive Auth Rules ─────────────────────────────────────────────────── */
+  L 2293: /* ── Auth Pages (Split Layout) ─────────────────────────────────────────────── */
+  L 2332: /* ── Multi-Step Onboarding & Registration System ────────────────────────────── */
+  L 2483: /* ── Modern Split-Screen Onboarding Experience ────────────────────────────── */
+  L 3151: /* ── Feedback Message Cards ────────────────────────────────────────────────── */
+  L 3168: /* ── Empty State ───────────────────────────────────────────────────────────── */
+  L 3210: /* ── Skeleton Loaders ──────────────────────────────────────────────────────── */
+  L 3250: /* ── Modern Table System ───────────────────────────────────────────────────── */
+  L 3293: /* ── Print Stylesheet ──────────────────────────────────────────────────────── */
+  L 3318: /* ── Responsive Queries ────────────────────────────────────────────────────── */
+  L 3351: /* ── Digital Values Reflection Carousel ───────────────────────────────────── */
+  L 3452: /* ── Top Hero / Summary Card ── */
+  L 3574: /* ── Middle Section: Four TPB Cards Grid (2x2) ── */
+  L 3617: /* ── Situation Tab Cards (Compact ~56px) ─────────────────────────────────── */
+  L 3787: /* ── Bottom Section: Actionable Next Steps & CTA ── */
+  L 3859: /* ── Responsive Results ── */
+  L 3900: /* ── Navbar Scrolled & Landing State ── */
+  L 4021: /* ── Landing Page Root ── */
+  L 4030: /* ── Hero Section ── */
+  L 4240: /* ── Hero Visual & Floating Layered Cards ── */
+  L 4411: /* ── Stats Strip Section ── */
+  L 4469: /* ── Common Landing Section Layout ── */
+  L 4505: /* ── How It Works Section ── */
+  L 4595: /* ── Features Section ── */
+  L 4671: /* ── CTA Banner Section ── */
+  L 4951: /* ── Compact Single-Line Footer ── */
+  L 5027: /* ── Responsive Scaling & Media Queries ── */
+  L 5109: /* ── Visual Feature Grid Styles ── */
+  L 5299: /* ── Sidebar Layout ─────────────────────────────────────────────────────────── */
+  L 5704: /* ── Student Hero Illustration ── */
+  L 7082: /* ── Assessment Page Header Banner ────────────────────────────────────────── */
+  L 7178: /* ── Interactive Scenario-Based Assessment Layout (Modernized & Compact) ── */
+  L 7775: /* ── Sticky Bottom Footer Navigation ────────────── */
+  L 7835: /* ── Responsive breakpoints ─────────────────────── */
+
+────────────────────────────────────────────────────────────────────────────────
+DUPLICATE SELECTORS (each defined 2+ times)
+────────────────────────────────────────────────────────────────────────────────
