@@ -1360,8 +1360,8 @@ export default function Assessment() {
         {/* ── 1. MERGED ASSESSMENT TITLE & PROGRESS CARD ── */}
         <header className="assessment-sticky-header">
           <div className="assessment-header-content-wrap">
-            {/* Left: Title + Badges + Short Subtitle */}
-            <div className="assessment-header-title-pane">
+            {/* Top row: Title + Badges and Top Meta */}
+            <div className="assessment-header-top-row">
               <div className="assessment-header-heading-line">
                 <h1 className="assessment-main-page-title">
                   Online Interaction Assessment
@@ -1376,17 +1376,7 @@ export default function Assessment() {
                   Situation {currentScenarioIdx + 1} of {scenarios.length || 3}
                 </span>
               </div>
-              <p className="assessment-page-subtitle">
-                Read each scenario carefully and choose your genuine response. No right or wrong answers.
-              </p>
-            </div>
-
-            {/* Right: Progress bar & Time / Avatar */}
-            <div className="assessment-header-progress-pane">
-              <div className="assessment-progress-meta-row">
-                <span className="assessment-progress-label">
-                  Progress: <strong>{progressPercent}%</strong> ({answeredQuestionsCount}/{totalQuestionsCount})
-                </span>
+              <div className="assessment-header-top-meta">
                 <div className="assessment-time-chip" title="Estimated remaining time">
                   <Clock size={13} style={{ color: 'var(--color-primary)' }} />
                   <span>~{estRemainingMinutes} min{estRemainingMinutes === 1 ? '' : 's'} left</span>
@@ -1397,6 +1387,20 @@ export default function Assessment() {
                 >
                   {userInitial}
                 </div>
+              </div>
+            </div>
+
+            {/* Subtitle below with comfortable space */}
+            <p className="assessment-page-subtitle">
+              Read each scenario carefully and choose your genuine response. No right or wrong answers.
+            </p>
+
+            {/* Progress bar on its own row with space above it */}
+            <div className="assessment-header-progress-row">
+              <div className="assessment-progress-meta-row">
+                <span className="assessment-progress-label">
+                  Progress: <strong>{progressPercent}%</strong> ({answeredQuestionsCount}/{totalQuestionsCount} questions)
+                </span>
               </div>
               <div className="assessment-header-progress-track">
                 <div
